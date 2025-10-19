@@ -1,4 +1,4 @@
-// Stream Central Analytics Engine with MongoDB
+// Stream Central Analytics Engine - Vercel + MongoDB
 class StreamCentralAnalytics {
     constructor() {
         this.mongoConnected = false;
@@ -8,6 +8,7 @@ class StreamCentralAnalytics {
         };
         this.totalViewers = 38;
         this.countries = 1;
+        this.apiBase = '/api'; // Vercel functions path
         this.init();
     }
     
@@ -16,53 +17,74 @@ class StreamCentralAnalytics {
         this.startAnalytics();
         this.updateViewerCounts();
         this.startLiveUpdates();
-        console.log('🔴 Stream Central Analytics - MongoDB Connected');
+        console.log('🔴 Stream Central Analytics - Vercel + MongoDB');
     }
     
     async connectToMongoDB() {
         try {
-            // MongoDB connection will be added via environment variables
-            const mongoURI = await this.getMongoURI();
-            if (mongoURI && mongoURI.includes('mongodb')) {
+            // Test MongoDB connection by sending visitor data
+            const visitorData = await this.collectVisitorData();
+            const connected = await this.sendToMongoDB(visitorData);
+            
+            if (connected) {
                 this.mongoConnected = true;
-                console.log('✅ MongoDB: Ready for connection');
+                console.log('✅ MongoDB: Connected via Vercel Functions');
                 this.showMongoStatus('connected');
             } else {
-                console.log('⚠️ MongoDB: Using simulated data (connection setup required)');
+                console.log('🟡 MongoDB: Using enhanced simulated data');
                 this.showMongoStatus('simulated');
             }
         } catch (error) {
-            console.log('❌ MongoDB: Connection failed, using simulated data');
+            console.log('🔴 MongoDB: Connection failed, using simulated data');
             this.showMongoStatus('failed');
         }
     }
     
-    async getMongoURI() {
-        // This will be handled by Netlify environment variables
-        // In production, this comes from process.env.MONGODB_URI
-        return null; // Simulated for now
-    }
-    
-    async storeVisitorData(visitorData) {
-        if (!this.mongoConnected) {
-            // Simulate database storage
-            this.simulateDataStorage(visitorData);
-            return;
+    async sendToMongoDB(data) {
+        try {
+            const response = await fetch(`${this.apiBase}/mongo-analytics`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('📊 MongoDB Storage Success:', result);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.log('📊 MongoDB Storage Failed:', error);
+            return false;
         }
-        
-        // Real MongoDB storage would go here
-        console.log('📊 Storing visitor data:', visitorData);
     }
     
-    simulateDataStorage(visitorData) {
-        // Simulate database operations
-        const timestamp = new Date().toISOString();
-        const data = {
-            timestamp,
-            ...visitorData,
-            storedIn: 'simulated-db'
+    collectVisitorData() {
+        return {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            screen: `${screen.width}x${screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            referrer: document.referrer,
+            url: window.location.href,
+            timestamp: new Date().toISOString(),
+            isBot: this.detectBot(),
+            sessionStart: new Date().toISOString(),
+            streamCentralVersion: '2.0'
         };
-        console.log('📊 Simulated DB Storage:', data);
+    }
+    
+    detectBot() {
+        const botIndicators = [
+            'bot', 'crawler', 'spider', 'googlebot', 'bingbot', 'slurp',
+            'duckduckbot', 'baiduspider', 'yandexbot', 'facebookexternalhit'
+        ];
+        const ua = navigator.userAgent.toLowerCase();
+        return botIndicators.some(bot => ua.includes(bot));
     }
     
     startAnalytics() {
@@ -79,40 +101,42 @@ class StreamCentralAnalytics {
         setInterval(() => {
             this.updateLastRefreshed();
         }, 1000);
+        
+        // Track page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.trackEvent('page_hidden');
+            } else {
+                this.trackEvent('page_visible');
+            }
+        });
     }
     
-    trackCurrentVisitor() {
-        const visitorData = {
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            language: navigator.language,
-            screen: `${screen.width}x${screen.height}`,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            timestamp: new Date().toISOString(),
-            isBot: this.detectBot()
-        };
-        
-        this.storeVisitorData(visitorData);
+    async trackCurrentVisitor() {
+        const visitorData = this.collectVisitorData();
+        await this.sendToMongoDB(visitorData);
         this.updateVisitorStats(visitorData);
     }
     
-    detectBot() {
-        const botIndicators = [
-            'bot', 'crawler', 'spider', 'googlebot', 'bingbot', 'slurp'
-        ];
-        const ua = navigator.userAgent.toLowerCase();
-        return botIndicators.some(bot => ua.includes(bot));
+    async trackEvent(eventName, additionalData = {}) {
+        const eventData = {
+            event: eventName,
+            ...additionalData,
+            timestamp: new Date().toISOString()
+        };
+        await this.sendToMongoDB(eventData);
     }
     
     updateVisitorStats(visitorData) {
-        // Update dashboard with real visitor info
         const statsElement = document.getElementById('visitor-stats');
         if (statsElement) {
+            const botStatus = visitorData.isBot ? '🤖 Bot' : '👤 Human';
             statsElement.innerHTML = `
                 <div class="visitor-info">
-                    <strong>Current Session:</strong><br>
+                    <strong>Current Session (Live):</strong><br>
                     📱 ${visitorData.platform} | 🌐 ${visitorData.language}<br>
-                    🖥️ ${visitorData.screen} | 🤖 ${visitorData.isBot ? 'Bot Detected' : 'Human'}
+                    🖥️ ${visitorData.screen} | ${botStatus}<br>
+                    🕒 ${new Date().toLocaleTimeString()}
                 </div>
             `;
         }
@@ -158,18 +182,23 @@ class StreamCentralAnalytics {
     updateLastRefreshed() {
         const now = new Date();
         const timeString = now.toLocaleTimeString();
-        document.getElementById('update-time').textContent = timeString;
+        const statusElement = document.getElementById('update-time');
+        if (statusElement) {
+            statusElement.textContent = timeString;
+            statusElement.title = `MongoDB: ${this.mongoConnected ? 'Connected' : 'Simulated'}`;
+        }
     }
     
     showMongoStatus(status) {
         const statusElement = document.getElementById('mongo-status');
         if (statusElement) {
             const statusMessages = {
-                connected: '🟢 MongoDB: Connected',
-                simulated: '🟡 MongoDB: Simulated Data',
+                connected: '🟢 MongoDB: Connected via Vercel',
+                simulated: '🟡 MongoDB: Enhanced Simulation',
                 failed: '🔴 MongoDB: Connection Failed'
             };
             statusElement.textContent = statusMessages[status] || '⚪ MongoDB: Unknown';
+            statusElement.className = `mongo-status status-${status}`;
         }
     }
     
@@ -202,7 +231,7 @@ class StreamCentralAnalytics {
 }
 
 // Enhanced global functions
-function refreshStream(streamId) {
+async function refreshStream(streamId) {
     const iframe = document.querySelector(`[data-stream-id="${streamId}"] iframe`);
     if (iframe) {
         const originalSrc = iframe.src;
@@ -214,11 +243,7 @@ function refreshStream(streamId) {
             // Log the refresh event
             const analytics = window.streamAnalytics;
             if (analytics) {
-                analytics.storeVisitorData({
-                    action: 'stream_refresh',
-                    streamId: streamId,
-                    timestamp: new Date().toISOString()
-                });
+                analytics.trackEvent('stream_refresh', { streamId: streamId });
             }
         }, 500);
     }
@@ -285,11 +310,12 @@ styles.textContent = `
     
     .visitor-info {
         background: rgba(255, 255, 255, 0.1);
-        padding: 10px;
+        padding: 12px;
         border-radius: 8px;
         margin-top: 10px;
-        font-size: 0.9em;
+        font-size: 0.85em;
         border-left: 3px solid #4ecdc4;
+        line-height: 1.4;
     }
     
     .mongo-status {
@@ -299,6 +325,22 @@ styles.textContent = `
         font-size: 0.8em;
         margin-top: 10px;
         display: inline-block;
+        font-weight: bold;
+    }
+    
+    .status-connected {
+        background: rgba(46, 204, 113, 0.2);
+        border: 1px solid rgba(46, 204, 113, 0.5);
+    }
+    
+    .status-simulated {
+        background: rgba(241, 196, 15, 0.2);
+        border: 1px solid rgba(241, 196, 15, 0.5);
+    }
+    
+    .status-failed {
+        background: rgba(231, 76, 60, 0.2);
+        border: 1px solid rgba(231, 76, 60, 0.5);
     }
 `;
 document.head.appendChild(styles);
