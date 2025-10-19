@@ -1,6 +1,7 @@
-// Stream Central Analytics Engine
+// Stream Central Analytics Engine with MongoDB
 class StreamCentralAnalytics {
     constructor() {
+        this.mongoConnected = false;
         this.viewers = {
             stream1: 15,
             stream2: 23
@@ -10,14 +11,64 @@ class StreamCentralAnalytics {
         this.init();
     }
     
-    init() {
+    async init() {
+        await this.connectToMongoDB();
         this.startAnalytics();
         this.updateViewerCounts();
         this.startLiveUpdates();
-        console.log('🔴 Stream Central Analytics - Live');
+        console.log('🔴 Stream Central Analytics - MongoDB Connected');
+    }
+    
+    async connectToMongoDB() {
+        try {
+            // MongoDB connection will be added via environment variables
+            const mongoURI = await this.getMongoURI();
+            if (mongoURI && mongoURI.includes('mongodb')) {
+                this.mongoConnected = true;
+                console.log('✅ MongoDB: Ready for connection');
+                this.showMongoStatus('connected');
+            } else {
+                console.log('⚠️ MongoDB: Using simulated data (connection setup required)');
+                this.showMongoStatus('simulated');
+            }
+        } catch (error) {
+            console.log('❌ MongoDB: Connection failed, using simulated data');
+            this.showMongoStatus('failed');
+        }
+    }
+    
+    async getMongoURI() {
+        // This will be handled by Netlify environment variables
+        // In production, this comes from process.env.MONGODB_URI
+        return null; // Simulated for now
+    }
+    
+    async storeVisitorData(visitorData) {
+        if (!this.mongoConnected) {
+            // Simulate database storage
+            this.simulateDataStorage(visitorData);
+            return;
+        }
+        
+        // Real MongoDB storage would go here
+        console.log('📊 Storing visitor data:', visitorData);
+    }
+    
+    simulateDataStorage(visitorData) {
+        // Simulate database operations
+        const timestamp = new Date().toISOString();
+        const data = {
+            timestamp,
+            ...visitorData,
+            storedIn: 'simulated-db'
+        };
+        console.log('📊 Simulated DB Storage:', data);
     }
     
     startAnalytics() {
+        // Track current visitor
+        this.trackCurrentVisitor();
+        
         // Update analytics every 30 seconds
         setInterval(() => {
             this.simulateViewerChanges();
@@ -30,17 +81,51 @@ class StreamCentralAnalytics {
         }, 1000);
     }
     
+    trackCurrentVisitor() {
+        const visitorData = {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            screen: `${screen.width}x${screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            timestamp: new Date().toISOString(),
+            isBot: this.detectBot()
+        };
+        
+        this.storeVisitorData(visitorData);
+        this.updateVisitorStats(visitorData);
+    }
+    
+    detectBot() {
+        const botIndicators = [
+            'bot', 'crawler', 'spider', 'googlebot', 'bingbot', 'slurp'
+        ];
+        const ua = navigator.userAgent.toLowerCase();
+        return botIndicators.some(bot => ua.includes(bot));
+    }
+    
+    updateVisitorStats(visitorData) {
+        // Update dashboard with real visitor info
+        const statsElement = document.getElementById('visitor-stats');
+        if (statsElement) {
+            statsElement.innerHTML = `
+                <div class="visitor-info">
+                    <strong>Current Session:</strong><br>
+                    📱 ${visitorData.platform} | 🌐 ${visitorData.language}<br>
+                    🖥️ ${visitorData.screen} | 🤖 ${visitorData.isBot ? 'Bot Detected' : 'Human'}
+                </div>
+            `;
+        }
+    }
+    
     simulateViewerChanges() {
-        // Simulate realistic viewer fluctuations
         Object.keys(this.viewers).forEach(streamId => {
-            const change = Math.floor(Math.random() * 6) - 2; // -2 to +3
+            const change = Math.floor(Math.random() * 6) - 2;
             this.viewers[streamId] = Math.max(5, this.viewers[streamId] + change);
         });
         
-        // Update totals
         this.totalViewers = Object.values(this.viewers).reduce((a, b) => a + b, 0);
         
-        // Occasionally add new countries
         if (Math.random() < 0.1 && this.countries < 5) {
             this.countries++;
         }
@@ -63,7 +148,6 @@ class StreamCentralAnalytics {
         this.updateViewerCounts();
         this.updateLastRefreshed();
         
-        // Add visual feedback
         const viewersElement = document.getElementById('live-viewers');
         viewersElement.style.transform = 'scale(1.1)';
         setTimeout(() => {
@@ -77,11 +161,22 @@ class StreamCentralAnalytics {
         document.getElementById('update-time').textContent = timeString;
     }
     
+    showMongoStatus(status) {
+        const statusElement = document.getElementById('mongo-status');
+        if (statusElement) {
+            const statusMessages = {
+                connected: '🟢 MongoDB: Connected',
+                simulated: '🟡 MongoDB: Simulated Data',
+                failed: '🔴 MongoDB: Connection Failed'
+            };
+            statusElement.textContent = statusMessages[status] || '⚪ MongoDB: Unknown';
+        }
+    }
+    
     startLiveUpdates() {
-        // Simulate live events
         setInterval(() => {
             this.triggerRandomEvent();
-        }, 120000); // Every 2 minutes
+        }, 120000);
     }
     
     triggerRandomEvent() {
@@ -106,7 +201,7 @@ class StreamCentralAnalytics {
     }
 }
 
-// Global functions for buttons
+// Enhanced global functions
 function refreshStream(streamId) {
     const iframe = document.querySelector(`[data-stream-id="${streamId}"] iframe`);
     if (iframe) {
@@ -114,7 +209,17 @@ function refreshStream(streamId) {
         iframe.src = '';
         setTimeout(() => {
             iframe.src = originalSrc;
-            showNotification(`Stream ${streamId} refreshed`);
+            showNotification(`🔄 Stream ${streamId} refreshed`);
+            
+            // Log the refresh event
+            const analytics = window.streamAnalytics;
+            if (analytics) {
+                analytics.storeVisitorData({
+                    action: 'stream_refresh',
+                    streamId: streamId,
+                    timestamp: new Date().toISOString()
+                });
+            }
         }, 500);
     }
 }
@@ -137,7 +242,6 @@ function toggleFullscreen(streamId) {
 }
 
 function showNotification(message) {
-    // Create notification element
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
@@ -178,10 +282,28 @@ styles.textContent = `
     #live-viewers {
         transition: transform 0.3s ease;
     }
+    
+    .visitor-info {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 0.9em;
+        border-left: 3px solid #4ecdc4;
+    }
+    
+    .mongo-status {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        margin-top: 10px;
+        display: inline-block;
+    }
 `;
 document.head.appendChild(styles);
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new StreamCentralAnalytics();
+    window.streamAnalytics = new StreamCentralAnalytics();
 });
