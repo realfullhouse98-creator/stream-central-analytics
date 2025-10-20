@@ -7,6 +7,14 @@ export default async function handler(req, res) {
 
   console.log('🔍 Testing MongoDB connection...');
   
+  // Check if MONGODB_URI exists
+  if (!process.env.MONGODB_URI) {
+    return res.status(500).json({ 
+      error: '❌ MONGODB_URI environment variable is missing',
+      suggestion: 'Check Vercel project settings → Environment Variables'
+    });
+  }
+
   const client = new MongoClient(process.env.MONGODB_URI);
   
   try {
@@ -34,7 +42,7 @@ export default async function handler(req, res) {
     res.status(500).json({ 
       error: '❌ MongoDB Connection FAILED',
       details: error.message,
-      suggestion: 'Check MONGODB_URI environment variable in Vercel'
+      suggestion: 'Check MONGODB_URI format and MongoDB Atlas IP whitelist'
     });
   } finally {
     await client.close();
