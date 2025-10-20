@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BMEYY62XPX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX', {
-    'anonymize_ip': true
-  });
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BMEYY62XPX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-BMEYY62XPX', {
+        'anonymize_ip': true
+      });
+    </script>
     
     <!-- Umami Analytics -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="99504c84-7b63-4718-8718-3b8117a7d0ce"></script>
@@ -34,7 +34,7 @@
                 <div class="stat-label">Live Viewers</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="total-streams">2</div>
+                <div class="stat-value" id="total-streams">6</div>
                 <div class="stat-label">Active Streams</div>
             </div>
             <div class="stat-card">
@@ -46,11 +46,26 @@
                 <div class="stat-label">Uptime</div>
             </div>
         </div>
-<!-- Add this RIGHT AFTER the existing stat cards -->
-<div class="analytics-panel">
-    <div class="mongo-status" id="mongo-status">⚪ MongoDB: Initializing...</div>
-    <div id="visitor-stats"></div>
-</div>
+
+        <!-- Add this RIGHT AFTER the existing stat cards -->
+        <div class="analytics-panel">
+            <div class="mongo-status" id="mongo-status">⚪ MongoDB: Initializing...</div>
+            <div id="visitor-stats"></div>
+        </div>
+
+        <!-- PSL STREAMS SECTION -->
+        <section class="psl-streams-section">
+            <div class="section-header">
+                <h2>⚽ Live PSL Betway Premiership</h2>
+                <p>South Africa Premier Soccer League - Live Matches</p>
+            </div>
+            
+            <div class="streams-grid" id="psl-streams-container">
+                <!-- PSL streams will be loaded dynamically here -->
+                <div class="loading-streams">Loading PSL matches...</div>
+            </div>
+        </section>
+
         <div class="streams-container">
             <!-- Stream 1: Unknown League -->
             <div class="stream-card" data-stream-id="stream1">
