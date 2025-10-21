@@ -218,6 +218,27 @@ function showNotification(message) {
     }, 3000);
 }
 
+// TEST BACK4APP CONNECTION
+async function testBack4app() {
+    try {
+        const Test = Parse.Object.extend('Test');
+        const test = new Test();
+        test.set('message', 'Test from Stream Central');
+        test.set('timestamp', new Date());
+        await test.save();
+        console.log('✅ Back4app test: SUCCESS', test);
+        showNotification('✅ Back4app Connected!');
+        return true;
+    } catch (error) {
+        console.log('❌ Back4app test: FAILED', error);
+        showNotification('❌ Back4app Failed - Check Console');
+        return false;
+    }
+}
+
+// Call test after page loads
+setTimeout(testBack4app, 2000);
+
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
     window.streamAnalytics = new StreamCentralAnalytics();
