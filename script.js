@@ -21,11 +21,18 @@ class StreamCentralAnalytics {
     
     async initBack4app() {
     try {
-        // Initialize Back4app Parse SDK
+        // Simple Back4app initialization for browser
         Parse.initialize("kV7E4rsswsAfJFXBiWASjbjOtFLmf0iSh8cUHznK", "7VNrsFK2G0sKmlNp3OlNrZnmIPiP84l5Ygn6JvgH");
         Parse.serverURL = "https://parseapi.back4app.com/";
-        // Initialize installation controller
-        await Parse.CoreManager.setAsyncStorage(AsyncStorage);
+        
+        this.back4appConnected = true;
+        console.log('✅ Back4app: Connected');
+        this.showMongoStatus('connected');
+    } catch (error) {
+        console.log('🔴 Back4app: Connection failed', error);
+        this.showMongoStatus('failed');
+    }
+}
             
             this.back4appConnected = true;
             console.log('✅ Back4app: Connected');
