@@ -220,15 +220,20 @@ function showNotification(message) {
     }, 3000);
 }
 
-// TEST BACK4APP CONNECTION - Using Back4app's exact example
+// TEST BACK4APP CONNECTION - Using visitor_analytics class
 async function testBack4app() {
     try {
-        const gameScore = new Parse.Object("GameScore");
-        gameScore.set("score", 1337);
-        gameScore.set("playerName", "Sean Plott");
-        gameScore.set("cheatMode", false);
-        await gameScore.save();
-        console.log('✅ Back4app test: SUCCESS - Created object:', gameScore.id);
+        // Use visitor_analytics class instead of GameScore
+        const Test = Parse.Object.extend("visitor_analytics");
+        const test = new Test();
+        test.set("userAgent", "Back4app Test");
+        test.set("platform", "Test Platform"); 
+        test.set("screen", "1920x1080");
+        test.set("timezone", "UTC");
+        test.set("isBot", false);
+        test.set("timestamp", new Date());
+        await test.save();
+        console.log('✅ Back4app test: SUCCESS');
         showNotification('✅ Back4app Connected!');
         return true;
     } catch (error) {
