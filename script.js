@@ -1,3 +1,7 @@
+// Prevent conflicts with YouTube embed scripts
+(function() {
+    'use strict';
+
 // Stream Central Analytics - GitHub Pages + Back4app
 class StreamCentralAnalytics {
     constructor() {
@@ -244,3 +248,5 @@ setTimeout(testBack4app, 2000);
 document.addEventListener('DOMContentLoaded', () => {
     window.streamAnalytics = new StreamCentralAnalytics();
 });
+
+})();
