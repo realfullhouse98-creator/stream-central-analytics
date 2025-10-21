@@ -1,63 +1,63 @@
-// Stream Central Analytics Engine - Back4app + GitHub Pages
+// Stream Central Analytics Engine - Vercel + MongoDB
 class StreamCentralAnalytics {
     constructor() {
-        this.back4appConnected = false;
+        this.mongoConnected = false;
         this.viewers = {
             stream1: 15,
             stream2: 23
         };
         this.totalViewers = 38;
         this.countries = 1;
+        this.apiBase = '/api'; // Vercel functions path
         this.init();
     }
     
     async init() {
-        await this.initBack4app();
+        await this.connectToMongoDB();
         this.startAnalytics();
         this.updateViewerCounts();
         this.startLiveUpdates();
-        console.log('🔴 Stream Central Analytics - Back4app + GitHub Pages');
+        console.log('🔴 Stream Central Analytics - Vercel + MongoDB');
     }
     
-    async initBack4app() {
-    try {
-        // Simple Back4app initialization for browser
-        Parse.initialize("kV7E4rsswsAfJFXBiWASjbjOtFLmf0iSh8cUHznK", "7VNrsFK2G0sKmlNp3OlNrZnmIPiP84l5Ygn6JvgH");
-        Parse.serverURL = "https://parseapi.back4app.com/";
-        
-        this.back4appConnected = true;
-        console.log('✅ Back4app: Connected');
-        this.showMongoStatus('connected');
-    } catch (error) {
-        console.log('🔴 Back4app: Connection failed', error);
-        this.showMongoStatus('failed');
-    }
-}
+    async connectToMongoDB() {
+        try {
+            // Test MongoDB connection by sending visitor data
+            const visitorData = await this.collectVisitorData();
+            const connected = await this.sendToMongoDB(visitorData);
             
-            this.back4appConnected = true;
-            console.log('✅ Back4app: Connected');
-            this.showMongoStatus('connected');
+            if (connected) {
+                this.mongoConnected = true;
+                console.log('✅ MongoDB: Connected via Vercel Functions');
+                this.showMongoStatus('connected');
+            } else {
+                console.log('🟡 MongoDB: Using enhanced simulated data');
+                this.showMongoStatus('simulated');
+            }
         } catch (error) {
-            console.log('🔴 Back4app: Connection failed');
+            console.log('🔴 MongoDB: Connection failed, using simulated data');
             this.showMongoStatus('failed');
         }
     }
     
-    async logToBack4app(data) {
-        if (!this.back4appConnected) return false;
-        
+    async sendToMongoDB(data) {
         try {
-            const result = await Parse.Cloud.run("logAnalytics", {
-                userAgent: data.userAgent,
-                platform: data.platform,
-                screen: data.screen,
-                timezone: data.timezone,
-                isBot: data.isBot
+            const response = await fetch(`${this.apiBase}/mongo-analytics`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
             });
-            console.log('📊 Back4app Storage Success:', result);
-            return true;
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('📊 MongoDB Storage Success:', result);
+                return true;
+            }
+            return false;
         } catch (error) {
-            console.log('📊 Back4app Storage Failed:', error);
+            console.log('📊 MongoDB Storage Failed:', error);
             return false;
         }
     }
@@ -66,11 +66,15 @@ class StreamCentralAnalytics {
         return {
             userAgent: navigator.userAgent,
             platform: navigator.platform,
+            language: navigator.language,
             screen: `${screen.width}x${screen.height}`,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            referrer: document.referrer,
+            url: window.location.href,
             timestamp: new Date().toISOString(),
             isBot: this.detectBot(),
-            sessionStart: new Date().toISOString()
+            sessionStart: new Date().toISOString(),
+            streamCentralVersion: '2.0'
         };
     }
     
@@ -84,17 +88,21 @@ class StreamCentralAnalytics {
     }
     
     startAnalytics() {
+        // Track current visitor
         this.trackCurrentVisitor();
         
+        // Update analytics every 30 seconds
         setInterval(() => {
             this.simulateViewerChanges();
             this.updateDashboard();
         }, 30000);
         
+        // Update clock every second
         setInterval(() => {
             this.updateLastRefreshed();
         }, 1000);
         
+        // Track page visibility changes
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 this.trackEvent('page_hidden');
@@ -106,7 +114,7 @@ class StreamCentralAnalytics {
     
     async trackCurrentVisitor() {
         const visitorData = this.collectVisitorData();
-        await this.logToBack4app(visitorData);
+        await this.sendToMongoDB(visitorData);
         this.updateVisitorStats(visitorData);
     }
     
@@ -116,7 +124,7 @@ class StreamCentralAnalytics {
             ...additionalData,
             timestamp: new Date().toISOString()
         };
-        await this.logToBack4app(eventData);
+        await this.sendToMongoDB(eventData);
     }
     
     updateVisitorStats(visitorData) {
@@ -128,8 +136,7 @@ class StreamCentralAnalytics {
                     <strong>Current Session (Live):</strong><br>
                     📱 ${visitorData.platform} | 🌐 ${visitorData.language}<br>
                     🖥️ ${visitorData.screen} | ${botStatus}<br>
-                    🕒 ${new Date().toLocaleTimeString()}<br>
-                    🔗 Back4app: ${this.back4appConnected ? 'Connected' : 'Failed'}
+                    🕒 ${new Date().toLocaleTimeString()}
                 </div>
             `;
         }
@@ -178,7 +185,7 @@ class StreamCentralAnalytics {
         const statusElement = document.getElementById('update-time');
         if (statusElement) {
             statusElement.textContent = timeString;
-            statusElement.title = `Back4app: ${this.back4appConnected ? 'Connected' : 'Failed'}`;
+            statusElement.title = `MongoDB: ${this.mongoConnected ? 'Connected' : 'Simulated'}`;
         }
     }
     
@@ -186,12 +193,40 @@ class StreamCentralAnalytics {
         const statusElement = document.getElementById('mongo-status');
         if (statusElement) {
             const statusMessages = {
-                connected: '🟢 Back4app: Connected',
-                failed: '🔴 Back4app: Connection Failed'
+                connected: '🟢 MongoDB: Connected via Vercel',
+                simulated: '🟡 MongoDB: Enhanced Simulation',
+                failed: '🔴 MongoDB: Connection Failed'
             };
-            statusElement.textContent = statusMessages[status] || '⚪ Back4app: Unknown';
+            statusElement.textContent = statusMessages[status] || '⚪ MongoDB: Unknown';
             statusElement.className = `mongo-status status-${status}`;
         }
+    }
+    
+    startLiveUpdates() {
+        setInterval(() => {
+            this.triggerRandomEvent();
+        }, 120000);
+    }
+    
+    triggerRandomEvent() {
+        const events = ['viewer_surge', 'new_country', 'stream_quality_change'];
+        const randomEvent = events[Math.floor(Math.random() * events.length)];
+        
+        switch(randomEvent) {
+            case 'viewer_surge':
+                this.simulateViewerSurge();
+                break;
+            case 'new_country':
+                if (this.countries < 8) this.countries++;
+                break;
+        }
+    }
+    
+    simulateViewerSurge() {
+        Object.keys(this.viewers).forEach(streamId => {
+            this.viewers[streamId] += Math.floor(Math.random() * 10) + 5;
+        });
+        this.updateDashboard();
     }
 }
 
@@ -205,6 +240,7 @@ async function refreshStream(streamId) {
             iframe.src = originalSrc;
             showNotification(`🔄 Stream ${streamId} refreshed`);
             
+            // Log the refresh event
             const analytics = window.streamAnalytics;
             if (analytics) {
                 analytics.trackEvent('stream_refresh', { streamId: streamId });
@@ -255,10 +291,59 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Add Parse SDK to your HTML - Add this before the script.js include
-const parseScript = document.createElement('script');
-parseScript.src = 'https://npmcdn.com/parse/dist/parse.min.js';
-document.head.appendChild(parseScript);
+// Add CSS animations
+const styles = document.createElement('style');
+styles.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    #live-viewers {
+        transition: transform 0.3s ease;
+    }
+    
+    .visitor-info {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 0.85em;
+        border-left: 3px solid #4ecdc4;
+        line-height: 1.4;
+    }
+    
+    .mongo-status {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        margin-top: 10px;
+        display: inline-block;
+        font-weight: bold;
+    }
+    
+    .status-connected {
+        background: rgba(46, 204, 113, 0.2);
+        border: 1px solid rgba(46, 204, 113, 0.5);
+    }
+    
+    .status-simulated {
+        background: rgba(241, 196, 15, 0.2);
+        border: 1px solid rgba(241, 196, 15, 0.5);
+    }
+    
+    .status-failed {
+        background: rgba(231, 76, 60, 0.2);
+        border: 1px solid rgba(231, 76, 60, 0.5);
+    }
+`;
+document.head.appendChild(styles);
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
