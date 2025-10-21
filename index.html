@@ -1,226 +1,133 @@
-// Stream Central Analytics - GitHub Pages
-class StreamCentralAnalytics {
-    constructor() {
-        this.viewers = {
-            stream1: 15,
-            stream2: 23
-        };
-        this.totalViewers = 38;
-        this.countries = 1;
-        this.init();
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BMEYY62XPX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-BMEYY62XPX', {
+        'anonymize_ip': true
+      });
+    </script>
     
-    init() {
-        this.startAnalytics();
-        this.updateViewerCounts();
-        this.startLiveUpdates();
-        console.log('🔴 Stream Central Analytics - Live Streaming Dashboard');
-    }
+    <!-- Umami Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="99504c84-7b63-4718-8718-3b8117a7d0ce"></script>
     
-    startAnalytics() {
-        this.trackCurrentVisitor();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Central Analytics - Live Multi-Platform Streaming</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Stream Central Analytics Dashboard -->
+    <div class="stream-central-dashboard">
+        <header class="dashboard-header">
+            <h1>🔴 Stream Central Analytics</h1>
+            <p>Live Multi-Platform Streaming Dashboard</p>
+        </header>
         
-        setInterval(() => {
-            this.simulateViewerChanges();
-            this.updateDashboard();
-        }, 30000);
-        
-        setInterval(() => {
-            this.updateLastRefreshed();
-        }, 1000);
-    }
-    
-    trackCurrentVisitor() {
-        this.updateVisitorStats();
-    }
-    
-    updateVisitorStats() {
-        const statsElement = document.getElementById('visitor-stats');
-        if (statsElement) {
-            const isBot = this.detectBot();
-            const botStatus = isBot ? '🤖 Bot' : '👤 Human';
-            statsElement.innerHTML = `
-                <div class="visitor-info">
-                    <strong>Current Session:</strong><br>
-                    📱 ${navigator.platform} | 🌐 ${navigator.language}<br>
-                    🖥️ ${screen.width}x${screen.height} | ${botStatus}
+        <div class="analytics-overview">
+            <div class="stat-card">
+                <div class="stat-value" id="live-viewers">0</div>
+                <div class="stat-label">Live Viewers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-streams">2</div>
+                <div class="stat-label">Active Streams</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="countries">1</div>
+                <div class="stat-label">Countries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uptime">100%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+
+        <div class="analytics-panel">
+            <div id="visitor-stats"></div>
+        </div>
+
+        <!-- PSL STREAMS SECTION -->
+        <section class="psl-streams-section">
+            <div class="section-header">
+                <h2>⚽ Live PSL Betway Premiership</h2>
+                <p>South Africa Premier Soccer League - Live Matches</p>
+            </div>
+            
+            <div class="streams-grid" id="psl-streams-container">
+                <!-- PSL streams will be loaded dynamically here -->
+                <div class="loading-streams">Loading PSL matches...</div>
+            </div>
+        </section>
+
+        <div class="streams-container">
+            <!-- Stream 1: Unknown League -->
+            <div class="stream-card" data-stream-id="stream1">
+                <div class="stream-header">
+                    <div class="stream-info">
+                        <h3>Live Sports Stream</h3>
+                        <span class="stream-category">Sports</span>
+                    </div>
+                    <div class="stream-status live">● LIVE</div>
                 </div>
-            `;
-        }
-    }
-    
-    detectBot() {
-        const botIndicators = ['bot', 'crawler', 'spider'];
-        const ua = navigator.userAgent.toLowerCase();
-        return botIndicators.some(bot => ua.includes(bot));
-    }
-    
-    simulateViewerChanges() {
-        Object.keys(this.viewers).forEach(streamId => {
-            const change = Math.floor(Math.random() * 6) - 2;
-            this.viewers[streamId] = Math.max(5, this.viewers[streamId] + change);
-        });
-        
-        this.totalViewers = Object.values(this.viewers).reduce((a, b) => a + b, 0);
-        
-        if (Math.random() < 0.1 && this.countries < 5) {
-            this.countries++;
-        }
-    }
-    
-    updateViewerCounts() {
-        Object.keys(this.viewers).forEach(streamId => {
-            const element = document.getElementById(`${streamId}-viewers`);
-            if (element) {
-                element.textContent = this.viewers[streamId];
-            }
-        });
-        
-        document.getElementById('live-viewers').textContent = this.totalViewers;
-        document.getElementById('countries').textContent = this.countries;
-        document.getElementById('total-streams').textContent = Object.keys(this.viewers).length;
-    }
-    
-    updateDashboard() {
-        this.updateViewerCounts();
-        this.updateLastRefreshed();
-        
-        const viewersElement = document.getElementById('live-viewers');
-        viewersElement.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-            viewersElement.style.transform = 'scale(1)';
-        }, 300);
-    }
-    
-    updateLastRefreshed() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString();
-        const statusElement = document.getElementById('update-time');
-        if (statusElement) {
-            statusElement.textContent = timeString;
-        }
-    }
-    
-    startLiveUpdates() {
-        setInterval(() => {
-            this.triggerRandomEvent();
-        }, 120000);
-    }
-    
-    triggerRandomEvent() {
-        const events = ['viewer_surge', 'new_country', 'stream_quality_change'];
-        const randomEvent = events[Math.floor(Math.random() * events.length)];
-        
-        switch(randomEvent) {
-            case 'viewer_surge':
-                this.simulateViewerSurge();
-                break;
-            case 'new_country':
-                if (this.countries < 8) this.countries++;
-                break;
-        }
-    }
-    
-    simulateViewerSurge() {
-        Object.keys(this.viewers).forEach(streamId => {
-            this.viewers[streamId] += Math.floor(Math.random() * 10) + 5;
-        });
-        this.updateDashboard();
-    }
-}
+                
+                <div class="stream-player">
+                    <iframe 
+                        src="https://www.youtube.com/embed/I42XWG-wddk?modestbranding=1&controls=0&rel=0" 
+                        title="Live Sports Stream 1"
+                        allowfullscreen 
+                        allow="autoplay; encrypted-media; picture-in-picture;">
+                    </iframe>
+                </div>
+                
+                <div class="stream-analytics">
+                    <div class="viewer-count">👥 <span id="stream1-viewers">15</span> watching</div>
+                    <div class="stream-actions">
+                        <button class="btn" onclick="refreshStream('stream1')">Refresh</button>
+                        <button class="btn" onclick="toggleFullscreen('stream1')">Fullscreen</button>
+                    </div>
+                </div>
+            </div>
 
-// Global functions
-async function refreshStream(streamId) {
-    const iframe = document.querySelector(`[data-stream-id="${streamId}"] iframe`);
-    if (iframe) {
-        const originalSrc = iframe.src;
-        iframe.src = '';
-        setTimeout(() => {
-            iframe.src = originalSrc;
-            showNotification(`🔄 Stream ${streamId} refreshed`);
-        }, 500);
-    }
-}
+            <!-- Stream 2: Canada Premier League -->
+            <div class="stream-card" data-stream-id="stream2">
+                <div class="stream-header">
+                    <div class="stream-info">
+                        <h3>Forge FC vs York United</h3>
+                        <span class="stream-category canada">Canada Premier League</span>
+                    </div>
+                    <div class="stream-status live">● LIVE</div>
+                </div>
+                
+                <div class="stream-player">
+                    <iframe 
+                        src="https://www.youtube.com/embed/mXbecrDVNM4?modestbranding=1&controls=0&rel=0" 
+                        title="Forge FC vs York United - Canada Premier League"
+                        allowfullscreen 
+                        allow="autoplay; encrypted-media; picture-in-picture;">
+                    </iframe>
+                </div>
+                
+                <div class="stream-analytics">
+                    <div class="viewer-count">👥 <span id="stream2-viewers">23</span> watching</div>
+                    <div class="stream-actions">
+                        <button class="btn" onclick="refreshStream('stream2')">Refresh</button>
+                        <button class="btn" onclick="toggleFullscreen('stream2')">Fullscreen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-function toggleFullscreen(streamId) {
-    const iframe = document.querySelector(`[data-stream-id="${streamId}"] iframe`);
-    if (!document.fullscreenElement) {
-        iframe.requestFullscreen?.();
-    } else {
-        document.exitFullscreen?.();
-    }
-}
+        <footer class="dashboard-footer">
+            <p>Stream Central Analytics • 100% Free Infrastructure • Live Updates Every 30s</p>
+            <div class="last-updated">Last updated: <span id="update-time">Just now</span></div>
+        </footer>
+    </div>
 
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 10px;
-        font-weight: bold;
-        z-index: 10000;
-        animation: slideInRight 0.5s ease-out;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.5s ease-in';
-        setTimeout(() => notification.remove(), 500);
-    }, 3000);
-}
-
-// Add CSS animations
-const styles = document.createElement('style');
-styles.textContent = `
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    
-    #live-viewers {
-        transition: transform 0.3s ease;
-    }
-    
-    .visitor-info {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 12px;
-        border-radius: 8px;
-        margin-top: 10px;
-        font-size: 0.85em;
-        border-left: 3px solid #4ecdc4;
-        line-height: 1.4;
-    }
-    
-    .stream-player iframe {
-        position: relative;
-    }
-    
-    .stream-player iframe::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 60px;
-        background: linear-gradient(transparent, rgba(0,0,0,0.8));
-        pointer-events: none;
-    }
-`;
-document.head.appendChild(styles);
-
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    window.streamAnalytics = new StreamCentralAnalytics();
-});
+    <script src="script.js"></script>
+</body>
+</html>
