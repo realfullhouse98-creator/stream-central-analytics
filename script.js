@@ -209,3 +209,34 @@ document.head.appendChild(styles);
 document.addEventListener('DOMContentLoaded', () => {
     window.streamAnalytics = new StreamCentralAnalytics();
 });
+// ... all your existing code ...
+
+// TEST PSL API - ADD THIS AT THE BOTTOM
+async function testPSLApi() {
+    try {
+        const response = await fetch('https://topembed.pw/api.php');
+        const data = await response.json();
+        console.log('📡 PSL API Test Result:', data);
+        
+        // Show what we received
+        if (data && data.length > 0) {
+            showNotification(`✅ PSL API: Found ${data.length} streams`);
+            return data;
+        } else {
+            showNotification('❌ PSL API: No streams found');
+            return null;
+        }
+    } catch (error) {
+        console.log('❌ PSL API Test Failed:', error);
+        showNotification('❌ PSL API: Connection failed');
+        return null;
+    }
+}
+
+// Test the API
+setTimeout(testPSLApi, 3000);
+
+// THIS SHOULD BE THE VERY LAST LINE
+document.addEventListener('DOMContentLoaded', () => {
+    window.streamAnalytics = new StreamCentralAnalytics();
+});
