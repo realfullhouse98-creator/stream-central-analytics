@@ -377,19 +377,3 @@ body {
 .fade-in {
     animation: fadeInUp 0.6s ease-out;
 }
-.stream-player iframe {
-    /* Hide YouTube controls */
-    position: relative;
-}
-
-/* Hide YouTube controls and title */
-.stream-player iframe::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
-    pointer-events: none;
-}
