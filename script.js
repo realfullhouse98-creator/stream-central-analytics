@@ -30,22 +30,23 @@ class StreamCentralAnalytics {
                 return;
             }
             
-            // NEW CREDENTIALS - REPLACED
+            // Back4app official initialization
             Parse.initialize("G6boJ5hTMouexPD3CqMq0dB3n1fjBr8HYJH3prlT", "RRTSRg8EfOcbnYp3NipTnYNUrYIyyUBHP9E4wjNo");
-            Parse.serverURL = "https://parseapi.back4app.com/";
+            Parse.serverURL = 'https://parseapi.back4app.com';
             
-            // Test connection
-            const TestObject = Parse.Object.extend('TestObject');
-            const testObject = new TestObject();
-            testObject.set('testField', 'connection_test');
-            await testObject.save();
+            // Test connection using Back4app's exact example
+            const gameScore = new Parse.Object("GameScore");
+            gameScore.set("score", 1337);
+            gameScore.set("playerName", "Sean Plott");
+            gameScore.set("cheatMode", false);
+            await gameScore.save();
             
             this.back4appConnected = true;
-            console.log('✅ Back4app: Connected successfully');
+            console.log('✅ Back4app: Connected successfully - Created object:', gameScore.id);
             this.showBack4appStatus('connected');
             
         } catch (error) {
-            console.log('🔴 Back4app: Connection failed', error);
+            console.log('🔴 Back4app: Connection failed', error.message);
             this.showBack4appStatus('failed');
         }
     }
@@ -68,7 +69,7 @@ class StreamCentralAnalytics {
             console.log('📊 Analytics logged to Back4app');
             
         } catch (error) {
-            console.log('🔴 Analytics logging failed:', error);
+            console.log('🔴 Analytics logging failed:', error.message);
         }
     }
     
@@ -223,20 +224,20 @@ function showNotification(message) {
     }, 3000);
 }
 
-// TEST BACK4APP CONNECTION
+// TEST BACK4APP CONNECTION - Using Back4app's exact example
 async function testBack4app() {
     try {
-        const Test = Parse.Object.extend('Test');
-        const test = new Test();
-        test.set('message', 'Test from Stream Central');
-        test.set('timestamp', new Date());
-        await test.save();
-        console.log('✅ Back4app test: SUCCESS', test);
+        const gameScore = new Parse.Object("GameScore");
+        gameScore.set("score", 1337);
+        gameScore.set("playerName", "Sean Plott");
+        gameScore.set("cheatMode", false);
+        await gameScore.save();
+        console.log('✅ Back4app test: SUCCESS - Created object:', gameScore.id);
         showNotification('✅ Back4app Connected!');
         return true;
     } catch (error) {
-        console.log('❌ Back4app test: FAILED', error);
-        showNotification('❌ Back4app Failed - Check Console');
+        console.log('❌ Back4app test: FAILED:', error.message);
+        showNotification('❌ Back4app Failed');
         return false;
     }
 }
