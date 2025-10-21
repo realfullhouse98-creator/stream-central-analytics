@@ -205,13 +205,7 @@ styles.textContent = `
 `;
 document.head.appendChild(styles);
 
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    window.streamAnalytics = new StreamCentralAnalytics();
-});
-// ... all your existing code ...
-
-// TEST PSL API - ADD THIS AT THE BOTTOM
+// TEST PSL API
 async function testPSLApi() {
     try {
         const response = await fetch('https://topembed.pw/api.php');
@@ -236,7 +230,7 @@ async function testPSLApi() {
 // Test the API
 setTimeout(testPSLApi, 3000);
 
-// THIS SHOULD BE THE VERY LAST LINE
+// Initialize when page loads - THIS IS THE LAST LINE
 document.addEventListener('DOMContentLoaded', () => {
     window.streamAnalytics = new StreamCentralAnalytics();
 });
