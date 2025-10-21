@@ -1,7 +1,6 @@
-// Stream Central Analytics - GitHub Pages + Back4app
+// Stream Central Analytics - GitHub Pages
 class StreamCentralAnalytics {
     constructor() {
-        this.back4appConnected = false;
         this.viewers = {
             stream1: 15,
             stream2: 23
@@ -11,81 +10,11 @@ class StreamCentralAnalytics {
         this.init();
     }
     
-    async init() {
-        await this.initBack4app();
+    init() {
         this.startAnalytics();
         this.updateViewerCounts();
         this.startLiveUpdates();
-        console.log('🔴 Stream Central Analytics - GitHub Pages + Back4app');
-    }
-    
-    async initBack4app() {
-        try {
-            if (typeof Parse === 'undefined') {
-                console.log('🔴 Parse SDK not loaded');
-                return;
-            }
-            
-            // Back4app official initialization
-            Parse.initialize("G6boJ5hTMouexPD3CqMq0dB3n1fjBr8HYJH3prlT", "RRTSRg8EfOcbnYp3NipTnYNUrYIyyUBHP9E4wjNo");
-            Parse.serverURL = 'https://parseapi.back4app.com';
-            
-            // Test connection using Back4app's exact example
-            const gameScore = new Parse.Object("GameScore");
-            gameScore.set("score", 1337);
-            gameScore.set("playerName", "Sean Plott");
-            gameScore.set("cheatMode", false);
-            await gameScore.save();
-            
-            this.back4appConnected = true;
-            console.log('✅ Back4app: Connected successfully - Created object:', gameScore.id);
-            this.showBack4appStatus('connected');
-            
-        } catch (error) {
-            console.log('🔴 Back4app: Connection failed', error.message);
-            this.showBack4appStatus('failed');
-        }
-    }
-    
-    async logAnalytics(data) {
-        if (!this.back4appConnected) return;
-        
-        try {
-            const Analytics = Parse.Object.extend("visitor_analytics");
-            const analytics = new Analytics();
-            await analytics.save({
-                userAgent: data.userAgent || navigator.userAgent,
-                platform: data.platform || navigator.platform,
-                screen: `${screen.width}x${screen.height}`,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                isBot: this.detectBot(),
-                timestamp: new Date()
-            });
-            
-            console.log('📊 Analytics logged to Back4app');
-            
-        } catch (error) {
-            console.log('🔴 Analytics logging failed:', error.message);
-        }
-    }
-    
-    collectVisitorData() {
-        return {
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            language: navigator.language,
-            screen: `${screen.width}x${screen.height}`,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            url: window.location.href,
-            timestamp: new Date(),
-            isBot: this.detectBot()
-        };
-    }
-    
-    detectBot() {
-        const botIndicators = ['bot', 'crawler', 'spider'];
-        const ua = navigator.userAgent.toLowerCase();
-        return botIndicators.some(bot => ua.includes(bot));
+        console.log('🔴 Stream Central Analytics - Live Streaming Dashboard');
     }
     
     startAnalytics() {
@@ -101,24 +30,29 @@ class StreamCentralAnalytics {
         }, 1000);
     }
     
-    async trackCurrentVisitor() {
-        const visitorData = this.collectVisitorData();
-        await this.logAnalytics(visitorData);
-        this.updateVisitorStats(visitorData);
+    trackCurrentVisitor() {
+        this.updateVisitorStats();
     }
     
-    updateVisitorStats(visitorData) {
+    updateVisitorStats() {
         const statsElement = document.getElementById('visitor-stats');
         if (statsElement) {
-            const botStatus = visitorData.isBot ? '🤖 Bot' : '👤 Human';
+            const isBot = this.detectBot();
+            const botStatus = isBot ? '🤖 Bot' : '👤 Human';
             statsElement.innerHTML = `
                 <div class="visitor-info">
                     <strong>Current Session:</strong><br>
-                    📱 ${visitorData.platform} | 🌐 ${visitorData.language}<br>
-                    🖥️ ${visitorData.screen} | ${botStatus}
+                    📱 ${navigator.platform} | 🌐 ${navigator.language}<br>
+                    🖥️ ${screen.width}x${screen.height} | ${botStatus}
                 </div>
             `;
         }
+    }
+    
+    detectBot() {
+        const botIndicators = ['bot', 'crawler', 'spider'];
+        const ua = navigator.userAgent.toLowerCase();
+        return botIndicators.some(bot => ua.includes(bot));
     }
     
     simulateViewerChanges() {
@@ -128,6 +62,10 @@ class StreamCentralAnalytics {
         });
         
         this.totalViewers = Object.values(this.viewers).reduce((a, b) => a + b, 0);
+        
+        if (Math.random() < 0.1 && this.countries < 5) {
+            this.countries++;
+        }
     }
     
     updateViewerCounts() {
@@ -140,11 +78,18 @@ class StreamCentralAnalytics {
         
         document.getElementById('live-viewers').textContent = this.totalViewers;
         document.getElementById('countries').textContent = this.countries;
+        document.getElementById('total-streams').textContent = Object.keys(this.viewers).length;
     }
     
     updateDashboard() {
         this.updateViewerCounts();
         this.updateLastRefreshed();
+        
+        const viewersElement = document.getElementById('live-viewers');
+        viewersElement.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            viewersElement.style.transform = 'scale(1)';
+        }, 300);
     }
     
     updateLastRefreshed() {
@@ -156,27 +101,35 @@ class StreamCentralAnalytics {
         }
     }
     
-    showBack4appStatus(status) {
-        const statusElement = document.getElementById('mongo-status');
-        if (statusElement) {
-            const statusMessages = {
-                connected: '🟢 Back4app: Connected',
-                failed: '🔴 Back4app: Connection Failed'
-            };
-            statusElement.textContent = statusMessages[status] || '⚪ Back4app: Unknown';
-            statusElement.className = `mongo-status status-${status}`;
+    startLiveUpdates() {
+        setInterval(() => {
+            this.triggerRandomEvent();
+        }, 120000);
+    }
+    
+    triggerRandomEvent() {
+        const events = ['viewer_surge', 'new_country', 'stream_quality_change'];
+        const randomEvent = events[Math.floor(Math.random() * events.length)];
+        
+        switch(randomEvent) {
+            case 'viewer_surge':
+                this.simulateViewerSurge();
+                break;
+            case 'new_country':
+                if (this.countries < 8) this.countries++;
+                break;
         }
     }
     
-    startLiveUpdates() {
-        setInterval(() => {
-            this.simulateViewerChanges();
-            this.updateDashboard();
-        }, 120000);
+    simulateViewerSurge() {
+        Object.keys(this.viewers).forEach(streamId => {
+            this.viewers[streamId] += Math.floor(Math.random() * 10) + 5;
+        });
+        this.updateDashboard();
     }
 }
 
-// Global functions remain the same
+// Global functions
 async function refreshStream(streamId) {
     const iframe = document.querySelector(`[data-stream-id="${streamId}"] iframe`);
     if (iframe) {
@@ -211,30 +164,61 @@ function showNotification(message) {
         font-weight: bold;
         z-index: 10000;
         animation: slideInRight 0.5s ease-out;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     `;
     notification.textContent = message;
+    
     document.body.appendChild(notification);
     
     setTimeout(() => {
-        notification.remove();
+        notification.style.animation = 'slideOutRight 0.5s ease-in';
+        setTimeout(() => notification.remove(), 500);
     }, 3000);
 }
 
-async function testBack4app() {
-    try {
-        const result = await Parse.Cloud.run("testConnection");
-        console.log('✅ Back4app test: SUCCESS', result);
-        showNotification('✅ Back4app Connected!');
-        return true;
-    } catch (error) {
-        console.log('❌ Back4app test: FAILED:', error.message);
-        showNotification('❌ Back4app Failed');
-        return false;
+// Add CSS animations
+const styles = document.createElement('style');
+styles.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
     }
-}
-
-// Call test after page loads
-setTimeout(testBack4app, 2000);
+    
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    #live-viewers {
+        transition: transform 0.3s ease;
+    }
+    
+    .visitor-info {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 0.85em;
+        border-left: 3px solid #4ecdc4;
+        line-height: 1.4;
+    }
+    
+    .stream-player iframe {
+        position: relative;
+    }
+    
+    .stream-player iframe::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        pointer-events: none;
+    }
+`;
+document.head.appendChild(styles);
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
