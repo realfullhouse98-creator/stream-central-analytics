@@ -176,7 +176,7 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Add CSS animations
+// Add CSS animations only (no YouTube CSS)
 const styles = document.createElement('style');
 styles.textContent = `
     @keyframes slideInRight {
@@ -201,21 +201,6 @@ styles.textContent = `
         font-size: 0.85em;
         border-left: 3px solid #4ecdc4;
         line-height: 1.4;
-    }
-    
-    .stream-player iframe {
-        position: relative;
-    }
-    
-    .stream-player iframe::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 60px;
-        background: linear-gradient(transparent, rgba(0,0,0,0.8));
-        pointer-events: none;
     }
 `;
 document.head.appendChild(styles);
