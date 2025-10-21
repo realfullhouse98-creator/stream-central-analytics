@@ -26,7 +26,8 @@ class StreamCentralAnalytics {
                 return;
             }
             
-            Parse.initialize("kV7E4rsswsAfJFXBiWASjbjOtFLmf0iSh8cUHznK", "7VNrsFK2G0sKmlNp3OlNrZnmIPiP84l5Ygn6JvgH");
+            // NEW CREDENTIALS - REPLACED
+            Parse.initialize("G6boJ5hTMouexPD3CqMq0dB3n1fjBr8HYJH3prlT", "RRTSRg8EfOcbnYp3NipTnYNUrYIyyUBHP9E4wjNo");
             Parse.serverURL = "https://parseapi.back4app.com/";
             
             // Test connection
