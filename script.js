@@ -1,64 +1,69 @@
-// Stream Central Analytics Engine - Vercel + MongoDB
+// Stream Central Analytics - GitHub Pages + Back4app
 class StreamCentralAnalytics {
     constructor() {
-        this.mongoConnected = false;
+        this.back4appConnected = false;
         this.viewers = {
             stream1: 15,
             stream2: 23
         };
         this.totalViewers = 38;
         this.countries = 1;
-        this.apiBase = '/api'; // Vercel functions path
         this.init();
     }
     
     async init() {
-        await this.connectToMongoDB();
+        await this.initBack4app();
         this.startAnalytics();
         this.updateViewerCounts();
         this.startLiveUpdates();
-        console.log('🔴 Stream Central Analytics - Vercel + MongoDB');
+        console.log('🔴 Stream Central Analytics - GitHub Pages + Back4app');
     }
     
-    async connectToMongoDB() {
+    async initBack4app() {
         try {
-            // Test MongoDB connection by sending visitor data
-            const visitorData = await this.collectVisitorData();
-            const connected = await this.sendToMongoDB(visitorData);
-            
-            if (connected) {
-                this.mongoConnected = true;
-                console.log('✅ MongoDB: Connected via Vercel Functions');
-                this.showMongoStatus('connected');
-            } else {
-                console.log('🟡 MongoDB: Using enhanced simulated data');
-                this.showMongoStatus('simulated');
+            if (typeof Parse === 'undefined') {
+                console.log('🔴 Parse SDK not loaded');
+                return;
             }
+            
+            Parse.initialize("kV7E4rsswsAfJFXBiWASjbjOtFLmf0iSh8cUHznK", "7VNrsFK2G0sKmlNp3OlNrZnmIPiP84l5Ygn6JvgH");
+            Parse.serverURL = "https://parseapi.back4app.com/";
+            
+            // Test connection
+            const TestObject = Parse.Object.extend('TestObject');
+            const testObject = new TestObject();
+            testObject.set('testField', 'connection_test');
+            await testObject.save();
+            
+            this.back4appConnected = true;
+            console.log('✅ Back4app: Connected successfully');
+            this.showBack4appStatus('connected');
+            
         } catch (error) {
-            console.log('🔴 MongoDB: Connection failed, using simulated data');
-            this.showMongoStatus('failed');
+            console.log('🔴 Back4app: Connection failed', error);
+            this.showBack4appStatus('failed');
         }
     }
     
-    async sendToMongoDB(data) {
+    async logAnalytics(data) {
+        if (!this.back4appConnected) return;
+        
         try {
-            const response = await fetch(`${this.apiBase}/mongo-analytics`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
+            const Analytics = Parse.Object.extend("visitor_analytics");
+            const analytics = new Analytics();
+            await analytics.save({
+                userAgent: data.userAgent || navigator.userAgent,
+                platform: data.platform || navigator.platform,
+                screen: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                isBot: this.detectBot(),
+                timestamp: new Date()
             });
             
-            if (response.ok) {
-                const result = await response.json();
-                console.log('📊 MongoDB Storage Success:', result);
-                return true;
-            }
-            return false;
+            console.log('📊 Analytics logged to Back4app');
+            
         } catch (error) {
-            console.log('📊 MongoDB Storage Failed:', error);
-            return false;
+            console.log('🔴 Analytics logging failed:', error);
         }
     }
     
@@ -69,62 +74,35 @@ class StreamCentralAnalytics {
             language: navigator.language,
             screen: `${screen.width}x${screen.height}`,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            referrer: document.referrer,
             url: window.location.href,
-            timestamp: new Date().toISOString(),
-            isBot: this.detectBot(),
-            sessionStart: new Date().toISOString(),
-            streamCentralVersion: '2.0'
+            timestamp: new Date(),
+            isBot: this.detectBot()
         };
     }
     
     detectBot() {
-        const botIndicators = [
-            'bot', 'crawler', 'spider', 'googlebot', 'bingbot', 'slurp',
-            'duckduckbot', 'baiduspider', 'yandexbot', 'facebookexternalhit'
-        ];
+        const botIndicators = ['bot', 'crawler', 'spider'];
         const ua = navigator.userAgent.toLowerCase();
         return botIndicators.some(bot => ua.includes(bot));
     }
     
     startAnalytics() {
-        // Track current visitor
         this.trackCurrentVisitor();
         
-        // Update analytics every 30 seconds
         setInterval(() => {
             this.simulateViewerChanges();
             this.updateDashboard();
         }, 30000);
         
-        // Update clock every second
         setInterval(() => {
             this.updateLastRefreshed();
         }, 1000);
-        
-        // Track page visibility changes
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.trackEvent('page_hidden');
-            } else {
-                this.trackEvent('page_visible');
-            }
-        });
     }
     
     async trackCurrentVisitor() {
         const visitorData = this.collectVisitorData();
-        await this.sendToMongoDB(visitorData);
+        await this.logAnalytics(visitorData);
         this.updateVisitorStats(visitorData);
-    }
-    
-    async trackEvent(eventName, additionalData = {}) {
-        const eventData = {
-            event: eventName,
-            ...additionalData,
-            timestamp: new Date().toISOString()
-        };
-        await this.sendToMongoDB(eventData);
     }
     
     updateVisitorStats(visitorData) {
@@ -133,10 +111,9 @@ class StreamCentralAnalytics {
             const botStatus = visitorData.isBot ? '🤖 Bot' : '👤 Human';
             statsElement.innerHTML = `
                 <div class="visitor-info">
-                    <strong>Current Session (Live):</strong><br>
+                    <strong>Current Session:</strong><br>
                     📱 ${visitorData.platform} | 🌐 ${visitorData.language}<br>
-                    🖥️ ${visitorData.screen} | ${botStatus}<br>
-                    🕒 ${new Date().toLocaleTimeString()}
+                    🖥️ ${visitorData.screen} | ${botStatus}
                 </div>
             `;
         }
@@ -149,10 +126,6 @@ class StreamCentralAnalytics {
         });
         
         this.totalViewers = Object.values(this.viewers).reduce((a, b) => a + b, 0);
-        
-        if (Math.random() < 0.1 && this.countries < 5) {
-            this.countries++;
-        }
     }
     
     updateViewerCounts() {
@@ -165,18 +138,11 @@ class StreamCentralAnalytics {
         
         document.getElementById('live-viewers').textContent = this.totalViewers;
         document.getElementById('countries').textContent = this.countries;
-        document.getElementById('total-streams').textContent = Object.keys(this.viewers).length;
     }
     
     updateDashboard() {
         this.updateViewerCounts();
         this.updateLastRefreshed();
-        
-        const viewersElement = document.getElementById('live-viewers');
-        viewersElement.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-            viewersElement.style.transform = 'scale(1)';
-        }, 300);
     }
     
     updateLastRefreshed() {
@@ -185,52 +151,30 @@ class StreamCentralAnalytics {
         const statusElement = document.getElementById('update-time');
         if (statusElement) {
             statusElement.textContent = timeString;
-            statusElement.title = `MongoDB: ${this.mongoConnected ? 'Connected' : 'Simulated'}`;
         }
     }
     
-    showMongoStatus(status) {
+    showBack4appStatus(status) {
         const statusElement = document.getElementById('mongo-status');
         if (statusElement) {
             const statusMessages = {
-                connected: '🟢 MongoDB: Connected via Vercel',
-                simulated: '🟡 MongoDB: Enhanced Simulation',
-                failed: '🔴 MongoDB: Connection Failed'
+                connected: '🟢 Back4app: Connected',
+                failed: '🔴 Back4app: Connection Failed'
             };
-            statusElement.textContent = statusMessages[status] || '⚪ MongoDB: Unknown';
+            statusElement.textContent = statusMessages[status] || '⚪ Back4app: Unknown';
             statusElement.className = `mongo-status status-${status}`;
         }
     }
     
     startLiveUpdates() {
         setInterval(() => {
-            this.triggerRandomEvent();
+            this.simulateViewerChanges();
+            this.updateDashboard();
         }, 120000);
-    }
-    
-    triggerRandomEvent() {
-        const events = ['viewer_surge', 'new_country', 'stream_quality_change'];
-        const randomEvent = events[Math.floor(Math.random() * events.length)];
-        
-        switch(randomEvent) {
-            case 'viewer_surge':
-                this.simulateViewerSurge();
-                break;
-            case 'new_country':
-                if (this.countries < 8) this.countries++;
-                break;
-        }
-    }
-    
-    simulateViewerSurge() {
-        Object.keys(this.viewers).forEach(streamId => {
-            this.viewers[streamId] += Math.floor(Math.random() * 10) + 5;
-        });
-        this.updateDashboard();
     }
 }
 
-// Enhanced global functions
+// Global functions remain the same
 async function refreshStream(streamId) {
     const iframe = document.querySelector(`[data-stream-id="${streamId}"] iframe`);
     if (iframe) {
@@ -239,12 +183,6 @@ async function refreshStream(streamId) {
         setTimeout(() => {
             iframe.src = originalSrc;
             showNotification(`🔄 Stream ${streamId} refreshed`);
-            
-            // Log the refresh event
-            const analytics = window.streamAnalytics;
-            if (analytics) {
-                analytics.trackEvent('stream_refresh', { streamId: streamId });
-            }
         }, 500);
     }
 }
@@ -252,17 +190,9 @@ async function refreshStream(streamId) {
 function toggleFullscreen(streamId) {
     const iframe = document.querySelector(`[data-stream-id="${streamId}"] iframe`);
     if (!document.fullscreenElement) {
-        if (iframe.requestFullscreen) {
-            iframe.requestFullscreen();
-        } else if (iframe.webkitRequestFullscreen) {
-            iframe.webkitRequestFullscreen();
-        }
+        iframe.requestFullscreen?.();
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
+        document.exitFullscreen?.();
     }
 }
 
@@ -279,71 +209,14 @@ function showNotification(message) {
         font-weight: bold;
         z-index: 10000;
         animation: slideInRight 0.5s ease-out;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     `;
     notification.textContent = message;
-    
     document.body.appendChild(notification);
     
     setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.5s ease-in';
-        setTimeout(() => notification.remove(), 500);
+        notification.remove();
     }, 3000);
 }
-
-// Add CSS animations
-const styles = document.createElement('style');
-styles.textContent = `
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    
-    #live-viewers {
-        transition: transform 0.3s ease;
-    }
-    
-    .visitor-info {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 12px;
-        border-radius: 8px;
-        margin-top: 10px;
-        font-size: 0.85em;
-        border-left: 3px solid #4ecdc4;
-        line-height: 1.4;
-    }
-    
-    .mongo-status {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-size: 0.8em;
-        margin-top: 10px;
-        display: inline-block;
-        font-weight: bold;
-    }
-    
-    .status-connected {
-        background: rgba(46, 204, 113, 0.2);
-        border: 1px solid rgba(46, 204, 113, 0.5);
-    }
-    
-    .status-simulated {
-        background: rgba(241, 196, 15, 0.2);
-        border: 1px solid rgba(241, 196, 15, 0.5);
-    }
-    
-    .status-failed {
-        background: rgba(231, 76, 60, 0.2);
-        border: 1px solid rgba(231, 76, 60, 0.5);
-    }
-`;
-document.head.appendChild(styles);
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
