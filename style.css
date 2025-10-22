@@ -448,3 +448,125 @@
         font-size: 2.5em;
     }
 }
+/* ===== 3-STEP NAVIGATION STYLES ===== */
+.sport-choice,
+.date-choice {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sport-choice:hover,
+.date-choice:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 217, 61, 0.5) !important;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.matches-table-container {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.matches-table {
+    width: 100%;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 100px 1fr 120px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: bold;
+    padding: 15px 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.match-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 120px;
+    padding: 15px 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.match-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.match-row:last-child {
+    border-bottom: none;
+}
+
+.live-match {
+    background: rgba(255, 107, 107, 0.1) !important;
+    border-left: 3px solid #ff6b6b;
+}
+
+.col-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    color: #ffd93d;
+}
+
+.watch-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.watch-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.live-watch-btn {
+    background: linear-gradient(45deg, #ff6b6b, #e74c3c);
+    animation: pulse 2s infinite;
+}
+
+.no-stream {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.no-matches {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.7);
+    grid-column: 1 / -1;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .table-header,
+    .match-row {
+        grid-template-columns: 80px 1fr 90px;
+        padding: 12px 15px;
+    }
+}
