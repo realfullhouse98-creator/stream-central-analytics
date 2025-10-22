@@ -1,4 +1,4 @@
-// Sport71.pro Style Match Schedules - COMPLETE FIXED VERSION
+// Sport71.pro Style Match Schedules - CLEAN VERSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -38,14 +38,12 @@ class MatchScheduler {
         this.allMatches = [];
         this.verifiedMatches = [];
         
-        // Process ALL dates, not just today
         Object.entries(apiData.events).forEach(([date, matches]) => {
             if (Array.isArray(matches)) {
                 matches.forEach((match) => {
                     if (match && match.match && match.sport) {
                         const matchTime = this.convertUnixToLocalTime(match.unix_timestamp);
                         
-                        // PROPERLY CLASSIFY AMERICAN FOOTBALL
                         const correctedSport = this.correctSportClassification(match);
                         
                         const processedMatch = {
@@ -58,7 +56,6 @@ class MatchScheduler {
                             sport: correctedSport,
                             originalSport: match.sport,
                             unixTimestamp: match.unix_timestamp,
-                            contentWarning: correctedSport !== match.sport
                         };
                         
                         this.allMatches.push(processedMatch);
@@ -71,10 +68,9 @@ class MatchScheduler {
             }
         });
         
-        // Sort by date/time
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         
-        console.log(`✅ ${this.verifiedMatches.length} verified matches organized`);
+        console.log(`✅ ${this.verifiedMatches.length} matches organized`);
         this.updateAnalytics();
     }
     
@@ -83,56 +79,45 @@ class MatchScheduler {
         const tournament = (match.tournament || '').toLowerCase();
         const matchName = (match.match || '').toLowerCase();
         
-        // AMERICAN FOOTBALL detection - MORE AGGRESSIVE
         const americanFootballTerms = [
-            'nfl', 'college football', 'super bowl', 'touchdown', 'ncaa football',
-            'afc', 'nfc', 'playoffs', 'pro bowl', 'madden', 'football'
+            'nfl', 'college football', 'super bowl', 'ncaa football',
+            'afc', 'nfc', 'playoffs'
         ];
         
         const americanFootballTeams = [
             'packers', 'chiefs', 'patriots', 'cowboys', 'steelers', '49ers',
             'raiders', 'broncos', 'seahawks', 'buccaneers', 'rams', 'ravens',
-            'bills', 'dolphins', 'jets', 'bears', 'lions', 'vikings', 'saints',
-            'panthers', 'falcons', 'bengals', 'browns', 'texans', 'colts',
-            'jaguars', 'chargers', 'cardinals', 'giants', 'titans', 'commanders'
+            'bills', 'dolphins', 'jets', 'bears', 'lions', 'vikings', 'saints'
         ];
         
         const hasAmericanFootballContent = 
             americanFootballTerms.some(term => tournament.includes(term)) ||
             americanFootballTeams.some(team => matchName.includes(team)) ||
             tournament.includes('college football') ||
-            matchName.includes('state') || // Common in college football
-            matchName.includes('university') || // Common in college football
-            (tournament.includes('football') && !tournament.includes('champions league'));
+            matchName.includes('state') ||
+            matchName.includes('university');
         
-        // SOCCER detection
         const soccerTerms = [
             'champions league', 'premier league', 'la liga', 'serie a', 'bundesliga',
-            'europa league', 'fa cup', 'carabao cup', 'ligue 1', 'eredivisie',
-            'primeira liga', 'mls', 'copa libertadores', 'copa sudamericana',
-            'afc champions league', 'uefa', 'fifa', 'world cup', 'euro'
+            'europa league', 'fa cup', 'ligue 1', 'mls', 'copa libertadores'
         ];
         
         const hasSoccerContent = soccerTerms.some(term => 
             tournament.includes(term) || matchName.includes(term)
         );
         
-        // FORCE American Football classification for college football
         if (tournament.includes('college football') || matchName.includes('kennesaw state')) {
             return 'American Football';
         }
         
-        // If it has American football content, classify as American Football
         if (hasAmericanFootballContent) {
             return 'American Football';
         }
         
-        // If it has soccer content, classify as Soccer
         if (hasSoccerContent) {
             return 'Soccer';
         }
         
-        // Default to original sport
         return sport.charAt(0).toUpperCase() + sport.slice(1);
     }
     
@@ -163,8 +148,7 @@ class MatchScheduler {
         return date.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false,
-            timeZoneName: 'short'
+            hour12: false
         });
     }
     
@@ -173,9 +157,8 @@ class MatchScheduler {
         
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unixTimestamp;
-        const twoHours = 2 * 60 * 60; // 2 hours in seconds
+        const twoHours = 2 * 60 * 60;
         
-        // Consider match live if it started in the last 2 hours
         return now >= matchTime && now <= (matchTime + twoHours);
     }
     
@@ -224,29 +207,28 @@ class MatchScheduler {
         container.innerHTML = `
             <div class="scheduled-events">
                 <div class="events-header">
-                    <h1 class="main-title">📅 Live Sports Schedules</h1>
-                    <div class="current-date-display">${currentDate} • Your Local Time</div>
-                    <div class="match-stats">${this.verifiedMatches.length} upcoming matches</div>
+                    <h1 class="main-title">Live Sports Schedules</h1>
+                    <div class="current-date-display">${currentDate}</div>
                 </div>
                 
                 <div class="sports-categories">
                     <button class="sport-btn ${this.currentSport === 'all' ? 'active' : ''}" data-sport="all">
-                        🌍 All Sports (${this.verifiedMatches.length})
+                        All Sports (${this.verifiedMatches.length})
                     </button>
                     <button class="sport-btn ${this.currentSport === 'soccer' ? 'active' : ''}" data-sport="soccer">
-                        ⚽ Soccer (${this.getVerifiedMatchesBySport('soccer').length})
+                        Soccer (${this.getVerifiedMatchesBySport('soccer').length})
                     </button>
                     <button class="sport-btn ${this.currentSport === 'american football' ? 'active' : ''}" data-sport="american football">
-                        🏈 American Football (${this.getVerifiedMatchesBySport('american football').length})
+                        American Football (${this.getVerifiedMatchesBySport('american football').length})
                     </button>
                     <button class="sport-btn ${this.currentSport === 'basketball' ? 'active' : ''}" data-sport="basketball">
-                        🏀 Basketball (${this.getVerifiedMatchesBySport('basketball').length})
+                        Basketball (${this.getVerifiedMatchesBySport('basketball').length})
                     </button>
                     <button class="sport-btn ${this.currentSport === 'ice hockey' ? 'active' : ''}" data-sport="ice hockey">
-                        🏒 Ice Hockey (${this.getVerifiedMatchesBySport('ice hockey').length})
+                        Ice Hockey (${this.getVerifiedMatchesBySport('ice hockey').length})
                     </button>
                     <button class="sport-btn ${this.currentSport === 'volleyball' ? 'active' : ''}" data-sport="volleyball">
-                        🏐 Volleyball (${this.getVerifiedMatchesBySport('volleyball').length})
+                        Volleyball (${this.getVerifiedMatchesBySport('volleyball').length})
                     </button>
                 </div>
                 
@@ -256,15 +238,11 @@ class MatchScheduler {
                         <span class="match-count">${this.getFilteredMatches().length} matches</span>
                     </div>
                     
-                    <div class="live-indicator-guide">
-                        <span class="live-badge">LIVE</span> = Match currently active
-                    </div>
-                    
                     <div class="matches-table">
                         <div class="table-header">
-                            <div class="col-time">🕒 Time</div>
-                            <div class="col-match">🎯 Match Details</div>
-                            <div class="col-watch">📺 Watch</div>
+                            <div class="col-time">Time</div>
+                            <div class="col-match">Match</div>
+                            <div class="col-watch">Watch</div>
                         </div>
                         <div class="table-body">
                             ${this.renderMatchesTable()}
@@ -274,7 +252,6 @@ class MatchScheduler {
             </div>
         `;
         
-        // Add event listeners to sport buttons
         this.attachSportButtonListeners();
     }
     
@@ -294,9 +271,9 @@ class MatchScheduler {
     }
     
     getSectionTitle() {
-        if (this.currentSport === 'all') return 'All Upcoming Events';
-        if (this.currentSport === 'soccer') return 'Soccer Matches ⚽';
-        if (this.currentSport === 'american football') return 'American Football 🏈';
+        if (this.currentSport === 'all') return 'All Sports Events';
+        if (this.currentSport === 'soccer') return 'Soccer Matches';
+        if (this.currentSport === 'american football') return 'American Football Matches';
         return `${this.currentSport.charAt(0).toUpperCase() + this.currentSport.slice(1)} Matches`;
     }
     
@@ -321,25 +298,19 @@ class MatchScheduler {
         return filteredMatches.map(match => `
             <div class="match-row ${match.isLive ? 'live-match' : ''}">
                 <div class="col-time">
-                    <span class="time-display">${match.time}</span>
+                    ${match.time}
                     ${match.isLive ? '<span class="live-badge">LIVE</span>' : ''}
                 </div>
                 <div class="col-match">
                     <div class="teams">${match.teams}</div>
-                    <div class="league">
-                        ${match.league} • ${match.sport}
-                        ${match.contentWarning ? 
-                            `<span class="correction-badge">Corrected</span>` : 
-                            ''
-                        }
-                    </div>
+                    <div class="league">${match.league} • ${match.sport}</div>
                 </div>
                 <div class="col-watch">
                     ${match.streamUrl ? 
                         `<button class="watch-btn ${match.isLive ? 'live-watch-btn' : ''}" onclick="matchScheduler.watchMatch('${match.streamUrl}')">
-                            ${match.isLive ? '🔴 LIVE NOW' : '🎥 WATCH'}
+                            ${match.isLive ? 'LIVE NOW' : 'WATCH'}
                         </button>` :
-                        `<span class="no-stream">⏸️ OFFLINE</span>`
+                        `<span class="no-stream">OFFLINE</span>`
                     }
                 </div>
             </div>
@@ -357,14 +328,9 @@ class MatchScheduler {
             tableBody.innerHTML = this.renderMatchesTable();
         }
         
-        // Update active button states
         document.querySelectorAll('.sport-btn').forEach(btn => {
             const btnSport = btn.getAttribute('data-sport');
-            if (btnSport === this.currentSport) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            btn.classList.toggle('active', btnSport === this.currentSport);
         });
     }
     
@@ -390,14 +356,12 @@ class MatchScheduler {
     }
     
     startLiveUpdates() {
-        // Update live status every 30 seconds
         setInterval(() => {
             this.updateLiveStatus();
         }, 30000);
     }
     
     startAutoRefresh() {
-        // Refresh data every 5 minutes
         setInterval(() => {
             this.loadMatches().then(() => {
                 this.displayScheduledEvents();
@@ -406,7 +370,7 @@ class MatchScheduler {
     }
 }
 
-// Add CSS with live features
+// Add Clean CSS
 const sportsStyles = document.createElement('style');
 sportsStyles.textContent = `
     .scheduled-events {
@@ -439,12 +403,6 @@ sportsStyles.textContent = `
         color: #ecf0f1;
         font-weight: 500;
         margin-bottom: 5px;
-    }
-    
-    .match-stats {
-        font-size: 0.9em;
-        color: #bdc3c7;
-        opacity: 0.8;
     }
     
     .sports-categories {
@@ -502,17 +460,6 @@ sportsStyles.textContent = `
         font-weight: 600;
     }
     
-    .live-indicator-guide {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        color: #495057;
-        padding: 8px 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        font-size: 0.9em;
-        text-align: center;
-    }
-    
     .matches-table {
         border: 1px solid #ecf0f1;
         border-radius: 8px;
@@ -522,7 +469,7 @@ sportsStyles.textContent = `
     
     .table-header {
         display: grid;
-        grid-template-columns: 120px 1fr 120px;
+        grid-template-columns: 100px 1fr 110px;
         background: #2c3e50;
         color: white;
         font-weight: 600;
@@ -531,7 +478,7 @@ sportsStyles.textContent = `
     
     .match-row, .no-matches {
         display: grid;
-        grid-template-columns: 120px 1fr 120px;
+        grid-template-columns: 100px 1fr 110px;
         padding: 15px 20px;
         border-bottom: 1px solid #f1f2f6;
         align-items: center;
@@ -577,15 +524,6 @@ sportsStyles.textContent = `
     .col-match .league {
         font-size: 0.85em;
         color: #7f8c8d;
-    }
-    
-    .correction-badge {
-        background: #fff3cd;
-        color: #856404;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 0.75em;
-        margin-left: 8px;
     }
     
     .watch-btn {
