@@ -31,40 +31,12 @@ class UncleStream {
         }
     }
     
-    extractAllMatches(apiData) {
-        if (!apiData || !Array.isArray(apiData)) return [];
-        
-        return apiData
-            .filter(item => item && (item.title || item.league))
-            .map(item => ({
-                id: item.id || Math.random().toString(36).substr(2, 9),
-                title: item.title || 'Football Match',
-                league: item.league || 'Soccer',
-                time: item.time || 'TBD',
-                startTime: this.parseTime(item.time),
-                streamUrl: item.url || null
-            }))
-            .sort((a, b) => (a.startTime || 0) - (b.startTime || 0)); // Sort by time
-    }
-    
-    parseTime(timeStr) {
-        if (!timeStr || timeStr === 'TBD') return null;
-        
-        try {
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            const time = new Date();
-            time.setHours(hours, minutes, 0, 0);
-            
-            // If time already passed today, assume tomorrow
-            if (time < new Date()) {
-                time.setDate(time.getDate() + 1);
-            }
-            
-            return time;
-        } catch (e) {
-            return null;
-        }
-    }
+   📊 API SCHEDULE DATA:
+Object
+
+events: {2025-10-22: Array, 2025-10-23: Array, 2025-10-24: Array, 2025-10-25: Array, 2025-10-26: Array, …}
+
+Object Prototype
     
     displaySchedule() {
         const container = document.getElementById('psl-streams-container');
@@ -111,29 +83,33 @@ class UncleStream {
         this.startTimeUpdates();
     }
     
-    createMatchRow(match) {
-        const isLive = this.isMatchLive(match.startTime);
-        
-        return `
-            <div class="match-row ${isLive ? 'live' : 'scheduled'}">
-                <div class="match-info">
-                    <div class="teams">${match.title}</div>
-                    <div class="match-details">
-                        <span class="league">${match.league}</span>
-                        <span class="time">${match.time}</span>
-                    </div>
-                </div>
-                <div class="match-status">
-                    ${isLive ? 
-                        `<button class="live-btn" onclick="uncleStream.watchMatch('${match.streamUrl}')">
-                            🔴 LIVE NOW
-                        </button>` :
-                        `<div class="upcoming">Starts at ${match.time}</div>`
-                    }
+// UPDATE the createMatchRow method:
+
+createMatchRow(match) {
+    const isLive = this.isMatchLive(match.startTime);
+    const displayDate = match.date ? new Date(match.date).toLocaleDateString() : 'Today';
+    
+    return `
+        <div class="match-row ${isLive ? 'live' : 'scheduled'}">
+            <div class="match-info">
+                <div class="teams">${match.title}</div>
+                <div class="match-details">
+                    <span class="league">${match.league}</span>
+                    <span class="date">${displayDate}</span>
+                    <span class="time">${match.time}</span>
                 </div>
             </div>
-        `;
-    }
+            <div class="match-status">
+                ${isLive ? 
+                    `<button class="live-btn" onclick="uncleStream.watchMatch('${match.streamUrl}')">
+                        🔴 LIVE NOW
+                    </button>` :
+                    `<div class="upcoming">${match.time}</div>`
+                }
+            </div>
+        </div>
+    `;
+}
     
     isMatchLive(startTime) {
         if (!startTime) return false;
