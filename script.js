@@ -1,4 +1,4 @@
-// Sport71.pro Style Match Schedules - FIXED COLORS VERSION
+// Sport71.pro Style Match Schedules - SHOW ALL MATCHES VERSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -34,7 +34,7 @@ class MatchScheduler {
         Object.entries(apiData.events).forEach(([date, matches]) => {
             if (Array.isArray(matches)) {
                 matches.forEach((match) => {
-                    if (match && match.match && match.sport) {
+                    if (match && match.match) {
                         const matchTime = this.convertUnixToLocalTime(match.unix_timestamp);
                         const correctedSport = this.correctSportClassification(match);
                         
@@ -42,7 +42,7 @@ class MatchScheduler {
                             date: date,
                             time: matchTime,
                             teams: match.match,
-                            league: match.tournament || match.sport,
+                            league: match.tournament || match.sport || 'Football',
                             streamUrl: this.getStreamUrl(match.channels),
                             isLive: this.checkIfLive(match),
                             sport: correctedSport,
@@ -51,7 +51,9 @@ class MatchScheduler {
                         };
                         
                         this.allMatches.push(processedMatch);
-                        if (this.isContentAccurate(processedMatch)) {
+                        
+                        // FIX: Only filter out truly invalid matches
+                        if (this.isValidMatch(processedMatch)) {
                             this.verifiedMatches.push(processedMatch);
                         }
                     }
@@ -60,6 +62,7 @@ class MatchScheduler {
         });
         
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
+        console.log(`✅ Loaded ${this.verifiedMatches.length} matches`);
         this.updateAnalytics();
     }
     
@@ -78,59 +81,43 @@ class MatchScheduler {
         const tournament = (match.tournament || '').toLowerCase();
         const matchName = (match.match || '').toLowerCase();
         
-        // FIX: Kaizer Chiefs is Soccer (South African team)
-        if (matchName.includes('kaizer chiefs') || matchName.includes('orlando pirates')) {
-            return 'Soccer';
-        }
-        
-        // Cricket detection
-        if (tournament.includes('cricket') || tournament.includes('icc')) {
-            return 'Cricket';
-        }
-        
-        // Women's Football detection
-        if (matchName.includes(' w ') || matchName.includes('women')) {
-            if (tournament.includes('football') || tournament.includes('soccer')) {
-                return 'Soccer';
-            }
-        }
-        
-        // American Football detection
-        const americanFootballTerms = ['nfl', 'college football', 'ncaa football'];
-        const americanFootballTeams = ['packers', 'chiefs', 'patriots', 'cowboys', 'raiders', 'broncos'];
-        
-        const hasAmericanFootballContent = 
-            americanFootballTerms.some(term => tournament.includes(term)) ||
-            americanFootballTeams.some(team => matchName.includes(team)) ||
-            tournament.includes('college football');
-        
-        // Soccer detection
-        const soccerTerms = [
-            'champions league', 'premier league', 'la liga', 'serie a', 'bundesliga',
-            'europa league', 'copa libertadores', 'copa sudamericana', 'african'
+        // FIX: Better football detection - include all football leagues
+        const footballTerms = [
+            'liga', 'premier', 'champions league', 'europa', 'serie', 'bundesliga',
+            'super lig', 'süper lig', 'premier league', 'championship', 'cup',
+            'youth league', 'world cup', 'afc', 'uefa', 'concacaf', 'copa',
+            'primera division', 'brasileiro', 'eredivisie', 'ligue', 'mls',
+            'tanzania ligi', 'malawi super', 'estonia meistriliiga', 'norway division',
+            'russia cup', 'poland league', 'czech league', 'slovakia', 'slovenia',
+            'lithuania lyga', 'finland veikkausliiga', 'montenegro cup', 'georgia league'
         ];
         
-        const soccerTeams = [
-            'kaizer', 'chiefs', 'pirates', 'sundowns', 'manchester', 'liverpool', 
-            'chelsea', 'arsenal', 'barcelona', 'real madrid', 'bayern'
-        ];
-        
-        const hasSoccerContent = soccerTerms.some(term => 
-            tournament.includes(term) || matchName.includes(term)
-        ) || soccerTeams.some(team =>
-            matchName.includes(team)
+        const hasFootballContent = footballTerms.some(term => 
+            tournament.toLowerCase().includes(term) || matchName.toLowerCase().includes(term)
         );
         
-        if (hasAmericanFootballContent) return 'American Football';
-        if (hasSoccerContent) return 'Soccer';
+        // If it looks like football, classify as Soccer
+        if (hasFootballContent) {
+            return 'Soccer';
+        }
         
         return sport.charAt(0).toUpperCase() + sport.slice(1);
     }
     
-    isContentAccurate(match) {
+    isValidMatch(match) {
         const matchName = (match.teams || '').toLowerCase();
-        return !(matchName.includes('undefined') || matchName.includes('null') || 
-                matchName.length < 5 || matchName === 'vs' || matchName === 'tbd');
+        
+        // FIX: Only filter out completely invalid matches
+        if (matchName.includes('undefined') || matchName.includes('null')) {
+            return false;
+        }
+        
+        if (matchName.length < 3) {
+            return false;
+        }
+        
+        // FIX: Allow matches with "vs" and "TBD"
+        return true;
     }
     
     getStreamUrl(channels) {
@@ -167,7 +154,7 @@ class MatchScheduler {
     
     updateAnalytics() {
         const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
-        document.getElementById('total-streams').textContent = liveMatches;
+        document.getElementById('total-streams').textContent = this.verifiedMatches.length; // Show total matches
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
     
@@ -175,12 +162,8 @@ class MatchScheduler {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
         
-        // REMOVED: Don't show duplicate header here, let HTML handle it
-        
         container.innerHTML = `
             <div class="scheduled-events">
-                <!-- Header removed - using HTML header instead -->
-                
                 <div class="sports-categories">
                     <button class="sport-btn ${this.currentSport === 'all' ? 'active' : ''}" data-sport="all">
                         All Sports (${this.verifiedMatches.length})
@@ -386,7 +369,7 @@ class MatchScheduler {
     }
 }
 
-// Add CSS with FIXED COLORS and BETTER CONTRAST
+// Keep the same CSS from previous version
 const sportsStyles = document.createElement('style');
 sportsStyles.textContent = `
     .scheduled-events {
@@ -511,7 +494,7 @@ sportsStyles.textContent = `
         align-items: center;
         gap: 14px;
         letter-spacing: 0.2px;
-        color: white; /* FIX: White text on dark background */
+        color: white;
     }
     
     .dropdown-arrow {
@@ -559,7 +542,7 @@ sportsStyles.textContent = `
     }
     
     .col-time {
-        color: white; /* FIX: White text for "Time" header */
+        color: white;
         font-weight: 700;
     }
     
@@ -588,7 +571,7 @@ sportsStyles.textContent = `
     
     .col-time {
         font-weight: 600;
-        color: #2c3e50; /* Match times in dark color */
+        color: #2c3e50;
         font-size: 1em;
         letter-spacing: 0.5px;
         display: flex;
