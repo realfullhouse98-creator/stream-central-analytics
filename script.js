@@ -1,4 +1,4 @@
-// Sport71.pro Style Match Schedules
+// Sport71.pro Style Match Schedules - DEBUG VERSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -7,42 +7,50 @@ class MatchScheduler {
     }
     
     async init() {
-        console.log('Loading match schedules...');
+        console.log('🚀 INIT: Starting match scheduler...');
         await this.loadMatches();
         this.displayScheduledEvents();
-        this.startAutoRefresh();
     }
     
     async loadMatches() {
         try {
-            console.log('🔍 Fetching data from API...');
+            console.log('🔍 FETCH: Loading data from API...');
             const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
             
-            console.log('📦 RAW API RESPONSE:', apiData);
+            console.log('📦 API RAW DATA:', apiData);
             
-            // Extract and organize matches
+            if (!apiData || !apiData.events) {
+                console.log('❌ ERROR: No events in API response');
+                return;
+            }
+            
+            console.log('📅 DATES FOUND:', Object.keys(apiData.events));
+            
+            // Process the data
             this.organizeMatches(apiData);
             
         } catch (error) {
-            console.log('❌ Failed to load matches:', error);
+            console.log('❌ FETCH ERROR:', error);
             this.showError();
         }
     }
     
     organizeMatches(apiData) {
-        if (!apiData || !apiData.events) {
-            console.log('❌ No events data found in API response');
-            return;
-        }
-        
         this.allMatches = [];
+        let totalMatches = 0;
+        
+        console.log('🔄 PROCESSING: Organizing matches...');
         
         // Process all dates and matches
         Object.entries(apiData.events).forEach(([date, matches]) => {
+            console.log(`📅 PROCESSING DATE: ${date}`, matches);
+            
             if (Array.isArray(matches)) {
-                matches.forEach(match => {
+                matches.forEach((match, index) => {
                     if (match && match.match) {
+                        console.log(`⚽ MATCH ${index}:`, match);
+                        
                         // Convert unix timestamp to readable time
                         const matchTime = this.convertUnixToTime(match.unix_timestamp);
                         
@@ -51,37 +59,21 @@ class MatchScheduler {
                             time: matchTime,
                             teams: match.match,
                             league: match.tournament || match.sport || 'Sports',
-                            streamUrl: this.getStreamUrl(match.channels),
-                            isLive: this.checkIfLive(match),
-                            sport: match.sport || 'Unknown',
-                            rawData: match // Keep original data for reference
+                            streamUrl: match.channels && match.channels.length > 0 ? match.channels[0] : null,
+                            isLive: false, // Simplified for now
+                            sport: match.sport || 'Unknown'
                         });
+                        totalMatches++;
                     }
                 });
             }
         });
         
-        console.log('✅ Organized matches:', this.allMatches);
+        console.log(`✅ SUCCESS: Organized ${totalMatches} matches total`);
+        console.log('📊 MATCHES ARRAY:', this.allMatches);
         
-        // Update analytics counters
-        this.updateAnalytics();
-    }
-    
-    getStreamUrl(channels) {
-        if (!channels || !Array.isArray(channels) || channels.length === 0) {
-            return null;
-        }
-        
-        // Take the first channel URL
-        const channelUrl = channels[0];
-        
-        // Convert topembed.pw channel link to actual stream page
-        if (channelUrl.includes('topembed.pw/channel/')) {
-            // This creates a link to the channel page where the actual stream is embedded
-            return channelUrl.replace('/channel/', '/embed/') + '.html';
-        }
-        
-        return channelUrl;
+        // Update display
+        this.updateDisplay();
     }
     
     convertUnixToTime(unixTimestamp) {
@@ -95,70 +87,55 @@ class MatchScheduler {
         });
     }
     
-    checkIfLive(match) {
-        if (!match.unix_timestamp) return false;
-        
-        const matchTime = match.unix_timestamp * 1000;
-        const now = Date.now();
-        const twoHours = 2 * 60 * 60 * 1000;
-        
-        // Consider match live if it's within 2 hours of current time
-        return Math.abs(now - matchTime) <= twoHours;
-    }
-    
-    updateAnalytics() {
-        // Update live viewers (random demo data)
-        const liveViewers = Math.floor(Math.random() * 10000) + 5000;
-        document.getElementById('live-viewers').textContent = liveViewers.toLocaleString();
-        
-        // Update active matches count
-        const activeMatches = this.allMatches.filter(match => match.isLive).length;
-        document.getElementById('total-streams').textContent = activeMatches;
-        
-        // Update countries (demo data)
-        const countries = Math.floor(Math.random() * 10) + 1;
-        document.getElementById('countries').textContent = countries;
-        
-        // Update last updated time
-        const now = new Date();
-        document.getElementById('update-time').textContent = now.toLocaleTimeString();
-    }
-    
-    displayScheduledEvents() {
+    updateDisplay() {
+        console.log('🖥️ UPDATING DISPLAY...');
         const container = document.getElementById('psl-streams-container');
-        if (!container) return;
         
-        const currentDate = new Date().toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        if (!container) {
+            console.log('❌ ERROR: Container element not found!');
+            return;
+        }
+        
+        if (this.allMatches.length === 0) {
+            console.log('ℹ️ INFO: No matches to display');
+            container.innerHTML = `
+                <div class="scheduled-events">
+                    <div class="events-header">
+                        <h2>Debug Info</h2>
+                        <div class="current-date">No matches found in data</div>
+                    </div>
+                    <div class="matches-section">
+                        <p>API returned data but no matches were processed.</p>
+                        <p>Check console for details.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        console.log(`🎯 DISPLAYING: ${this.allMatches.length} matches`);
+        
+        // Simple display for debugging
+        const matchesHTML = this.allMatches.slice(0, 10).map((match, index) => `
+            <div class="match-row">
+                <div class="col-time">${match.time}</div>
+                <div class="col-match">
+                    <strong>${match.teams}</strong><br>
+                    <small>${match.league} • ${match.sport}</small>
+                </div>
+                <div class="col-watch">
+                    ${match.streamUrl ? '<button class="watch-btn">WATCH</button>' : 'OFFLINE'}
+                </div>
+            </div>
+        `).join('');
         
         container.innerHTML = `
             <div class="scheduled-events">
                 <div class="events-header">
-                    <h2>Scheduled Events</h2>
-                    <div class="current-date">${currentDate}</div>
+                    <h2>Live Sports Schedules</h2>
+                    <div class="current-date">Debug Mode - ${this.allMatches.length} matches loaded</div>
                 </div>
-                
-                <div class="sports-categories">
-                    <button class="sport-btn active" onclick="matchScheduler.setSport('all')">
-                        All Sports
-                    </button>
-                    <button class="sport-btn" onclick="matchScheduler.setSport('football')">
-                        Football
-                    </button>
-                    <button class="sport-btn" onclick="matchScheduler.setSport('ice hockey')">
-                        Ice Hockey
-                    </button>
-                    <button class="sport-btn" onclick="matchScheduler.setSport('basketball')">
-                        Basketball
-                    </button>
-                </div>
-                
                 <div class="matches-section">
-                    <h3>All Matches</h3>
                     <div class="matches-table">
                         <div class="table-header">
                             <div class="col-time">Time</div>
@@ -166,102 +143,19 @@ class MatchScheduler {
                             <div class="col-watch">Watch</div>
                         </div>
                         <div class="table-body">
-                            ${this.renderMatchesTable()}
+                            ${matchesHTML}
                         </div>
                     </div>
                 </div>
             </div>
         `;
+        
+        console.log('✅ DISPLAY UPDATED SUCCESSFULLY');
     }
     
-    renderMatchesTable() {
-        if (this.allMatches.length === 0) {
-            return `
-                <div class="no-matches">
-                    <div class="col-time">-</div>
-                    <div class="col-match">No scheduled matches found</div>
-                    <div class="col-watch">-</div>
-                </div>
-            `;
-        }
-        
-        // Filter matches based on current sport selection
-        let filteredMatches = this.allMatches;
-        if (this.currentSport !== 'all') {
-            filteredMatches = this.allMatches.filter(match => 
-                match.sport.toLowerCase().includes(this.currentSport.toLowerCase())
-            );
-        }
-        
-        if (filteredMatches.length === 0) {
-            return `
-                <div class="no-matches">
-                    <div class="col-time">-</div>
-                    <div class="col-match">No ${this.currentSport} matches found</div>
-                    <div class="col-watch">-</div>
-                </div>
-            `;
-        }
-        
-        // Show first 15 matches
-        return filteredMatches.slice(0, 15).map(match => `
-            <div class="match-row">
-                <div class="col-time">
-                    ${match.time}
-                    ${match.isLive ? '<span class="live-badge">LIVE</span>' : ''}
-                </div>
-                <div class="col-match">
-                    <div class="teams">${match.teams}</div>
-                    <div class="league">${match.league}</div>
-                </div>
-                <div class="col-watch">
-                    ${match.streamUrl ? 
-                        `<button class="watch-btn" onclick="matchScheduler.watchMatch('${match.streamUrl}')">
-                            WATCH
-                        </button>` :
-                        `<span class="no-stream">OFFLINE</span>`
-                    }
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    setSport(sport) {
-        this.currentSport = sport;
-        
-        // Update active button
-        document.querySelectorAll('.sport-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        event.target.classList.add('active');
-        
-        // Update matches section title
-        const titleElement = document.querySelector('.matches-section h3');
-        if (titleElement) {
-            const sportName = sport === 'all' ? 'All' : sport.charAt(0).toUpperCase() + sport.slice(1);
-            titleElement.textContent = sportName + ' Matches';
-        }
-        
-        // Refresh the matches display
-        const tableBody = document.querySelector('.table-body');
-        if (tableBody) {
-            tableBody.innerHTML = this.renderMatchesTable();
-        }
-        
-        console.log('Switched to sport:', sport);
-    }
-    
-    watchMatch(streamUrl) {
-        if (streamUrl) {
-            // Open in new tab
-            window.open(streamUrl, '_blank', 'noopener,noreferrer');
-            this.showNotification('Opening stream...');
-            
-            // Track stream click in analytics
-            console.log('🎥 Stream opened:', streamUrl);
-        } else {
-            this.showNotification('Stream not available yet');
-        }
+    displayScheduledEvents() {
+        console.log('📋 DISPLAY: Creating schedule events...');
+        this.updateDisplay();
     }
     
     showError() {
@@ -271,53 +165,16 @@ class MatchScheduler {
                 <div class="error-state">
                     <h3>Unable to Load Schedules</h3>
                     <p>Please check your connection and try again.</p>
-                    <button onclick="matchScheduler.loadMatches()" class="retry-btn">
-                        Try Again
+                    <button onclick="location.reload()" class="retry-btn">
+                        Reload Page
                     </button>
                 </div>
             `;
         }
     }
-    
-    showNotification(message) {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #2c3e50;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 5px;
-            font-weight: bold;
-            z-index: 10000;
-        `;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 3000);
-    }
-    
-    startAutoRefresh() {
-        // Auto-refresh every 5 minutes
-        setInterval(() => {
-            console.log('🔄 Auto-refreshing match data...');
-            this.loadMatches().then(() => {
-                // Refresh the display after loading new data
-                const tableBody = document.querySelector('.table-body');
-                if (tableBody) {
-                    tableBody.innerHTML = this.renderMatchesTable();
-                }
-            });
-        }, 5 * 60 * 1000); // 5 minutes
-    }
 }
 
-// Add Sport71.pro Style CSS
+// Add basic CSS
 const sportsStyles = document.createElement('style');
 sportsStyles.textContent = `
     .scheduled-events {
@@ -345,45 +202,8 @@ sportsStyles.textContent = `
         font-size: 1em;
     }
     
-    .sports-categories {
-        padding: 15px 20px;
-        background: #ecf0f1;
-        border-bottom: 1px solid #bdc3c7;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    
-    .sport-btn {
-        background: white;
-        border: 1px solid #bdc3c7;
-        padding: 8px 15px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.9em;
-        transition: all 0.3s ease;
-    }
-    
-    .sport-btn.active {
-        background: #e74c3c;
-        color: white;
-        border-color: #e74c3c;
-    }
-    
-    .sport-btn:hover {
-        background: #3498db;
-        color: white;
-        border-color: #3498db;
-    }
-    
     .matches-section {
         padding: 20px;
-    }
-    
-    .matches-section h3 {
-        margin: 0 0 15px 0;
-        color: #2c3e50;
-        font-size: 1.3em;
     }
     
     .matches-table {
@@ -401,7 +221,7 @@ sportsStyles.textContent = `
         padding: 12px 15px;
     }
     
-    .match-row, .no-matches {
+    .match-row {
         display: grid;
         grid-template-columns: 100px 1fr 100px;
         padding: 15px;
@@ -413,36 +233,9 @@ sportsStyles.textContent = `
         border-bottom: none;
     }
     
-    .match-row:hover {
-        background: #f8f9fa;
-    }
-    
     .col-time {
         font-weight: bold;
         color: #e74c3c;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .live-badge {
-        background: #e74c3c;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 0.7em;
-        font-weight: bold;
-    }
-    
-    .col-match .teams {
-        font-weight: bold;
-        margin-bottom: 3px;
-        color: #2c3e50;
-    }
-    
-    .col-match .league {
-        font-size: 0.85em;
-        color: #7f8c8d;
     }
     
     .watch-btn {
@@ -454,24 +247,12 @@ sportsStyles.textContent = `
         cursor: pointer;
         font-size: 0.85em;
         font-weight: bold;
-        transition: background 0.3s ease;
     }
     
-    .watch-btn:hover {
-        background: #c0392b;
-    }
-    
-    .no-stream {
-        color: #95a5a6;
-        font-style: italic;
-        font-size: 0.85em;
-    }
-    
-    .no-matches, .error-state {
+    .error-state {
         text-align: center;
         padding: 30px;
         color: #7f8c8d;
-        grid-column: 1 / -1;
     }
     
     .retry-btn {
@@ -483,15 +264,11 @@ sportsStyles.textContent = `
         cursor: pointer;
         margin-top: 10px;
     }
-    
-    .error-state h3 {
-        color: #e74c3c;
-        margin-bottom: 10px;
-    }
 `;
 document.head.appendChild(sportsStyles);
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎬 DOM LOADED: Starting application...');
     window.matchScheduler = new MatchScheduler();
 });
