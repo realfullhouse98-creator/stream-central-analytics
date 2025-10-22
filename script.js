@@ -6,9 +6,8 @@ class UncleStream {
     }
     
     async init() {
-        console.log('📅 UNCLE STREAM: Loading match schedules...');
+        console.log('UNCLE STREAM: Loading match schedules...');
         await this.loadMatchSchedules();
-        this.startScheduleUpdates();
     }
     
     async loadMatchSchedules() {
@@ -16,24 +15,24 @@ class UncleStream {
             const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
             
-            console.log('📊 API SCHEDULE DATA:', apiData);
+            console.log('API SCHEDULE DATA:', apiData);
             
             // Get ALL matches from API
             this.allMatches = this.extractAllMatches(apiData);
             
-            console.log(`🎯 FOUND ${this.allMatches.length} MATCHES:`, this.allMatches);
+            console.log('FOUND ' + this.allMatches.length + ' MATCHES:', this.allMatches);
             
             this.displaySchedule();
             
         } catch (error) {
-            console.log('❌ Failed to load schedules:', error);
+            console.log('Failed to load schedules:', error);
             this.showError();
         }
     }
     
     extractAllMatches(apiData) {
         if (!apiData || !apiData.events) {
-            console.log('❌ No events data in API');
+            console.log('No events data in API');
             return [];
         }
         
@@ -52,13 +51,13 @@ class UncleStream {
                         date: date,
                         startTime: this.parseDateTime(date, match.time),
                         streamUrl: match.url || null,
-                        hasStream: !!match.url // Just note if stream exists
+                        hasStream: !!match.url
                     });
                 });
             }
         });
         
-        console.log(`📅 FOUND ${allMatches.length} MATCHES TOTAL`);
+        console.log('FOUND ' + allMatches.length + ' MATCHES TOTAL');
         return allMatches.sort((a, b) => (a.startTime || 0) - (b.startTime || 0));
     }
     
@@ -66,11 +65,9 @@ class UncleStream {
         if (!dateStr || !timeStr || timeStr === 'TBD') return null;
         
         try {
-            // Combine date "2025-10-22" with time "19:30"
             const [hours, minutes] = timeStr.split(':').map(Number);
             const dateTime = new Date(dateStr);
             dateTime.setHours(hours, minutes, 0, 0);
-            
             return dateTime;
         } catch (e) {
             return null;
@@ -80,19 +77,23 @@ class UncleStream {
     displaySchedule() {
         const container = document.getElementById('psl-streams-container');
         
+        if (!container) {
+            console.log('Container not found');
+            return;
+        }
+        
         if (this.allMatches.length === 0) {
             container.innerHTML = `
                 <div class="no-schedules">
-                    <h3>📅 No Match Schedules Found</h3>
+                    <h3>No Match Schedules Found</h3>
                     <p>The API returned no match schedule data.</p>
-                    <p>This could mean:</p>
                     <ul>
                         <li>No matches scheduled in the API</li>
                         <li>API data format has changed</li>
                         <li>Temporary API issue</li>
                     </ul>
-                    <button onclick="uncleStream.loadMatchSchedules()" class="retry-btn">
-                        🔄 Try Again
+                    <button onclick="window.uncleStream.loadMatchSchedules()" class="retry-btn">
+                        Refresh Schedules
                     </button>
                 </div>
             `;
@@ -102,8 +103,8 @@ class UncleStream {
         container.innerHTML = `
             <div class="schedule-container">
                 <div class="schedule-header">
-                    <h3>📅 Football Match Schedules</h3>
-                    <div class="match-count">${this.allMatches.length} matches found</div>
+                    <h3>Football Match Schedules</h3>
+                    <div class="match-count">${this.allMatches.length} matches</div>
                 </div>
                 
                 <div class="matches-list">
@@ -112,14 +113,12 @@ class UncleStream {
                 
                 <div class="schedule-footer">
                     <div class="last-updated">Updated: ${new Date().toLocaleTimeString()}</div>
-                    <button onclick="uncleStream.loadMatchSchedules()" class="refresh-btn">
-                        🔄 Refresh Schedules
+                    <button onclick="window.uncleStream.loadMatchSchedules()" class="refresh-btn">
+                        Refresh
                     </button>
                 </div>
             </div>
         `;
-        
-        this.startTimeUpdates();
     }
     
     createMatchRow(match) {
@@ -133,83 +132,35 @@ class UncleStream {
                         <span class="league">${match.league}</span>
                         <span class="date">${displayDate}</span>
                         <span class="time">${match.time}</span>
-                        ${match.hasStream ? '<span class="stream-available">📺 Stream</span>' : ''}
+                        ${match.hasStream ? '<span class="stream-available">Stream Available</span>' : ''}
                     </div>
                 </div>
             </div>
         `;
     }
     
-    isMatchLive(startTime) {
-        if (!startTime) return false;
-        
-        const now = new Date();
-        const matchTime = new Date(startTime);
-        const twoHoursLater = new Date(matchTime.getTime() + 2 * 60 * 60 * 1000);
-        
-        return now >= matchTime && now <= twoHoursLater;
-    }
-    
-    startScheduleUpdates() {
-        // Check every minute if matches should go live
-        setInterval(() => {
-            this.updateLiveStatus();
-        }, 60000);
-    }
-    
-    startTimeUpdates() {
-        // Update time displays every 30 seconds
-        setInterval(() => {
-            this.updateLiveStatus();
-        }, 30000);
-    }
-    
-    updateLiveStatus() {
-        this.allMatches.forEach(match => {
-            const row = document.querySelector(`[data-match-id="${match.id}"]`);
-            if (!row) return;
-            
-            const isLive = this.isMatchLive(match.startTime);
-            const statusElement = row.querySelector('.match-status');
-            
-            if (statusElement) {
-                if (isLive) {
-                    statusElement.innerHTML = 
-                        `<button class="live-btn" onclick="uncleStream.watchMatch('${match.streamUrl}')">
-                            🔴 LIVE NOW
-                        </button>`;
-                    row.classList.add('live');
-                    row.classList.remove('scheduled');
-                } else {
-                    statusElement.innerHTML = 
-                        `<div class="upcoming">Starts at ${match.time}</div>`;
-                    row.classList.remove('live');
-                    row.classList.add('scheduled');
-                }
-            }
-        });
-    }
-    
     watchMatch(streamUrl) {
         if (streamUrl) {
             window.open(streamUrl, '_blank');
-            this.showNotification('🔴 Opening live stream...');
+            this.showNotification('Opening live stream...');
         } else {
-            this.showNotification('⚠️ Stream URL not available for this match');
+            this.showNotification('Stream not available for this match');
         }
     }
     
     showError() {
         const container = document.getElementById('psl-streams-container');
-        container.innerHTML = `
-            <div class="error-state">
-                <h3>❌ Connection Issue</h3>
-                <p>Unable to load match schedules from the API.</p>
-                <button onclick="uncleStream.loadMatchSchedules()" class="retry-btn">
-                    🔄 Retry Connection
-                </button>
-            </div>
-        `;
+        if (container) {
+            container.innerHTML = `
+                <div class="error-state">
+                    <h3>Connection Issue</h3>
+                    <p>Unable to load match schedules from the API.</p>
+                    <button onclick="window.uncleStream.loadMatchSchedules()" class="retry-btn">
+                        Retry Connection
+                    </button>
+                </div>
+            `;
+        }
     }
     
     showNotification(message) {
@@ -228,7 +179,11 @@ class UncleStream {
         notification.textContent = message;
         document.body.appendChild(notification);
         
-        setTimeout(() => notification.remove(), 3000);
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 3000);
     }
 }
 
@@ -275,7 +230,6 @@ scheduleStyles.textContent = `
         align-items: center;
         padding: 15px 20px;
         border-bottom: 1px solid #ecf0f1;
-        transition: background-color 0.3s ease;
     }
     
     .match-row:last-child {
@@ -330,23 +284,13 @@ scheduleStyles.textContent = `
         border-top: 1px solid #ecf0f1;
     }
     
-    .refresh-btn {
+    .refresh-btn, .retry-btn {
         background: #3498db;
         color: white;
         border: none;
         padding: 8px 15px;
         border-radius: 15px;
         cursor: pointer;
-    }
-    
-    .retry-btn {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
-        cursor: pointer;
-        margin-top: 15px;
     }
     
     .no-schedules, .error-state {
@@ -365,45 +309,26 @@ scheduleStyles.textContent = `
 `;
 document.head.appendChild(scheduleStyles);
 
-// DEBUG FUNCTION - SIMPLE API TEST
-async function debugAPIData() {
-    try {
-        console.log('🔍 DEBUG: Testing API connection...');
-        const response = await fetch('https://topembed.pw/api.php?format=json');
-        const rawData = await response.json();
-        
-        console.log('✅ API CONNECTION SUCCESS');
-        console.log('📊 RAW API DATA:', rawData);
-        
-        if (rawData && rawData.events) {
-            const dateCount = Object.keys(rawData.events).length;
-            let matchCount = 0;
-            
-            Object.values(rawData.events).forEach(matches => {
-                if (Array.isArray(matches)) matchCount += matches.length;
-            });
-            
-            console.log(`📅 FOUND: ${dateCount} dates, ${matchCount} total matches`);
-            
-            // Show sample of first match
-            const firstDate = Object.keys(rawData.events)[0];
-            const firstMatches = rawData.events[firstDate];
-            if (firstMatches && firstMatches.length > 0) {
-                console.log('🎯 SAMPLE MATCH:', firstMatches[0]);
+// Simple API Test
+function testAPI() {
+    fetch('https://topembed.pw/api.php?format=json')
+        .then(response => response.json())
+        .then(data => {
+            console.log('API TEST SUCCESS');
+            if (data && data.events) {
+                const dates = Object.keys(data.events);
+                console.log('Dates found: ' + dates.length);
+                console.log('Sample data:', data.events[dates[0]]);
             }
-        } else {
-            console.log('❌ API returned no events data');
-        }
-        
-    } catch (error) {
-        console.log('❌ API CONNECTION FAILED:', error);
-    }
+        })
+        .catch(error => {
+            console.log('API TEST FAILED:', error);
+        });
 }
 
-// Test API immediately
-setTimeout(debugAPIData, 1000);
+// Initialize
+setTimeout(testAPI, 1000);
 
-// Initialize Uncle Stream - THIS IS THE LAST LINE
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     window.uncleStream = new UncleStream();
 });
