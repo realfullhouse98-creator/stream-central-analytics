@@ -17,25 +17,26 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Central Analytics - Live Multi-Platform Streaming</title>
+    <title>Uncle Stream - Live Football Match Schedules</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Stream Central Analytics Dashboard -->
+    <!-- Uncle Stream Dashboard -->
     <div class="stream-central-dashboard">
         <header class="dashboard-header">
-            <h1>🔴 Stream Central Analytics</h1>
-            <p>Live Multi-Platform Streaming Dashboard</p>
+            <h1>🔴 Uncle Stream</h1>
+            <p>Live Football Match Discovery</p>
         </header>
         
+        <!-- Analytics Overview -->
         <div class="analytics-overview">
             <div class="stat-card">
                 <div class="stat-value" id="live-viewers">0</div>
                 <div class="stat-label">Live Viewers</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="total-streams">2</div>
-                <div class="stat-label">Active Streams</div>
+                <div class="stat-value" id="total-streams">0</div>
+                <div class="stat-label">Active Matches</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="countries">1</div>
@@ -43,87 +44,33 @@
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="uptime">100%</div>
-                <div class="stat-label">Uptime</div>
+                <div class="stat-label">System Status</div>
             </div>
         </div>
 
+        <!-- Visitor Stats -->
         <div class="analytics-panel">
             <div id="visitor-stats"></div>
         </div>
 
-        <!-- PSL STREAMS SECTION - KEEP ONLY ONE -->
+        <!-- UNCLE STREAM MATCH SCHEDULES SECTION -->
         <section class="psl-streams-section">
             <div class="section-header">
-                <h2>⚽ Live PSL Betway Premiership</h2>
-                <p>South Africa Premier Soccer League - Automated Match System</p>
+                <h2>🎯 Live Match Schedules</h2>
+                <p>Real-time football match discovery from multiple sources</p>
             </div>
             
             <div class="streams-grid" id="psl-streams-container">
-                <!-- Hybrid system will load here -->
-                <div class="loading-streams">Loading PSL matches...</div>
+                <!-- Uncle Stream system will load match schedules here -->
+                <div class="loading-streams">Initializing Uncle Stream match discovery...</div>
             </div>
         </section>
 
-        <div class="streams-container">
-            <!-- Stream 1: Unknown League -->
-            <div class="stream-card" data-stream-id="stream1">
-                <div class="stream-header">
-                    <div class="stream-info">
-                        <h3>Live Sports Stream</h3>
-                        <span class="stream-category">Sports</span>
-                    </div>
-                    <div class="stream-status live">● LIVE</div>
-                </div>
-                
-                <div class="stream-player">
-                    <iframe 
-                        src="https://www.youtube.com/embed/I42XWG-wddk" 
-                        title="Live Sports Stream 1"
-                        allowfullscreen 
-                        allow="autoplay; encrypted-media; picture-in-picture;">
-                    </iframe>
-                </div>
-                
-                <div class="stream-analytics">
-                    <div class="viewer-count">👥 <span id="stream1-viewers">15</span> watching</div>
-                    <div class="stream-actions">
-                        <button class="btn" onclick="refreshStream('stream1')">Refresh</button>
-                        <button class="btn" onclick="toggleFullscreen('stream1')">Fullscreen</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stream 2: Canada Premier League -->
-            <div class="stream-card" data-stream-id="stream2">
-                <div class="stream-header">
-                    <div class="stream-info">
-                        <h3>Forge FC vs York United</h3>
-                        <span class="stream-category canada">Canada Premier League</span>
-                    </div>
-                    <div class="stream-status live">● LIVE</div>
-                </div>
-                
-                <div class="stream-player">
-                    <iframe 
-                        src="https://www.youtube.com/embed/mXbecrDVNM4" 
-                        title="Forge FC vs York United - Canada Premier League"
-                        allowfullscreen 
-                        allow="autoplay; encrypted-media; picture-in-picture;">
-                    </iframe>
-                </div>
-                
-                <div class="stream-analytics">
-                    <div class="viewer-count">👥 <span id="stream2-viewers">23</span> watching</div>
-                    <div class="stream-actions">
-                        <button class="btn" onclick="refreshStream('stream2')">Refresh</button>
-                        <button class="btn" onclick="toggleFullscreen('stream2')">Fullscreen</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- REMOVED: Test streams section -->
+        <!-- The entire streams-container with test YouTube embeds is GONE -->
 
         <footer class="dashboard-footer">
-            <p>Stream Central Analytics • 100% Free Infrastructure • Live Updates Every 30s</p>
+            <p>Uncle Stream • Intelligent Match Discovery • Live Updates Every 2 Minutes</p>
             <div class="last-updated">Last updated: <span id="update-time">Just now</span></div>
         </footer>
     </div>
