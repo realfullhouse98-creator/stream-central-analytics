@@ -1,14 +1,14 @@
-// Sport71.pro Style Match Schedules - CLEAN VERSION
+// Sport71.pro Style Match Schedules - DAY ORGANIZED VERSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
         this.currentSport = 'all';
         this.verifiedMatches = [];
+        this.expandedDays = new Set(); // Track which days are expanded
         this.init();
     }
     
     async init() {
-        console.log('Loading match schedules...');
         await this.loadMatches();
         this.displayScheduledEvents();
         this.startLiveUpdates();
@@ -17,23 +17,16 @@ class MatchScheduler {
     
     async loadMatches() {
         try {
-            console.log('🔍 Fetching data from API...');
             const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
-            
             this.organizeMatches(apiData);
-            
         } catch (error) {
-            console.log('❌ Failed to load matches:', error);
             this.showError();
         }
     }
     
     organizeMatches(apiData) {
-        if (!apiData || !apiData.events) {
-            console.log('❌ No events data found in API response');
-            return;
-        }
+        if (!apiData || !apiData.events) return;
         
         this.allMatches = [];
         this.verifiedMatches = [];
@@ -43,7 +36,6 @@ class MatchScheduler {
                 matches.forEach((match) => {
                     if (match && match.match && match.sport) {
                         const matchTime = this.convertUnixToLocalTime(match.unix_timestamp);
-                        
                         const correctedSport = this.correctSportClassification(match);
                         
                         const processedMatch = {
@@ -54,12 +46,11 @@ class MatchScheduler {
                             streamUrl: this.getStreamUrl(match.channels),
                             isLive: this.checkIfLive(match),
                             sport: correctedSport,
-                            originalSport: match.sport,
                             unixTimestamp: match.unix_timestamp,
+                            displayDate: this.formatDisplayDate(date)
                         };
                         
                         this.allMatches.push(processedMatch);
-                        
                         if (this.isContentAccurate(processedMatch)) {
                             this.verifiedMatches.push(processedMatch);
                         }
@@ -68,10 +59,24 @@ class MatchScheduler {
             }
         });
         
+        // Sort by date and time
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         
-        console.log(`✅ ${this.verifiedMatches.length} matches organized`);
+        // Auto-expand today by default
+        const today = new Date().toISOString().split('T')[0];
+        this.expandedDays.add(today);
+        
         this.updateAnalytics();
+    }
+    
+    formatDisplayDate(dateString) {
+        const date = new Date(dateString + 'T00:00:00');
+        return date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
     }
     
     correctSportClassification(match) {
@@ -79,67 +84,47 @@ class MatchScheduler {
         const tournament = (match.tournament || '').toLowerCase();
         const matchName = (match.match || '').toLowerCase();
         
-        const americanFootballTerms = [
-            'nfl', 'college football', 'super bowl', 'ncaa football',
-            'afc', 'nfc', 'playoffs'
-        ];
+        if (tournament.includes('cricket') || tournament.includes('icc')) {
+            return 'Cricket';
+        }
         
-        const americanFootballTeams = [
-            'packers', 'chiefs', 'patriots', 'cowboys', 'steelers', '49ers',
-            'raiders', 'broncos', 'seahawks', 'buccaneers', 'rams', 'ravens',
-            'bills', 'dolphins', 'jets', 'bears', 'lions', 'vikings', 'saints'
-        ];
+        if (matchName.includes(' w ') || matchName.includes('women')) {
+            if (tournament.includes('football') || tournament.includes('soccer')) {
+                return 'Soccer';
+            }
+        }
+        
+        const americanFootballTerms = ['nfl', 'college football', 'ncaa football'];
+        const americanFootballTeams = ['packers', 'chiefs', 'patriots', 'cowboys'];
         
         const hasAmericanFootballContent = 
             americanFootballTerms.some(term => tournament.includes(term)) ||
             americanFootballTeams.some(team => matchName.includes(team)) ||
-            tournament.includes('college football') ||
-            matchName.includes('state') ||
-            matchName.includes('university');
+            tournament.includes('college football');
         
         const soccerTerms = [
             'champions league', 'premier league', 'la liga', 'serie a', 'bundesliga',
-            'europa league', 'fa cup', 'ligue 1', 'mls', 'copa libertadores'
+            'europa league', 'copa libertadores', 'copa sudamericana'
         ];
         
         const hasSoccerContent = soccerTerms.some(term => 
             tournament.includes(term) || matchName.includes(term)
         );
         
-        if (tournament.includes('college football') || matchName.includes('kennesaw state')) {
-            return 'American Football';
-        }
-        
-        if (hasAmericanFootballContent) {
-            return 'American Football';
-        }
-        
-        if (hasSoccerContent) {
-            return 'Soccer';
-        }
+        if (hasAmericanFootballContent) return 'American Football';
+        if (hasSoccerContent) return 'Soccer';
         
         return sport.charAt(0).toUpperCase() + sport.slice(1);
     }
     
     isContentAccurate(match) {
         const matchName = (match.teams || '').toLowerCase();
-        
-        if (matchName.includes('undefined') || matchName.includes('null')) {
-            return false;
-        }
-        
-        if (matchName.length < 5 || matchName === 'vs' || matchName === 'tbd') {
-            return false;
-        }
-        
-        return true;
+        return !(matchName.includes('undefined') || matchName.includes('null') || 
+                matchName.length < 5 || matchName === 'vs' || matchName === 'tbd');
     }
     
     getStreamUrl(channels) {
-        if (!channels || !Array.isArray(channels) || channels.length === 0) {
-            return null;
-        }
-        return channels[0];
+        return channels && Array.isArray(channels) && channels.length > 0 ? channels[0] : null;
     }
     
     convertUnixToLocalTime(unixTimestamp) {
@@ -154,43 +139,26 @@ class MatchScheduler {
     
     checkIfLive(match) {
         if (!match.unixTimestamp) return false;
-        
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unixTimestamp;
         const twoHours = 2 * 60 * 60;
-        
         return now >= matchTime && now <= (matchTime + twoHours);
     }
     
     updateLiveStatus() {
         let hasUpdates = false;
-        
         this.verifiedMatches.forEach(match => {
             const wasLive = match.isLive;
             match.isLive = this.checkIfLive(match);
-            
-            if (wasLive !== match.isLive) {
-                hasUpdates = true;
-            }
+            if (wasLive !== match.isLive) hasUpdates = true;
         });
-        
-        if (hasUpdates) {
-            this.updateDisplay();
-        }
+        if (hasUpdates) this.updateDisplay();
     }
     
     updateAnalytics() {
-        const liveViewers = Math.floor(Math.random() * 10000) + 5000;
-        document.getElementById('live-viewers').textContent = liveViewers.toLocaleString();
-        
         const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
         document.getElementById('total-streams').textContent = liveMatches;
-        
-        const countries = Math.floor(Math.random() * 10) + 1;
-        document.getElementById('countries').textContent = countries;
-        
-        const now = new Date();
-        document.getElementById('update-time').textContent = now.toLocaleTimeString();
+        document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
     
     displayScheduledEvents() {
@@ -224,11 +192,8 @@ class MatchScheduler {
                     <button class="sport-btn ${this.currentSport === 'basketball' ? 'active' : ''}" data-sport="basketball">
                         Basketball (${this.getVerifiedMatchesBySport('basketball').length})
                     </button>
-                    <button class="sport-btn ${this.currentSport === 'ice hockey' ? 'active' : ''}" data-sport="ice hockey">
-                        Ice Hockey (${this.getVerifiedMatchesBySport('ice hockey').length})
-                    </button>
-                    <button class="sport-btn ${this.currentSport === 'volleyball' ? 'active' : ''}" data-sport="volleyball">
-                        Volleyball (${this.getVerifiedMatchesBySport('volleyball').length})
+                    <button class="sport-btn ${this.currentSport === 'cricket' ? 'active' : ''}" data-sport="cricket">
+                        Cricket (${this.getVerifiedMatchesBySport('cricket').length})
                     </button>
                 </div>
                 
@@ -238,21 +203,100 @@ class MatchScheduler {
                         <span class="match-count">${this.getFilteredMatches().length} matches</span>
                     </div>
                     
-                    <div class="matches-table">
-                        <div class="table-header">
-                            <div class="col-time">Time</div>
-                            <div class="col-match">Match</div>
-                            <div class="col-watch">Watch</div>
-                        </div>
-                        <div class="table-body">
-                            ${this.renderMatchesTable()}
-                        </div>
+                    <div class="day-organized-matches">
+                        ${this.renderDaySections()}
                     </div>
                 </div>
             </div>
         `;
         
         this.attachSportButtonListeners();
+        this.attachDayDropdownListeners();
+    }
+    
+    renderDaySections() {
+        const filteredMatches = this.getFilteredMatches();
+        
+        // Group matches by date
+        const matchesByDate = {};
+        filteredMatches.forEach(match => {
+            if (!matchesByDate[match.date]) {
+                matchesByDate[match.date] = [];
+            }
+            matchesByDate[match.date].push(match);
+        });
+        
+        if (Object.keys(matchesByDate).length === 0) {
+            return `<div class="no-matches">No ${this.currentSport === 'all' ? '' : this.currentSport + ' '}matches available</div>`;
+        }
+        
+        // Create day sections
+        return Object.entries(matchesByDate)
+            .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
+            .map(([date, matches]) => {
+                const isExpanded = this.expandedDays.has(date);
+                const matchCount = matches.length;
+                
+                return `
+                    <div class="day-section">
+                        <div class="day-header ${isExpanded ? 'expanded' : ''}" data-date="${date}">
+                            <div class="day-title">
+                                <span class="dropdown-arrow">${isExpanded ? '▼' : '►'}</span>
+                                ${this.formatDisplayDate(date)}
+                            </div>
+                            <div class="day-match-count">${matchCount} match${matchCount !== 1 ? 'es' : ''}</div>
+                        </div>
+                        <div class="day-matches ${isExpanded ? 'expanded' : 'collapsed'}">
+                            <div class="matches-table">
+                                <div class="table-header">
+                                    <div class="col-time">Time</div>
+                                    <div class="col-match">Match</div>
+                                    <div class="col-watch">Watch</div>
+                                </div>
+                                <div class="table-body">
+                                    ${matches.map(match => this.renderMatchRow(match)).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+    }
+    
+    renderMatchRow(match) {
+        // Show loading state immediately, then update when live detection completes
+        const showLivePlaceholder = this.shouldShowLivePlaceholder(match);
+        
+        return `
+            <div class="match-row ${match.isLive ? 'live-match' : ''} ${showLivePlaceholder ? 'live-placeholder' : ''}">
+                <div class="col-time">
+                    ${match.time}
+                    ${match.isLive ? '<span class="live-badge">LIVE</span>' : 
+                      showLivePlaceholder ? '<span class="live-badge loading">LIVE</span>' : ''}
+                </div>
+                <div class="col-match">
+                    <div class="teams">${match.teams}</div>
+                    <div class="league">${match.league} • ${match.sport}</div>
+                </div>
+                <div class="col-watch">
+                    ${match.streamUrl ? 
+                        `<button class="watch-btn ${match.isLive ? 'live-watch-btn' : ''} ${showLivePlaceholder ? 'live-watch-btn loading' : ''}" onclick="matchScheduler.watchMatch('${match.streamUrl}')">
+                            ${match.isLive ? 'LIVE NOW' : showLivePlaceholder ? 'CHECKING...' : 'WATCH'}
+                        </button>` :
+                        `<span class="no-stream">OFFLINE</span>`
+                    }
+                </div>
+            </div>
+        `;
+    }
+    
+    shouldShowLivePlaceholder(match) {
+        // Show placeholder for matches happening around now
+        if (!match.unixTimestamp) return false;
+        const now = Math.floor(Date.now() / 1000);
+        const matchTime = match.unixTimestamp;
+        const oneHour = 60 * 60;
+        return Math.abs(now - matchTime) <= oneHour;
     }
     
     attachSportButtonListeners() {
@@ -264,6 +308,24 @@ class MatchScheduler {
         });
     }
     
+    attachDayDropdownListeners() {
+        document.querySelectorAll('.day-header').forEach(header => {
+            header.addEventListener('click', (e) => {
+                const date = e.currentTarget.getAttribute('data-date');
+                this.toggleDay(date);
+            });
+        });
+    }
+    
+    toggleDay(date) {
+        if (this.expandedDays.has(date)) {
+            this.expandedDays.delete(date);
+        } else {
+            this.expandedDays.add(date);
+        }
+        this.updateDisplay();
+    }
+    
     getVerifiedMatchesBySport(sport) {
         return this.verifiedMatches.filter(match => 
             match.sport.toLowerCase().includes(sport.toLowerCase())
@@ -272,49 +334,11 @@ class MatchScheduler {
     
     getSectionTitle() {
         if (this.currentSport === 'all') return 'All Sports Events';
-        if (this.currentSport === 'soccer') return 'Soccer Matches';
-        if (this.currentSport === 'american football') return 'American Football Matches';
         return `${this.currentSport.charAt(0).toUpperCase() + this.currentSport.slice(1)} Matches`;
     }
     
     getFilteredMatches() {
-        if (this.currentSport === 'all') return this.verifiedMatches;
-        return this.getVerifiedMatchesBySport(this.currentSport);
-    }
-    
-    renderMatchesTable() {
-        const filteredMatches = this.getFilteredMatches();
-        
-        if (filteredMatches.length === 0) {
-            return `
-                <div class="no-matches">
-                    <div class="col-time">-</div>
-                    <div class="col-match">No ${this.currentSport === 'all' ? '' : this.currentSport + ' '}matches available</div>
-                    <div class="col-watch">-</div>
-                </div>
-            `;
-        }
-        
-        return filteredMatches.map(match => `
-            <div class="match-row ${match.isLive ? 'live-match' : ''}">
-                <div class="col-time">
-                    ${match.time}
-                    ${match.isLive ? '<span class="live-badge">LIVE</span>' : ''}
-                </div>
-                <div class="col-match">
-                    <div class="teams">${match.teams}</div>
-                    <div class="league">${match.league} • ${match.sport}</div>
-                </div>
-                <div class="col-watch">
-                    ${match.streamUrl ? 
-                        `<button class="watch-btn ${match.isLive ? 'live-watch-btn' : ''}" onclick="matchScheduler.watchMatch('${match.streamUrl}')">
-                            ${match.isLive ? 'LIVE NOW' : 'WATCH'}
-                        </button>` :
-                        `<span class="no-stream">OFFLINE</span>`
-                    }
-                </div>
-            </div>
-        `).join('');
+        return this.currentSport === 'all' ? this.verifiedMatches : this.getVerifiedMatchesBySport(this.currentSport);
     }
     
     setSport(sport) {
@@ -323,9 +347,10 @@ class MatchScheduler {
     }
     
     updateDisplay() {
-        const tableBody = document.querySelector('.table-body');
-        if (tableBody) {
-            tableBody.innerHTML = this.renderMatchesTable();
+        const matchesSection = document.querySelector('.day-organized-matches');
+        if (matchesSection) {
+            matchesSection.innerHTML = this.renderDaySections();
+            this.attachDayDropdownListeners();
         }
         
         document.querySelectorAll('.sport-btn').forEach(btn => {
@@ -335,9 +360,7 @@ class MatchScheduler {
     }
     
     watchMatch(streamUrl) {
-        if (streamUrl) {
-            window.open(streamUrl, '_blank');
-        }
+        if (streamUrl) window.open(streamUrl, '_blank');
     }
     
     showError() {
@@ -347,30 +370,27 @@ class MatchScheduler {
                 <div class="error-state">
                     <h3>Unable to Load Schedules</h3>
                     <p>Please check your connection and try again.</p>
-                    <button onclick="matchScheduler.loadMatches()" class="retry-btn">
-                        Try Again
-                    </button>
+                    <button onclick="matchScheduler.loadMatches()" class="retry-btn">Try Again</button>
                 </div>
             `;
         }
     }
     
     startLiveUpdates() {
-        setInterval(() => {
-            this.updateLiveStatus();
-        }, 30000);
+        // Update immediately on load
+        setTimeout(() => this.updateLiveStatus(), 1000);
+        // Then update every 30 seconds
+        setInterval(() => this.updateLiveStatus(), 30000);
     }
     
     startAutoRefresh() {
         setInterval(() => {
-            this.loadMatches().then(() => {
-                this.displayScheduledEvents();
-            });
+            this.loadMatches().then(() => this.displayScheduledEvents());
         }, 5 * 60 * 1000);
     }
 }
 
-// Add Clean CSS
+// Add CSS with Day Organization and Live Animations
 const sportsStyles = document.createElement('style');
 sportsStyles.textContent = `
     .scheduled-events {
@@ -402,7 +422,6 @@ sportsStyles.textContent = `
         font-size: 1.3em;
         color: #ecf0f1;
         font-weight: 500;
-        margin-bottom: 5px;
     }
     
     .sports-categories {
@@ -441,7 +460,7 @@ sportsStyles.textContent = `
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
     
     .section-title {
@@ -460,10 +479,80 @@ sportsStyles.textContent = `
         font-weight: 600;
     }
     
-    .matches-table {
-        border: 1px solid #ecf0f1;
+    .day-organized-matches {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .day-section {
+        border: 1px solid #e9ecef;
         border-radius: 8px;
         overflow: hidden;
+    }
+    
+    .day-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.3s ease;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .day-header:hover {
+        background: #e9ecef;
+    }
+    
+    .day-header.expanded {
+        background: #e74c3c;
+        color: white;
+    }
+    
+    .day-title {
+        font-weight: 600;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .dropdown-arrow {
+        font-size: 0.8em;
+        transition: transform 0.3s ease;
+    }
+    
+    .day-header.expanded .dropdown-arrow {
+        transform: rotate(0deg);
+    }
+    
+    .day-match-count {
+        background: rgba(255,255,255,0.2);
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+    
+    .day-header.expanded .day-match-count {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    .day-matches {
+        transition: all 0.3s ease;
+    }
+    
+    .day-matches.collapsed {
+        display: none;
+    }
+    
+    .day-matches.expanded {
+        display: block;
+    }
+    
+    .matches-table {
         background: white;
     }
     
@@ -489,6 +578,11 @@ sportsStyles.textContent = `
         border-left: 4px solid #e74c3c;
     }
     
+    .live-placeholder {
+        background: #f8f9fa !important;
+        border-left: 4px solid #ffa500;
+    }
+    
     .col-time {
         font-weight: 600;
         color: #e74c3c;
@@ -506,6 +600,11 @@ sportsStyles.textContent = `
         font-weight: 700;
         text-transform: uppercase;
         animation: pulse 2s infinite;
+    }
+    
+    .live-badge.loading {
+        background: #ffa500;
+        animation: pulse 1s infinite;
     }
     
     @keyframes pulse {
@@ -543,16 +642,23 @@ sportsStyles.textContent = `
         animation: pulse 2s infinite;
     }
     
+    .live-watch-btn.loading {
+        background: #ffa500;
+        animation: pulse 1s infinite;
+    }
+    
     .no-matches, .error-state {
         text-align: center;
         padding: 30px;
         color: #7f8c8d;
+    }
+    
+    .error-state {
         grid-column: 1 / -1;
     }
 `;
 document.head.appendChild(sportsStyles);
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     window.matchScheduler = new MatchScheduler();
 });
