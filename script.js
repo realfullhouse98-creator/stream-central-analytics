@@ -1,182 +1,196 @@
-// Uncle Stream - Match Schedule Display
-class UncleStream {
+// Sport71.pro Style Match Schedules
+class MatchScheduler {
     constructor() {
         this.allMatches = [];
+        this.currentSport = 'soccer';
         this.init();
     }
     
     async init() {
-        console.log('UNCLE STREAM: Loading match schedules...');
-        await this.loadMatchSchedules();
+        console.log('Loading match schedules...');
+        await this.loadMatches();
+        this.displayScheduledEvents();
     }
     
-    async loadMatchSchedules() {
+    async loadMatches() {
         try {
             const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
             
-            console.log('API SCHEDULE DATA:', apiData);
+            console.log('API Data received:', apiData);
             
-            // Get ALL matches from API
-            this.allMatches = this.extractAllMatches(apiData);
-            
-            console.log('FOUND ' + this.allMatches.length + ' MATCHES:', this.allMatches);
-            
-            this.displaySchedule();
+            // Extract and organize matches
+            this.organizeMatches(apiData);
             
         } catch (error) {
-            console.log('Failed to load schedules:', error);
+            console.log('Failed to load matches:', error);
             this.showError();
         }
     }
     
-    extractAllMatches(apiData) {
+    organizeMatches(apiData) {
         if (!apiData || !apiData.events) {
-            console.log('No events data in API');
-            return [];
+            console.log('No events data found');
+            return;
         }
         
-        const allMatches = [];
+        this.allMatches = [];
         
-        // Get ALL matches from ALL dates
+        // Process all dates and matches
         Object.entries(apiData.events).forEach(([date, matches]) => {
             if (Array.isArray(matches)) {
                 matches.forEach(match => {
-                    // BETTER DATA EXTRACTION
-                    const title = this.extractTitle(match);
-                    const league = this.extractLeague(match);
-                    const time = this.extractTime(match);
-                    
-                    allMatches.push({
-                        id: match.id || Math.random().toString(36).substr(2, 9),
-                        title: title,
-                        league: league,
-                        time: time,
-                        date: date,
-                        startTime: this.parseDateTime(date, time),
-                        streamUrl: match.url || null,
-                        hasStream: !!match.url,
-                        // DEBUG: Keep original data for analysis
-                        originalData: match
-                    });
+                    if (match && this.isSoccerMatch(match)) {
+                        this.allMatches.push({
+                            date: date,
+                            time: match.time || 'TBD',
+                            teams: this.getTeamNames(match),
+                            league: this.getLeague(match),
+                            streamUrl: match.url || null
+                        });
+                    }
                 });
             }
         });
         
-        console.log('IMPROVED MATCH EXTRACTION:', allMatches);
-        return allMatches.sort((a, b) => (a.startTime || 0) - (b.startTime || 0));
+        console.log('Organized matches:', this.allMatches);
     }
     
-    parseDateTime(dateStr, timeStr) {
-        if (!dateStr || !timeStr || timeStr === 'TBD') return null;
+    isSoccerMatch(match) {
+        // Focus on soccer/football matches
+        const title = (match.title || '').toLowerCase();
+        const league = (match.league || '').toLowerCase();
         
-        try {
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            const dateTime = new Date(dateStr);
-            dateTime.setHours(hours, minutes, 0, 0);
-            return dateTime;
-        } catch (e) {
-            return null;
+        return title.includes('vs') || 
+               league.includes('football') || 
+               league.includes('soccer') ||
+               title.includes('fc') ||
+               title.includes('united');
+    }
+    
+    getTeamNames(match) {
+        // Extract team names from title
+        if (match.title && match.title !== 'Football Match') {
+            return match.title;
         }
+        if (match.teams) {
+            return match.teams;
+        }
+        return 'Teams TBD';
     }
     
-    extractTitle(match) {
-        // Try multiple fields for title
-        if (match.title && match.title !== 'Football Match') return match.title;
-        if (match.name) return match.name;
-        if (match.match) return match.match;
-        if (match.teams) return match.teams;
-        
-        // Show what fields are available
-        const availableFields = Object.keys(match).join(', ');
-        return `Match - Fields: ${availableFields}`;
-    }
-    
-    extractLeague(match) {
-        if (match.league && match.league !== 'Football') return match.league;
-        if (match.competition) return match.competition;
-        if (match.tournament) return match.tournament;
+    getLeague(match) {
+        if (match.league && match.league !== 'Football') {
+            return match.league;
+        }
         return 'Football';
     }
     
-    extractTime(match) {
-        if (match.time && match.time !== 'TBD') return match.time;
-        if (match.start_time) return match.start_time;
-        if (match.kickoff) return match.kickoff;
-        return 'TBD';
-    }
-    
-    displaySchedule() {
+    displayScheduledEvents() {
         const container = document.getElementById('psl-streams-container');
+        if (!container) return;
         
-        if (!container) {
-            console.log('Container not found');
-            return;
-        }
-        
-        if (this.allMatches.length === 0) {
-            container.innerHTML = `
-                <div class="no-schedules">
-                    <h3>No Match Schedules Found</h3>
-                    <p>The API returned no match schedule data.</p>
-                    <ul>
-                        <li>No matches scheduled in the API</li>
-                        <li>API data format has changed</li>
-                        <li>Temporary API issue</li>
-                    </ul>
-                    <button onclick="window.uncleStream.loadMatchSchedules()" class="retry-btn">
-                        Refresh Schedules
-                    </button>
-                </div>
-            `;
-            return;
-        }
+        const currentDate = new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
         
         container.innerHTML = `
-            <div class="schedule-container">
-                <div class="schedule-header">
-                    <h3>Football Match Schedules</h3>
-                    <div class="match-count">${this.allMatches.length} matches</div>
+            <div class="scheduled-events">
+                <div class="events-header">
+                    <h2>Scheduled Events</h2>
+                    <div class="current-date">${currentDate}</div>
                 </div>
                 
-                <div class="matches-list">
-                    ${this.allMatches.map(match => this.createMatchRow(match)).join('')}
-                </div>
-                
-                <div class="schedule-footer">
-                    <div class="last-updated">Updated: ${new Date().toLocaleTimeString()}</div>
-                    <button onclick="window.uncleStream.loadMatchSchedules()" class="refresh-btn">
-                        Refresh
+                <div class="sports-categories">
+                    <button class="sport-btn active" onclick="matchScheduler.setSport('soccer')">
+                        Soccer
+                    </button>
+                    <button class="sport-btn" onclick="matchScheduler.setSport('rugby')">
+                        Rugby
+                    </button>
+                    <button class="sport-btn" onclick="matchScheduler.setSport('hockey')">
+                        Hockey
+                    </button>
+                    <button class="sport-btn" onclick="matchScheduler.setSport('basketball')">
+                        Basketball
                     </button>
                 </div>
-            </div>
-        `;
-    }
-    
-    createMatchRow(match) {
-        const displayDate = match.date ? new Date(match.date).toLocaleDateString() : 'TBD';
-        
-        return `
-            <div class="match-row">
-                <div class="match-info">
-                    <div class="teams">${match.title}</div>
-                    <div class="match-details">
-                        <span class="league">${match.league}</span>
-                        <span class="date">${displayDate}</span>
-                        <span class="time">${match.time}</span>
-                        ${match.hasStream ? '<span class="stream-available">Stream Available</span>' : ''}
+                
+                <div class="matches-section">
+                    <h3>Soccer Matches</h3>
+                    <div class="matches-table">
+                        <div class="table-header">
+                            <div class="col-time">Time</div>
+                            <div class="col-match">Match</div>
+                            <div class="col-watch">Watch</div>
+                        </div>
+                        <div class="table-body">
+                            ${this.renderMatchesTable()}
+                        </div>
                     </div>
                 </div>
             </div>
         `;
     }
     
+    renderMatchesTable() {
+        if (this.allMatches.length === 0) {
+            return `
+                <div class="no-matches">
+                    <div class="col-time">-</div>
+                    <div class="col-match">No scheduled matches found</div>
+                    <div class="col-watch">-</div>
+                </div>
+            `;
+        }
+        
+        // Show first 10 matches for demo
+        return this.allMatches.slice(0, 10).map(match => `
+            <div class="match-row">
+                <div class="col-time">${match.time}</div>
+                <div class="col-match">
+                    <div class="teams">${match.teams}</div>
+                    <div class="league">${match.league}</div>
+                </div>
+                <div class="col-watch">
+                    ${match.streamUrl ? 
+                        `<button class="watch-btn" onclick="matchScheduler.watchMatch('${match.streamUrl}')">
+                            WATCH
+                        </button>` :
+                        `<span class="no-stream">OFFLINE</span>`
+                    }
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    setSport(sport) {
+        this.currentSport = sport;
+        
+        // Update active button
+        document.querySelectorAll('.sport-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Update matches section title
+        const titleElement = document.querySelector('.matches-section h3');
+        if (titleElement) {
+            titleElement.textContent = sport.charAt(0).toUpperCase() + sport.slice(1) + ' Matches';
+        }
+        
+        console.log('Switched to sport:', sport);
+    }
+    
     watchMatch(streamUrl) {
         if (streamUrl) {
             window.open(streamUrl, '_blank');
-            this.showNotification('Opening live stream...');
+            this.showNotification('Opening stream...');
         } else {
-            this.showNotification('Stream not available for this match');
+            this.showNotification('Stream not available');
         }
     }
     
@@ -185,10 +199,10 @@ class UncleStream {
         if (container) {
             container.innerHTML = `
                 <div class="error-state">
-                    <h3>Connection Issue</h3>
-                    <p>Unable to load match schedules from the API.</p>
-                    <button onclick="window.uncleStream.loadMatchSchedules()" class="retry-btn">
-                        Retry Connection
+                    <h3>Unable to Load Schedules</h3>
+                    <p>Please check your connection and try again.</p>
+                    <button onclick="matchScheduler.loadMatches()" class="retry-btn">
+                        Try Again
                     </button>
                 </div>
             `;
@@ -201,10 +215,10 @@ class UncleStream {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #e74c3c;
+            background: #2c3e50;
             color: white;
             padding: 15px 25px;
-            border-radius: 10px;
+            border-radius: 5px;
             font-weight: bold;
             z-index: 10000;
         `;
@@ -219,49 +233,94 @@ class UncleStream {
     }
 }
 
-// Add Schedule CSS
-const scheduleStyles = document.createElement('style');
-scheduleStyles.textContent = `
-    .schedule-container {
+// Add Sport71.pro Style CSS
+const sportsStyles = document.createElement('style');
+sportsStyles.textContent = `
+    .scheduled-events {
         background: white;
         border-radius: 10px;
         padding: 0;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     
-    .schedule-header {
-        background: #2c3e50;
+    .events-header {
+        background: #34495e;
         color: white;
         padding: 20px;
         border-radius: 10px 10px 0 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
     
-    .schedule-header h3 {
-        margin: 0;
-        color: white;
+    .events-header h2 {
+        margin: 0 0 5px 0;
+        font-size: 1.8em;
     }
     
-    .match-count {
-        background: #e74c3c;
-        padding: 5px 12px;
-        border-radius: 15px;
-        font-size: 0.9em;
+    .current-date {
+        color: #bdc3c7;
+        font-size: 1em;
     }
     
-    .matches-list {
-        max-height: 600px;
-        overflow-y: auto;
-    }
-    
-    .match-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .sports-categories {
         padding: 15px 20px;
+        background: #ecf0f1;
+        border-bottom: 1px solid #bdc3c7;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .sport-btn {
+        background: white;
+        border: 1px solid #bdc3c7;
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.3s ease;
+    }
+    
+    .sport-btn.active {
+        background: #e74c3c;
+        color: white;
+        border-color: #e74c3c;
+    }
+    
+    .sport-btn:hover {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+    
+    .matches-section {
+        padding: 20px;
+    }
+    
+    .matches-section h3 {
+        margin: 0 0 15px 0;
+        color: #2c3e50;
+        font-size: 1.3em;
+    }
+    
+    .matches-table {
+        border: 1px solid #ecf0f1;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .table-header {
+        display: grid;
+        grid-template-columns: 100px 1fr 100px;
+        background: #2c3e50;
+        color: white;
+        font-weight: bold;
+        padding: 12px 15px;
+    }
+    
+    .match-row, .no-matches {
+        display: grid;
+        grid-template-columns: 100px 1fr 100px;
+        padding: 15px;
         border-bottom: 1px solid #ecf0f1;
+        align-items: center;
     }
     
     .match-row:last-child {
@@ -272,95 +331,62 @@ scheduleStyles.textContent = `
         background: #f8f9fa;
     }
     
-    .teams {
+    .col-time {
         font-weight: bold;
-        font-size: 1.1em;
-        margin-bottom: 5px;
+        color: #e74c3c;
+    }
+    
+    .col-match .teams {
+        font-weight: bold;
+        margin-bottom: 3px;
         color: #2c3e50;
     }
     
-    .match-details {
-        display: flex;
-        gap: 10px;
+    .col-match .league {
         font-size: 0.85em;
         color: #7f8c8d;
     }
     
-    .league {
-        color: #3498db;
-        font-weight: bold;
-    }
-    
-    .date {
-        color: #9b59b6;
-        font-weight: bold;
-    }
-    
-    .time {
-        color: #e74c3c;
-        font-weight: bold;
-    }
-    
-    .stream-available {
-        color: #27ae60;
-        font-weight: bold;
-    }
-    
-    .schedule-footer {
-        padding: 15px 20px;
-        background: #f8f9fa;
-        border-radius: 0 0 10px 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #ecf0f1;
-    }
-    
-    .refresh-btn, .retry-btn {
-        background: #3498db;
+    .watch-btn {
+        background: #27ae60;
         color: white;
         border: none;
         padding: 8px 15px;
         border-radius: 15px;
         cursor: pointer;
+        font-size: 0.85em;
+        font-weight: bold;
     }
     
-    .no-schedules, .error-state {
+    .watch-btn:hover {
+        background: #219653;
+    }
+    
+    .no-stream {
+        color: #95a5a6;
+        font-style: italic;
+        font-size: 0.85em;
+    }
+    
+    .no-matches, .error-state {
         text-align: center;
-        padding: 40px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        padding: 30px;
+        color: #7f8c8d;
     }
     
-    .no-schedules ul {
-        text-align: left;
-        max-width: 400px;
-        margin: 15px auto;
+    .retry-btn {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
     }
 `;
-document.head.appendChild(scheduleStyles);
-
-// Simple API Test
-function testAPI() {
-    fetch('https://topembed.pw/api.php?format=json')
-        .then(response => response.json())
-        .then(data => {
-            console.log('API TEST SUCCESS');
-            if (data && data.events) {
-                const dates = Object.keys(data.events);
-                console.log('Dates found: ' + dates.length);
-                console.log('Sample data:', data.events[dates[0]]);
-            }
-        })
-        .catch(error => {
-            console.log('API TEST FAILED:', error);
-        });
-}
+document.head.appendChild(sportsStyles);
 
 // Initialize
-setTimeout(testAPI, 1000);
-
 document.addEventListener('DOMContentLoaded', function() {
-    window.uncleStream = new UncleStream();
+    window.matchScheduler = new MatchScheduler();
 });
