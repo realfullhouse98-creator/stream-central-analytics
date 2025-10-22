@@ -1,4 +1,4 @@
-// Uncle Stream - Sports Schedules
+// Uncle Stream - Sports Schedules (Using Your Professional CSS)
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -36,7 +36,6 @@ class MatchScheduler {
         this.allMatches = [];
         this.verifiedMatches = [];
         
-        // Process all events from API
         Object.entries(apiData.events).forEach(([date, matches]) => {
             if (Array.isArray(matches)) {
                 matches.forEach((match) => {
@@ -62,9 +61,7 @@ class MatchScheduler {
             }
         });
         
-        // Sort by time
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
-        
         console.log(`✅ Loaded ${this.verifiedMatches.length} matches`);
         this.updateAnalytics();
     }
@@ -73,29 +70,14 @@ class MatchScheduler {
         const tournament = (match.tournament || '').toLowerCase();
         const matchName = (match.match || '').toLowerCase();
         
-        // Cricket
-        if (tournament.includes('cricket') || tournament.includes('icc')) {
-            return 'Cricket';
-        }
-        
-        // Basketball
-        if (tournament.includes('nba') || matchName.includes('basketball')) {
-            return 'Basketball';
-        }
-        
-        // American Football
-        if (tournament.includes('nfl') || tournament.includes('college football')) {
-            return 'American Football';
-        }
-        
-        // Default to Soccer
+        if (tournament.includes('cricket') || tournament.includes('icc')) return 'Cricket';
+        if (tournament.includes('nba') || matchName.includes('basketball')) return 'Basketball';
+        if (tournament.includes('nfl') || tournament.includes('college football')) return 'American Football';
         return 'Soccer';
     }
     
     getStreamUrl(channels) {
-        if (!channels || !Array.isArray(channels) || channels.length === 0) {
-            return null;
-        }
+        if (!channels || !Array.isArray(channels) || channels.length === 0) return null;
         return channels[0];
     }
     
@@ -130,17 +112,19 @@ class MatchScheduler {
         ];
         
         container.innerHTML = `
-            <div class="sports-selection">
-                <div class="selection-header">
-                    <h2>Choose Sport</h2>
+            <div class="sports-selection-section">
+                <div class="section-header">
+                    <h2>Choose Your Sport</h2>
                     <p>Select a sport to view available matches</p>
                 </div>
-                <div class="sports-grid">
+                <div class="streams-grid">
                     ${sports.map(sport => `
-                        <div class="sport-option" onclick="matchScheduler.selectSport('${sport.id}')">
-                            <div class="sport-icon">${sport.icon}</div>
-                            <div class="sport-name">${sport.name}</div>
-                            <div class="match-count">${sport.count} matches</div>
+                        <div class="match-card sport-choice-card" onclick="matchScheduler.selectSport('${sport.id}')">
+                            <div class="sport-icon-large">${sport.icon}</div>
+                            <h4>${sport.name}</h4>
+                            <div class="match-info">
+                                <span class="match-count-badge">${sport.count} matches</span>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -167,19 +151,21 @@ class MatchScheduler {
         const sportName = this.getSportDisplayName();
         
         container.innerHTML = `
-            <div class="dates-selection">
-                <div class="selection-header">
-                    <button class="back-button" onclick="matchScheduler.showSports()">← Back to Sports</button>
+            <div class="dates-selection-section">
+                <div class="section-header">
+                    <button class="btn back-btn" onclick="matchScheduler.showSports()">← Back to Sports</button>
                     <h2>${sportName} Matches</h2>
                     <p>Select a date to view matches</p>
                 </div>
-                <div class="dates-grid">
+                <div class="streams-grid">
                     ${dates.map(date => {
                         const dateMatches = matches.filter(m => m.date === date);
                         return `
-                            <div class="date-option" onclick="matchScheduler.selectDate('${date}')">
+                            <div class="match-card date-choice-card" onclick="matchScheduler.selectDate('${date}')">
                                 <div class="date-display">${this.formatDisplayDate(date)}</div>
-                                <div class="date-count">${dateMatches.length} matches</div>
+                                <div class="match-info">
+                                    <span class="match-status status-upcoming">${dateMatches.length} matches</span>
+                                </div>
                             </div>
                         `;
                     }).join('')}
@@ -205,29 +191,29 @@ class MatchScheduler {
         const sportName = this.getSportDisplayName();
         const displayDate = this.formatDisplayDate(this.currentDate);
         
-        // Update live status for matches
         matches.forEach(match => {
             match.isLive = this.checkIfLive(match);
         });
         
         container.innerHTML = `
-            <div class="matches-view">
-                <div class="selection-header">
-                    <button class="back-button" onclick="matchScheduler.showDates()">← Back to Dates</button>
+            <div class="matches-view-section">
+                <div class="section-header">
+                    <button class="btn back-btn" onclick="matchScheduler.showDates()">← Back to Dates</button>
                     <h2>${sportName} • ${displayDate}</h2>
                     <p>${matches.length} matches scheduled</p>
                 </div>
-                <div class="matches-container">
+                
+                <div class="matches-table-container">
                     <div class="matches-table">
-                        <div class="table-header">
-                            <div>Time</div>
-                            <div>Match</div>
-                            <div>Watch</div>
+                        <div class="table-header-row">
+                            <div class="col-time-header">Time</div>
+                            <div class="col-match-header">Match</div>
+                            <div class="col-watch-header">Watch</div>
                         </div>
                         <div class="table-body">
                             ${matches.length > 0 ? 
                                 matches.map(match => this.renderMatchRow(match)).join('') :
-                                '<div class="no-matches">No matches found for this date</div>'
+                                '<div class="no-matches-message">No matches found for this date</div>'
                             }
                         </div>
                     </div>
@@ -241,21 +227,21 @@ class MatchScheduler {
     
     renderMatchRow(match) {
         return `
-            <div class="match-row ${match.isLive ? 'live-match' : ''}">
-                <div class="match-time">
-                    ${match.time}
-                    ${match.isLive ? '<span class="live-badge">LIVE</span>' : ''}
+            <div class="match-table-row ${match.isLive ? 'live-match-row' : ''}">
+                <div class="col-time">
+                    <span class="match-time">${match.time}</span>
+                    ${match.isLive ? '<span class="match-status status-live">LIVE</span>' : ''}
                 </div>
-                <div class="match-info">
-                    <div class="teams">${match.teams}</div>
-                    <div class="league">${match.league}</div>
+                <div class="col-match">
+                    <div class="teams-display">${match.teams}</div>
+                    <div class="league-display">${match.league}</div>
                 </div>
-                <div class="watch-action">
+                <div class="col-watch">
                     ${match.streamUrl ? 
-                        `<button class="watch-btn ${match.isLive ? 'live-btn' : ''}" onclick="window.open('${match.streamUrl}', '_blank')">
+                        `<button class="watch-stream-btn ${match.isLive ? 'live-stream-btn' : ''}" onclick="window.open('${match.streamUrl}', '_blank')">
                             ${match.isLive ? 'LIVE NOW' : 'WATCH'}
                         </button>` :
-                        '<span class="offline">OFFLINE</span>'
+                        '<span class="stream-offline">OFFLINE</span>'
                     }
                 </div>
             </div>
@@ -303,12 +289,11 @@ class MatchScheduler {
     
     updateLiveStatus() {
         if (this.currentView === 'matches') {
-            this.showMatches(); // Refresh to update LIVE status
+            this.showMatches();
         }
     }
     
     updateAnalytics() {
-        const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
         document.getElementById('total-streams').textContent = this.verifiedMatches.length;
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
@@ -320,25 +305,19 @@ class MatchScheduler {
                 <div class="error-state">
                     <h3>Unable to Load Schedules</h3>
                     <p>Please check your connection and try again.</p>
-                    <button onclick="matchScheduler.init()" class="retry-btn">Try Again</button>
+                    <button class="btn retry-btn" onclick="matchScheduler.init()">Try Again</button>
                 </div>
             `;
         }
     }
     
     startLiveUpdates() {
-        // Update live status every 30 seconds
-        setInterval(() => {
-            this.updateLiveStatus();
-        }, 30000);
+        setInterval(() => this.updateLiveStatus(), 30000);
     }
     
     startAutoRefresh() {
-        // Refresh data every 5 minutes
         setInterval(() => {
-            console.log('🔄 Auto-refreshing match data...');
             this.loadMatches().then(() => {
-                // Refresh current view
                 if (this.currentView === 'matches') {
                     this.showMatches();
                 } else if (this.currentView === 'dates') {
@@ -351,7 +330,7 @@ class MatchScheduler {
     }
 }
 
-// Initialize the application
+// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     window.matchScheduler = new MatchScheduler();
 });
