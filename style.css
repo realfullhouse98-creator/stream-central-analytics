@@ -1,35 +1,34 @@
-/* ===== CLEAN 3-STEP NAVIGATION STYLES ===== */
-.sport-selection-page,
-.date-selection-page,
-.matches-page {
+/* ===== SIMPLE SPORTS NAVIGATION ===== */
+.sports-selection,
+.dates-selection,
+.matches-view {
     max-width: 1000px;
     margin: 0 auto;
 }
 
-.page-header {
+.selection-header {
     text-align: center;
     margin-bottom: 40px;
-    padding: 20px;
+    padding: 30px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.page-header h2 {
+.selection-header h2 {
     margin: 0 0 10px 0;
     font-size: 2em;
     color: #ffd93d;
-    text-shadow: 0 0 10px rgba(255, 217, 61, 0.3);
 }
 
-.page-header p {
+.selection-header p {
     margin: 0;
     opacity: 0.8;
     font-size: 1.1em;
 }
 
-.back-btn {
+.back-button {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
@@ -37,11 +36,11 @@
     border-radius: 25px;
     cursor: pointer;
     font-size: 0.9em;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
-    margin-bottom: 15px;
 }
 
-.back-btn:hover {
+.back-button:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 }
@@ -49,12 +48,11 @@
 /* Sports Grid */
 .sports-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-top: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
 }
 
-.sport-card {
+.sport-option {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 15px;
     padding: 30px;
@@ -63,56 +61,43 @@
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: hidden;
 }
 
-.sport-card:hover {
-    transform: translateY(-10px);
-    border-color: rgba(255, 217, 61, 0.3);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-}
-
-.sport-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f);
+.sport-option:hover {
+    transform: translateY(-5px);
+    border-color: #ffd93d;
+    box-shadow: 0 10px 30px rgba(255, 217, 61, 0.2);
 }
 
 .sport-icon {
     font-size: 3em;
     margin-bottom: 15px;
-    display: block;
 }
 
-.sport-info h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.5em;
+.sport-name {
+    font-size: 1.3em;
+    font-weight: bold;
     color: white;
+    margin-bottom: 10px;
 }
 
 .match-count {
     background: rgba(52, 152, 219, 0.2);
     color: #3498db;
-    padding: 6px 12px;
-    border-radius: 15px;
+    padding: 5px 10px;
+    border-radius: 12px;
     font-size: 0.9em;
-    font-weight: 700;
+    font-weight: bold;
 }
 
 /* Dates Grid */
 .dates-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
+    gap: 15px;
 }
 
-.date-card {
+.date-option {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 25px;
@@ -123,35 +108,31 @@
     text-align: center;
 }
 
-.date-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255, 217, 61, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+.date-option:hover {
+    transform: translateY(-3px);
+    border-color: #ffd93d;
 }
 
 .date-display {
-    font-size: 1.2em;
-    font-weight: 700;
+    font-size: 1.1em;
+    font-weight: bold;
     color: white;
     margin-bottom: 8px;
 }
 
-.date-match-count {
+.date-count {
     background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.8);
     padding: 4px 10px;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 0.85em;
-    font-weight: 600;
 }
 
 /* Matches Table */
 .matches-container {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 15px;
-    padding: 0;
     border: 1px solid rgba(255, 215, 0, 0.2);
-    margin-top: 30px;
 }
 
 .matches-table {
@@ -163,60 +144,49 @@
     grid-template-columns: 100px 1fr 120px;
     background: rgba(255, 255, 255, 0.1);
     color: white;
-    font-weight: 600;
-    padding: 18px 25px;
-    font-size: 0.9em;
+    font-weight: bold;
+    padding: 15px 25px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .match-row {
     display: grid;
     grid-template-columns: 100px 1fr 120px;
-    padding: 18px 25px;
+    padding: 15px 25px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     align-items: center;
-    transition: background 0.3s ease;
-}
-
-.match-row:hover {
-    background: rgba(255, 255, 255, 0.03);
 }
 
 .match-row:last-child {
     border-bottom: none;
 }
 
+.match-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
 .live-match {
-    background: rgba(255, 107, 107, 0.1) !important;
+    background: rgba(255, 107, 107, 0.1);
     border-left: 3px solid #ff6b6b;
 }
 
-.live-placeholder {
-    background: rgba(255, 217, 61, 0.1) !important;
-    border-left: 3px solid #ffd93d;
-}
-
 .match-time {
-    font-weight: 600;
+    font-weight: bold;
     color: #ffd93d;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.95em;
 }
 
-.match-details .teams {
-    font-weight: 700;
-    margin-bottom: 4px;
+.match-info .teams {
+    font-weight: bold;
     color: white;
-    font-size: 1em;
-    line-height: 1.3;
+    margin-bottom: 4px;
 }
 
-.match-details .league {
-    font-size: 0.85em;
+.match-info .league {
     color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
+    font-size: 0.9em;
 }
 
 .watch-action {
@@ -230,45 +200,33 @@
     padding: 8px 16px;
     border-radius: 20px;
     cursor: pointer;
-    font-size: 0.85em;
-    font-weight: 700;
+    font-weight: bold;
     transition: all 0.3s ease;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
 .watch-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
-.live-watch-btn {
+.live-btn {
     background: linear-gradient(45deg, #ff6b6b, #e74c3c);
     animation: pulse 2s infinite;
 }
 
-.no-stream {
+.offline {
     color: rgba(255, 255, 255, 0.5);
     font-style: italic;
-    font-size: 0.85em;
 }
 
-/* Live badge */
 .live-badge {
     background: #ff6b6b;
     color: white;
     padding: 3px 8px;
     border-radius: 10px;
     font-size: 0.7em;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
+    font-weight: bold;
     animation: pulse 2s infinite;
-}
-
-.live-badge.loading {
-    background: #ffd93d;
-    animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
@@ -277,10 +235,9 @@
     100% { opacity: 1; }
 }
 
-/* Error state */
 .error-state {
     text-align: center;
-    padding: 60px 40px;
+    padding: 60px;
     color: rgba(255, 255, 255, 0.7);
 }
 
@@ -292,16 +249,10 @@
     border-radius: 8px;
     cursor: pointer;
     margin-top: 20px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    font-weight: bold;
 }
 
-.retry-btn:hover {
-    background: rgba(52, 152, 219, 0.3);
-    transform: translateY(-2px);
-}
-
-/* Responsive */
+/* Mobile */
 @media (max-width: 768px) {
     .sports-grid {
         grid-template-columns: 1fr;
@@ -314,10 +265,14 @@
     .table-header,
     .match-row {
         grid-template-columns: 80px 1fr 90px;
-        padding: 15px;
+        padding: 12px 15px;
     }
     
-    .page-header h2 {
+    .selection-header {
+        padding: 20px;
+    }
+    
+    .selection-header h2 {
         font-size: 1.5em;
     }
 }
