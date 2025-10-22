@@ -1,10 +1,10 @@
-// Sport71.pro Style Match Schedules - PROFESSIONAL VERSION
+// Sport71.pro Style Match Schedules - FIXED COLORS VERSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
         this.currentSport = 'all';
         this.verifiedMatches = [];
-        this.expandedDays = new Set(); // No days expanded by default
+        this.expandedDays = new Set();
         this.init();
     }
     
@@ -59,7 +59,6 @@ class MatchScheduler {
             }
         });
         
-        // Sort by date and time
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
     }
@@ -79,31 +78,47 @@ class MatchScheduler {
         const tournament = (match.tournament || '').toLowerCase();
         const matchName = (match.match || '').toLowerCase();
         
+        // FIX: Kaizer Chiefs is Soccer (South African team)
+        if (matchName.includes('kaizer chiefs') || matchName.includes('orlando pirates')) {
+            return 'Soccer';
+        }
+        
+        // Cricket detection
         if (tournament.includes('cricket') || tournament.includes('icc')) {
             return 'Cricket';
         }
         
+        // Women's Football detection
         if (matchName.includes(' w ') || matchName.includes('women')) {
             if (tournament.includes('football') || tournament.includes('soccer')) {
                 return 'Soccer';
             }
         }
         
+        // American Football detection
         const americanFootballTerms = ['nfl', 'college football', 'ncaa football'];
-        const americanFootballTeams = ['packers', 'chiefs', 'patriots', 'cowboys'];
+        const americanFootballTeams = ['packers', 'chiefs', 'patriots', 'cowboys', 'raiders', 'broncos'];
         
         const hasAmericanFootballContent = 
             americanFootballTerms.some(term => tournament.includes(term)) ||
             americanFootballTeams.some(team => matchName.includes(team)) ||
             tournament.includes('college football');
         
+        // Soccer detection
         const soccerTerms = [
             'champions league', 'premier league', 'la liga', 'serie a', 'bundesliga',
-            'europa league', 'copa libertadores', 'copa sudamericana'
+            'europa league', 'copa libertadores', 'copa sudamericana', 'african'
+        ];
+        
+        const soccerTeams = [
+            'kaizer', 'chiefs', 'pirates', 'sundowns', 'manchester', 'liverpool', 
+            'chelsea', 'arsenal', 'barcelona', 'real madrid', 'bayern'
         ];
         
         const hasSoccerContent = soccerTerms.some(term => 
             tournament.includes(term) || matchName.includes(term)
+        ) || soccerTeams.some(team =>
+            matchName.includes(team)
         );
         
         if (hasAmericanFootballContent) return 'American Football';
@@ -160,19 +175,11 @@ class MatchScheduler {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
         
-        const currentDate = new Date().toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        // REMOVED: Don't show duplicate header here, let HTML handle it
         
         container.innerHTML = `
             <div class="scheduled-events">
-                <div class="events-header">
-                    <h1 class="main-title">Live Sports Schedules</h1>
-                    <div class="current-date-display">${currentDate}</div>
-                </div>
+                <!-- Header removed - using HTML header instead -->
                 
                 <div class="sports-categories">
                     <button class="sport-btn ${this.currentSport === 'all' ? 'active' : ''}" data-sport="all">
@@ -212,7 +219,6 @@ class MatchScheduler {
     renderDaySections() {
         const filteredMatches = this.getFilteredMatches();
         
-        // Group matches by date
         const matchesByDate = {};
         filteredMatches.forEach(match => {
             if (!matchesByDate[match.date]) {
@@ -225,7 +231,6 @@ class MatchScheduler {
             return `<div class="no-matches">No ${this.currentSport === 'all' ? '' : this.currentSport + ' '}matches available</div>`;
         }
         
-        // Create day sections
         return Object.entries(matchesByDate)
             .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
             .map(([date, matches]) => {
@@ -381,7 +386,7 @@ class MatchScheduler {
     }
 }
 
-// Add PROFESSIONAL CSS with Better Typography and Colors
+// Add CSS with FIXED COLORS and BETTER CONTRAST
 const sportsStyles = document.createElement('style');
 sportsStyles.textContent = `
     .scheduled-events {
@@ -389,33 +394,10 @@ sportsStyles.textContent = `
         border-radius: 12px;
         padding: 0;
         box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        margin: 25px auto;
+        margin: 20px auto;
         max-width: 1200px;
         width: 95%;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .events-header {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        color: white;
-        padding: 28px 35px;
-        border-radius: 12px 12px 0 0;
-        text-align: center;
-    }
-    
-    .main-title {
-        margin: 0 0 12px 0;
-        font-size: 2.4em;
-        font-weight: 700;
-        color: white;
-        letter-spacing: -0.5px;
-    }
-    
-    .current-date-display {
-        font-size: 1.2em;
-        color: #ecf0f1;
-        font-weight: 500;
-        opacity: 0.9;
     }
     
     .sports-categories {
@@ -503,24 +485,23 @@ sportsStyles.textContent = `
     }
     
     .day-header {
-        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        background: linear-gradient(135deg, #2c3e50, #34495e);
         padding: 20px 25px;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
         align-items: center;
         transition: all 0.3s ease;
-        border-bottom: 1px solid #e9ecef;
+        border-bottom: 1px solid #2c3e50;
     }
     
     .day-header:hover {
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        background: linear-gradient(135deg, #34495e, #2c3e50);
     }
     
     .day-header.expanded {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        color: white;
-        border-bottom-color: #2c3e50;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border-bottom-color: #c0392b;
     }
     
     .day-title {
@@ -530,27 +511,24 @@ sportsStyles.textContent = `
         align-items: center;
         gap: 14px;
         letter-spacing: 0.2px;
+        color: white; /* FIX: White text on dark background */
     }
     
     .dropdown-arrow {
         font-size: 0.9em;
         transition: transform 0.3s ease;
         font-weight: 700;
+        color: white;
     }
     
     .day-match-count {
-        background: rgba(52, 152, 219, 0.1);
-        color: #3498db;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
         padding: 6px 12px;
         border-radius: 15px;
         font-size: 0.85em;
         font-weight: 700;
         letter-spacing: 0.5px;
-    }
-    
-    .day-header.expanded .day-match-count {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
     }
     
     .day-matches {
@@ -580,6 +558,11 @@ sportsStyles.textContent = `
         letter-spacing: 0.5px;
     }
     
+    .col-time {
+        color: white; /* FIX: White text for "Time" header */
+        font-weight: 700;
+    }
+    
     .match-row, .no-matches {
         display: grid;
         grid-template-columns: 110px 1fr 120px;
@@ -605,9 +588,12 @@ sportsStyles.textContent = `
     
     .col-time {
         font-weight: 600;
-        color: #2c3e50; /* Changed from red to dark color */
+        color: #2c3e50; /* Match times in dark color */
         font-size: 1em;
         letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
     
     .live-badge {
@@ -697,23 +683,6 @@ sportsStyles.textContent = `
     
     .error-state {
         grid-column: 1 / -1;
-    }
-    
-    .retry-btn {
-        background: #3498db;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-top: 15px;
-        font-weight: 600;
-        font-size: 1em;
-        transition: background 0.3s ease;
-    }
-    
-    .retry-btn:hover {
-        background: #2980b9;
     }
 `;
 document.head.appendChild(sportsStyles);
