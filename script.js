@@ -376,7 +376,33 @@ scheduleStyles.textContent = `
 `;
 document.head.appendChild(scheduleStyles);
 
-// Initialize Uncle Stream
+// DEBUG FUNCTION 
+async function debugAPIData() {
+    try {
+        console.log('🔍 DEBUG: Fetching raw API data...');
+        const response = await fetch('https://topembed.pw/api.php?format=json');
+        const rawData = await response.json();
+        
+        console.log('📊 RAW API RESPONSE:', rawData);
+        
+        if (rawData && Array.isArray(rawData)) {
+            console.log(`📝 Found ${rawData.length} items in API`);
+            rawData.forEach((item, index) => {
+                console.log(`Item ${index}:`, item);
+            });
+        } else {
+            console.log('❌ API returned non-array data:', typeof rawData);
+        }
+        
+    } catch (error) {
+        console.log('❌ DEBUG: API fetch failed:', error);
+    }
+}
+
+// Test immediately
+setTimeout(debugAPIData, 1000);
+
+// THIS IS THE VERY LAST LINE - ONLY ONCE
 document.addEventListener('DOMContentLoaded', () => {
     window.uncleStream = new UncleStream();
 });
