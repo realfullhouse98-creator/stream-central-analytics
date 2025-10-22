@@ -391,6 +391,30 @@ async function debugAPIData() {
 setTimeout(debugAPIData, 1000);
 
 // THIS IS THE VERY LAST LINE - ONLY ONCE
+// IMMEDIATE DEBUG - Add this right before the last line
+console.log('🚨 IMMEDIATE DEBUG: Checking API connection...');
+
+fetch('https://topembed.pw/api.php?format=json')
+    .then(response => response.json())
+    .then(data => {
+        console.log('✅ API CONNECTION SUCCESS:', data);
+        console.log('📅 DATES AVAILABLE:', Object.keys(data.events || {}));
+        
+        // Count total matches
+        let totalMatches = 0;
+        if (data.events) {
+            Object.values(data.events).forEach(matches => {
+                if (Array.isArray(matches)) totalMatches += matches.length;
+            });
+        }
+        console.log(`🎯 TOTAL MATCHES: ${totalMatches}`);
+        
+    })
+    .catch(error => {
+        console.log('❌ API CONNECTION FAILED:', error);
+    });
+
+// THIS IS THE VERY LAST LINE
 document.addEventListener('DOMContentLoaded', () => {
     window.uncleStream = new UncleStream();
 });
