@@ -31,7 +31,6 @@ class UncleStream {
         }
     }
     
-    // ADD THIS MISSING METHOD:
     extractAllMatches(apiData) {
         if (!apiData || !apiData.events) {
             console.log('❌ No events data in API');
@@ -63,7 +62,6 @@ class UncleStream {
         return allMatches.sort((a, b) => (a.startTime || 0) - (b.startTime || 0));
     }
     
-    // ADD THIS METHOD TOO:
     parseDateTime(dateStr, timeStr) {
         if (!dateStr || !timeStr || timeStr === 'TBD') return null;
         
@@ -367,54 +365,45 @@ scheduleStyles.textContent = `
 `;
 document.head.appendChild(scheduleStyles);
 
-// DEBUG FUNCTION 
+// DEBUG FUNCTION - SIMPLE API TEST
 async function debugAPIData() {
     try {
-        console.log('🔍 DEBUG: Fetching raw API data...');
+        console.log('🔍 DEBUG: Testing API connection...');
         const response = await fetch('https://topembed.pw/api.php?format=json');
         const rawData = await response.json();
         
-        console.log('📊 RAW API RESPONSE:', rawData);
+        console.log('✅ API CONNECTION SUCCESS');
+        console.log('📊 RAW API DATA:', rawData);
         
         if (rawData && rawData.events) {
-            console.log(`📝 Found events for ${Object.keys(rawData.events).length} dates`);
+            const dateCount = Object.keys(rawData.events).length;
+            let matchCount = 0;
+            
+            Object.values(rawData.events).forEach(matches => {
+                if (Array.isArray(matches)) matchCount += matches.length;
+            });
+            
+            console.log(`📅 FOUND: ${dateCount} dates, ${matchCount} total matches`);
+            
+            // Show sample of first match
+            const firstDate = Object.keys(rawData.events)[0];
+            const firstMatches = rawData.events[firstDate];
+            if (firstMatches && firstMatches.length > 0) {
+                console.log('🎯 SAMPLE MATCH:', firstMatches[0]);
+            }
         } else {
             console.log('❌ API returned no events data');
         }
         
     } catch (error) {
-        console.log('❌ DEBUG: API fetch failed:', error);
+        console.log('❌ API CONNECTION FAILED:', error);
     }
 }
 
-// Test immediately
+// Test API immediately
 setTimeout(debugAPIData, 1000);
 
-// THIS IS THE VERY LAST LINE - ONLY ONCE
-// IMMEDIATE DEBUG - Add this right before the last line
-console.log('🚨 IMMEDIATE DEBUG: Checking API connection...');
-
-fetch('https://topembed.pw/api.php?format=json')
-    .then(response => response.json())
-    .then(data => {
-        console.log('✅ API CONNECTION SUCCESS:', data);
-        console.log('📅 DATES AVAILABLE:', Object.keys(data.events || {}));
-        
-        // Count total matches
-        let totalMatches = 0;
-        if (data.events) {
-            Object.values(data.events).forEach(matches => {
-                if (Array.isArray(matches)) totalMatches += matches.length;
-            });
-        }
-        console.log(`🎯 TOTAL MATCHES: ${totalMatches}`);
-        
-    })
-    .catch(error => {
-        console.log('❌ API CONNECTION FAILED:', error);
-    });
-
-// THIS IS THE VERY LAST LINE
+// Initialize Uncle Stream - THIS IS THE LAST LINE
 document.addEventListener('DOMContentLoaded', () => {
     window.uncleStream = new UncleStream();
 });
