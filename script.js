@@ -31,12 +31,53 @@ class UncleStream {
         }
     }
     
-   📊 API SCHEDULE DATA:
-Object
-
-events: {2025-10-22: Array, 2025-10-23: Array, 2025-10-24: Array, 2025-10-25: Array, 2025-10-26: Array, …}
-
-Object Prototype
+    // ADD THIS MISSING METHOD:
+    extractAllMatches(apiData) {
+        if (!apiData || !apiData.events) {
+            console.log('❌ No events data in API');
+            return [];
+        }
+        
+        const allMatches = [];
+        
+        // Get ALL matches from ALL dates
+        Object.entries(apiData.events).forEach(([date, matches]) => {
+            if (Array.isArray(matches)) {
+                matches.forEach(match => {
+                    // Show EVERY match, no filtering
+                    allMatches.push({
+                        id: match.id || Math.random().toString(36).substr(2, 9),
+                        title: match.title || 'Football Match',
+                        league: match.league || 'Football',
+                        time: match.time || 'Time TBD',
+                        date: date,
+                        startTime: this.parseDateTime(date, match.time),
+                        streamUrl: match.url || null,
+                        hasStream: !!match.url // Just note if stream exists
+                    });
+                });
+            }
+        });
+        
+        console.log(`📅 FOUND ${allMatches.length} MATCHES TOTAL`);
+        return allMatches.sort((a, b) => (a.startTime || 0) - (b.startTime || 0));
+    }
+    
+    // ADD THIS METHOD TOO:
+    parseDateTime(dateStr, timeStr) {
+        if (!dateStr || !timeStr || timeStr === 'TBD') return null;
+        
+        try {
+            // Combine date "2025-10-22" with time "19:30"
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const dateTime = new Date(dateStr);
+            dateTime.setHours(hours, minutes, 0, 0);
+            
+            return dateTime;
+        } catch (e) {
+            return null;
+        }
+    }
     
     displaySchedule() {
         const container = document.getElementById('psl-streams-container');
@@ -63,7 +104,7 @@ Object Prototype
         container.innerHTML = `
             <div class="schedule-container">
                 <div class="schedule-header">
-                    <h3>📅 Today's Match Schedule</h3>
+                    <h3>📅 Football Match Schedules</h3>
                     <div class="match-count">${this.allMatches.length} matches found</div>
                 </div>
                 
@@ -83,33 +124,23 @@ Object Prototype
         this.startTimeUpdates();
     }
     
-// UPDATE the createMatchRow method:
-
-createMatchRow(match) {
-    const isLive = this.isMatchLive(match.startTime);
-    const displayDate = match.date ? new Date(match.date).toLocaleDateString() : 'Today';
-    
-    return `
-        <div class="match-row ${isLive ? 'live' : 'scheduled'}">
-            <div class="match-info">
-                <div class="teams">${match.title}</div>
-                <div class="match-details">
-                    <span class="league">${match.league}</span>
-                    <span class="date">${displayDate}</span>
-                    <span class="time">${match.time}</span>
+    createMatchRow(match) {
+        const displayDate = match.date ? new Date(match.date).toLocaleDateString() : 'TBD';
+        
+        return `
+            <div class="match-row">
+                <div class="match-info">
+                    <div class="teams">${match.title}</div>
+                    <div class="match-details">
+                        <span class="league">${match.league}</span>
+                        <span class="date">${displayDate}</span>
+                        <span class="time">${match.time}</span>
+                        ${match.hasStream ? '<span class="stream-available">📺 Stream</span>' : ''}
+                    </div>
                 </div>
             </div>
-            <div class="match-status">
-                ${isLive ? 
-                    `<button class="live-btn" onclick="uncleStream.watchMatch('${match.streamUrl}')">
-                        🔴 LIVE NOW
-                    </button>` :
-                    `<div class="upcoming">${match.time}</div>`
-                }
-            </div>
-        </div>
-    `;
-}
+        `;
+    }
     
     isMatchLive(startTime) {
         if (!startTime) return false;
@@ -257,11 +288,6 @@ scheduleStyles.textContent = `
         background: #f8f9fa;
     }
     
-    .match-row.live {
-        background: #fff5f5;
-        border-left: 4px solid #e74c3c;
-    }
-    
     .teams {
         font-weight: bold;
         font-size: 1.1em;
@@ -271,8 +297,8 @@ scheduleStyles.textContent = `
     
     .match-details {
         display: flex;
-        gap: 15px;
-        font-size: 0.9em;
+        gap: 10px;
+        font-size: 0.85em;
         color: #7f8c8d;
     }
     
@@ -281,30 +307,19 @@ scheduleStyles.textContent = `
         font-weight: bold;
     }
     
+    .date {
+        color: #9b59b6;
+        font-weight: bold;
+    }
+    
     .time {
         color: #e74c3c;
         font-weight: bold;
     }
     
-    .live-btn {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
+    .stream-available {
+        color: #27ae60;
         font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .live-btn:hover {
-        background: #c0392b;
-        transform: scale(1.05);
-    }
-    
-    .upcoming {
-        color: #7f8c8d;
-        font-style: italic;
     }
     
     .schedule-footer {
@@ -361,13 +376,10 @@ async function debugAPIData() {
         
         console.log('📊 RAW API RESPONSE:', rawData);
         
-        if (rawData && Array.isArray(rawData)) {
-            console.log(`📝 Found ${rawData.length} items in API`);
-            rawData.forEach((item, index) => {
-                console.log(`Item ${index}:`, item);
-            });
+        if (rawData && rawData.events) {
+            console.log(`📝 Found events for ${Object.keys(rawData.events).length} dates`);
         } else {
-            console.log('❌ API returned non-array data:', typeof rawData);
+            console.log('❌ API returned no events data');
         }
         
     } catch (error) {
