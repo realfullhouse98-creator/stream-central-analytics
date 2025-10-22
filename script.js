@@ -2,7 +2,7 @@
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
-        this.currentSport = 'soccer';
+        this.currentSport = 'all';
         this.init();
     }
     
@@ -20,16 +20,6 @@ class MatchScheduler {
             const apiData = await response.json();
             
             console.log('📦 RAW API RESPONSE:', apiData);
-            console.log('🔍 Events object keys:', Object.keys(apiData.events || {}));
-            
-            // Log first date's matches to see structure
-            const firstDate = Object.keys(apiData.events || {})[0];
-            if (firstDate) {
-                console.log('📅 First date matches:', apiData.events[firstDate]);
-                if (apiData.events[firstDate] && apiData.events[firstDate].length > 0) {
-                    console.log('🔍 First match structure:', apiData.events[firstDate][0]);
-                }
-            }
             
             // Extract and organize matches
             this.organizeMatches(apiData);
@@ -46,62 +36,74 @@ class MatchScheduler {
             return;
         }
         
-        console.log('📊 Total dates in events:', Object.keys(apiData.events).length);
-        
         this.allMatches = [];
-        let matchCount = 0;
         
         // Process all dates and matches
         Object.entries(apiData.events).forEach(([date, matches]) => {
-            console.log(`📅 Processing date: ${date}`, matches);
-            
             if (Array.isArray(matches)) {
-                matches.forEach((match, index) => {
-                    console.log(`⚽ Match ${index} on ${date}:`, match);
-                    
-                    // For now, include ALL matches to see what we get
-                    if (match && match.title) {
+                matches.forEach(match => {
+                    if (match && match.match) {
+                        // Convert unix timestamp to readable time
+                        const matchTime = this.convertUnixToTime(match.unix_timestamp);
+                        
                         this.allMatches.push({
                             date: date,
-                            time: match.time || 'TBD',
-                            teams: match.title, // Use the full title directly
-                            league: match.league || 'Football',
-                            streamUrl: match.url || null,
-                            isLive: this.checkIfLive(match), // Add live status
-                            rawMatch: match // Keep raw data for debugging
+                            time: matchTime,
+                            teams: match.match,
+                            league: match.tournament || match.sport || 'Sports',
+                            streamUrl: this.getStreamUrl(match.channels),
+                            isLive: this.checkIfLive(match),
+                            sport: match.sport || 'Unknown',
+                            rawData: match // Keep original data for reference
                         });
-                        matchCount++;
                     }
                 });
             }
         });
         
-        console.log(`✅ Organized ${matchCount} matches:`, this.allMatches);
+        console.log('✅ Organized matches:', this.allMatches);
         
         // Update analytics counters
         this.updateAnalytics();
     }
     
-    checkIfLive(match) {
-        // Simple check - if match has "Live" in title or is happening now
-        const title = (match.title || '').toLowerCase();
-        return title.includes('live') || (match.time && this.isCurrentTime(match.time));
-    }
-    
-    isCurrentTime(matchTime) {
-        // Basic check if match time is around current time
-        // You can enhance this with more precise logic
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        
-        // Simple time comparison (you can improve this)
-        if (matchTime.includes(':')) {
-            const [hour, minute] = matchTime.split(':').map(Number);
-            return Math.abs((currentHour * 60 + currentMinute) - (hour * 60 + minute)) <= 120; // Within 2 hours
+    getStreamUrl(channels) {
+        if (!channels || !Array.isArray(channels) || channels.length === 0) {
+            return null;
         }
         
-        return false;
+        // Take the first channel URL
+        const channelUrl = channels[0];
+        
+        // Convert topembed.pw channel link to actual stream page
+        if (channelUrl.includes('topembed.pw/channel/')) {
+            // This creates a link to the channel page where the actual stream is embedded
+            return channelUrl.replace('/channel/', '/embed/') + '.html';
+        }
+        
+        return channelUrl;
+    }
+    
+    convertUnixToTime(unixTimestamp) {
+        if (!unixTimestamp) return 'TBD';
+        
+        const date = new Date(unixTimestamp * 1000);
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    }
+    
+    checkIfLive(match) {
+        if (!match.unix_timestamp) return false;
+        
+        const matchTime = match.unix_timestamp * 1000;
+        const now = Date.now();
+        const twoHours = 2 * 60 * 60 * 1000;
+        
+        // Consider match live if it's within 2 hours of current time
+        return Math.abs(now - matchTime) <= twoHours;
     }
     
     updateAnalytics() {
@@ -141,14 +143,14 @@ class MatchScheduler {
                 </div>
                 
                 <div class="sports-categories">
-                    <button class="sport-btn active" onclick="matchScheduler.setSport('soccer')">
-                        Soccer
+                    <button class="sport-btn active" onclick="matchScheduler.setSport('all')">
+                        All Sports
                     </button>
-                    <button class="sport-btn" onclick="matchScheduler.setSport('rugby')">
-                        Rugby
+                    <button class="sport-btn" onclick="matchScheduler.setSport('football')">
+                        Football
                     </button>
-                    <button class="sport-btn" onclick="matchScheduler.setSport('hockey')">
-                        Hockey
+                    <button class="sport-btn" onclick="matchScheduler.setSport('ice hockey')">
+                        Ice Hockey
                     </button>
                     <button class="sport-btn" onclick="matchScheduler.setSport('basketball')">
                         Basketball
@@ -156,7 +158,7 @@ class MatchScheduler {
                 </div>
                 
                 <div class="matches-section">
-                    <h3>Soccer Matches</h3>
+                    <h3>All Matches</h3>
                     <div class="matches-table">
                         <div class="table-header">
                             <div class="col-time">Time</div>
@@ -183,8 +185,26 @@ class MatchScheduler {
             `;
         }
         
+        // Filter matches based on current sport selection
+        let filteredMatches = this.allMatches;
+        if (this.currentSport !== 'all') {
+            filteredMatches = this.allMatches.filter(match => 
+                match.sport.toLowerCase().includes(this.currentSport.toLowerCase())
+            );
+        }
+        
+        if (filteredMatches.length === 0) {
+            return `
+                <div class="no-matches">
+                    <div class="col-time">-</div>
+                    <div class="col-match">No ${this.currentSport} matches found</div>
+                    <div class="col-watch">-</div>
+                </div>
+            `;
+        }
+        
         // Show first 15 matches
-        return this.allMatches.slice(0, 15).map(match => `
+        return filteredMatches.slice(0, 15).map(match => `
             <div class="match-row">
                 <div class="col-time">
                     ${match.time}
@@ -218,7 +238,14 @@ class MatchScheduler {
         // Update matches section title
         const titleElement = document.querySelector('.matches-section h3');
         if (titleElement) {
-            titleElement.textContent = sport.charAt(0).toUpperCase() + sport.slice(1) + ' Matches';
+            const sportName = sport === 'all' ? 'All' : sport.charAt(0).toUpperCase() + sport.slice(1);
+            titleElement.textContent = sportName + ' Matches';
+        }
+        
+        // Refresh the matches display
+        const tableBody = document.querySelector('.table-body');
+        if (tableBody) {
+            tableBody.innerHTML = this.renderMatchesTable();
         }
         
         console.log('Switched to sport:', sport);
@@ -226,10 +253,14 @@ class MatchScheduler {
     
     watchMatch(streamUrl) {
         if (streamUrl) {
-            window.open(streamUrl, '_blank');
+            // Open in new tab
+            window.open(streamUrl, '_blank', 'noopener,noreferrer');
             this.showNotification('Opening stream...');
+            
+            // Track stream click in analytics
+            console.log('🎥 Stream opened:', streamUrl);
         } else {
-            this.showNotification('Stream not available');
+            this.showNotification('Stream not available yet');
         }
     }
     
@@ -275,7 +306,13 @@ class MatchScheduler {
         // Auto-refresh every 5 minutes
         setInterval(() => {
             console.log('🔄 Auto-refreshing match data...');
-            this.loadMatches();
+            this.loadMatches().then(() => {
+                // Refresh the display after loading new data
+                const tableBody = document.querySelector('.table-body');
+                if (tableBody) {
+                    tableBody.innerHTML = this.renderMatchesTable();
+                }
+            });
         }, 5 * 60 * 1000); // 5 minutes
     }
 }
@@ -288,6 +325,7 @@ sportsStyles.textContent = `
         border-radius: 10px;
         padding: 0;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin: 20px 0;
     }
     
     .events-header {
@@ -313,6 +351,7 @@ sportsStyles.textContent = `
         border-bottom: 1px solid #bdc3c7;
         display: flex;
         gap: 10px;
+        flex-wrap: wrap;
     }
     
     .sport-btn {
@@ -432,6 +471,7 @@ sportsStyles.textContent = `
         text-align: center;
         padding: 30px;
         color: #7f8c8d;
+        grid-column: 1 / -1;
     }
     
     .retry-btn {
