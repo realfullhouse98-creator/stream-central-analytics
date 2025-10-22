@@ -1,323 +1,188 @@
-// Uncle Stream - Intelligent Match Discovery
+// Uncle Stream - Match Schedule Display
 class UncleStream {
     constructor() {
-        this.siteName = "Uncle Stream";
-        this.liveMatches = [];
-        this.upcomingMatches = [];
-        this.systemStatus = "initializing";
-        
+        this.allMatches = [];
         this.init();
     }
     
     async init() {
-        console.log('🎯 UNCLE STREAM: Starting Intelligent Match Discovery');
-        
-        // Update site branding
-        this.updateBranding();
-        
-        // Immediate API fetch for match data
-        await this.fetchMatchData();
-        
-        // Continuous updates
-        this.startContinuousUpdates();
-        
-        // Render clean interface
-        this.renderMatchInterface();
+        console.log('📅 UNCLE STREAM: Loading match schedules...');
+        await this.loadMatchSchedules();
+        this.startScheduleUpdates();
     }
     
-    updateBranding() {
-        // Update page title and header
-        document.title = `${this.siteName} - Live Football Match Schedules`;
-        
-        const header = document.querySelector('.dashboard-header h1');
-        if (header) {
-            header.innerHTML = '🔴 Uncle Stream';
-            header.nextElementSibling.textContent = 'Live Football Match Discovery';
-        }
-    }
-    
-    async fetchMatchData() {
-        console.log('📡 UNCLE STREAM: Fetching match schedules...');
-        
+    async loadMatchSchedules() {
         try {
             const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
             
-            console.log('🎯 RAW API DATA:', apiData);
+            console.log('📊 API SCHEDULE DATA:', apiData);
             
-            // FOCUS: Extract REAL match information
-            const extractedMatches = this.extractRealMatches(apiData);
+            // Get ALL matches from API
+            this.allMatches = this.extractAllMatches(apiData);
             
-            console.log('🎯 EXTRACTED MATCHES:', extractedMatches);
+            console.log(`🎯 FOUND ${this.allMatches.length} MATCHES:`, this.allMatches);
             
-            this.processMatches(extractedMatches);
-            this.systemStatus = "api_connected";
+            this.displaySchedule();
             
         } catch (error) {
-            console.log('❌ UNCLE STREAM: API connection failed');
-            this.systemStatus = "api_failed";
-            this.showConnectionMessage();
+            console.log('❌ Failed to load schedules:', error);
+            this.showError();
         }
     }
     
-    extractRealMatches(apiData) {
-        if (!apiData || !Array.isArray(apiData)) {
-            return [];
-        }
+    extractAllMatches(apiData) {
+        if (!apiData || !Array.isArray(apiData)) return [];
         
         return apiData
-            .filter(item => item && this.isFootballMatch(item))
-            .map(item => this.createMatchObject(item))
-            .filter(match => match.teams && match.time); // Only valid matches
+            .filter(item => item && (item.title || item.league))
+            .map(item => ({
+                id: item.id || Math.random().toString(36).substr(2, 9),
+                title: item.title || 'Football Match',
+                league: item.league || 'Soccer',
+                time: item.time || 'TBD',
+                startTime: this.parseTime(item.time),
+                streamUrl: item.url || null
+            }))
+            .sort((a, b) => (a.startTime || 0) - (b.startTime || 0)); // Sort by time
     }
     
-    isFootballMatch(item) {
-        // SMART DETECTION: Identify actual football matches
-        const title = (item.title || '').toLowerCase();
-        const league = (item.league || '').toLowerCase();
-        
-        const footballIndicators = [
-            'psl', 'premier league', 'champions league', 'europa league',
-            'vs', 'fc', 'united', 'city', 'afc', 'fc vs'
-        ];
-        
-        return footballIndicators.some(indicator => 
-            title.includes(indicator) || league.includes(indicator)
-        );
-    }
-    
-    createMatchObject(apiItem) {
-        // FOCUS: Extract CLEAN match information
-        const teams = this.extractTeams(apiItem.title || apiItem.league);
-        const time = apiItem.time || 'TBD';
-        const league = this.detectLeague(apiItem.league, apiItem.title);
-        
-        return {
-            id: apiItem.id || Math.random().toString(36).substr(2, 9),
-            teams: teams,
-            league: league,
-            time: time,
-            startTime: this.parseTimeToDate(time),
-            streamUrl: apiItem.url || null,
-            dataQuality: this.assessDataQuality(apiItem),
-            source: 'api_direct'
-        };
-    }
-    
-    extractTeams(title) {
-        if (!title) return 'Match TBD';
-        
-        // CLEAN team extraction
-        const cleanTitle = title
-            .replace(/\[.*?\]/g, '') // Remove brackets
-            .replace(/\(.*?\)/g, '') // Remove parentheses
-            .replace(/live|stream|hd/gi, '') // Remove common fluff
-            .trim();
-            
-        return cleanTitle || 'Football Match';
-    }
-    
-    detectLeague(league, title) {
-        if (league) return league;
-        
-        // Auto-detect from title
-        const titleStr = (title || '').toLowerCase();
-        if (titleStr.includes('psl')) return 'PSL';
-        if (titleStr.includes('champions league')) return 'Champions League';
-        if (titleStr.includes('premier league')) return 'Premier League';
-        
-        return 'Football';
-    }
-    
-    parseTimeToDate(timeString) {
-        if (!timeString || timeString === 'TBD') return null;
+    parseTime(timeStr) {
+        if (!timeStr || timeStr === 'TBD') return null;
         
         try {
-            const [hours, minutes] = timeString.split(':').map(Number);
-            const matchTime = new Date();
-            matchTime.setHours(hours, minutes, 0, 0);
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const time = new Date();
+            time.setHours(hours, minutes, 0, 0);
             
-            // If time passed, assume tomorrow
-            if (matchTime < new Date()) {
-                matchTime.setDate(matchTime.getDate() + 1);
+            // If time already passed today, assume tomorrow
+            if (time < new Date()) {
+                time.setDate(time.getDate() + 1);
             }
             
-            return matchTime;
-        } catch (error) {
+            return time;
+        } catch (e) {
             return null;
         }
     }
     
-    assessDataQuality(item) {
-        let score = 0;
-        if (item.title) score += 40;
-        if (item.league) score += 30;
-        if (item.time) score += 20;
-        if (item.url) score += 10;
-        return score;
+    displaySchedule() {
+        const container = document.getElementById('psl-streams-container');
+        
+        if (this.allMatches.length === 0) {
+            container.innerHTML = `
+                <div class="no-schedules">
+                    <h3>📅 No Match Schedules Found</h3>
+                    <p>The API returned no match schedule data.</p>
+                    <p>This could mean:</p>
+                    <ul>
+                        <li>No matches scheduled in the API</li>
+                        <li>API data format has changed</li>
+                        <li>Temporary API issue</li>
+                    </ul>
+                    <button onclick="uncleStream.loadMatchSchedules()" class="retry-btn">
+                        🔄 Try Again
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div class="schedule-container">
+                <div class="schedule-header">
+                    <h3>📅 Today's Match Schedule</h3>
+                    <div class="match-count">${this.allMatches.length} matches found</div>
+                </div>
+                
+                <div class="matches-list">
+                    ${this.allMatches.map(match => this.createMatchRow(match)).join('')}
+                </div>
+                
+                <div class="schedule-footer">
+                    <div class="last-updated">Updated: ${new Date().toLocaleTimeString()}</div>
+                    <button onclick="uncleStream.loadMatchSchedules()" class="refresh-btn">
+                        🔄 Refresh Schedules
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        this.startTimeUpdates();
     }
     
-    processMatches(matches) {
-        const now = new Date();
+    createMatchRow(match) {
+        const isLive = this.isMatchLive(match.startTime);
         
-        this.liveMatches = matches.filter(match => 
-            match.startTime && this.isMatchLive(match.startTime)
-        );
-        
-        this.upcomingMatches = matches.filter(match => 
-            match.startTime && match.startTime > now
-        ).sort((a, b) => a.startTime - b.startTime); // Sort by time
-        
-        console.log(`🎯 UNCLE STREAM: ${this.liveMatches.length} live, ${this.upcomingMatches.length} upcoming`);
+        return `
+            <div class="match-row ${isLive ? 'live' : 'scheduled'}">
+                <div class="match-info">
+                    <div class="teams">${match.title}</div>
+                    <div class="match-details">
+                        <span class="league">${match.league}</span>
+                        <span class="time">${match.time}</span>
+                    </div>
+                </div>
+                <div class="match-status">
+                    ${isLive ? 
+                        `<button class="live-btn" onclick="uncleStream.watchMatch('${match.streamUrl}')">
+                            🔴 LIVE NOW
+                        </button>` :
+                        `<div class="upcoming">Starts at ${match.time}</div>`
+                    }
+                </div>
+            </div>
+        `;
     }
     
     isMatchLive(startTime) {
+        if (!startTime) return false;
+        
         const now = new Date();
-        const matchStart = new Date(startTime);
-        const matchEnd = new Date(matchStart.getTime() + 2 * 60 * 60 * 1000); // +2 hours
+        const matchTime = new Date(startTime);
+        const twoHoursLater = new Date(matchTime.getTime() + 2 * 60 * 60 * 1000);
         
-        return now >= matchStart && now <= matchEnd;
+        return now >= matchTime && now <= twoHoursLater;
     }
     
-    renderMatchInterface() {
-        const container = document.getElementById('psl-streams-container');
-        if (!container) return;
-        
-        container.innerHTML = `
-            <div class="uncle-stream-interface">
-                <div class="stream-header">
-                    <h3>🔴 ${this.siteName} - Match Schedules</h3>
-                    <div class="system-status ${this.systemStatus}">
-                        ${this.getStatusText()}
-                    </div>
-                </div>
-                
-                <div class="matches-display">
-                    ${this.renderMatchesSection()}
-                </div>
-                
-                <div class="match-actions">
-                    <button onclick="uncleStream.refreshData()" class="uncle-btn">
-                        🔄 Update Schedules
-                    </button>
-                    <div class="last-update">
-                        Last checked: ${new Date().toLocaleTimeString()}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    
-    renderMatchesSection() {
-        if (this.liveMatches.length === 0 && this.upcomingMatches.length === 0) {
-            return `
-                <div class="no-matches">
-                    <h4>🔍 Scanning for Matches</h4>
-                    <p>No live or upcoming matches detected in current data.</p>
-                    <p>This could mean:</p>
-                    <ul>
-                        <li>No matches scheduled right now</li>
-                        <li>API data format has changed</li>
-                        <li>Matches outside current detection patterns</li>
-                    </ul>
-                    <div class="raw-data-toggle">
-                        <button onclick="uncleStream.showRawData()">View Raw API Data</button>
-                    </div>
-                </div>
-            `;
-        }
-        
-        return `
-            ${this.liveMatches.length > 0 ? `
-                <div class="live-section">
-                    <h4>🔴 LIVE NOW</h4>
-                    ${this.liveMatches.map(match => this.renderMatchCard(match, 'live')).join('')}
-                </div>
-            ` : ''}
-            
-            ${this.upcomingMatches.length > 0 ? `
-                <div class="upcoming-section">
-                    <h4>⏰ UPCOMING MATCHES</h4>
-                    ${this.upcomingMatches.map(match => this.renderMatchCard(match, 'upcoming')).join('')}
-                </div>
-            ` : ''}
-        `;
-    }
-    
-    renderMatchCard(match, status) {
-        const timeInfo = status === 'live' 
-            ? '🔴 LIVE' 
-            : `🕒 ${match.time}`;
-            
-        const actionButton = status === 'live'
-            ? `<button class="watch-live" onclick="uncleStream.watchMatch('${match.streamUrl}')">WATCH LIVE</button>`
-            : `<div class="countdown" data-time="${match.startTime?.toISOString()}">Starts: ${match.time}</div>`;
-        
-        return `
-            <div class="match-card-uncle ${status}">
-                <div class="match-info">
-                    <h5>${match.teams}</h5>
-                    <div class="match-meta">
-                        <span class="league">${match.league}</span>
-                        <span class="time">${timeInfo}</span>
-                        <span class="quality">Data: ${match.dataQuality}%</span>
-                    </div>
-                </div>
-                <div class="match-action">
-                    ${actionButton}
-                </div>
-            </div>
-        `;
-    }
-    
-    getStatusText() {
-        switch(this.systemStatus) {
-            case 'api_connected': return '📡 Connected to Match Data';
-            case 'api_failed': return '❌ Checking Alternative Sources';
-            default: return '🔍 Initializing Match Discovery';
-        }
-    }
-    
-    showConnectionMessage() {
-        // Show helpful connection status
-        console.log('🔍 UNCLE STREAM: Analyzing connection issues...');
-    }
-    
-    startContinuousUpdates() {
-        // Update every 2 minutes
+    startScheduleUpdates() {
+        // Check every minute if matches should go live
         setInterval(() => {
-            this.fetchMatchData();
-        }, 120000);
-        
-        // Update countdowns every 30 seconds
+            this.updateLiveStatus();
+        }, 60000);
+    }
+    
+    startTimeUpdates() {
+        // Update time displays every 30 seconds
         setInterval(() => {
-            this.updateCountdowns();
+            this.updateLiveStatus();
         }, 30000);
     }
     
-    updateCountdowns() {
-        // Update any countdown timers
-        document.querySelectorAll('.countdown').forEach(element => {
-            const matchTime = new Date(element.dataset.time);
-            const now = new Date();
-            const diff = matchTime - now;
+    updateLiveStatus() {
+        this.allMatches.forEach(match => {
+            const row = document.querySelector(`[data-match-id="${match.id}"]`);
+            if (!row) return;
             
-            if (diff <= 0) {
-                element.textContent = '🔴 LIVE NOW';
-                element.classList.add('live');
-            } else {
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                element.textContent = `Starts in: ${hours}h ${minutes}m`;
+            const isLive = this.isMatchLive(match.startTime);
+            const statusElement = row.querySelector('.match-status');
+            
+            if (statusElement) {
+                if (isLive) {
+                    statusElement.innerHTML = 
+                        `<button class="live-btn" onclick="uncleStream.watchMatch('${match.streamUrl}')">
+                            🔴 LIVE NOW
+                        </button>`;
+                    row.classList.add('live');
+                    row.classList.remove('scheduled');
+                } else {
+                    statusElement.innerHTML = 
+                        `<div class="upcoming">Starts at ${match.time}</div>`;
+                    row.classList.remove('live');
+                    row.classList.add('scheduled');
+                }
             }
         });
-    }
-    
-    // Public methods
-    refreshData() {
-        console.log('🔄 UNCLE STREAM: Manual refresh');
-        this.fetchMatchData();
-        this.showNotification('🔄 Updating match schedules...');
     }
     
     watchMatch(streamUrl) {
@@ -325,13 +190,21 @@ class UncleStream {
             window.open(streamUrl, '_blank');
             this.showNotification('🔴 Opening live stream...');
         } else {
-            this.showNotification('❌ Stream URL not available');
+            this.showNotification('⚠️ Stream URL not available for this match');
         }
     }
     
-    showRawData() {
-        console.log('📊 UNCLE STREAM: Raw API data analysis');
-        this.showNotification('📊 Check browser console for raw data');
+    showError() {
+        const container = document.getElementById('psl-streams-container');
+        container.innerHTML = `
+            <div class="error-state">
+                <h3>❌ Connection Issue</h3>
+                <p>Unable to load match schedules from the API.</p>
+                <button onclick="uncleStream.loadMatchSchedules()" class="retry-btn">
+                    🔄 Retry Connection
+                </button>
+            </div>
+        `;
     }
     
     showNotification(message) {
@@ -340,164 +213,170 @@ class UncleStream {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: #e74c3c;
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
             font-weight: bold;
             z-index: 10000;
-            animation: slideInRight 0.5s ease-out;
         `;
         notification.textContent = message;
         document.body.appendChild(notification);
         
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
+        setTimeout(() => notification.remove(), 3000);
     }
 }
 
-// Initialize Uncle Stream
-document.addEventListener('DOMContentLoaded', () => {
-    window.uncleStream = new UncleStream();
-});
-
-// Add Uncle Stream CSS
-const uncleStyles = document.createElement('style');
-uncleStyles.textContent = `
-    .uncle-stream-interface {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        border-radius: 15px;
-        padding: 25px;
-        color: white;
-        margin: 20px 0;
+// Add Schedule CSS
+const scheduleStyles = document.createElement('style');
+scheduleStyles.textContent = `
+    .schedule-container {
+        background: white;
+        border-radius: 10px;
+        padding: 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
-    .stream-header {
+    .schedule-header {
+        background: #2c3e50;
+        color: white;
+        padding: 20px;
+        border-radius: 10px 10px 0 0;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 25px;
-        border-bottom: 2px solid #e74c3c;
-        padding-bottom: 15px;
     }
     
-    .stream-header h3 {
+    .schedule-header h3 {
         margin: 0;
-        color: #e74c3c;
-        font-size: 1.5em;
+        color: white;
     }
     
-    .system-status {
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-weight: bold;
+    .match-count {
+        background: #e74c3c;
+        padding: 5px 12px;
+        border-radius: 15px;
         font-size: 0.9em;
     }
     
-    .system-status.api_connected { background: #27ae60; }
-    .system-status.api_failed { background: #e74c3c; }
-    .system-status.initializing { background: #f39c12; }
+    .matches-list {
+        max-height: 600px;
+        overflow-y: auto;
+    }
     
-    .match-card-uncle {
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
-        padding: 20px;
-        margin: 15px 0;
+    .match-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid #ecf0f1;
+        transition: background-color 0.3s ease;
+    }
+    
+    .match-row:last-child {
+        border-bottom: none;
+    }
+    
+    .match-row:hover {
+        background: #f8f9fa;
+    }
+    
+    .match-row.live {
+        background: #fff5f5;
         border-left: 4px solid #e74c3c;
-        transition: transform 0.2s ease;
     }
     
-    .match-card-uncle.live {
-        border-left-color: #27ae60;
-        background: rgba(39, 174, 96, 0.1);
+    .teams {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 5px;
+        color: #2c3e50;
     }
     
-    .match-card-uncle:hover {
-        transform: translateX(5px);
-    }
-    
-    .match-info h5 {
-        margin: 0 0 10px 0;
-        font-size: 1.2em;
-        color: white;
-    }
-    
-    .match-meta {
+    .match-details {
         display: flex;
         gap: 15px;
         font-size: 0.9em;
-        color: #bdc3c7;
+        color: #7f8c8d;
     }
     
-    .league { color: #3498db; }
-    .time { color: #f39c12; }
-    .quality { color: #2ecc71; }
+    .league {
+        color: #3498db;
+        font-weight: bold;
+    }
     
-    .watch-live {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    .time {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    
+    .live-btn {
+        background: #e74c3c;
         color: white;
         border: none;
-        padding: 12px 25px;
-        border-radius: 25px;
+        padding: 10px 20px;
+        border-radius: 20px;
         font-weight: bold;
         cursor: pointer;
         transition: all 0.3s ease;
     }
     
-    .watch-live:hover {
+    .live-btn:hover {
+        background: #c0392b;
         transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
     }
     
-    .countdown {
-        background: #34495e;
-        color: #f39c12;
-        padding: 10px 20px;
-        border-radius: 20px;
-        font-weight: bold;
-        font-family: monospace;
+    .upcoming {
+        color: #7f8c8d;
+        font-style: italic;
     }
     
-    .countdown.live {
-        background: #27ae60;
-        color: white;
+    .schedule-footer {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-radius: 0 0 10px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #ecf0f1;
     }
     
-    .uncle-btn {
+    .refresh-btn {
         background: #3498db;
         color: white;
         border: none;
-        padding: 12px 25px;
-        border-radius: 25px;
+        padding: 8px 15px;
+        border-radius: 15px;
         cursor: pointer;
-        font-weight: bold;
-        margin-right: 15px;
     }
     
-    .last-update {
-        color: #bdc3c7;
-        font-size: 0.9em;
+    .retry-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        margin-top: 15px;
     }
     
-    .no-matches {
+    .no-schedules, .error-state {
         text-align: center;
         padding: 40px;
-        color: #bdc3c7;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
-    .no-matches ul {
+    .no-schedules ul {
         text-align: left;
         max-width: 400px;
-        margin: 20px auto;
-    }
-    
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+        margin: 15px auto;
     }
 `;
-document.head.appendChild(uncleStyles);
+document.head.appendChild(scheduleStyles);
+
+// Initialize Uncle Stream
+document.addEventListener('DOMContentLoaded', () => {
+    window.uncleStream = new UncleStream();
+});
