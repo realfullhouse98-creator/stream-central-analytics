@@ -1,4 +1,4 @@
-// Sport71.pro Style Match Schedules - SHOW ALL MATCHES VERSION
+// Sport71.pro Style Match Schedules - PROFESSIONAL VERSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -52,7 +52,6 @@ class MatchScheduler {
                         
                         this.allMatches.push(processedMatch);
                         
-                        // FIX: Only filter out truly invalid matches
                         if (this.isValidMatch(processedMatch)) {
                             this.verifiedMatches.push(processedMatch);
                         }
@@ -81,33 +80,36 @@ class MatchScheduler {
         const tournament = (match.tournament || '').toLowerCase();
         const matchName = (match.match || '').toLowerCase();
         
-        // FIX: Better football detection - include all football leagues
-        const footballTerms = [
-            'liga', 'premier', 'champions league', 'europa', 'serie', 'bundesliga',
-            'super lig', 'süper lig', 'premier league', 'championship', 'cup',
-            'youth league', 'world cup', 'afc', 'uefa', 'concacaf', 'copa',
-            'primera division', 'brasileiro', 'eredivisie', 'ligue', 'mls',
-            'tanzania ligi', 'malawi super', 'estonia meistriliiga', 'norway division',
-            'russia cup', 'poland league', 'czech league', 'slovakia', 'slovenia',
-            'lithuania lyga', 'finland veikkausliiga', 'montenegro cup', 'georgia league'
-        ];
-        
-        const hasFootballContent = footballTerms.some(term => 
-            tournament.toLowerCase().includes(term) || matchName.toLowerCase().includes(term)
-        );
-        
-        // If it looks like football, classify as Soccer
-        if (hasFootballContent) {
-            return 'Soccer';
+        // Cricket detection
+        if (tournament.includes('cricket') || tournament.includes('icc')) {
+            return 'Cricket';
         }
         
-        return sport.charAt(0).toUpperCase() + sport.slice(1);
+        // American Football detection
+        const americanFootballTerms = ['nfl', 'college football', 'ncaa football'];
+        const americanFootballTeams = ['packers', 'chiefs', 'patriots', 'cowboys'];
+        
+        const hasAmericanFootballContent = 
+            americanFootballTerms.some(term => tournament.includes(term)) ||
+            americanFootballTeams.some(team => matchName.includes(team)) ||
+            tournament.includes('college football');
+        
+        // Basketball detection
+        const basketballTerms = ['nba', 'basketball'];
+        const hasBasketballContent = basketballTerms.some(term => 
+            tournament.includes(term) || matchName.includes(term)
+        );
+        
+        // Default to Soccer for most football matches
+        if (hasAmericanFootballContent) return 'American Football';
+        if (hasBasketballContent) return 'Basketball';
+        
+        return 'Soccer'; // Default for international football
     }
     
     isValidMatch(match) {
         const matchName = (match.teams || '').toLowerCase();
         
-        // FIX: Only filter out completely invalid matches
         if (matchName.includes('undefined') || matchName.includes('null')) {
             return false;
         }
@@ -116,7 +118,6 @@ class MatchScheduler {
             return false;
         }
         
-        // FIX: Allow matches with "vs" and "TBD"
         return true;
     }
     
@@ -154,7 +155,7 @@ class MatchScheduler {
     
     updateAnalytics() {
         const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
-        document.getElementById('total-streams').textContent = this.verifiedMatches.length; // Show total matches
+        document.getElementById('total-streams').textContent = this.verifiedMatches.length;
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
     
@@ -163,34 +164,32 @@ class MatchScheduler {
         if (!container) return;
         
         container.innerHTML = `
-            <div class="scheduled-events">
-                <div class="sports-categories">
-                    <button class="sport-btn ${this.currentSport === 'all' ? 'active' : ''}" data-sport="all">
-                        All Sports (${this.verifiedMatches.length})
-                    </button>
-                    <button class="sport-btn ${this.currentSport === 'soccer' ? 'active' : ''}" data-sport="soccer">
-                        Soccer (${this.getVerifiedMatchesBySport('soccer').length})
-                    </button>
-                    <button class="sport-btn ${this.currentSport === 'american football' ? 'active' : ''}" data-sport="american football">
-                        American Football (${this.getVerifiedMatchesBySport('american football').length})
-                    </button>
-                    <button class="sport-btn ${this.currentSport === 'basketball' ? 'active' : ''}" data-sport="basketball">
-                        Basketball (${this.getVerifiedMatchesBySport('basketball').length})
-                    </button>
-                    <button class="sport-btn ${this.currentSport === 'cricket' ? 'active' : ''}" data-sport="cricket">
-                        Cricket (${this.getVerifiedMatchesBySport('cricket').length})
-                    </button>
+            <div class="sports-navigation">
+                <button class="sport-btn ${this.currentSport === 'all' ? 'active' : ''}" data-sport="all">
+                    All Sports (${this.verifiedMatches.length})
+                </button>
+                <button class="sport-btn ${this.currentSport === 'soccer' ? 'active' : ''}" data-sport="soccer">
+                    Soccer (${this.getVerifiedMatchesBySport('soccer').length})
+                </button>
+                <button class="sport-btn ${this.currentSport === 'american football' ? 'active' : ''}" data-sport="american football">
+                    American Football (${this.getVerifiedMatchesBySport('american football').length})
+                </button>
+                <button class="sport-btn ${this.currentSport === 'basketball' ? 'active' : ''}" data-sport="basketball">
+                    Basketball (${this.getVerifiedMatchesBySport('basketball').length})
+                </button>
+                <button class="sport-btn ${this.currentSport === 'cricket' ? 'active' : ''}" data-sport="cricket">
+                    Cricket (${this.getVerifiedMatchesBySport('cricket').length})
+                </button>
+            </div>
+            
+            <div class="matches-container">
+                <div class="matches-header">
+                    <h3>${this.getSectionTitle()}</h3>
+                    <span class="match-count">${this.getFilteredMatches().length} matches</span>
                 </div>
                 
-                <div class="matches-section">
-                    <div class="section-title-bar">
-                        <h2 class="section-title">${this.getSectionTitle()}</h2>
-                        <span class="match-count">${this.getFilteredMatches().length} matches</span>
-                    </div>
-                    
-                    <div class="day-organized-matches">
-                        ${this.renderDaySections()}
-                    </div>
+                <div class="day-organized-matches">
+                    ${this.renderDaySections()}
                 </div>
             </div>
         `;
@@ -221,7 +220,7 @@ class MatchScheduler {
                 const matchCount = matches.length;
                 
                 return `
-                    <div class="day-section">
+                    <div class="day-section fade-in">
                         <div class="day-header ${isExpanded ? 'expanded' : ''}" data-date="${date}">
                             <div class="day-title">
                                 <span class="dropdown-arrow">${isExpanded ? '▼' : '►'}</span>
@@ -232,9 +231,9 @@ class MatchScheduler {
                         <div class="day-matches ${isExpanded ? 'expanded' : 'collapsed'}">
                             <div class="matches-table">
                                 <div class="table-header">
-                                    <div class="col-time">Time</div>
-                                    <div class="col-match">Match</div>
-                                    <div class="col-watch">Watch</div>
+                                    <div>Time</div>
+                                    <div>Match</div>
+                                    <div>Watch</div>
                                 </div>
                                 <div class="table-body">
                                     ${matches.map(match => this.renderMatchRow(match)).join('')}
@@ -251,16 +250,16 @@ class MatchScheduler {
         
         return `
             <div class="match-row ${match.isLive ? 'live-match' : ''} ${showLivePlaceholder ? 'live-placeholder' : ''}">
-                <div class="col-time">
-                    ${match.time}
+                <div class="match-time">
+                    <span class="time">${match.time}</span>
                     ${match.isLive ? '<span class="live-badge">LIVE</span>' : 
                       showLivePlaceholder ? '<span class="live-badge loading">LIVE</span>' : ''}
                 </div>
-                <div class="col-match">
+                <div class="match-details">
                     <div class="teams">${match.teams}</div>
                     <div class="league">${match.league} • ${match.sport}</div>
                 </div>
-                <div class="col-watch">
+                <div class="watch-action">
                     ${match.streamUrl ? 
                         `<button class="watch-btn ${match.isLive ? 'live-watch-btn' : ''} ${showLivePlaceholder ? 'live-watch-btn loading' : ''}" onclick="matchScheduler.watchMatch('${match.streamUrl}')">
                             ${match.isLive ? 'LIVE NOW' : showLivePlaceholder ? 'CHECKING...' : 'WATCH'}
@@ -324,6 +323,7 @@ class MatchScheduler {
     
     setSport(sport) {
         this.currentSport = sport;
+        // FIX: Instant update instead of waiting
         this.updateDisplay();
     }
     
@@ -334,10 +334,23 @@ class MatchScheduler {
             this.attachDayDropdownListeners();
         }
         
+        // FIX: Instant sport button updates
         document.querySelectorAll('.sport-btn').forEach(btn => {
             const btnSport = btn.getAttribute('data-sport');
             btn.classList.toggle('active', btnSport === this.currentSport);
         });
+        
+        // FIX: Instant section title update
+        const sectionTitle = document.querySelector('.matches-header h3');
+        if (sectionTitle) {
+            sectionTitle.textContent = this.getSectionTitle();
+        }
+        
+        // FIX: Instant match count update
+        const matchCount = document.querySelector('.match-count');
+        if (matchCount) {
+            matchCount.textContent = `${this.getFilteredMatches().length} matches`;
+        }
     }
     
     watchMatch(streamUrl) {
@@ -369,306 +382,7 @@ class MatchScheduler {
     }
 }
 
-// Keep the same CSS from previous version
-const sportsStyles = document.createElement('style');
-sportsStyles.textContent = `
-    .scheduled-events {
-        background: white;
-        border-radius: 12px;
-        padding: 0;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        margin: 20px auto;
-        max-width: 1200px;
-        width: 95%;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .sports-categories {
-        padding: 22px 30px;
-        background: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .sport-btn {
-        background: white;
-        border: 2px solid #dee2e6;
-        padding: 12px 22px;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 1em;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        color: #495057;
-        letter-spacing: 0.3px;
-    }
-    
-    .sport-btn:hover {
-        border-color: #adb5bd;
-        transform: translateY(-1px);
-    }
-    
-    .sport-btn.active {
-        background: #e74c3c;
-        color: white;
-        border-color: #e74c3c;
-        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
-    }
-    
-    .matches-section {
-        padding: 28px 32px;
-    }
-    
-    .section-title-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid #f1f2f6;
-    }
-    
-    .section-title {
-        margin: 0;
-        color: #2c3e50;
-        font-size: 1.8em;
-        font-weight: 700;
-        letter-spacing: -0.3px;
-    }
-    
-    .match-count {
-        background: #3498db;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.9em;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-    }
-    
-    .day-organized-matches {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-    
-    .day-section {
-        border: 1px solid #e9ecef;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        transition: box-shadow 0.3s ease;
-    }
-    
-    .day-section:hover {
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-    
-    .day-header {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        padding: 20px 25px;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.3s ease;
-        border-bottom: 1px solid #2c3e50;
-    }
-    
-    .day-header:hover {
-        background: linear-gradient(135deg, #34495e, #2c3e50);
-    }
-    
-    .day-header.expanded {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        border-bottom-color: #c0392b;
-    }
-    
-    .day-title {
-        font-weight: 700;
-        font-size: 1.3em;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        letter-spacing: 0.2px;
-        color: white;
-    }
-    
-    .dropdown-arrow {
-        font-size: 0.9em;
-        transition: transform 0.3s ease;
-        font-weight: 700;
-        color: white;
-    }
-    
-    .day-match-count {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 6px 12px;
-        border-radius: 15px;
-        font-size: 0.85em;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-    }
-    
-    .day-matches {
-        transition: all 0.3s ease;
-    }
-    
-    .day-matches.collapsed {
-        display: none;
-    }
-    
-    .day-matches.expanded {
-        display: block;
-    }
-    
-    .matches-table {
-        background: white;
-    }
-    
-    .table-header {
-        display: grid;
-        grid-template-columns: 110px 1fr 120px;
-        background: #34495e;
-        color: white;
-        font-weight: 700;
-        padding: 18px 25px;
-        font-size: 1em;
-        letter-spacing: 0.5px;
-    }
-    
-    .col-time {
-        color: white;
-        font-weight: 700;
-    }
-    
-    .match-row, .no-matches {
-        display: grid;
-        grid-template-columns: 110px 1fr 120px;
-        padding: 18px 25px;
-        border-bottom: 1px solid #f8f9fa;
-        align-items: center;
-        transition: background 0.2s ease;
-    }
-    
-    .match-row:hover {
-        background: #f8f9fa;
-    }
-    
-    .live-match {
-        background: #fffaf0 !important;
-        border-left: 4px solid #e74c3c;
-    }
-    
-    .live-placeholder {
-        background: #f8f9fa !important;
-        border-left: 4px solid #ffa500;
-    }
-    
-    .col-time {
-        font-weight: 600;
-        color: #2c3e50;
-        font-size: 1em;
-        letter-spacing: 0.5px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .live-badge {
-        background: #e74c3c;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 12px;
-        font-size: 0.75em;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        animation: pulse 2s infinite;
-    }
-    
-    .live-badge.loading {
-        background: #ffa500;
-        animation: pulse 1s infinite;
-    }
-    
-    @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.7; }
-        100% { opacity: 1; }
-    }
-    
-    .col-match .teams {
-        font-weight: 700;
-        margin-bottom: 6px;
-        color: #2c3e50;
-        font-size: 1.1em;
-        line-height: 1.3;
-        letter-spacing: 0.2px;
-    }
-    
-    .col-match .league {
-        font-size: 0.9em;
-        color: #7f8c8d;
-        font-weight: 500;
-        letter-spacing: 0.2px;
-    }
-    
-    .watch-btn {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 10px 18px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.9em;
-        font-weight: 700;
-        transition: all 0.3s ease;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
-    }
-    
-    .watch-btn:hover {
-        background: #c0392b;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-    }
-    
-    .live-watch-btn {
-        background: #dc3545;
-        animation: pulse 2s infinite;
-        font-weight: 800;
-    }
-    
-    .live-watch-btn.loading {
-        background: #ffa500;
-        animation: pulse 1s infinite;
-    }
-    
-    .no-stream {
-        color: #95a5a6;
-        font-style: italic;
-        font-size: 0.9em;
-        font-weight: 500;
-    }
-    
-    .no-matches, .error-state {
-        text-align: center;
-        padding: 40px 30px;
-        color: #7f8c8d;
-        font-size: 1.1em;
-        font-weight: 500;
-    }
-    
-    .error-state {
-        grid-column: 1 / -1;
-    }
-`;
-document.head.appendChild(sportsStyles);
+// NO CSS HERE - Using your professional CSS classes only
 
 document.addEventListener('DOMContentLoaded', function() {
     window.matchScheduler = new MatchScheduler();
