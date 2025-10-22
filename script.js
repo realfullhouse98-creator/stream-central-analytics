@@ -1,4 +1,4 @@
-// Uncle Stream - Sports Schedules (Clean 3-Step Navigation)
+// Uncle Stream - Sports Schedules (Using Your Existing CSS)
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -101,17 +101,18 @@ class MatchScheduler {
         ];
         
         container.innerHTML = `
-            <div class="sports-grid">
+            <div class="streams-grid">
                 ${sports.map(sport => `
-                    <div class="match-card sport-choice" onclick="matchScheduler.selectSport('${sport.id}')">
+                    <div class="match-card" onclick="matchScheduler.selectSport('${sport.id}')">
                         <div class="match-header">
-                            <div class="sport-icon">${sport.icon}</div>
+                            <div class="team-logo">${sport.icon}</div>
                             <div class="vs">${sport.name}</div>
-                            <div class="sport-icon">${sport.count}</div>
+                            <div class="team-logo">${sport.count}</div>
                         </div>
                         <h4>${sport.count} Matches Available</h4>
                         <div class="match-info">
-                            <span class="date">Click to view</span>
+                            <span class="date">Click to view dates</span>
+                            <span class="match-status status-upcoming">SELECT</span>
                         </div>
                     </div>
                 `).join('')}
@@ -138,30 +139,31 @@ class MatchScheduler {
         const sportName = this.getSportDisplayName();
         
         container.innerHTML = `
-            <div class="dates-view">
-                <div class="section-header">
-                    <button class="btn back-btn" onclick="matchScheduler.showSportsView()">← Back to Sports</button>
-                    <h2>${sportName} Matches</h2>
-                    <p>Select a date to view matches</p>
-                </div>
-                <div class="streams-grid">
-                    ${dates.map(date => {
-                        const dateMatches = matches.filter(m => m.date === date);
-                        return `
-                            <div class="match-card date-choice" onclick="matchScheduler.selectDate('${date}')">
-                                <div class="match-header">
-                                    <div class="team-logo">📅</div>
-                                    <div class="vs">${this.formatDisplayDate(date)}</div>
-                                    <div class="team-logo">${dateMatches.length}</div>
-                                </div>
-                                <h4>${dateMatches.length} Matches</h4>
-                                <div class="match-info">
-                                    <span class="date">${sportName}</span>
-                                </div>
+            <div class="section-header">
+                <h2>${sportName} Matches</h2>
+                <p>Select a date to view matches</p>
+            </div>
+            <div class="streams-grid">
+                ${dates.map(date => {
+                    const dateMatches = matches.filter(m => m.date === date);
+                    return `
+                        <div class="match-card" onclick="matchScheduler.selectDate('${date}')">
+                            <div class="match-header">
+                                <div class="team-logo">📅</div>
+                                <div class="vs">${this.formatDisplayDate(date)}</div>
+                                <div class="team-logo">${dateMatches.length}</div>
                             </div>
-                        `;
-                    }).join('')}
-                </div>
+                            <h4>${dateMatches.length} Matches</h4>
+                            <div class="match-info">
+                                <span class="date">${sportName}</span>
+                                <span class="match-status status-upcoming">VIEW</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="back-btn" onclick="matchScheduler.showSportsView()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 25px; cursor: pointer;">← Back to Sports</button>
             </div>
         `;
         
@@ -188,26 +190,25 @@ class MatchScheduler {
         });
         
         container.innerHTML = `
-            <div class="matches-view">
-                <div class="section-header">
-                    <button class="btn back-btn" onclick="matchScheduler.showDatesView()">← Back to Dates</button>
-                    <h2>${sportName} • ${displayDate}</h2>
-                    <p>${matches.length} matches scheduled</p>
+            <div class="section-header">
+                <h2>${sportName} • ${displayDate}</h2>
+                <p>${matches.length} matches scheduled</p>
+            </div>
+            
+            <div class="matches-table" style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,215,0,0.2); overflow: hidden;">
+                <div class="table-header" style="display: grid; grid-template-columns: 100px 1fr 120px; background: rgba(255,255,255,0.1); color: white; font-weight: bold; padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div>Time</div>
+                    <div>Match</div>
+                    <div>Watch</div>
                 </div>
-                
-                <div class="matches-table-container">
-                    <div class="matches-table">
-                        <div class="table-header">
-                            <div class="col-time">Time</div>
-                            <div class="col-match">Match</div>
-                            <div class="col-watch">Watch</div>
-                        </div>
-                        ${matches.length > 0 ? 
-                            matches.map(match => this.renderMatchRow(match)).join('') :
-                            '<div class="no-matches">No matches found for this date</div>'
-                        }
-                    </div>
-                </div>
+                ${matches.length > 0 ? 
+                    matches.map(match => this.renderMatchRow(match)).join('') :
+                    '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.7);">No matches found for this date</div>'
+                }
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="back-btn" onclick="matchScheduler.showDatesView()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 25px; cursor: pointer;">← Back to Dates</button>
             </div>
         `;
         
@@ -217,21 +218,21 @@ class MatchScheduler {
     
     renderMatchRow(match) {
         return `
-            <div class="match-row ${match.isLive ? 'live-match' : ''}">
-                <div class="col-time">
+            <div class="match-row" style="display: grid; grid-template-columns: 100px 1fr 120px; padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center; transition: background 0.3s ease; ${match.isLive ? 'background: rgba(255,107,107,0.1); border-left: 3px solid #ff6b6b;' : ''}">
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #ffd93d;">
                     ${match.time}
-                    ${match.isLive ? '<span class="live-badge">LIVE</span>' : ''}
+                    ${match.isLive ? '<span style="background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7em; font-weight: bold;">LIVE</span>' : ''}
                 </div>
-                <div class="col-match">
-                    <div class="teams">${match.teams}</div>
-                    <div class="league">${match.league}</div>
+                <div>
+                    <div style="font-weight: bold; color: white; margin-bottom: 4px;">${match.teams}</div>
+                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9em;">${match.league}</div>
                 </div>
-                <div class="col-watch">
+                <div style="text-align: center;">
                     ${match.streamUrl ? 
-                        `<button class="watch-btn ${match.isLive ? 'live-watch-btn' : ''}" onclick="window.open('${match.streamUrl}', '_blank')">
+                        `<button style="background: ${match.isLive ? 'linear-gradient(45deg, #ff6b6b, #e74c3c)' : 'linear-gradient(45deg, #ff6b6b, #ffd93d)'}; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; ${match.isLive ? 'animation: pulse 2s infinite;' : ''}" onclick="window.open('${match.streamUrl}', '_blank')">
                             ${match.isLive ? 'LIVE NOW' : 'WATCH'}
                         </button>` :
-                        '<span class="no-stream">OFFLINE</span>'
+                        '<span style="color: rgba(255,255,255,0.5); font-style: italic;">OFFLINE</span>'
                     }
                 </div>
             </div>
@@ -289,10 +290,10 @@ class MatchScheduler {
         const container = document.getElementById('psl-streams-container');
         if (container) {
             container.innerHTML = `
-                <div class="error-state">
+                <div style="text-align: center; padding: 60px; color: rgba(255,255,255,0.7);">
                     <h3>Unable to Load Schedules</h3>
                     <p>Please check your connection and try again.</p>
-                    <button class="btn" onclick="matchScheduler.init()">Try Again</button>
+                    <button style="background: rgba(52,152,219,0.2); color: #3498db; border: 1px solid #3498db; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-top: 20px;" onclick="matchScheduler.init()">Try Again</button>
                 </div>
             `;
         }
@@ -316,6 +317,17 @@ class MatchScheduler {
         }, 5 * 60 * 1000);
     }
 }
+
+// Add pulse animation to style.css
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
