@@ -30,36 +30,42 @@ class UncleStream {
         }
     }
     
-    extractAllMatches(apiData) {
-        if (!apiData || !apiData.events) {
-            console.log('No events data in API');
-            return [];
-        }
-        
-        const allMatches = [];
-        
-        // Get ALL matches from ALL dates
-        Object.entries(apiData.events).forEach(([date, matches]) => {
-            if (Array.isArray(matches)) {
-                matches.forEach(match => {
-                    // Show EVERY match, no filtering
-                    allMatches.push({
-                        id: match.id || Math.random().toString(36).substr(2, 9),
-                        title: match.title || 'Football Match',
-                        league: match.league || 'Football',
-                        time: match.time || 'Time TBD',
-                        date: date,
-                        startTime: this.parseDateTime(date, match.time),
-                        streamUrl: match.url || null,
-                        hasStream: !!match.url
-                    });
-                });
-            }
-        });
-        
-        console.log('FOUND ' + allMatches.length + ' MATCHES TOTAL');
-        return allMatches.sort((a, b) => (a.startTime || 0) - (b.startTime || 0));
+ extractAllMatches(apiData) {
+    if (!apiData || !apiData.events) {
+        console.log('No events data in API');
+        return [];
     }
+    
+    const allMatches = [];
+    
+    // Get ALL matches from ALL dates
+    Object.entries(apiData.events).forEach(([date, matches]) => {
+        if (Array.isArray(matches)) {
+            matches.forEach(match => {
+                // BETTER DATA EXTRACTION
+                const title = this.extractTitle(match);
+                const league = this.extractLeague(match);
+                const time = this.extractTime(match);
+                
+                allMatches.push({
+                    id: match.id || Math.random().toString(36).substr(2, 9),
+                    title: title,
+                    league: league,
+                    time: time,
+                    date: date,
+                    startTime: this.parseDateTime(date, time),
+                    streamUrl: match.url || null,
+                    hasStream: !!match.url,
+                    // DEBUG: Keep original data for analysis
+                    originalData: match
+                });
+            });
+        }
+    });
+    
+    console.log('IMPROVED MATCH EXTRACTION:', allMatches);
+    return allMatches.sort((a, b) => (a.startTime || 0) - (b.startTime || 0));
+},
     
     parseDateTime(dateStr, timeStr) {
         if (!dateStr || !timeStr || timeStr === 'TBD') return null;
@@ -72,7 +78,32 @@ class UncleStream {
         } catch (e) {
             return null;
         }
-    }
+    },
+    extractTitle(match) {
+    // Try multiple fields for title
+    if (match.title && match.title !== 'Football Match') return match.title;
+    if (match.name) return match.name;
+    if (match.match) return match.match;
+    if (match.teams) return match.teams;
+    
+    // Show what fields are available
+    const availableFields = Object.keys(match).join(', ');
+    return `Match - Fields: ${availableFields}`;
+},
+
+extractLeague(match) {
+    if (match.league && match.league !== 'Football') return match.league;
+    if (match.competition) return match.competition;
+    if (match.tournament) return match.tournament;
+    return 'Football';
+},
+
+extractTime(match) {
+    if (match.time && match.time !== 'TBD') return match.time;
+    if (match.start_time) return match.start_time;
+    if (match.kickoff) return match.kickoff;
+    return 'TBD';
+},
     
     displaySchedule() {
         const container = document.getElementById('psl-streams-container');
