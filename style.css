@@ -546,6 +546,7 @@ body {
     background: #000;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .video-player {
@@ -554,6 +555,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .stream-iframe {
@@ -576,6 +578,33 @@ body {
     font-size: 1.5em;
     margin-bottom: 10px;
     color: var(--accent-red);
+}
+
+/* Video Player Controls */
+.video-player-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.player-refresh-btn, .player-fullscreen-btn {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.player-refresh-btn:hover, .player-fullscreen-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* YouTube-Style Video Controls */
@@ -603,6 +632,33 @@ body {
 .views-count {
     color: var(--text-muted);
     font-size: 0.9em;
+}
+
+/* Live Badge Animation */
+.live-badge-details {
+    background: var(--accent-red);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    animation: pulse 1.5s infinite ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 10px;
+}
+
+.live-badge-details::before {
+    content: "●";
+    font-size: 0.6em;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
 }
 
 .video-actions {
@@ -642,32 +698,128 @@ body {
     opacity: 0.8;
 }
 
+/* Match Description */
+.match-description {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border: 1px solid var(--border-light);
+}
+
+.description-text {
+    font-size: 1.1em;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* Poll Section */
+.poll-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border: 1px solid var(--border-light);
+}
+
+.poll-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.poll-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.poll-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.poll-option:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.poll-option input[type="radio"] {
+    margin: 0;
+}
+
+.poll-label {
+    flex: 1;
+    color: var(--text-primary);
+}
+
+.poll-percentage {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    min-width: 50px;
+    text-align: right;
+}
+
+.poll-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.poll-fill {
+    height: 100%;
+    background: linear-gradient(45deg, var(--accent-red), var(--accent-gold));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+.poll-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 10px;
+}
+
 /* YouTube-Style Chat */
 .chat-container {
     width: 400px;
-    background: rgba(255, 255, 255, 0.05);
-    border-left: 1px solid var(--border-light);
+    background: #000000 !important;
+    border-left: 1px solid #333;
     display: flex;
     flex-direction: column;
 }
 
 .chat-header {
     padding: 15px 20px;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 1px solid #333;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: #111;
 }
 
 .chat-header h3 {
     font-size: 1.2em;
-    color: var(--text-primary);
+    color: #ffffff !important;
 }
 
 .collapse-btn {
     background: none;
     border: none;
-    color: var(--text-muted);
+    color: #ffffff !important;
     cursor: pointer;
     font-size: 1.1em;
     padding: 5px;
@@ -680,6 +832,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    background: #000000;
 }
 
 .chat-message {
@@ -687,19 +840,20 @@ body {
     gap: 10px;
     padding: 8px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #111111;
 }
 
 .user-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: linear-gradient(45deg, var(--accent-red), var(--accent-gold));
+    background: linear-gradient(45deg, #666, #999);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.8em;
     font-weight: bold;
+    color: #ffffff;
 }
 
 .message-content {
@@ -716,43 +870,44 @@ body {
 .username {
     font-weight: 600;
     font-size: 0.9em;
-    color: var(--text-primary);
+    color: #ffffff !important;
 }
 
 .timestamp {
     font-size: 0.7em;
-    color: var(--text-muted);
+    color: #888 !important;
 }
 
 .message-text {
     font-size: 0.9em;
-    color: var(--text-secondary);
+    color: #cccccc !important;
     line-height: 1.4;
 }
 
 .chat-input {
     padding: 15px 20px;
-    border-top: 1px solid var(--border-light);
+    border-top: 1px solid #333;
     display: flex;
     gap: 10px;
+    background: #111;
 }
 
 .message-input {
     flex: 1;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-light);
+    background: #222;
+    border: 1px solid #333;
     border-radius: 20px;
     padding: 10px 15px;
-    color: var(--text-primary);
+    color: #ffffff;
     font-size: 0.9em;
 }
 
 .message-input::placeholder {
-    color: var(--text-muted);
+    color: #888;
 }
 
 .send-btn {
-    background: var(--accent-blue);
+    background: #555;
     border: none;
     color: white;
     padding: 10px 20px;
@@ -763,12 +918,7 @@ body {
 }
 
 .send-btn:hover {
-    background: #2980b9;
-}
-
-.send-btn:disabled {
-    background: var(--text-muted);
-    cursor: not-allowed;
+    background: #666;
 }
 
 /* Collapsed Chat */
@@ -973,6 +1123,16 @@ body {
     
     .action-btn {
         padding: 6px 12px;
+        font-size: 0.8em;
+    }
+    
+    .video-player-controls {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .player-refresh-btn, .player-fullscreen-btn {
+        padding: 6px 10px;
         font-size: 0.8em;
     }
 }
