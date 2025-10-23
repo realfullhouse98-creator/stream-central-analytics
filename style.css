@@ -1,4 +1,4 @@
-/* Uncle 9 Stream - Clean CSS */
+/* Uncle 9 Stream - Complete CSS with TV Channels */
 :root {
     --primary-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     --card-bg: rgba(255, 255, 255, 0.08);
@@ -6,6 +6,7 @@
     --accent-gold: #ffd93d;
     --accent-red: #ff6b6b;
     --accent-green: #6bcf7f;
+    --accent-blue: #3498db;
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.8);
     --text-muted: rgba(255, 255, 255, 0.6);
@@ -96,8 +97,43 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* Navigation Tabs */
+.navigation-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.tab-btn.active {
+    background: linear-gradient(45deg, var(--accent-red), var(--accent-gold));
+    color: white;
+    border-color: transparent;
+}
+
+.tab-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
 /* Main Content Sections */
-.psl-streams-section {
+.content-section {
     margin-bottom: 40px;
     padding: 30px;
     background: rgba(255, 255, 255, 0.03);
@@ -124,15 +160,21 @@ body {
 /* Streams Grid */
 .streams-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Compact grid for sports */
+.streams-grid.compact {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
 }
 
 /* Match Cards */
 .match-card {
     background: var(--card-bg);
     border-radius: 12px;
-    padding: 25px;
+    padding: 20px;
     backdrop-filter: blur(10px);
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
@@ -162,7 +204,7 @@ body {
     display: grid;
     grid-template-columns: 50px 1fr 50px;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     margin-bottom: 15px;
 }
 
@@ -191,6 +233,10 @@ body {
     border-color: rgba(255, 217, 61, 0.3);
 }
 
+.team-logo.tv-icon {
+    background: linear-gradient(135deg, var(--accent-blue), #9b59b6);
+}
+
 .vs {
     text-align: center;
     font-weight: bold;
@@ -199,13 +245,13 @@ body {
 }
 
 .vs.sport-name {
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 .match-card h4 {
-    margin: 0 0 15px 0;
+    margin: 0 0 12px 0;
     text-align: center;
-    font-size: 1.1em;
+    font-size: 1em;
     color: var(--text-primary);
 }
 
@@ -213,8 +259,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9em;
-    margin-top: 15px;
+    font-size: 0.85em;
+    margin-top: 12px;
 }
 
 .match-info .date {
@@ -222,9 +268,9 @@ body {
 }
 
 .match-status {
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 0.8em;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -240,6 +286,43 @@ body {
     color: var(--accent-gold);
 }
 
+/* TV Channel Cards */
+.tv-channel-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+    text-align: center;
+    cursor: pointer;
+}
+
+.tv-channel-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    background: var(--card-hover);
+}
+
+.tv-channel-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
+
+.tv-channel-name {
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.tv-channel-category {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
 /* Matches Table */
 .matches-table {
     background: rgba(255, 255, 255, 0.03);
@@ -253,18 +336,18 @@ body {
     display: grid;
     grid-template-columns: 100px 1fr 120px;
     background: rgba(255, 255, 255, 0.1);
-    padding: 18px 25px;
+    padding: 15px 25px;
     border-bottom: 1px solid var(--border-light);
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-size: 0.9em;
+    font-size: 0.85em;
 }
 
 .match-row {
     display: grid;
     grid-template-columns: 100px 1fr 120px;
-    padding: 18px 25px;
+    padding: 15px 25px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     align-items: center;
     transition: background 0.3s ease;
@@ -286,18 +369,18 @@ body {
 .match-time {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-weight: bold;
     color: var(--accent-gold);
-    font-size: 1em;
+    font-size: 0.95em;
 }
 
 .live-badge {
     background: var(--accent-red);
     color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.75em;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.7em;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -305,13 +388,13 @@ body {
 .team-names {
     font-weight: bold;
     color: var(--text-primary);
-    margin-bottom: 5px;
-    font-size: 1.1em;
+    margin-bottom: 4px;
+    font-size: 1em;
 }
 
 .league-name {
     color: var(--text-muted);
-    font-size: 0.9em;
+    font-size: 0.85em;
 }
 
 .watch-action {
@@ -322,14 +405,14 @@ body {
     background: linear-gradient(45deg, var(--accent-red), var(--accent-gold));
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 20px;
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
-    min-width: 90px;
+    min-width: 80px;
     text-transform: uppercase;
-    font-size: 0.85em;
+    font-size: 0.8em;
     letter-spacing: 0.5px;
 }
 
@@ -346,7 +429,7 @@ body {
 .offline-text {
     color: var(--text-muted);
     font-style: italic;
-    font-size: 0.9em;
+    font-size: 0.85em;
 }
 
 /* Buttons */
@@ -354,11 +437,11 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-light);
     color: var(--text-primary);
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 0.9em;
+    font-size: 0.85em;
 }
 
 .back-btn:hover {
@@ -370,10 +453,10 @@ body {
     background: rgba(52, 152, 219, 0.2);
     color: #3498db;
     border: 1px solid #3498db;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 15px;
     transition: all 0.3s ease;
 }
 
@@ -385,7 +468,7 @@ body {
 /* Utility States */
 .loading-streams {
     text-align: center;
-    padding: 60px 40px;
+    padding: 50px 30px;
     grid-column: 1 / -1;
     color: var(--text-muted);
     font-size: 1.1em;
@@ -393,19 +476,19 @@ body {
 
 .no-matches {
     text-align: center;
-    padding: 60px 40px;
+    padding: 50px 30px;
     grid-column: 1 / -1;
     color: var(--text-muted);
 }
 
 .error-message {
     text-align: center;
-    padding: 60px 40px;
+    padding: 50px 30px;
     color: var(--text-muted);
 }
 
 .error-message h3 {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     color: var(--accent-red);
 }
 
@@ -428,22 +511,26 @@ body {
 /* Footer */
 .dashboard-footer {
     text-align: center;
-    padding: 30px 20px;
+    padding: 25px 20px;
     color: var(--text-muted);
     border-top: 1px solid var(--border-light);
     margin-top: 40px;
 }
 
 .last-updated {
-    margin-top: 10px;
-    font-size: 0.85em;
+    margin-top: 8px;
+    font-size: 0.8em;
     color: var(--text-muted);
 }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
     .streams-grid {
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    
+    .streams-grid.compact {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     }
 }
 
@@ -473,19 +560,27 @@ body {
         font-size: 2em;
     }
     
-    .psl-streams-section {
+    .navigation-tabs {
+        flex-direction: column;
+    }
+    
+    .content-section {
         padding: 20px;
         margin-bottom: 30px;
     }
     
     .streams-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 15px;
+    }
+    
+    .streams-grid.compact {
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .match-header {
         grid-template-columns: 40px 1fr 40px;
-        gap: 12px;
+        gap: 10px;
     }
     
     .team-logo {
@@ -496,27 +591,27 @@ body {
     
     .table-header {
         grid-template-columns: 80px 1fr 100px;
-        padding: 15px 20px;
-        font-size: 0.85em;
+        padding: 12px 15px;
+        font-size: 0.8em;
     }
     
     .match-row {
         grid-template-columns: 80px 1fr 100px;
-        padding: 15px 20px;
+        padding: 12px 15px;
     }
     
     .match-time {
-        font-size: 0.9em;
+        font-size: 0.85em;
     }
     
     .team-names {
-        font-size: 1em;
+        font-size: 0.9em;
     }
     
     .watch-btn {
-        padding: 8px 16px;
-        font-size: 0.8em;
-        min-width: 80px;
+        padding: 6px 12px;
+        font-size: 0.75em;
+        min-width: 70px;
     }
 }
 
@@ -533,29 +628,37 @@ body {
         font-size: 1.6em;
     }
     
+    .streams-grid.compact {
+        grid-template-columns: 1fr;
+    }
+    
     .table-header {
         grid-template-columns: 70px 1fr 90px;
-        padding: 12px 15px;
-        font-size: 0.8em;
+        padding: 10px 12px;
+        font-size: 0.75em;
     }
     
     .match-row {
         grid-template-columns: 70px 1fr 90px;
-        padding: 12px 15px;
+        padding: 10px 12px;
     }
     
     .match-card {
-        padding: 20px;
+        padding: 15px;
+    }
+    
+    .tv-channel-card {
+        padding: 15px;
     }
     
     .watch-btn {
-        padding: 6px 12px;
-        font-size: 0.75em;
-        min-width: 70px;
+        padding: 5px 10px;
+        font-size: 0.7em;
+        min-width: 65px;
     }
     
     .back-btn {
-        padding: 10px 20px;
-        font-size: 0.85em;
+        padding: 8px 16px;
+        font-size: 0.8em;
     }
 }
