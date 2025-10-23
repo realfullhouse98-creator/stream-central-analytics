@@ -1,4 +1,4 @@
-// Uncle Stream - Final Version with Optimized Sizing
+// Uncle Stream - Final Version with Navigation Buttons
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -161,9 +161,11 @@ class MatchScheduler {
 
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">←</button>
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                </div>
                 <div class="section-header">
-                    <h2>Choose </h2>
+                    <h2>Choose</h2>
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
@@ -200,7 +202,9 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">←</button>
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                </div>
                 <div class="section-header">
                     <h2>TV Channels</h2>
                     <p>Click any channel to watch live</p>
@@ -233,7 +237,10 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showSportsView()">←</button>
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                    <button class="top-back-button" onclick="matchScheduler.showSportsView()">←</button>
+                </div>
                 <div class="section-header">
                     <h2>${sportName}</h2>
                     <p>Select a date</p>
@@ -273,7 +280,10 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                    <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
+                </div>
                 <div class="section-header">
                     <h2>${sportName} • ${displayDate}</h2>
                     <p>${matches.length} matches • ${liveCount} live</p>
