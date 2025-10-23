@@ -1,4 +1,4 @@
-// Uncle Stream - Complete Working Version
+// Uncle Stream - Complete Working Version with Fixed Styling
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -169,7 +169,7 @@ class MatchScheduler {
                     ${sports.map(sport => `
                         <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
                             <div class="sport-name">${sport.name}</div>
-                            <div class="match-count">${sport.count}</div>
+                            <div class="match-count">${sport.count} match${sport.count !== 1 ? 'es' : ''}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -244,9 +244,9 @@ class MatchScheduler {
                         const dateMatches = matches.filter(m => m.date === date);
                         const liveCount = dateMatches.filter(m => m.isLive).length;
                         return `
-                            <div class="sport-button" onclick="matchScheduler.selectDate('${date}')">
-                                <div class="sport-name">${this.formatDisplayDate(date)}</div>
-                                <div class="match-count">${dateMatches.length}${liveCount > 0 ? ` • ${liveCount} LIVE` : ''}</div>
+                            <div class="date-button" onclick="matchScheduler.selectDate('${date}')">
+                                <div class="date-name">${this.formatDisplayDate(date)}</div>
+                                <div class="match-count">${dateMatches.length} match${dateMatches.length !== 1 ? 'es' : ''}${liveCount > 0 ? ` • ${liveCount} live` : ''}</div>
                             </div>
                         `;
                     }).join('')}
