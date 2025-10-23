@@ -1,4 +1,4 @@
-// Uncle Stream - Final Version with All Sizing Fixes
+// Uncle Stream - Final Version with Optimized Sizing
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -161,7 +161,7 @@ class MatchScheduler {
 
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">← Back to Main Menu</button>
+                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">←</button>
                 <div class="section-header">
                     <h2>Choose Sport</h2>
                 </div>
@@ -200,7 +200,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">← Back to Main Menu</button>
+                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">←</button>
                 <div class="section-header">
                     <h2>TV Channels</h2>
                     <p>Click any channel to watch live</p>
@@ -233,7 +233,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showSportsView()">← Back to Sports</button>
+                <button class="top-back-button" onclick="matchScheduler.showSportsView()">←</button>
                 <div class="section-header">
                     <h2>${sportName}</h2>
                     <p>Select a date</p>
@@ -273,7 +273,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <button class="top-back-button" onclick="matchScheduler.showDatesView()">← Back to Dates</button>
+                <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
                 <div class="section-header">
                     <h2>${sportName} • ${displayDate}</h2>
                     <p>${matches.length} matches • ${liveCount} live</p>
