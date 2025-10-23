@@ -1,4 +1,4 @@
-// Uncle Stream - Fixed Live Animations Version
+// Uncle Stream - Enhanced Live Detection Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -17,24 +17,50 @@ class MatchScheduler {
     
     async loadMatches() {
         try {
+            console.log('🔍 Loading matches from API...');
             const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
             this.organizeMatches(apiData);
         } catch (error) {
+            console.error('API Error:', error);
             this.showError();
         }
     }
     
     organizeMatches(apiData) {
-        if (!apiData?.events) return;
+        if (!apiData?.events) {
+            console.log('❌ No events found in API data');
+            console.log('📊 API response:', apiData);
+            return;
+        }
         
         this.allMatches = [];
         this.verifiedMatches = [];
         
+        console.log('📅 API Events structure:', Object.keys(apiData.events));
+        
         Object.entries(apiData.events).forEach(([date, matches]) => {
+            console.log(`🕒 Processing date: ${date}, matches count:`, Array.isArray(matches) ? matches.length : 'N/A');
+            
             if (Array.isArray(matches)) {
                 matches.forEach(match => {
                     if (match?.match) {
+                        // Enhanced debugging for raw match data
+                        if (match.unix_timestamp) {
+                            const matchTime = new Date(match.unix_timestamp * 1000);
+                            const now = new Date();
+                            const timeDiff = (now.getTime() - matchTime.getTime()) / (1000 * 60); // minutes
+                            
+                            console.log('⚽ Raw match:', {
+                                teams: match.match,
+                                timestamp: match.unix_timestamp,
+                                matchTime: matchTime.toLocaleString(),
+                                currentTime: now.toLocaleString(),
+                                difference: timeDiff.toFixed(1) + ' minutes',
+                                tournament: match.tournament
+                            });
+                        }
+                        
                         const processedMatch = {
                             date: date,
                             time: this.convertUnixToLocalTime(match.unix_timestamp),
@@ -53,26 +79,73 @@ class MatchScheduler {
             }
         });
         
-        // TEST: Add a guaranteed live match for debugging
+        // TEST: Add guaranteed live matches for debugging
+        const now = Math.floor(Date.now() / 1000);
         this.verifiedMatches.push({
-            date: new Date().toISOString().split('T')[0], // Today's date
+            date: new Date().toISOString().split('T')[0],
             time: 'NOW',
-            teams: 'TEST LIVE MATCH 🔴',
+            teams: 'TEST LIVE FOOTBALL 🔴',
             league: 'Live Test League',
             streamUrl: 'https://example.com',
             isLive: true,
             sport: 'football',
-            unixTimestamp: Math.floor(Date.now() / 1000) - 1800 // 30 minutes ago
+            unixTimestamp: now - 1800 // 30 minutes ago
+        });
+        
+        this.verifiedMatches.push({
+            date: new Date().toISOString().split('T')[0],
+            time: 'SOON',
+            teams: 'TEST UPCOMING MATCH ⏰',
+            league: 'Upcoming Test',
+            streamUrl: 'https://example.com',
+            isLive: false,
+            sport: 'basketball',
+            unixTimestamp: now + 3600 // 1 hour from now
         });
         
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
         
-        // Debug log
+        // Enhanced debug log
+        console.log('=== 🎯 MATCH ANALYSIS ===');
         console.log('Total matches loaded:', this.verifiedMatches.length);
-        console.log('Live matches:', this.verifiedMatches.filter(m => m.isLive).length);
-        this.verifiedMatches.filter(m => m.isLive).forEach(match => {
-            console.log('LIVE:', match.teams, match.time);
+        
+        const liveMatches = this.verifiedMatches.filter(m => m.isLive);
+        const realLiveMatches = liveMatches.filter(m => !m.teams.includes('TEST'));
+        
+        console.log('Live matches found:', liveMatches.length);
+        console.log('Real live matches:', realLiveMatches.length);
+        console.log('Test live matches:', liveMatches.length - realLiveMatches.length);
+        
+        liveMatches.forEach(match => {
+            const timeDiff = (Math.floor(Date.now() / 1000) - match.unixTimestamp) / 60;
+            console.log('🔴 LIVE MATCH:', {
+                teams: match.teams,
+                time: match.time, 
+                timestamp: match.unixTimestamp,
+                started: timeDiff.toFixed(1) + ' minutes ago',
+                isTest: match.teams.includes('TEST')
+            });
+        });
+        
+        // Show real matches that should be live but aren't
+        const realMatches = this.verifiedMatches.filter(m => !m.teams.includes('TEST'));
+        const shouldBeLive = realMatches.filter(m => {
+            if (!m.unixTimestamp) return false;
+            const now = Math.floor(Date.now() / 1000);
+            return now >= m.unixTimestamp && now <= (m.unixTimestamp + 7200); // 2-hour window
+        });
+        
+        console.log('Real matches that should be LIVE:', shouldBeLive.length);
+        shouldBeLive.forEach(match => {
+            const timeDiff = (Math.floor(Date.now() / 1000) - match.unixTimestamp) / 60;
+            console.log('❓ Should be LIVE:', {
+                teams: match.teams,
+                time: match.time,
+                timestamp: match.unixTimestamp,
+                started: timeDiff.toFixed(1) + ' minutes ago',
+                isLive: match.isLive
+            });
         });
     }
     
@@ -120,22 +193,28 @@ class MatchScheduler {
     }
     
     checkIfLive(match) {
-        if (!match.unixTimestamp) return false;
+        if (!match.unix_timestamp) {
+            console.log('⏰ No timestamp for match:', match.match);
+            return false;
+        }
+        
         const now = Math.floor(Date.now() / 1000);
-        const matchTime = match.unixTimestamp;
+        const matchTime = match.unix_timestamp;
         const twoHours = 2 * 60 * 60;
         
         // Match is live if current time is between match start and 2 hours after
         const isLive = now >= matchTime && now <= (matchTime + twoHours);
         
-        // Debug specific matches
-        if (match.teams && match.teams.includes('TEST')) {
-            console.log('TEST MATCH LIVE CHECK:', {
-                teams: match.teams,
-                matchTime: matchTime,
-                now: now,
-                difference: now - matchTime,
-                isLive: isLive
+        // Enhanced debugging for ALL matches
+        if (isLive || match.teams?.includes('TEST')) {
+            const timeDiff = (now - matchTime) / 60; // minutes
+            console.log('🔍 LIVE CHECK:', {
+                teams: match.match,
+                matchTime: new Date(matchTime * 1000).toLocaleTimeString(),
+                currentTime: new Date(now * 1000).toLocaleTimeString(),
+                timeDifference: timeDiff.toFixed(1) + ' minutes',
+                isLive: isLive,
+                window: `${new Date(matchTime * 1000).toLocaleTimeString()} - ${new Date((matchTime + twoHours) * 1000).toLocaleTimeString()}`
             });
         }
         
@@ -364,7 +443,6 @@ class MatchScheduler {
     
     renderMatchRow(match) {
         const isLive = match.isLive;
-        console.log('Rendering match:', match.teams, 'isLive:', isLive); // Debug
         
         return `
             <div class="match-row ${isLive ? 'live' : ''}">
