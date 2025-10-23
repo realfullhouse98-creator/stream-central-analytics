@@ -1,4 +1,4 @@
-// Uncle Stream - Final Version with Stats Management
+// Uncle Stream - Fixed Live Animations Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -53,8 +53,27 @@ class MatchScheduler {
             }
         });
         
+        // TEST: Add a guaranteed live match for debugging
+        this.verifiedMatches.push({
+            date: new Date().toISOString().split('T')[0], // Today's date
+            time: 'NOW',
+            teams: 'TEST LIVE MATCH 🔴',
+            league: 'Live Test League',
+            streamUrl: 'https://example.com',
+            isLive: true,
+            sport: 'football',
+            unixTimestamp: Math.floor(Date.now() / 1000) - 1800 // 30 minutes ago
+        });
+        
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
+        
+        // Debug log
+        console.log('Total matches loaded:', this.verifiedMatches.length);
+        console.log('Live matches:', this.verifiedMatches.filter(m => m.isLive).length);
+        this.verifiedMatches.filter(m => m.isLive).forEach(match => {
+            console.log('LIVE:', match.teams, match.time);
+        });
     }
     
     classifySport(match) {
@@ -104,7 +123,23 @@ class MatchScheduler {
         if (!match.unixTimestamp) return false;
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unixTimestamp;
-        return now >= matchTime && now <= (matchTime + 7200);
+        const twoHours = 2 * 60 * 60;
+        
+        // Match is live if current time is between match start and 2 hours after
+        const isLive = now >= matchTime && now <= (matchTime + twoHours);
+        
+        // Debug specific matches
+        if (match.teams && match.teams.includes('TEST')) {
+            console.log('TEST MATCH LIVE CHECK:', {
+                teams: match.teams,
+                matchTime: matchTime,
+                now: now,
+                difference: now - matchTime,
+                isLive: isLive
+            });
+        }
+        
+        return isLive;
     }
     
     showStats() {
@@ -329,6 +364,8 @@ class MatchScheduler {
     
     renderMatchRow(match) {
         const isLive = match.isLive;
+        console.log('Rendering match:', match.teams, 'isLive:', isLive); // Debug
+        
         return `
             <div class="match-row ${isLive ? 'live' : ''}">
                 <div class="match-time">
