@@ -1,4 +1,4 @@
-// Uncle Stream - Complete Working Version with Fixed Styling
+// Uncle Stream - Final Version with All Sizing Fixes
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -169,7 +169,6 @@ class MatchScheduler {
                     ${sports.map(sport => `
                         <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
                             <div class="sport-name">${sport.name}</div>
-                            <div class="match-count">${sport.count} match${sport.count !== 1 ? 'es' : ''}</div>
                         </div>
                     `).join('')}
                 </div>
