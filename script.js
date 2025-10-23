@@ -163,7 +163,7 @@ class MatchScheduler {
             <div class="content-section">
                 <button class="top-back-button" onclick="matchScheduler.showMainMenu()">←</button>
                 <div class="section-header">
-                    <h2>Choose Sport</h2>
+                    <h2>Choose </h2>
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
