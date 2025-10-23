@@ -1,18 +1,17 @@
-// Uncle Stream - Complete with TV Channels
+// Uncle Stream - Simplified Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
-        this.currentView = 'sports';
+        this.currentView = 'main';
         this.currentSport = null;
         this.currentDate = null;
         this.verifiedMatches = [];
-        this.currentTab = 'sports';
         this.init();
     }
     
     async init() {
         await this.loadMatches();
-        this.showNavigation();
+        this.showMainMenu();
         this.startAutoRefresh();
     }
     
@@ -108,93 +107,72 @@ class MatchScheduler {
         return now >= matchTime && now <= (matchTime + 7200);
     }
     
-    showNavigation() {
+    showMainMenu() {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
         
         container.innerHTML = `
-            <div class="navigation-tabs">
-                <button class="tab-btn ${this.currentTab === 'sports' ? 'active' : ''}" onclick="matchScheduler.switchTab('sports')">
-                    🏆 Sports Matches
-                </button>
-                <button class="tab-btn ${this.currentTab === 'tv' ? 'active' : ''}" onclick="matchScheduler.switchTab('tv')">
-                    📺 TV Channels
-                </button>
+            <div class="main-menu">
+                <div class="menu-grid">
+                    <div class="menu-button sports-button" onclick="matchScheduler.showSportsView()">
+                        <div class="button-title">SPORTS MATCHES</div>
+                        <div class="button-subtitle">Live games & schedules</div>
+                    </div>
+                    <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
+                        <div class="button-title">TV CHANNELS</div>
+                        <div class="button-subtitle">24/7 live streams</div>
+                    </div>
+                </div>
             </div>
-            <div id="tab-content"></div>
         `;
         
-        this.showTabContent();
-    }
-    
-    switchTab(tab) {
-        this.currentTab = tab;
         this.currentView = 'main';
-        this.showNavigation();
-    }
-    
-    showTabContent() {
-        const content = document.getElementById('tab-content');
-        if (!content) return;
-        
-        if (this.currentTab === 'sports') {
-            this.showSportsView();
-        } else {
-            this.showTVChannels();
-        }
+        this.currentSport = null;
+        this.currentDate = null;
     }
     
     showSportsView() {
-        const content = document.getElementById('tab-content');
-        if (!content) return;
-        
+        const container = document.getElementById('psl-streams-container');
+        if (!container) return;
+
         const sports = [
-            { id: 'tennis', name: 'Tennis', icon: '🎾' },
-            { id: 'football', name: 'Football', icon: '⚽' },
-            { id: 'badminton', name: 'Badminton', icon: '🏸' },
-            { id: 'golf', name: 'Golf', icon: '⛳' },
-            { id: 'baseball', name: 'Baseball', icon: '⚾' },
-            { id: 'basketball', name: 'Basketball', icon: '🏀' },
-            { id: 'snooker', name: 'Snooker', icon: '🎱' },
-            { id: 'cricket', name: 'Cricket', icon: '🏏' },
-            { id: 'hockey', name: 'Hockey', icon: '🏒' },
-            { id: 'handball', name: 'Handball', icon: '🤾' },
-            { id: 'darts', name: 'Darts', icon: '🎯' },
-            { id: 'rugby union', name: 'Rugby Union', icon: '🏉' },
-            { id: 'volleyball', name: 'Volleyball', icon: '🏐' },
-            { id: 'mma', name: 'MMA', icon: '🥊' },
-            { id: 'equestrian', name: 'Equestrian', icon: '🏇' },
-            { id: 'wintersports', name: 'Wintersports', icon: '⛷️' },
-            { id: 'motorsports', name: 'Motorsports', icon: '🏎️' },
-            { id: 'other', name: 'Other Sports', icon: '🏆' }
+            { id: 'tennis', name: 'Tennis' },
+            { id: 'football', name: 'Football' },
+            { id: 'badminton', name: 'Badminton' },
+            { id: 'golf', name: 'Golf' },
+            { id: 'baseball', name: 'Baseball' },
+            { id: 'basketball', name: 'Basketball' },
+            { id: 'snooker', name: 'Snooker' },
+            { id: 'cricket', name: 'Cricket' },
+            { id: 'hockey', name: 'Hockey' },
+            { id: 'handball', name: 'Handball' },
+            { id: 'darts', name: 'Darts' },
+            { id: 'rugby union', name: 'Rugby Union' },
+            { id: 'volleyball', name: 'Volleyball' },
+            { id: 'mma', name: 'MMA' },
+            { id: 'equestrian', name: 'Equestrian' },
+            { id: 'wintersports', name: 'Wintersports' },
+            { id: 'motorsports', name: 'Motorsports' },
+            { id: 'other', name: 'Other Sports' }
         ].map(sport => ({
             ...sport,
             count: this.getMatchesBySport(sport.id).length
         })).filter(sport => sport.count > 0);
-        
-        content.innerHTML = `
+
+        container.innerHTML = `
             <div class="content-section">
+                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">← Back to Main Menu</button>
                 <div class="section-header">
-                    <h2>Live Sports Schedules</h2>
-                    <p>Select a sport to view available matches</p>
+                    <h2>Choose Sport</h2>
                 </div>
-                <div class="streams-grid compact">
+                <div class="sports-grid">
                     ${sports.map(sport => `
-                        <div class="match-card sport-category" onclick="matchScheduler.selectSport('${sport.id}')">
-                            <div class="match-header">
-                                <div class="team-logo sport-icon">${sport.icon}</div>
-                                <div class="vs sport-name">${sport.name}</div>
-                                <div class="team-logo match-count">${sport.count}</div>
-                            </div>
-                            <h4>${sport.count} Match${sport.count !== 1 ? 'es' : ''}</h4>
-                            <div class="match-info">
-                                <span class="date">View Schedule</span>
-                                <span class="match-status status-upcoming">GO</span>
-                            </div>
+                        <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
+                            <div class="sport-name">${sport.name}</div>
+                            <div class="match-count">${sport.count}</div>
                         </div>
                     `).join('')}
                 </div>
-                ${sports.length === 0 ? '<div class="loading-streams">No matches available at the moment</div>' : ''}
             </div>
         `;
         
@@ -203,34 +181,34 @@ class MatchScheduler {
     }
     
     showTVChannels() {
-        const content = document.getElementById('tab-content');
-        if (!content) return;
+        const container = document.getElementById('psl-streams-container');
+        if (!container) return;
         
         const tvChannels = [
-            { name: 'Sky Sports Main Event', icon: '📡', category: 'Sports', url: 'https://example.com/sky-sports' },
-            { name: 'BT Sport 1', icon: '⚽', category: 'Sports', url: 'https://example.com/bt-sport' },
-            { name: 'ESPN', icon: '🏀', category: 'Sports', url: 'https://example.com/espn' },
-            { name: 'beIN Sports', icon: '🌍', category: 'Sports', url: 'https://example.com/beinsports' },
-            { name: 'NBA TV', icon: '🏀', category: 'Basketball', url: 'https://example.com/nba-tv' },
-            { name: 'NFL Network', icon: '🏈', category: 'American Football', url: 'https://example.com/nfl' },
-            { name: 'MLB Network', icon: '⚾', category: 'Baseball', url: 'https://example.com/mlb' },
-            { name: 'NHL Network', icon: '🏒', category: 'Hockey', url: 'https://example.com/nhl' },
-            { name: 'Tennis Channel', icon: '🎾', category: 'Tennis', url: 'https://example.com/tennis' },
-            { name: 'Sky Sports Cricket', icon: '🏏', category: 'Cricket', url: 'https://example.com/cricket' },
-            { name: 'Eurosport 1', icon: '🏆', category: 'Multi-Sport', url: 'https://example.com/eurosport' },
-            { name: 'DAZN', icon: '🎯', category: 'Sports', url: 'https://example.com/dazn' }
+            { name: 'Sky Sports Main Event', category: 'Sports', url: 'https://example.com/sky-sports' },
+            { name: 'BT Sport 1', category: 'Sports', url: 'https://example.com/bt-sport' },
+            { name: 'ESPN', category: 'Sports', url: 'https://example.com/espn' },
+            { name: 'beIN Sports', category: 'Sports', url: 'https://example.com/beinsports' },
+            { name: 'NBA TV', category: 'Basketball', url: 'https://example.com/nba-tv' },
+            { name: 'NFL Network', category: 'American Football', url: 'https://example.com/nfl' },
+            { name: 'MLB Network', category: 'Baseball', url: 'https://example.com/mlb' },
+            { name: 'NHL Network', category: 'Hockey', url: 'https://example.com/nhl' },
+            { name: 'Tennis Channel', category: 'Tennis', url: 'https://example.com/tennis' },
+            { name: 'Sky Sports Cricket', category: 'Cricket', url: 'https://example.com/cricket' },
+            { name: 'Eurosport 1', category: 'Multi-Sport', url: 'https://example.com/eurosport' },
+            { name: 'DAZN', category: 'Sports', url: 'https://example.com/dazn' }
         ];
         
-        content.innerHTML = `
+        container.innerHTML = `
             <div class="content-section">
+                <button class="top-back-button" onclick="matchScheduler.showMainMenu()">← Back to Main Menu</button>
                 <div class="section-header">
-                    <h2>Live TV Channels</h2>
-                    <p>Click on any channel to start watching</p>
+                    <h2>TV Channels</h2>
+                    <p>Click any channel to watch live</p>
                 </div>
                 <div class="streams-grid">
                     ${tvChannels.map(channel => `
                         <div class="tv-channel-card" onclick="window.open('${channel.url}', '_blank')">
-                            <div class="tv-channel-icon">${channel.icon}</div>
                             <div class="tv-channel-name">${channel.name}</div>
                             <div class="tv-channel-category">${channel.category}</div>
                             <button class="watch-btn">WATCH LIVE</button>
@@ -247,43 +225,31 @@ class MatchScheduler {
     }
     
     showDatesView() {
-        const content = document.getElementById('tab-content');
-        if (!content) return;
+        const container = document.getElementById('psl-streams-container');
+        if (!container) return;
         
         const matches = this.getMatchesBySport(this.currentSport);
         const dates = [...new Set(matches.map(match => match.date))].sort();
         const sportName = this.getSportDisplayName();
         
-        content.innerHTML = `
+        container.innerHTML = `
             <div class="content-section">
+                <button class="top-back-button" onclick="matchScheduler.showSportsView()">← Back to Sports</button>
                 <div class="section-header">
-                    <h2>${sportName} Matches</h2>
-                    <p>Select a date to view matches</p>
+                    <h2>${sportName}</h2>
+                    <p>Select a date</p>
                 </div>
-                <div class="streams-grid">
+                <div class="sports-grid">
                     ${dates.map(date => {
                         const dateMatches = matches.filter(m => m.date === date);
                         const liveCount = dateMatches.filter(m => m.isLive).length;
                         return `
-                            <div class="match-card date-card" onclick="matchScheduler.selectDate('${date}')">
-                                <div class="match-header">
-                                    <div class="team-logo">📅</div>
-                                    <div class="vs">${this.formatDisplayDate(date)}</div>
-                                    <div class="team-logo">${dateMatches.length}</div>
-                                </div>
-                                <h4>${dateMatches.length} Match${dateMatches.length !== 1 ? 'es' : ''}${liveCount > 0 ? ` • ${liveCount} LIVE` : ''}</h4>
-                                <div class="match-info">
-                                    <span class="date">${sportName}</span>
-                                    <span class="match-status ${liveCount > 0 ? 'status-live' : 'status-upcoming'}">
-                                        ${liveCount > 0 ? 'LIVE' : 'VIEW'}
-                                    </span>
-                                </div>
+                            <div class="sport-button" onclick="matchScheduler.selectDate('${date}')">
+                                <div class="sport-name">${this.formatDisplayDate(date)}</div>
+                                <div class="match-count">${dateMatches.length}${liveCount > 0 ? ` • ${liveCount} LIVE` : ''}</div>
                             </div>
                         `;
                     }).join('')}
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="back-btn" onclick="matchScheduler.showSportsView()">← Back to Sports</button>
                 </div>
             </div>
         `;
@@ -298,19 +264,20 @@ class MatchScheduler {
     }
     
     showMatchesView() {
-        const content = document.getElementById('tab-content');
-        if (!content) return;
+        const container = document.getElementById('psl-streams-container');
+        if (!container) return;
         
         const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
         const sportName = this.getSportDisplayName();
         const displayDate = this.formatDisplayDate(this.currentDate);
         const liveCount = matches.filter(m => m.isLive).length;
         
-        content.innerHTML = `
+        container.innerHTML = `
             <div class="content-section">
+                <button class="top-back-button" onclick="matchScheduler.showDatesView()">← Back to Dates</button>
                 <div class="section-header">
                     <h2>${sportName} • ${displayDate}</h2>
-                    <p>${matches.length} matches scheduled • ${liveCount} live now</p>
+                    <p>${matches.length} matches • ${liveCount} live</p>
                 </div>
                 
                 <div class="matches-table">
@@ -321,12 +288,8 @@ class MatchScheduler {
                     </div>
                     ${matches.length > 0 ? 
                         matches.map(match => this.renderMatchRow(match)).join('') :
-                        '<div class="no-matches">No matches found for this date</div>'
+                        '<div class="no-matches">No matches found</div>'
                     }
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="back-btn" onclick="matchScheduler.showDatesView()">← Back to Dates</button>
                 </div>
             </div>
         `;
@@ -394,7 +357,6 @@ class MatchScheduler {
     formatDisplayDate(dateString) {
         return new Date(dateString + 'T00:00:00').toLocaleDateString('en-US', {
             weekday: 'long',
-            year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
@@ -434,7 +396,6 @@ class MatchScheduler {
                 if (this.currentView === 'matches') this.showMatchesView();
                 else if (this.currentView === 'dates') this.showDatesView();
                 else if (this.currentView === 'sports') this.showSportsView();
-                else this.showNavigation();
             });
         }, 300000);
     }
