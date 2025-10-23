@@ -115,7 +115,7 @@ class MatchScheduler {
             <div class="main-menu">
                 <div class="menu-grid">
                     <div class="menu-button sports-button" onclick="matchScheduler.showSportsView()">
-                        <div class="button-title">SPORTS MATCHES</div>
+                        <div class="button-title">LIVE SPORTS</div>
                         <div class="button-subtitle">Live games & schedules</div>
                     </div>
                     <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
