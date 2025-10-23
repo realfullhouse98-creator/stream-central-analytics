@@ -1,4 +1,4 @@
-/* Uncle 9 Stream - Clean CSS with Live Animations Only */
+/* Uncle 9 Stream - Enhanced CSS with Match Details */
 :root {
     --primary-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     --card-bg: rgba(255, 255, 255, 0.08);
@@ -256,14 +256,16 @@ body {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
     border-radius: 15px;
-    padding: 25px 20px;
+    padding: 20px 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    min-height: 120px;
+    min-height: 110px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .date-button:hover {
@@ -273,19 +275,19 @@ body {
 }
 
 .date-name {
-    font-size: 1.6em;
+    font-size: 1.3em;
     font-weight: 600;
     color: white;
-    line-height: 1.3;
+    line-height: 1.2;
+    margin-bottom: 8px;
 }
 
 .match-count {
-    font-size: 0.7em;
-    color: rgba(255, 255, 255, 0.6);
-    font-weight: 600;
-    align-self: flex-end;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    text-align: center;
     margin-top: auto;
-    text-align: right;
 }
 
 .tv-channel-card {
@@ -369,8 +371,6 @@ body {
     color: var(--accent-gold);
     font-size: 1.4em;
 }
-
-/* REMOVED .live-badge styles since we're not using the badge anymore */
 
 .team-names {
     font-weight: bold;
@@ -467,7 +467,166 @@ body {
     transform: translateY(-2px);
 }
 
-/* CLEANED LIVE ANIMATIONS - Removed test animations, kept only essential */
+/* Match Details Overlay */
+.match-details-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-bg);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.match-details-modal {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Header */
+.match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.header-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.refresh-btn, .fullscreen-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.refresh-btn:hover, .fullscreen-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Title Section */
+.match-title-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.main-title {
+    font-size: 2.5em;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.match-subtitle {
+    color: var(--text-muted);
+    font-size: 1.2em;
+}
+
+/* Content Layout */
+.match-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    height: 70vh;
+}
+
+.stream-area {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.stream-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #000;
+}
+
+.no-stream {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.no-stream h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: var(--accent-red);
+}
+
+.chat-area {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.chat-placeholder {
+    text-align: center;
+    color: var(--text-muted);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-placeholder h3 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.chat-messages {
+    margin-top: 20px;
+    text-align: left;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.chat-message {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 6px;
+    font-size: 0.9em;
+}
+
+/* LIVE ANIMATIONS */
 @keyframes pulse {
     0% { 
         opacity: 1;
@@ -528,7 +687,7 @@ body {
     }
 }
 
-/* APPLY ANIMATIONS TO LIVE ELEMENTS ONLY */
+/* APPLY ANIMATIONS TO LIVE ELEMENTS */
 .watch-btn.live {
     background: linear-gradient(45deg, var(--accent-red), #e74c3c);
     -webkit-animation: pulse 1.5s infinite ease-in-out;
@@ -557,6 +716,7 @@ body {
     color: var(--text-muted);
 }
 
+/* Responsive */
 @media (max-width: 1200px) {
     .sports-grid {
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -618,11 +778,11 @@ body {
     }
     
     .date-name {
-        font-size: 1.4em;
+        font-size: 1.2em;
     }
     
     .match-count {
-        font-size: 0.6em;
+        font-size: 0.7em;
     }
     
     .navigation-buttons {
@@ -662,6 +822,30 @@ body {
         padding: 8px 14px;
         font-size: 1em;
         min-width: 80px;
+    }
+    
+    /* Match Details Mobile */
+    .match-content {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .main-title {
+        font-size: 1.8em;
+    }
+    
+    .match-details-modal {
+        padding: 10px;
+    }
+    
+    .match-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .header-controls {
+        align-self: flex-end;
     }
 }
 
