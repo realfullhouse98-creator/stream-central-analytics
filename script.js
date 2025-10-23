@@ -6,7 +6,8 @@ class MatchScheduler {
         this.currentSport = null;
         this.currentDate = null;
         this.verifiedMatches = [];
-        this.matchStats = new Map(); // Store likes, views, etc.
+        this.matchStats = new Map();
+        this.matchPolls = new Map();
         this.init();
     }
     
@@ -38,7 +39,6 @@ class MatchScheduler {
                     if (match?.match) {
                         const matchId = this.generateMatchId(match);
                         
-                        // Initialize match stats
                         if (!this.matchStats.has(matchId)) {
                             this.matchStats.set(matchId, {
                                 views: Math.floor(Math.random() * 10000) + 500,
@@ -392,22 +392,48 @@ class MatchScheduler {
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         
+        // Generate poll data
+        if (!this.matchPolls.has(matchId)) {
+            this.matchPolls.set(matchId, {
+                question: `Who will win ${formattedTeams}?`,
+                options: [
+                    { text: this.getTeamName(match.teams, 0), votes: Math.floor(Math.random() * 100) + 20 },
+                    { text: this.getTeamName(match.teams, 1), votes: Math.floor(Math.random() * 100) + 15 },
+                    { text: "Draw", votes: Math.floor(Math.random() * 50) + 5 }
+                ],
+                totalVotes: 0,
+                userVoted: false
+            });
+            
+            // Calculate total votes
+            const poll = this.matchPolls.get(matchId);
+            poll.totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
+        }
+        
+        const poll = this.matchPolls.get(matchId);
+        
         const matchDetailsHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
                     <div class="match-header">
                         <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                         <div class="header-controls">
-                            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+                            <button class="refresh-btn" onclick="location.reload()">🔄 Page Refresh</button>
                             <button class="fullscreen-btn" onclick="matchScheduler.toggleFullscreen()">⛶ Fullscreen</button>
                         </div>
                     </div>
                     
                     <div class="match-content">
                         <div class="video-container">
-                            <div class="video-player">
+                            <!-- Video Player Controls -->
+                            <div class="video-player-controls">
+                                <button class="player-refresh-btn" onclick="matchScheduler.refreshStream('${matchId}')">🔄 Stream</button>
+                                <button class="player-fullscreen-btn" onclick="matchScheduler.toggleVideoFullscreen('${matchId}')">⛶ Video</button>
+                            </div>
+                            
+                            <div class="video-player" id="video-player-${matchId}">
                                 ${match.streamUrl ? 
-                                    `<iframe src="${match.streamUrl}" class="stream-iframe" 
+                                    `<iframe src="${match.streamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
                                             allowfullscreen></iframe>` :
                                     `<div class="no-stream">
                                         <h3>Stream Not Available</h3>
@@ -420,7 +446,7 @@ class MatchScheduler {
                                 <div class="video-title">${formattedTeams}</div>
                                 <div class="video-stats">
                                     <span class="views-count">${this.formatNumber(stats.views)} views</span>
-                                    <span class="match-status">${match.isLive ? '🔴 LIVE NOW' : '⏰ UPCOMING'}</span>
+                                    ${match.isLive ? '<span class="live-badge-details">LIVE</span>' : '<span class="match-status">UPCOMING</span>'}
                                 </div>
                                 <div class="video-actions">
                                     <button class="action-btn like-btn" onclick="matchScheduler.handleLike('${matchId}')">
@@ -435,6 +461,39 @@ class MatchScheduler {
                                     <button class="action-btn" onclick="matchScheduler.handleReport('${matchId}')">
                                         ⚠️ Report
                                     </button>
+                                </div>
+                                
+                                <!-- Match Description -->
+                                <div class="match-description">
+                                    <div class="description-text">
+                                        ${this.getTeamName(match.teams, 0)} against ${this.getTeamName(match.teams, 1)} clash - who will emerge the winner?
+                                    </div>
+                                </div>
+                                
+                                <!-- Poll Section -->
+                                <div class="poll-section">
+                                    <div class="poll-title">Community Poll: ${poll.question}</div>
+                                    <div class="poll-options">
+                                        ${poll.options.map((option, index) => {
+                                            const percentage = poll.totalVotes > 0 ? Math.round((option.votes / poll.totalVotes) * 100) : 0;
+                                            return `
+                                                <div class="poll-option" onclick="matchScheduler.voteInPoll('${matchId}', ${index})">
+                                                    <input type="radio" name="poll-${matchId}" ${poll.userVoted ? 'disabled' : ''}>
+                                                    <div class="poll-label">${option.text}</div>
+                                                    <div class="poll-percentage">${percentage}%</div>
+                                                    ${poll.userVoted ? `
+                                                        <div class="poll-bar">
+                                                            <div class="poll-fill" style="width: ${percentage}%"></div>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                    <div class="poll-stats">
+                                        <span>Total Votes: ${poll.totalVotes}</span>
+                                        ${poll.userVoted ? '<span>Thanks for voting! 🗳️</span>' : '<span>Click to vote!</span>'}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -484,6 +543,11 @@ class MatchScheduler {
         
         // Increment views
         this.incrementViews(matchId);
+    }
+    
+    getTeamName(teamString, index) {
+        const teams = teamString.split(' - ');
+        return teams[index] || `Team ${index + 1}`;
     }
     
     incrementViews(matchId) {
@@ -544,6 +608,71 @@ class MatchScheduler {
         alert('Thank you for reporting. We will review this stream.');
     }
     
+    refreshStream(matchId) {
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (!match || !match.streamUrl) return;
+        
+        const iframe = document.getElementById(`stream-iframe-${matchId}`);
+        if (iframe) {
+            // Reload the iframe to refresh the stream
+            iframe.src = iframe.src;
+            
+            // Show refresh feedback
+            const refreshBtn = document.querySelector('.player-refresh-btn');
+            if (refreshBtn) {
+                refreshBtn.textContent = '🔄 Refreshing...';
+                setTimeout(() => {
+                    refreshBtn.textContent = '🔄 Stream';
+                }, 1000);
+            }
+        }
+    }
+    
+    toggleVideoFullscreen(matchId) {
+        const videoPlayer = document.getElementById(`video-player-${matchId}`);
+        if (!videoPlayer) return;
+        
+        if (!document.fullscreenElement) {
+            videoPlayer.requestFullscreen().catch(err => {
+                console.log('Fullscreen failed:', err);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+    
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+    
+    voteInPoll(matchId, optionIndex) {
+        const poll = this.matchPolls.get(matchId);
+        if (!poll || poll.userVoted) return;
+        
+        // Add vote
+        poll.options[optionIndex].votes++;
+        poll.totalVotes++;
+        poll.userVoted = true;
+        
+        // Update UI
+        this.updatePollUI(matchId);
+    }
+    
+    updatePollUI(matchId) {
+        const poll = this.matchPolls.get(matchId);
+        if (!poll) return;
+        
+        // This would need to be more sophisticated in a real app
+        // For now, we'll just reload the match details to show updated poll
+        this.showMatchDetails(matchId);
+    }
+    
     toggleChat(matchId) {
         const chatContainer = document.getElementById(`chat-${matchId}`);
         if (chatContainer) {
@@ -581,16 +710,6 @@ class MatchScheduler {
             chatMessages.insertAdjacentHTML('beforeend', messageHTML);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             input.value = '';
-        }
-    }
-    
-    toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
         }
     }
     
