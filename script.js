@@ -1,4 +1,4 @@
-// Uncle Stream - Final Clean Version
+// Uncle Stream - Enhanced with Match Details
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -36,6 +36,7 @@ class MatchScheduler {
                 matches.forEach(match => {
                     if (match?.match) {
                         const processedMatch = {
+                            id: this.generateMatchId(match),
                             date: date,
                             time: this.convertUnixToLocalTime(match.unix_timestamp),
                             teams: match.match,
@@ -53,10 +54,12 @@ class MatchScheduler {
             }
         });
         
-        // REMOVED TEST MATCHES - Only real API matches
-        
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
+    }
+    
+    generateMatchId(match) {
+        return `${match.match || 'match'}-${match.unix_timestamp || Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
     
     classifySport(match) {
@@ -108,8 +111,11 @@ class MatchScheduler {
         const matchTime = match.unix_timestamp;
         const twoHours = 2 * 60 * 60;
         
-        // Match is live if current time is between match start and 2 hours after
         return now >= matchTime && now <= (matchTime + twoHours);
+    }
+    
+    formatTeamNames(teamString) {
+        return teamString.replace(/ - /g, ' Vs ');
     }
     
     showStats() {
@@ -185,7 +191,7 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Choose</h2>
+                    <h2>Choose Sport</h2>
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
@@ -334,27 +340,93 @@ class MatchScheduler {
     
     renderMatchRow(match) {
         const isLive = match.isLive;
+        const formattedTeams = this.formatTeamNames(match.teams);
         
         return `
             <div class="match-row ${isLive ? 'live' : ''}">
                 <div class="match-time">
                     ${match.time}
-                    <!-- REMOVED LIVE BADGE -->
                 </div>
                 <div class="match-details">
-                    <div class="team-names">${match.teams}</div>
+                    <div class="team-names">${formattedTeams}</div>
                     <div class="league-name">${match.league}</div>
                 </div>
                 <div class="watch-action">
                     ${match.streamUrl ? 
-                        `<button class="watch-btn ${isLive ? 'live' : ''}" onclick="window.open('${match.streamUrl}', '_blank')">
-                            ${isLive ? 'LIVE' : 'WATCH'}  <!-- REMOVED "NOW" -->
+                        `<button class="watch-btn ${isLive ? 'live' : ''}" 
+                                onclick="matchScheduler.showMatchDetails('${match.id}')">
+                            ${isLive ? 'LIVE' : 'WATCH'}
                         </button>` :
                         '<span class="offline-text">OFFLINE</span>'
                     }
                 </div>
             </div>
         `;
+    }
+    
+    showMatchDetails(matchId) {
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (!match) return;
+        
+        const formattedTeams = this.formatTeamNames(match.teams);
+        
+        const matchDetailsHTML = `
+            <div class="match-details-overlay">
+                <div class="match-details-modal">
+                    <div class="match-header">
+                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
+                        <div class="header-controls">
+                            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+                            <button class="fullscreen-btn" onclick="matchScheduler.toggleFullscreen()">⛶ Fullscreen</button>
+                        </div>
+                    </div>
+                    
+                    <div class="match-title-section">
+                        <h1 class="main-title">${formattedTeams}</h1>
+                        <div class="match-subtitle">${match.sport} - ${match.league} - ${formattedTeams}</div>
+                    </div>
+                    
+                    <div class="match-content">
+                        <div class="stream-area">
+                            ${match.streamUrl ? 
+                                `<iframe src="${match.streamUrl}" class="stream-iframe" 
+                                        allowfullscreen></iframe>` :
+                                `<div class="no-stream">
+                                    <h3>Stream Not Available</h3>
+                                    <p>This match stream is currently offline</p>
+                                </div>`
+                            }
+                        </div>
+                        
+                        <div class="chat-area">
+                            <div class="chat-placeholder">
+                                <h3>Live Chat</h3>
+                                <p>Chat functionality coming soon</p>
+                                <div class="chat-messages">
+                                    <div class="chat-message">Welcome to the match!</div>
+                                    <div class="chat-message">Chat feature in development...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const container = document.getElementById('psl-streams-container');
+        container.innerHTML = matchDetailsHTML;
+        this.currentView = 'match-details';
+        this.hideStats();
+    }
+    
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
     }
     
     getMatchesBySport(sport) {
@@ -431,6 +503,7 @@ class MatchScheduler {
                 if (this.currentView === 'matches') this.showMatchesView();
                 else if (this.currentView === 'dates') this.showDatesView();
                 else if (this.currentView === 'sports') this.showSportsView();
+                else if (this.currentView === 'main') this.showMainMenu();
             });
         }, 300000);
     }
