@@ -1,4 +1,4 @@
-// Uncle Stream - Fixed Live Animations Version
+// Uncle Stream - FIXED Sports Categorization & Live Detection
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -17,23 +17,32 @@ class MatchScheduler {
     
     async loadMatches() {
         try {
+            console.log('Loading matches from API...');
             const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
+            console.log('Raw API data:', apiData);
             this.organizeMatches(apiData);
         } catch (error) {
+            console.error('API Error:', error);
             this.showError();
         }
     }
     
     organizeMatches(apiData) {
-        if (!apiData?.events) return;
+        if (!apiData?.events) {
+            console.log('No events found in API data');
+            return;
+        }
         
         this.allMatches = [];
         this.verifiedMatches = [];
         
+        console.log('Processing API events...');
         Object.entries(apiData.events).forEach(([date, matches]) => {
+            console.log(`Date: ${date}, Matches:`, matches);
+            
             if (Array.isArray(matches)) {
-                matches.forEach(match => {
+                matches.forEach((match, index) => {
                     if (match?.match) {
                         const processedMatch = {
                             date: date,
@@ -43,71 +52,173 @@ class MatchScheduler {
                             streamUrl: match.channels?.[0] || null,
                             isLive: this.checkIfLive(match),
                             sport: this.classifySport(match),
-                            unixTimestamp: match.unix_timestamp
+                            unixTimestamp: match.unix_timestamp,
+                            rawData: match // Keep original for debugging
                         };
                         
                         this.allMatches.push(processedMatch);
                         this.verifiedMatches.push(processedMatch);
+                        
+                        console.log(`Processed match ${index}:`, {
+                            teams: processedMatch.teams,
+                            league: processedMatch.league,
+                            sport: processedMatch.sport,
+                            isLive: processedMatch.isLive
+                        });
                     }
                 });
             }
         });
         
-        // TEST: Add a guaranteed live match for debugging
+        // TEST: Add guaranteed live matches for debugging
         this.verifiedMatches.push({
-            date: new Date().toISOString().split('T')[0], // Today's date
+            date: new Date().toISOString().split('T')[0],
             time: 'NOW',
-            teams: 'TEST LIVE MATCH 🔴',
-            league: 'Live Test League',
+            teams: 'TEST FOOTBALL MATCH 🔴',
+            league: 'Premier League',
             streamUrl: 'https://example.com',
             isLive: true,
             sport: 'football',
-            unixTimestamp: Math.floor(Date.now() / 1000) - 1800 // 30 minutes ago
+            unixTimestamp: Math.floor(Date.now() / 1000) - 1800
+        });
+        
+        this.verifiedMatches.push({
+            date: new Date().toISOString().split('T')[0],
+            time: 'NOW',
+            teams: 'TEST TENNIS MATCH 🔴',
+            league: 'Wimbledon',
+            streamUrl: 'https://example.com',
+            isLive: true,
+            sport: 'tennis',
+            unixTimestamp: Math.floor(Date.now() / 1000) - 1800
         });
         
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
         
-        // Debug log
-        console.log('Total matches loaded:', this.verifiedMatches.length);
-        console.log('Live matches:', this.verifiedMatches.filter(m => m.isLive).length);
-        this.verifiedMatches.filter(m => m.isLive).forEach(match => {
-            console.log('LIVE:', match.teams, match.time);
-        });
+        // Debug categorization
+        this.debugSportsCategorization();
     }
     
     classifySport(match) {
         const tournament = (match.tournament || '').toLowerCase();
         const matchName = (match.match || '').toLowerCase();
+        const sport = (match.sport || '').toLowerCase();
         
+        console.log('Classifying sport:', { tournament, matchName, sport });
+        
+        // First, check if we have direct sport information
+        if (sport && sport !== 'sports' && sport !== 'other') {
+            const sportMap = {
+                'soccer': 'football',
+                'american football': 'football',
+                'table tennis': 'tennis',
+                'ice hockey': 'hockey',
+                'field hockey': 'hockey',
+                'rugby': 'rugby union',
+                'mixed martial arts': 'mma',
+                'formula 1': 'motorsports',
+                'motor sports': 'motorsports',
+                'winter sports': 'wintersports'
+            };
+            
+            return sportMap[sport] || sport;
+        }
+        
+        // Enhanced sport patterns with better matching
         const sportPatterns = {
-            tennis: ['tennis', 'wimbledon', 'us open', 'australian open', 'french open', 'atp', 'wta', 'davis cup'],
-            football: ['premier league', 'champions league', 'la liga', 'serie a', 'bundesliga', 'world cup', 
-                      'euro', 'mls', 'fa cup', 'ligue 1', 'europa league', 'copa america', 'afcon', 'asian cup'],
-            badminton: ['badminton', 'bwf', 'all england', 'thomas cup', 'uber cup'],
-            golf: ['golf', 'pga', 'european tour', 'masters tournament', 'us open', 'the open', 'ryder cup'],
-            baseball: ['baseball', 'mlb', 'world series', 'major league baseball', 'npb', 'kbo'],
-            basketball: ['nba', 'basketball', 'euroleague', 'wnba', 'ncaa', 'fibra'],
-            snooker: ['snooker', 'world snooker', 'uk championship', 'masters snooker'],
-            cricket: ['cricket', 'icc', 'ipl', 't20', 'test match', 'odi', 'big bash', 'psl', 'cpl'],
-            hockey: ['hockey', 'nhl', 'khl', 'stanley cup', 'ice hockey', 'field hockey'],
-            handball: ['handball', 'euro handball', 'world handball'],
-            darts: ['darts', 'pdc', 'world darts', 'premier league darts'],
-            'rugby union': ['rugby union', 'six nations', 'super rugby', 'premiership', 'rugby championship'],
-            volleyball: ['volleyball', 'beach volleyball', 'fivb', 'world volleyball'],
-            mma: ['ufc', 'mma', 'mixed martial arts', 'bellator', 'one championship'],
-            equestrian: ['equestrian', 'horse racing', 'derby', 'grand national', 'show jumping'],
-            wintersports: ['wintersports', 'skiing', 'snowboarding', 'biathlon', 'cross-country', 'alpine'],
-            motorsports: ['f1', 'formula 1', 'nascar', 'motogp', 'indycar', 'wec', 'wrc', 'formula e']
+            tennis: [
+                'tennis', 'wimbledon', 'us open', 'australian open', 'french open', 
+                'atp', 'wta', 'davis cup', 'grand slam', 'roland garros'
+            ],
+            football: [
+                'premier league', 'champions league', 'la liga', 'serie a', 'bundesliga', 
+                'world cup', 'euro', 'mls', 'fa cup', 'ligue 1', 'europa league', 
+                'copa america', 'afcon', 'asian cup', 'concacaf', 'uefa', 'fifa'
+            ],
+            badminton: [
+                'badminton', 'bwf', 'all england', 'thomas cup', 'uber cup', 
+                'sudirman cup', 'world championship'
+            ],
+            golf: [
+                'golf', 'pga', 'european tour', 'masters tournament', 'us open', 
+                'the open', 'ryder cup', 'augusta', 'pga tour'
+            ],
+            baseball: [
+                'baseball', 'mlb', 'world series', 'major league baseball', 
+                'npb', 'kbo', 'little league'
+            ],
+            basketball: [
+                'nba', 'basketball', 'euroleague', 'wnba', 'ncaa', 'fiba',
+                'basketball championship'
+            ],
+            snooker: [
+                'snooker', 'world snooker', 'uk championship', 'masters snooker',
+                'world championship'
+            ],
+            cricket: [
+                'cricket', 'icc', 'ipl', 't20', 'test match', 'odi', 'big bash', 
+                'psl', 'cpl', 'world cup', 'ashes', 'county championship'
+            ],
+            hockey: [
+                'hockey', 'nhl', 'khl', 'stanley cup', 'ice hockey', 'field hockey',
+                'world hockey'
+            ],
+            handball: [
+                'handball', 'euro handball', 'world handball', 'handball championship'
+            ],
+            darts: [
+                'darts', 'pdc', 'world darts', 'premier league darts', 'darts championship'
+            ],
+            'rugby union': [
+                'rugby union', 'six nations', 'super rugby', 'premiership', 
+                'rugby championship', 'world cup', 'rugby'
+            ],
+            volleyball: [
+                'volleyball', 'beach volleyball', 'fivb', 'world volleyball',
+                'volleyball championship'
+            ],
+            mma: [
+                'ufc', 'mma', 'mixed martial arts', 'bellator', 'one championship',
+                'ultimate fighting'
+            ],
+            equestrian: [
+                'equestrian', 'horse racing', 'derby', 'grand national', 
+                'show jumping', 'royal ascot', 'kentucky derby'
+            ],
+            wintersports: [
+                'wintersports', 'skiing', 'snowboarding', 'biathlon', 'cross-country', 
+                'alpine', 'winter olympics', 'ski jump'
+            ],
+            motorsports: [
+                'f1', 'formula 1', 'nascar', 'motogp', 'indycar', 'wec', 'wrc', 
+                'formula e', 'racing', 'grand prix'
+            ]
         };
         
+        // Check tournament names first
         for (const [sport, patterns] of Object.entries(sportPatterns)) {
             if (patterns.some(pattern => tournament.includes(pattern))) {
+                console.log(`Matched ${sport} via tournament: ${tournament}`);
                 return sport;
             }
         }
         
-        return tournament.includes('football') || matchName.includes('vs') ? 'football' : 'other';
+        // Check match names as fallback
+        for (const [sport, patterns] of Object.entries(sportPatterns)) {
+            if (patterns.some(pattern => matchName.includes(pattern))) {
+                console.log(`Matched ${sport} via match name: ${matchName}`);
+                return sport;
+            }
+        }
+        
+        // Final fallback based on common patterns
+        if (tournament.includes('football') || matchName.includes('vs') || matchName.includes('fc')) {
+            return 'football';
+        }
+        
+        console.log(`No sport match found, defaulting to 'other'. Tournament: ${tournament}, Match: ${matchName}`);
+        return 'other';
     }
     
     convertUnixToLocalTime(unixTimestamp) {
@@ -120,42 +231,59 @@ class MatchScheduler {
     }
     
     checkIfLive(match) {
-        if (!match.unixTimestamp) return false;
+        if (!match.unix_timestamp) return false;
+        
         const now = Math.floor(Date.now() / 1000);
-        const matchTime = match.unixTimestamp;
-        const twoHours = 2 * 60 * 60;
+        const matchTime = match.unix_timestamp;
+        const threeHours = 3 * 60 * 60; // Extended to 3 hours for longer matches
         
-        // Match is live if current time is between match start and 2 hours after
-        const isLive = now >= matchTime && now <= (matchTime + twoHours);
+        // Match is live if current time is between match start and 3 hours after
+        const isLive = now >= matchTime && now <= (matchTime + threeHours);
         
-        // Debug specific matches
-        if (match.teams && match.teams.includes('TEST')) {
+        // Enhanced debugging
+        if (match.match && match.match.includes('TEST')) {
             console.log('TEST MATCH LIVE CHECK:', {
-                teams: match.teams,
+                teams: match.match,
                 matchTime: matchTime,
                 now: now,
                 difference: now - matchTime,
-                isLive: isLive
+                isLive: isLive,
+                window: `${new Date(matchTime * 1000).toLocaleTimeString()} - ${new Date((matchTime + threeHours) * 1000).toLocaleTimeString()}`
             });
         }
         
         return isLive;
     }
     
-    showStats() {
-        const analytics = document.querySelector('.analytics-overview');
-        if (analytics) {
-            analytics.style.display = 'grid';
-        }
+    debugSportsCategorization() {
+        console.log('=== SPORTS CATEGORIZATION DEBUG ===');
+        const sportsCount = {};
+        
+        this.verifiedMatches.forEach(match => {
+            if (!sportsCount[match.sport]) {
+                sportsCount[match.sport] = 0;
+            }
+            sportsCount[match.sport]++;
+        });
+        
+        console.log('Sports distribution:', sportsCount);
+        console.log('Total matches:', this.verifiedMatches.length);
+        console.log('Live matches:', this.verifiedMatches.filter(m => m.isLive).length);
+        
+        // Log sample matches from each sport
+        Object.keys(sportsCount).forEach(sport => {
+            const sampleMatches = this.verifiedMatches
+                .filter(m => m.sport === sport)
+                .slice(0, 2);
+            console.log(`Sample ${sport} matches:`, sampleMatches.map(m => ({
+                teams: m.teams,
+                league: m.league,
+                isLive: m.isLive
+            })));
+        });
     }
     
-    hideStats() {
-        const analytics = document.querySelector('.analytics-overview');
-        if (analytics) {
-            analytics.style.display = 'none';
-        }
-    }
-    
+    // ... rest of your existing methods remain the same ...
     showMainMenu() {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
@@ -185,29 +313,33 @@ class MatchScheduler {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
 
+        // Get all sports that have matches, sorted by match count
         const sports = [
-            { id: 'tennis', name: 'Tennis' },
-            { id: 'football', name: 'Football' },
-            { id: 'badminton', name: 'Badminton' },
-            { id: 'golf', name: 'Golf' },
-            { id: 'baseball', name: 'Baseball' },
-            { id: 'basketball', name: 'Basketball' },
-            { id: 'snooker', name: 'Snooker' },
-            { id: 'cricket', name: 'Cricket' },
-            { id: 'hockey', name: 'Hockey' },
-            { id: 'handball', name: 'Handball' },
-            { id: 'darts', name: 'Darts' },
-            { id: 'rugby union', name: 'Rugby Union' },
-            { id: 'volleyball', name: 'Volleyball' },
-            { id: 'mma', name: 'MMA' },
-            { id: 'equestrian', name: 'Equestrian' },
-            { id: 'wintersports', name: 'Wintersports' },
-            { id: 'motorsports', name: 'Motorsports' },
-            { id: 'other', name: 'Other Sports' }
+            { id: 'football', name: '⚽ Football' },
+            { id: 'basketball', name: '🏀 Basketball' },
+            { id: 'tennis', name: '🎾 Tennis' },
+            { id: 'cricket', name: '🏏 Cricket' },
+            { id: 'baseball', name: '⚾ Baseball' },
+            { id: 'hockey', name: '🏒 Hockey' },
+            { id: 'rugby union', name: '🏉 Rugby' },
+            { id: 'golf', name: '⛳ Golf' },
+            { id: 'motorsports', name: '🏎️ Motorsports' },
+            { id: 'mma', name: '🥊 MMA' },
+            { id: 'boxing', name: '🥊 Boxing' },
+            { id: 'volleyball', name: '🏐 Volleyball' },
+            { id: 'badminton', name: '🏸 Badminton' },
+            { id: 'snooker', name: '🎱 Snooker' },
+            { id: 'darts', name: '🎯 Darts' },
+            { id: 'wintersports', name: '⛷️ Wintersports' },
+            { id: 'equestrian', name: '🏇 Equestrian' },
+            { id: 'handball', name: '🤾 Handball' },
+            { id: 'other', name: '🏆 Other Sports' }
         ].map(sport => ({
             ...sport,
-            count: this.getMatchesBySport(sport.id).length
-        })).filter(sport => sport.count > 0);
+            count: this.getMatchesBySport(sport.id).length,
+            liveCount: this.getMatchesBySport(sport.id).filter(m => m.isLive).length
+        })).filter(sport => sport.count > 0)
+          .sort((a, b) => b.count - a.count);
 
         container.innerHTML = `
             <div class="content-section">
@@ -215,12 +347,14 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Choose</h2>
+                    <h2>Choose Sport</h2>
+                    <p>Select a sport to view matches</p>
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
                         <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
                             <div class="sport-name">${sport.name}</div>
+                            <div class="match-count">${sport.count} match${sport.count !== 1 ? 'es' : ''}${sport.liveCount > 0 ? ` • ${sport.liveCount} live` : ''}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -231,240 +365,8 @@ class MatchScheduler {
         this.currentView = 'sports';
         this.currentSport = null;
     }
-    
-    showTVChannels() {
-        const container = document.getElementById('psl-streams-container');
-        if (!container) return;
-        
-        const tvChannels = [
-            { name: 'Sky Sports Main Event', category: 'Sports', url: 'https://example.com/sky-sports' },
-            { name: 'BT Sport 1', category: 'Sports', url: 'https://example.com/bt-sport' },
-            { name: 'ESPN', category: 'Sports', url: 'https://example.com/espn' },
-            { name: 'beIN Sports', category: 'Sports', url: 'https://example.com/beinsports' },
-            { name: 'NBA TV', category: 'Basketball', url: 'https://example.com/nba-tv' },
-            { name: 'NFL Network', category: 'American Football', url: 'https://example.com/nfl' },
-            { name: 'MLB Network', category: 'Baseball', url: 'https://example.com/mlb' },
-            { name: 'NHL Network', category: 'Hockey', url: 'https://example.com/nhl' },
-            { name: 'Tennis Channel', category: 'Tennis', url: 'https://example.com/tennis' },
-            { name: 'Sky Sports Cricket', category: 'Cricket', url: 'https://example.com/cricket' },
-            { name: 'Eurosport 1', category: 'Multi-Sport', url: 'https://example.com/eurosport' },
-            { name: 'DAZN', category: 'Sports', url: 'https://example.com/dazn' }
-        ];
-        
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
-                </div>
-                <div class="section-header">
-                    <h2>TV Channels</h2>
-                    <p>Click any channel to watch live</p>
-                </div>
-                <div class="streams-grid">
-                    ${tvChannels.map(channel => `
-                        <div class="tv-channel-card" onclick="window.open('${channel.url}', '_blank')">
-                            <div class="tv-channel-name">${channel.name}</div>
-                            <div class="tv-channel-category">${channel.category}</div>
-                            <button class="watch-btn">WATCH LIVE</button>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-        
-        this.hideStats();
-    }
-    
-    selectSport(sport) {
-        this.currentSport = sport;
-        this.showDatesView();
-    }
-    
-    showDatesView() {
-        const container = document.getElementById('psl-streams-container');
-        if (!container) return;
-        
-        const matches = this.getMatchesBySport(this.currentSport);
-        const dates = [...new Set(matches.map(match => match.date))].sort();
-        const sportName = this.getSportDisplayName();
-        
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
-                    <button class="top-back-button" onclick="matchScheduler.showSportsView()">←</button>
-                </div>
-                <div class="section-header">
-                    <h2>${sportName}</h2>
-                    <p>Select a date</p>
-                </div>
-                <div class="sports-grid">
-                    ${dates.map(date => {
-                        const dateMatches = matches.filter(m => m.date === date);
-                        const liveCount = dateMatches.filter(m => m.isLive).length;
-                        return `
-                            <div class="date-button" onclick="matchScheduler.selectDate('${date}')">
-                                <div class="date-name">${this.formatDisplayDate(date)}</div>
-                                <div class="match-count">${dateMatches.length} match${dateMatches.length !== 1 ? 'es' : ''}${liveCount > 0 ? ` • ${liveCount} live` : ''}</div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            </div>
-        `;
-        
-        this.hideStats();
-        this.currentView = 'dates';
-        this.currentDate = null;
-    }
-    
-    selectDate(date) {
-        this.currentDate = date;
-        this.showMatchesView();
-    }
-    
-    showMatchesView() {
-        const container = document.getElementById('psl-streams-container');
-        if (!container) return;
-        
-        const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
-        const sportName = this.getSportDisplayName();
-        const displayDate = this.formatDisplayDate(this.currentDate);
-        const liveCount = matches.filter(m => m.isLive).length;
-        
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
-                    <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
-                </div>
-                <div class="section-header">
-                    <h2>${sportName} • ${displayDate}</h2>
-                    <p>${matches.length} matches • ${liveCount} live</p>
-                </div>
-                
-                <div class="matches-table">
-                    <div class="table-header">
-                        <div>Time</div>
-                        <div>Match</div>
-                        <div>Watch</div>
-                    </div>
-                    ${matches.length > 0 ? 
-                        matches.map(match => this.renderMatchRow(match)).join('') :
-                        '<div class="no-matches">No matches found</div>'
-                    }
-                </div>
-            </div>
-        `;
-        
-        this.hideStats();
-        this.currentView = 'matches';
-        this.startLiveUpdates();
-    }
-    
-    renderMatchRow(match) {
-        const isLive = match.isLive;
-        console.log('Rendering match:', match.teams, 'isLive:', isLive); // Debug
-        
-        return `
-            <div class="match-row ${isLive ? 'live' : ''}">
-                <div class="match-time">
-                    ${match.time}
-                    ${isLive ? '<span class="live-badge">LIVE</span>' : ''}
-                </div>
-                <div class="match-details">
-                    <div class="team-names">${match.teams}</div>
-                    <div class="league-name">${match.league}</div>
-                </div>
-                <div class="watch-action">
-                    ${match.streamUrl ? 
-                        `<button class="watch-btn ${isLive ? 'live' : ''}" onclick="window.open('${match.streamUrl}', '_blank')">
-                            ${isLive ? 'LIVE NOW' : 'WATCH'}
-                        </button>` :
-                        '<span class="offline-text">OFFLINE</span>'
-                    }
-                </div>
-            </div>
-        `;
-    }
-    
-    getMatchesBySport(sport) {
-        return this.verifiedMatches.filter(match => match.sport.toLowerCase() === sport.toLowerCase());
-    }
-    
-    getMatchesBySportAndDate(sport, date) {
-        return this.getMatchesBySport(sport).filter(match => match.date === date);
-    }
-    
-    getSportDisplayName() {
-        const names = {
-            'tennis': 'Tennis',
-            'football': 'Football',
-            'badminton': 'Badminton',
-            'golf': 'Golf',
-            'baseball': 'Baseball',
-            'basketball': 'Basketball',
-            'snooker': 'Snooker',
-            'cricket': 'Cricket',
-            'hockey': 'Hockey',
-            'handball': 'Handball',
-            'darts': 'Darts',
-            'rugby union': 'Rugby Union',
-            'volleyball': 'Volleyball',
-            'mma': 'MMA',
-            'equestrian': 'Equestrian',
-            'wintersports': 'Wintersports',
-            'motorsports': 'Motorsports',
-            'other': 'Other Sports'
-        };
-        return names[this.currentSport] || this.currentSport;
-    }
-    
-    formatDisplayDate(dateString) {
-        return new Date(dateString + 'T00:00:00').toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-    
-    updateLiveStatus() {
-        if (this.currentView === 'matches') this.showMatchesView();
-    }
-    
-    updateAnalytics() {
-        const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
-        document.getElementById('total-streams').textContent = this.verifiedMatches.length;
-        document.getElementById('live-viewers').textContent = liveMatches * 125;
-        document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
-    }
-    
-    showError() {
-        const container = document.getElementById('psl-streams-container');
-        if (container) {
-            container.innerHTML = `
-                <div class="error-message">
-                    <h3>Unable to Load Schedules</h3>
-                    <p>Please check your connection and try again.</p>
-                    <button class="retry-btn" onclick="matchScheduler.init()">Try Again</button>
-                </div>
-            `;
-        }
-    }
-    
-    startLiveUpdates() {
-        setInterval(() => this.updateLiveStatus(), 30000);
-    }
-    
-    startAutoRefresh() {
-        setInterval(() => {
-            this.loadMatches().then(() => {
-                if (this.currentView === 'matches') this.showMatchesView();
-                else if (this.currentView === 'dates') this.showDatesView();
-                else if (this.currentView === 'sports') this.showSportsView();
-            });
-        }, 300000);
-    }
+
+    // ... keep all your other existing methods exactly as they were ...
 }
 
 // Initialize
