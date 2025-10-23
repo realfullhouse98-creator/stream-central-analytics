@@ -1,4 +1,4 @@
-// Uncle Stream - Enhanced with Match Details
+// Uncle Stream - YouTube Style with Enhanced Match Details
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -6,6 +6,7 @@ class MatchScheduler {
         this.currentSport = null;
         this.currentDate = null;
         this.verifiedMatches = [];
+        this.matchStats = new Map(); // Store likes, views, etc.
         this.init();
     }
     
@@ -35,8 +36,19 @@ class MatchScheduler {
             if (Array.isArray(matches)) {
                 matches.forEach(match => {
                     if (match?.match) {
+                        const matchId = this.generateMatchId(match);
+                        
+                        // Initialize match stats
+                        if (!this.matchStats.has(matchId)) {
+                            this.matchStats.set(matchId, {
+                                views: Math.floor(Math.random() * 10000) + 500,
+                                likes: Math.floor(Math.random() * 500) + 50,
+                                dislikes: Math.floor(Math.random() * 100) + 10
+                            });
+                        }
+                        
                         const processedMatch = {
-                            id: this.generateMatchId(match),
+                            id: matchId,
                             date: date,
                             time: this.convertUnixToLocalTime(match.unix_timestamp),
                             teams: match.match,
@@ -116,6 +128,15 @@ class MatchScheduler {
     
     formatTeamNames(teamString) {
         return teamString.replace(/ - /g, ' Vs ');
+    }
+    
+    formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
     }
     
     showStats() {
@@ -369,6 +390,7 @@ class MatchScheduler {
         if (!match) return;
         
         const formattedTeams = this.formatTeamNames(match.teams);
+        const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         
         const matchDetailsHTML = `
             <div class="match-details-overlay">
@@ -381,31 +403,73 @@ class MatchScheduler {
                         </div>
                     </div>
                     
-                    <div class="match-title-section">
-                        <h1 class="main-title">${formattedTeams}</h1>
-                        <div class="match-subtitle">${match.sport} - ${match.league} - ${formattedTeams}</div>
-                    </div>
-                    
                     <div class="match-content">
-                        <div class="stream-area">
-                            ${match.streamUrl ? 
-                                `<iframe src="${match.streamUrl}" class="stream-iframe" 
-                                        allowfullscreen></iframe>` :
-                                `<div class="no-stream">
-                                    <h3>Stream Not Available</h3>
-                                    <p>This match stream is currently offline</p>
-                                </div>`
-                            }
+                        <div class="video-container">
+                            <div class="video-player">
+                                ${match.streamUrl ? 
+                                    `<iframe src="${match.streamUrl}" class="stream-iframe" 
+                                            allowfullscreen></iframe>` :
+                                    `<div class="no-stream">
+                                        <h3>Stream Not Available</h3>
+                                        <p>This match stream is currently offline</p>
+                                    </div>`
+                                }
+                            </div>
+                            
+                            <div class="video-controls">
+                                <div class="video-title">${formattedTeams}</div>
+                                <div class="video-stats">
+                                    <span class="views-count">${this.formatNumber(stats.views)} views</span>
+                                    <span class="match-status">${match.isLive ? '🔴 LIVE NOW' : '⏰ UPCOMING'}</span>
+                                </div>
+                                <div class="video-actions">
+                                    <button class="action-btn like-btn" onclick="matchScheduler.handleLike('${matchId}')">
+                                        👍 <span class="like-count">${this.formatNumber(stats.likes)}</span>
+                                    </button>
+                                    <button class="action-btn dislike-btn" onclick="matchScheduler.handleDislike('${matchId}')">
+                                        👎 <span class="dislike-count">${this.formatNumber(stats.dislikes)}</span>
+                                    </button>
+                                    <button class="action-btn" onclick="matchScheduler.handleShare('${matchId}')">
+                                        📤 Share
+                                    </button>
+                                    <button class="action-btn" onclick="matchScheduler.handleReport('${matchId}')">
+                                        ⚠️ Report
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="chat-area">
-                            <div class="chat-placeholder">
+                        <div class="chat-container" id="chat-${matchId}">
+                            <div class="chat-header">
                                 <h3>Live Chat</h3>
-                                <p>Chat functionality coming soon</p>
-                                <div class="chat-messages">
-                                    <div class="chat-message">Welcome to the match!</div>
-                                    <div class="chat-message">Chat feature in development...</div>
+                                <button class="collapse-btn" onclick="matchScheduler.toggleChat('${matchId}')">◀</button>
+                            </div>
+                            <div class="chat-messages" id="chat-messages-${matchId}">
+                                <div class="chat-message">
+                                    <div class="user-avatar">U</div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="username">UncleStream</span>
+                                            <span class="timestamp">just now</span>
+                                        </div>
+                                        <div class="message-text">Welcome to the match chat! Enjoy the game! ⚽</div>
+                                    </div>
                                 </div>
+                                <div class="chat-message">
+                                    <div class="user-avatar">F</div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="username">Fan123</span>
+                                            <span class="timestamp">2 min ago</span>
+                                        </div>
+                                        <div class="message-text">Excited for this match! Who's your favorite player?</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-input">
+                                <input type="text" class="message-input" placeholder="Type a message..." 
+                                       onkeypress="matchScheduler.handleChatInput(event, '${matchId}')">
+                                <button class="send-btn" onclick="matchScheduler.sendMessage('${matchId}')">Send</button>
                             </div>
                         </div>
                     </div>
@@ -417,6 +481,107 @@ class MatchScheduler {
         container.innerHTML = matchDetailsHTML;
         this.currentView = 'match-details';
         this.hideStats();
+        
+        // Increment views
+        this.incrementViews(matchId);
+    }
+    
+    incrementViews(matchId) {
+        const stats = this.matchStats.get(matchId);
+        if (stats) {
+            stats.views++;
+            this.matchStats.set(matchId, stats);
+        }
+    }
+    
+    handleLike(matchId) {
+        const stats = this.matchStats.get(matchId);
+        if (stats) {
+            stats.likes++;
+            this.matchStats.set(matchId, stats);
+            this.updateActionButtons(matchId);
+        }
+    }
+    
+    handleDislike(matchId) {
+        const stats = this.matchStats.get(matchId);
+        if (stats) {
+            stats.dislikes++;
+            this.matchStats.set(matchId, stats);
+            this.updateActionButtons(matchId);
+        }
+    }
+    
+    updateActionButtons(matchId) {
+        const stats = this.matchStats.get(matchId);
+        if (!stats) return;
+        
+        const likeBtn = document.querySelector('.like-btn');
+        const dislikeBtn = document.querySelector('.dislike-btn');
+        
+        if (likeBtn) {
+            likeBtn.querySelector('.like-count').textContent = this.formatNumber(stats.likes);
+        }
+        if (dislikeBtn) {
+            dislikeBtn.querySelector('.dislike-count').textContent = this.formatNumber(stats.dislikes);
+        }
+    }
+    
+    handleShare(matchId) {
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (match && navigator.share) {
+            navigator.share({
+                title: `${this.formatTeamNames(match.teams)} - Live Stream`,
+                text: `Watch ${this.formatTeamNames(match.teams)} live on Uncle Stream!`,
+                url: window.location.href
+            });
+        } else {
+            alert('Share this match with your friends!');
+        }
+    }
+    
+    handleReport(matchId) {
+        alert('Thank you for reporting. We will review this stream.');
+    }
+    
+    toggleChat(matchId) {
+        const chatContainer = document.getElementById(`chat-${matchId}`);
+        if (chatContainer) {
+            chatContainer.classList.toggle('collapsed');
+        }
+    }
+    
+    handleChatInput(event, matchId) {
+        if (event.key === 'Enter') {
+            this.sendMessage(matchId);
+        }
+    }
+    
+    sendMessage(matchId) {
+        const input = document.querySelector('.message-input');
+        const message = input.value.trim();
+        
+        if (message) {
+            const chatMessages = document.getElementById(`chat-messages-${matchId}`);
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            const messageHTML = `
+                <div class="chat-message">
+                    <div class="user-avatar">Y</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="username">You</span>
+                            <span class="timestamp">${timestamp}</span>
+                        </div>
+                        <div class="message-text">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            input.value = '';
+        }
     }
     
     toggleFullscreen() {
