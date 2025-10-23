@@ -1,4 +1,4 @@
-// Uncle Stream - Final Version with Navigation Buttons
+// Uncle Stream - Final Version with Stats Management
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -107,6 +107,20 @@ class MatchScheduler {
         return now >= matchTime && now <= (matchTime + 7200);
     }
     
+    showStats() {
+        const analytics = document.querySelector('.analytics-overview');
+        if (analytics) {
+            analytics.style.display = 'grid';
+        }
+    }
+    
+    hideStats() {
+        const analytics = document.querySelector('.analytics-overview');
+        if (analytics) {
+            analytics.style.display = 'none';
+        }
+    }
+    
     showMainMenu() {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
@@ -126,6 +140,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.showStats();
         this.currentView = 'main';
         this.currentSport = null;
         this.currentDate = null;
@@ -177,6 +192,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'sports';
         this.currentSport = null;
     }
@@ -220,6 +236,8 @@ class MatchScheduler {
                 </div>
             </div>
         `;
+        
+        this.hideStats();
     }
     
     selectSport(sport) {
@@ -260,6 +278,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'dates';
         this.currentDate = null;
     }
@@ -303,6 +322,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'matches';
         this.startLiveUpdates();
     }
