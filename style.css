@@ -1,4 +1,4 @@
-/* Uncle 9 Stream - Final Optimized Sizing */
+/* Uncle 9 Stream - Cleaned CSS with Working Live Animations */
 :root {
     --primary-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     --card-bg: rgba(255, 255, 255, 0.08);
@@ -28,14 +28,12 @@ body {
     line-height: 1.6;
 }
 
-/* Main Layout */
 .stream-central-dashboard {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Header */
 .dashboard-header {
     text-align: center;
     margin-bottom: 30px;
@@ -60,7 +58,6 @@ body {
     font-size: 1.1em;
 }
 
-/* Analytics */
 .analytics-overview {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -97,7 +94,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Main Menu Styles */
 .main-menu {
     margin-bottom: 40px;
 }
@@ -140,7 +136,6 @@ body {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Content Sections */
 .content-section {
     margin-bottom: 40px;
     padding: 30px;
@@ -156,7 +151,7 @@ body {
 
 .section-header h2 {
     margin: 0 0 10px 0;
-    font-size: 4.4em; /* DOUBLED from 2.2em */
+    font-size: 4.4em;
     color: var(--accent-gold);
     font-weight: 800;
 }
@@ -166,7 +161,6 @@ body {
     font-size: 1.4em;
 }
 
-/* Sports Grid - Centered text, no match counts */
 .sports-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -201,7 +195,6 @@ body {
     line-height: 1.2;
 }
 
-/* Date Buttons */
 .date-button {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
@@ -229,7 +222,6 @@ body {
     line-height: 1.3;
 }
 
-/* Match Count - 50% smaller for dates only */
 .match-count {
     font-size: 0.7em;
     color: rgba(255, 255, 255, 0.6);
@@ -239,7 +231,6 @@ body {
     text-align: right;
 }
 
-/* TV Channel Cards */
 .tv-channel-card {
     background: var(--card-bg);
     border-radius: 12px;
@@ -271,7 +262,6 @@ body {
     margin-bottom: 15px;
 }
 
-/* Matches Table - OPTIMIZED Standard Sizes */
 .matches-table {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
@@ -289,7 +279,7 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-size: 1.6em; /* Optimal desktop size */
+    font-size: 1.6em;
 }
 
 .match-row {
@@ -320,7 +310,7 @@ body {
     gap: 10px;
     font-weight: bold;
     color: var(--accent-gold);
-    font-size: 1.4em; /* Optimal desktop size */
+    font-size: 1.4em;
 }
 
 .live-badge {
@@ -331,18 +321,19 @@ body {
     font-size: 1em;
     font-weight: bold;
     text-transform: uppercase;
+    animation: glow 2s infinite;
 }
 
 .team-names {
     font-weight: bold;
     color: var(--text-primary);
     margin-bottom: 6px;
-    font-size: 1.4em; /* Optimal desktop size */
+    font-size: 1.4em;
 }
 
 .league-name {
     color: var(--text-muted);
-    font-size: 1.2em; /* Optimal desktop size */
+    font-size: 1.2em;
 }
 
 .watch-action {
@@ -360,13 +351,13 @@ body {
     transition: all 0.3s ease;
     min-width: 100px;
     text-transform: uppercase;
-    font-size: 1.2em; /* Optimal desktop size */
+    font-size: 1.2em;
     letter-spacing: 0.5px;
 }
 
 .watch-btn.live {
     background: linear-gradient(45deg, var(--accent-red), #e74c3c);
-    animation: pulse 2s infinite;
+    animation: pulse 1.5s infinite;
 }
 
 .watch-btn:hover {
@@ -380,7 +371,6 @@ body {
     font-size: 1.2em;
 }
 
-/* Back Button - UPDATED: Half size, square, arrow only */
 .top-back-button {
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid var(--border-light);
@@ -423,7 +413,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Utility States */
 .loading-streams {
     text-align: center;
     padding: 60px 40px;
@@ -456,23 +445,41 @@ body {
     font-size: 1.2em;
 }
 
-/* Animations */
+/* LIVE ANIMATIONS - CLEANED AND WORKING */
 @keyframes pulse {
     0% { 
         opacity: 1;
+        transform: scale(1);
         box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
     }
-    70% { 
+    50% { 
         opacity: 0.8;
+        transform: scale(1.05);
         box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
     }
     100% { 
         opacity: 1;
+        transform: scale(1);
         box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
     }
 }
 
-/* Footer */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+    }
+}
+
+.match-row.live {
+    animation: glow 3s infinite;
+}
+
 .dashboard-footer {
     text-align: center;
     padding: 30px 20px;
@@ -487,7 +494,6 @@ body {
     color: var(--text-muted);
 }
 
-/* Responsive Design - OPTIMIZED Mobile Sizes */
 @media (max-width: 1200px) {
     .sports-grid {
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -526,7 +532,7 @@ body {
     }
     
     .section-header h2 {
-        font-size: 3em; /* Adjusted for mobile */
+        font-size: 3em;
     }
     
     .sports-grid {
@@ -556,11 +562,10 @@ body {
         font-size: 0.6em;
     }
     
-    /* MOBILE TABLE SIZES - Optimized for phones */
     .table-header {
         grid-template-columns: 80px 1fr 100px;
         padding: 14px 20px;
-        font-size: 1.2em; /* Optimal mobile size */
+        font-size: 1.2em;
     }
     
     .match-row {
@@ -569,20 +574,20 @@ body {
     }
     
     .match-time {
-        font-size: 1.1em; /* Optimal mobile size */
+        font-size: 1.1em;
     }
     
     .team-names {
-        font-size: 1.2em; /* Optimal mobile size */
+        font-size: 1.2em;
     }
     
     .league-name {
-        font-size: 1em; /* Optimal mobile size */
+        font-size: 1em;
     }
     
     .watch-btn {
         padding: 8px 14px;
-        font-size: 1em; /* Optimal mobile size */
+        font-size: 1em;
         min-width: 80px;
     }
     
@@ -633,46 +638,4 @@ body {
         height: 40px;
         font-size: 1.6em;
     }
-}
-/* Live Animations */
-@keyframes pulse {
-    0% { 
-        opacity: 1;
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
-    }
-    50% { 
-        opacity: 0.8;
-        transform: scale(1.05);
-        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
-    }
-    100% { 
-        opacity: 1;
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
-    }
-}
-
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
-    }
-    50% {
-        box-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
-    }
-    100% {
-        box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
-    }
-}
-
-.live-badge {
-    animation: glow 2s infinite;
-}
-
-.watch-btn.live {
-    animation: pulse 1.5s infinite;
-}
-
-.match-row.live {
-    animation: glow 3s infinite;
 }
