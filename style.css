@@ -14,13 +14,41 @@
     --border-gold: rgba(255, 215, 0, 0.2);
 }
 
-/* CRITICAL SAFARI FIXES - ELIMINATE WHITE BARS */
+/* iOS PWA Status Bar Fix */
+@supports (-webkit-touch-callout: none) {
+    body {
+        /* Use safe area insets for iOS devices */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+    
+    .stream-central-dashboard {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+    }
+    
+    /* Ensure content doesn't get hidden behind status bar */
+    .dashboard-header {
+        padding-top: max(20px, env(safe-area-inset-top));
+    }
+}
+
+/* Fallback for older iOS */
+@supports (padding: max(0px)) {
+    body {
+        padding-top: max(0px, env(safe-area-inset-top));
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+}
+
+/* Ensure HTML takes full height */
 html {
     height: 100%;
+    height: -webkit-fill-available;
     overflow-x: hidden;
     background: var(--primary-bg);
-    background-attachment: fixed;
-    background-size: cover;
 }
 
 * {
@@ -34,17 +62,13 @@ body {
     background: var(--primary-bg);
     color: var(--text-primary);
     min-height: 100vh;
+    min-height: -webkit-fill-available;
     line-height: 1.6;
     margin: 0;
     padding: 0;
     width: 100%;
     overflow-x: hidden;
     position: relative;
-    /* SAFARI UI FIXES */
-    height: 100vh;
-    background-attachment: fixed;
-    background-size: cover;
-    background-clip: border-box;
 }
 
 /* YouTube-Style Full Width Layout */
@@ -53,6 +77,7 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    min-height: -webkit-fill-available;
     position: relative;
     background: inherit;
 }
