@@ -15,6 +15,7 @@ class MatchScheduler {
         await this.loadMatches();
         this.showMainMenu();
         this.startAutoRefresh();
+        this.initFooterVisibility();
     }
     
     async loadMatches() {
@@ -176,6 +177,7 @@ class MatchScheduler {
         this.currentView = 'main';
         this.currentSport = null;
         this.currentDate = null;
+        this.updateFooterVisibility();
     }
     
     showSportsView() {
@@ -213,6 +215,7 @@ class MatchScheduler {
                 </div>
                 <div class="section-header">
                     <h2>Choose Sport</h2>
+                    <p>Select a category</p>
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
@@ -227,6 +230,7 @@ class MatchScheduler {
         this.hideStats();
         this.currentView = 'sports';
         this.currentSport = null;
+        this.updateFooterVisibility();
     }
     
     showTVChannels() {
@@ -257,12 +261,11 @@ class MatchScheduler {
                     <h2>TV Channels</h2>
                     <p>Click any channel to watch live</p>
                 </div>
-                <div class="streams-grid">
+                <div class="sports-grid">
                     ${tvChannels.map(channel => `
-                        <div class="tv-channel-card" onclick="window.open('${channel.url}', '_blank')">
-                            <div class="tv-channel-name">${channel.name}</div>
-                            <div class="tv-channel-category">${channel.category}</div>
-                            <button class="watch-btn">WATCH LIVE</button>
+                        <div class="sport-button" onclick="window.open('${channel.url}', '_blank')">
+                            <div class="sport-name">${channel.name}</div>
+                            <div class="match-count">${channel.category}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -270,6 +273,7 @@ class MatchScheduler {
         `;
         
         this.hideStats();
+        this.updateFooterVisibility();
     }
     
     selectSport(sport) {
@@ -313,6 +317,7 @@ class MatchScheduler {
         this.hideStats();
         this.currentView = 'dates';
         this.currentDate = null;
+        this.updateFooterVisibility();
     }
     
     selectDate(date) {
@@ -336,8 +341,8 @@ class MatchScheduler {
                     <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
                 </div>
                 <div class="section-header">
-                    <h2>${sportName} • ${displayDate}</h2>
-                    <p>${matches.length} matches • ${liveCount} live</p>
+                    <h2>${sportName}</h2>
+                    <p>${displayDate} • ${matches.length} matches${liveCount > 0 ? ` • ${liveCount} live` : ''}</p>
                 </div>
                 
                 <div class="matches-table">
@@ -357,6 +362,7 @@ class MatchScheduler {
         this.hideStats();
         this.currentView = 'matches';
         this.startLiveUpdates();
+        this.updateFooterVisibility();
     }
     
     renderMatchRow(match) {
@@ -418,7 +424,7 @@ class MatchScheduler {
                     <div class="match-header">
                         <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                         <div class="header-controls">
-                            <button class="refresh-btn" onclick="location.reload()">🔄 Page Refresh</button>
+                            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
                             <button class="fullscreen-btn" onclick="matchScheduler.toggleFullscreen()">⛶ Fullscreen</button>
                         </div>
                     </div>
@@ -458,9 +464,6 @@ class MatchScheduler {
                                     <button class="action-btn" onclick="matchScheduler.handleShare('${matchId}')">
                                         📤 Share
                                     </button>
-                                    <button class="action-btn" onclick="matchScheduler.handleReport('${matchId}')">
-                                        ⚠️ Report
-                                    </button>
                                 </div>
                                 
                                 <!-- Match Description -->
@@ -497,40 +500,6 @@ class MatchScheduler {
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="chat-container" id="chat-${matchId}">
-                            <div class="chat-header">
-                                <h3>Live Chat</h3>
-                                <button class="collapse-btn" onclick="matchScheduler.toggleChat('${matchId}')">◀</button>
-                            </div>
-                            <div class="chat-messages" id="chat-messages-${matchId}">
-                                <div class="chat-message">
-                                    <div class="user-avatar">U</div>
-                                    <div class="message-content">
-                                        <div class="message-header">
-                                            <span class="username">UncleStream</span>
-                                            <span class="timestamp">just now</span>
-                                        </div>
-                                        <div class="message-text">Welcome to the match chat! Enjoy the game! ⚽</div>
-                                    </div>
-                                </div>
-                                <div class="chat-message">
-                                    <div class="user-avatar">F</div>
-                                    <div class="message-content">
-                                        <div class="message-header">
-                                            <span class="username">Fan123</span>
-                                            <span class="timestamp">2 min ago</span>
-                                        </div>
-                                        <div class="message-text">Excited for this match! Who's your favorite player?</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="chat-input">
-                                <input type="text" class="message-input" placeholder="Type a message..." 
-                                       onkeypress="matchScheduler.handleChatInput(event, '${matchId}')">
-                                <button class="send-btn" onclick="matchScheduler.sendMessage('${matchId}')">Send</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -543,6 +512,7 @@ class MatchScheduler {
         
         // Increment views
         this.incrementViews(matchId);
+        this.updateFooterVisibility();
     }
     
     getTeamName(teamString, index) {
@@ -596,16 +566,12 @@ class MatchScheduler {
         if (match && navigator.share) {
             navigator.share({
                 title: `${this.formatTeamNames(match.teams)} - Live Stream`,
-                text: `Watch ${this.formatTeamNames(match.teams)} live on Uncle Stream!`,
+                text: `Watch ${this.formatTeamNames(match.teams)} live on 9kilo Stream!`,
                 url: window.location.href
             });
         } else {
             alert('Share this match with your friends!');
         }
-    }
-    
-    handleReport(matchId) {
-        alert('Thank you for reporting. We will review this stream.');
     }
     
     refreshStream(matchId) {
@@ -673,46 +639,6 @@ class MatchScheduler {
         this.showMatchDetails(matchId);
     }
     
-    toggleChat(matchId) {
-        const chatContainer = document.getElementById(`chat-${matchId}`);
-        if (chatContainer) {
-            chatContainer.classList.toggle('collapsed');
-        }
-    }
-    
-    handleChatInput(event, matchId) {
-        if (event.key === 'Enter') {
-            this.sendMessage(matchId);
-        }
-    }
-    
-    sendMessage(matchId) {
-        const input = document.querySelector('.message-input');
-        const message = input.value.trim();
-        
-        if (message) {
-            const chatMessages = document.getElementById(`chat-messages-${matchId}`);
-            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            const messageHTML = `
-                <div class="chat-message">
-                    <div class="user-avatar">Y</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="username">You</span>
-                            <span class="timestamp">${timestamp}</span>
-                        </div>
-                        <div class="message-text">${message}</div>
-                    </div>
-                </div>
-            `;
-            
-            chatMessages.insertAdjacentHTML('beforeend', messageHTML);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            input.value = '';
-        }
-    }
-    
     getMatchesBySport(sport) {
         return this.verifiedMatches.filter(match => match.sport.toLowerCase() === sport.toLowerCase());
     }
@@ -759,8 +685,13 @@ class MatchScheduler {
     
     updateAnalytics() {
         const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
+        const totalViewers = this.verifiedMatches.reduce((sum, match) => {
+            const stats = this.matchStats.get(match.id);
+            return sum + (stats ? stats.views : 0);
+        }, 0);
+        
         document.getElementById('total-streams').textContent = this.verifiedMatches.length;
-        document.getElementById('live-viewers').textContent = liveMatches * 125;
+        document.getElementById('live-viewers').textContent = Math.floor(totalViewers / 100);
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
     
@@ -791,9 +722,48 @@ class MatchScheduler {
             });
         }, 300000);
     }
+    
+    // Footer Visibility Control
+    initFooterVisibility() {
+        const footer = document.querySelector('.dashboard-footer');
+        
+        if (!footer) return;
+        
+        let lastScrollTop = 0;
+        
+        const checkFooterVisibility = () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            // Show footer when near bottom of page (within 100px)
+            if (scrollTop + windowHeight >= documentHeight - 100) {
+                footer.classList.add('visible');
+            } else {
+                footer.classList.remove('visible');
+            }
+            
+            lastScrollTop = scrollTop;
+        };
+        
+        // Check on scroll and resize
+        window.addEventListener('scroll', checkFooterVisibility);
+        window.addEventListener('resize', checkFooterVisibility);
+        
+        // Initial check
+        setTimeout(checkFooterVisibility, 100);
+    }
+    
+    updateFooterVisibility() {
+        // Force a re-check of footer visibility when view changes
+        setTimeout(() => {
+            const event = new Event('scroll');
+            window.dispatchEvent(event);
+        }, 100);
+    }
 }
 
-// Initialize
+// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     window.matchScheduler = new MatchScheduler();
 });
