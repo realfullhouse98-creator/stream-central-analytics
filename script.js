@@ -161,6 +161,10 @@ class MatchScheduler {
         container.innerHTML = `
             <div class="main-menu">
                 <div class="menu-grid">
+                    <div class="menu-button community-stream" onclick="matchScheduler.showCommunityStreams()">
+                        <div class="button-title">COMMUNITY STREAMS</div>
+                        <div class="button-subtitle">Live fan streams & discussions</div>
+                    </div>
                     <div class="menu-button sports-button" onclick="matchScheduler.showSportsView()">
                         <div class="button-title">LIVE SPORTS</div>
                         <div class="button-subtitle">Live games & schedules</div>
@@ -180,13 +184,50 @@ class MatchScheduler {
         this.updateFooterVisibility();
     }
     
+    showCommunityStreams() {
+        const container = document.getElementById('psl-streams-container');
+        if (!container) return;
+        
+        const communityStreams = [
+            { name: 'Fan Zone - Live Chat', category: 'Community', viewers: '1.2K', url: 'https://example.com/fanzone' },
+            { name: 'Match Reactions', category: 'Reactions', viewers: '856', url: 'https://example.com/reactions' },
+            { name: 'Player Cams', category: 'Multi-View', viewers: '2.1K', url: 'https://example.com/playercams' },
+            { name: 'Stadium Atmosphere', category: 'Ambience', viewers: '743', url: 'https://example.com/stadium' },
+            { name: 'Expert Analysis', category: 'Discussion', viewers: '1.5K', url: 'https://example.com/analysis' },
+            { name: 'Fan Commentary', category: 'Alternative', viewers: '934', url: 'https://example.com/commentary' }
+        ];
+        
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                </div>
+                <div class="section-header">
+                    <h2>Community Streams</h2>
+                    <p>Join live fan discussions and alternative streams</p>
+                </div>
+                <div class="sports-grid">
+                    ${communityStreams.map(stream => `
+                        <div class="sport-button" onclick="window.open('${stream.url}', '_blank')">
+                            <div class="sport-name">${stream.name}</div>
+                            <div class="match-count">${stream.category} • ${stream.viewers} viewers</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        this.hideStats();
+        this.updateFooterVisibility();
+    }
+    
     showSportsView() {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
 
         const sports = [
-            { id: 'tennis', name: 'Tennis' },
             { id: 'football', name: 'Football' },
+            { id: 'tennis', name: 'Tennis' },
             { id: 'badminton', name: 'Badminton' },
             { id: 'golf', name: 'Golf' },
             { id: 'baseball', name: 'Baseball' },
@@ -341,7 +382,7 @@ class MatchScheduler {
                     <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
                 </div>
                 <div class="section-header">
-                    <h2>${sportName}</h2>
+                    <h2>${sportName} Schedule</h2>
                     <p>${displayDate} • ${matches.length} matches${liveCount > 0 ? ` • ${liveCount} live` : ''}</p>
                 </div>
                 
