@@ -14,6 +14,12 @@
     --border-gold: rgba(255, 215, 0, 0.2);
 }
 
+/* MOBILE FIXES - ADDED AT TOP */
+html {
+    height: 100%;
+    overflow-x: hidden;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -26,6 +32,12 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
+    /* ADDED MOBILE FIXES */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
 }
 
 /* YouTube-Style Full Width Layout */
@@ -33,6 +45,9 @@ body {
     max-width: 100%;
     margin: 0;
     padding: 0;
+    /* ADDED MOBILE FIX */
+    min-height: 100vh;
+    position: relative;
 }
 
 .dashboard-header {
@@ -478,6 +493,9 @@ body {
     background: var(--primary-bg);
     z-index: 1000;
     overflow-y: auto;
+    /* ADDED MOBILE FIX */
+    margin: 0;
+    padding: 0;
 }
 
 .match-details-modal {
@@ -1004,6 +1022,17 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* ADDED MOBILE FIXES */
+    .match-content {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .video-container {
+        min-height: 60vh;
+    }
+    
     .dashboard-header h1 {
         font-size: 2em;
     }
@@ -1095,11 +1124,6 @@ body {
     }
     
     /* Mobile Match Details */
-    .match-content {
-        flex-direction: column;
-        height: auto;
-    }
-    
     .chat-container {
         width: 100%;
         height: 300px;
