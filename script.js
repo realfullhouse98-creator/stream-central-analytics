@@ -161,10 +161,6 @@ class MatchScheduler {
         container.innerHTML = `
             <div class="main-menu">
                 <div class="menu-grid">
-                    <div class="menu-button community-stream" onclick="matchScheduler.showCommunityStreams()">
-                        <div class="button-title">COMMUNITY STREAMS</div>
-                        <div class="button-subtitle">Live fan streams & discussions</div>
-                    </div>
                     <div class="menu-button sports-button" onclick="matchScheduler.showSportsView()">
                         <div class="button-title">LIVE SPORTS</div>
                         <div class="button-subtitle">Live games & schedules</div>
@@ -172,6 +168,10 @@ class MatchScheduler {
                     <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
                         <div class="button-title">TV CHANNELS</div>
                         <div class="button-subtitle">24/7 live streams</div>
+                    </div>
+                    <div class="menu-button community" onclick="matchScheduler.showCommunity()">
+                        <div class="button-title">COMMUNITY</div>
+                        <div class="button-subtitle">Fan discussions & events</div>
                     </div>
                 </div>
             </div>
@@ -184,17 +184,15 @@ class MatchScheduler {
         this.updateFooterVisibility();
     }
     
-    showCommunityStreams() {
+    showCommunity() {
         const container = document.getElementById('psl-streams-container');
         if (!container) return;
         
-        const communityStreams = [
-            { name: 'Fan Zone - Live Chat', category: 'Community', viewers: '1.2K', url: 'https://example.com/fanzone' },
-            { name: 'Match Reactions', category: 'Reactions', viewers: '856', url: 'https://example.com/reactions' },
-            { name: 'Player Cams', category: 'Multi-View', viewers: '2.1K', url: 'https://example.com/playercams' },
-            { name: 'Stadium Atmosphere', category: 'Ambience', viewers: '743', url: 'https://example.com/stadium' },
-            { name: 'Expert Analysis', category: 'Discussion', viewers: '1.5K', url: 'https://example.com/analysis' },
-            { name: 'Fan Commentary', category: 'Alternative', viewers: '934', url: 'https://example.com/commentary' }
+        const communityItems = [
+            { name: 'Fan Zone', category: 'Live Chat', url: 'https://example.com/fanzone' },
+            { name: 'Match Reactions', category: 'Community', url: 'https://example.com/reactions' },
+            { name: 'Player Discussions', category: 'Forums', url: 'https://example.com/discussions' },
+            { name: 'Event Planning', category: 'Meetups', url: 'https://example.com/events' }
         ];
         
         container.innerHTML = `
@@ -203,14 +201,14 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Community Streams</h2>
-                    <p>Join live fan discussions and alternative streams</p>
+                    <h2>Community</h2>
+                    <p>Join fan discussions and community events</p>
                 </div>
                 <div class="sports-grid">
-                    ${communityStreams.map(stream => `
-                        <div class="sport-button" onclick="window.open('${stream.url}', '_blank')">
-                            <div class="sport-name">${stream.name}</div>
-                            <div class="match-count">${stream.category} • ${stream.viewers} viewers</div>
+                    ${communityItems.map(item => `
+                        <div class="sport-button" onclick="window.open('${item.url}', '_blank')">
+                            <div class="sport-name">${item.name}</div>
+                            <div class="match-count">${item.category}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -382,7 +380,7 @@ class MatchScheduler {
                     <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
                 </div>
                 <div class="section-header">
-                    <h2>${sportName} Schedule</h2>
+                    <h2>Schedule</h2>
                     <p>${displayDate} • ${matches.length} matches${liveCount > 0 ? ` • ${liveCount} live` : ''}</p>
                 </div>
                 
@@ -764,13 +762,11 @@ class MatchScheduler {
         }, 300000);
     }
     
-    // Footer Visibility Control
+    // Footer Visibility Control - FIXED
     initFooterVisibility() {
         const footer = document.querySelector('.dashboard-footer');
         
         if (!footer) return;
-        
-        let lastScrollTop = 0;
         
         const checkFooterVisibility = () => {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -783,8 +779,6 @@ class MatchScheduler {
             } else {
                 footer.classList.remove('visible');
             }
-            
-            lastScrollTop = scrollTop;
         };
         
         // Check on scroll and resize
