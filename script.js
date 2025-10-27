@@ -1,4 +1,4 @@
-// 9kilo Stream - Enhanced Video Player with Channel Selector
+// 9kilo Stream - Enhanced Professional Layout
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -8,7 +8,7 @@ class MatchScheduler {
         this.verifiedMatches = [];
         this.matchStats = new Map();
         this.matchPolls = new Map();
-        this.currentStreams = new Map(); // Track current stream for each match
+        this.currentStreams = new Map();
         this.init();
     }
     
@@ -48,10 +48,9 @@ class MatchScheduler {
                             });
                         }
                         
-                        // Set first channel as default
                         const channels = match.channels || [];
                         if (channels.length > 0 && !this.currentStreams.has(matchId)) {
-                            this.currentStreams.set(matchId, 0); // Default to first channel
+                            this.currentStreams.set(matchId, 0);
                         }
                         
                         const processedMatch = {
@@ -357,7 +356,6 @@ class MatchScheduler {
         `;
     }
     
-    // Generate channel selector HTML
     generateChannelSelector(channels, matchId) {
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
         const hasMultipleChannels = channels.length > 1;
@@ -366,7 +364,6 @@ class MatchScheduler {
             return '';
         }
         
-        // For 1-2 channels, show buttons
         if (channels.length <= 2) {
             return `
                 <div class="channel-selector">
@@ -383,7 +380,6 @@ class MatchScheduler {
             `;
         }
         
-        // For 3+ channels, show dropdown
         return `
             <div class="channel-selector">
                 <span class="channel-label">Source:</span>
@@ -421,30 +417,35 @@ class MatchScheduler {
             <div class="match-details-overlay">
                 <div class="match-details-modal">
                     <div class="match-header">
-                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back to Matches</button>
+                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                     </div>
                     
                     <div class="video-container">
                         <!-- Enhanced Player Controls -->
                         <div class="video-player-controls">
-                            <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
-                                🔄 Refresh Stream
-                            </button>
-                            <button class="player-control-btn fullscreen" onclick="matchScheduler.toggleFullscreen('${matchId}')">
-                                ⛶ Fullscreen
-                            </button>
                             ${channelSelectorHTML}
+                            <div class="control-buttons-right">
+                                <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
+                                    Refresh
+                                </button>
+                                <button class="player-control-btn fullscreen" onclick="matchScheduler.toggleFullscreen('${matchId}')">
+                                    ⛶
+                                </button>
+                            </div>
                         </div>
                         
-                        <div class="video-player" id="video-player-${matchId}">
-                            ${currentStreamUrl ? 
-                                `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
-                                        allow="autoplay; fullscreen" allowfullscreen></iframe>` :
-                                `<div class="no-stream">
-                                    <h3>Stream Offline</h3>
-                                    <p>No streams available for this match</p>
-                                </div>`
-                            }
+                        <!-- YouTube-style Video Player -->
+                        <div class="video-player-wrapper">
+                            <div class="video-player" id="video-player-${matchId}">
+                                ${currentStreamUrl ? 
+                                    `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
+                                            allow="autoplay; fullscreen" allowfullscreen></iframe>` :
+                                    `<div class="no-stream">
+                                        <h3>Stream Offline</h3>
+                                        <p>No streams available for this match</p>
+                                    </div>`
+                                }
+                            </div>
                         </div>
                         
                         <div class="video-controls">
@@ -477,18 +478,33 @@ class MatchScheduler {
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Footer in match details -->
+                    <footer class="dashboard-footer">
+                        <div class="footer-legal">
+                            <p class="copyright">© 2025 9KILOS. All rights reserved.</p>
+                            <p class="legal-disclaimer">
+                                KILOS is simply a database of embedded streams and HLS files available throughout the internet. 
+                                WE does not host, control or upload any streams and/or media files. Please contact appropriate 
+                                media owners or hosts.
+                            </p>
+                        </div>
+                        <div class="last-updated">Updated: <span id="update-time-details">Just now</span></div>
+                    </footer>
                 </div>
             </div>
         `;
+        
+        // Update the details footer time
+        document.getElementById('update-time-details').textContent = new Date().toLocaleTimeString();
         
         this.hideStats();
         this.incrementViews(matchId);
     }
     
-    // Channel management functions
     switchChannel(matchId, channelIndex) {
         this.currentStreams.set(matchId, channelIndex);
-        this.showMatchDetails(matchId); // Reload to update stream
+        this.showMatchDetails(matchId);
     }
     
     toggleDropdown(matchId) {
@@ -499,7 +515,6 @@ class MatchScheduler {
             dropdown.classList.remove('show');
             button.classList.remove('open');
         } else {
-            // Close any other open dropdowns
             document.querySelectorAll('.channel-dropdown-content.show').forEach(dd => {
                 dd.classList.remove('show');
                 dd.previousElementSibling.classList.remove('open');
@@ -521,10 +536,9 @@ class MatchScheduler {
             setTimeout(() => {
                 iframe.src = currentSrc;
                 
-                // Show refresh feedback
                 const refreshBtn = document.querySelector('.player-control-btn.refresh');
                 const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = '🔄 Refreshing...';
+                refreshBtn.innerHTML = 'Refreshing...';
                 setTimeout(() => {
                     refreshBtn.innerHTML = originalText;
                 }, 1000);
