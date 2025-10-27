@@ -1,4 +1,4 @@
-// 9kilo Stream - Dynamic Footer & Professional Mobile
+// 9kilo Stream - Fixed Layout & Clean Structure
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -14,9 +14,6 @@ class MatchScheduler {
     async init() {
         // Load matches in background
         this.loadMatches().catch(console.error);
-        
-        // Initialize dynamic footer for both website and mobile
-        this.initFooterVisibility();
         
         // Show main menu immediately
         this.showMainMenu();
@@ -178,7 +175,6 @@ class MatchScheduler {
         
         this.showStats();
         this.currentView = 'main';
-        this.updateFooterVisibility();
     }
     
     showCommunity() {
@@ -206,7 +202,6 @@ class MatchScheduler {
         `;
         
         this.hideStats();
-        this.updateFooterVisibility();
     }
     
     showSportsView() {
@@ -239,7 +234,7 @@ class MatchScheduler {
                     ${sports.map(sport => `
                         <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
                             <div class="sport-name">${sport.name}</div>
-                            <div class="match-count">${sport.count} match${sport.count !== 1 ? 'es' : ''}</div>
+                            <!-- REMOVED match count from Choose page -->
                         </div>
                     `).join('')}
                 </div>
@@ -248,7 +243,6 @@ class MatchScheduler {
         
         this.hideStats();
         this.currentView = 'sports';
-        this.updateFooterVisibility();
     }
     
     showTVChannels() {
@@ -276,7 +270,6 @@ class MatchScheduler {
         `;
         
         this.hideStats();
-        this.updateFooterVisibility();
     }
     
     selectSport(sport) {
@@ -317,7 +310,6 @@ class MatchScheduler {
         
         this.hideStats();
         this.currentView = 'dates';
-        this.updateFooterVisibility();
     }
     
     selectDate(date) {
@@ -358,7 +350,6 @@ class MatchScheduler {
         
         this.hideStats();
         this.currentView = 'matches';
-        this.updateFooterVisibility();
     }
     
     renderMatchRow(match) {
@@ -526,39 +517,6 @@ class MatchScheduler {
         setInterval(() => {
             this.loadMatches();
         }, 300000);
-    }
-    
-    // DYNAMIC FOOTER - Works on both website and mobile
-    initFooterVisibility() {
-        const footer = document.querySelector('.dashboard-footer');
-        
-        if (!footer) return;
-        
-        const checkFooterVisibility = () => {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            
-            // Show footer only when at bottom (within 50px)
-            if (scrollTop + windowHeight >= documentHeight - 50) {
-                footer.classList.add('visible');
-            } else {
-                footer.classList.remove('visible');
-            }
-        };
-        
-        window.addEventListener('scroll', checkFooterVisibility);
-        window.addEventListener('resize', checkFooterVisibility);
-        
-        // Initial check
-        setTimeout(checkFooterVisibility, 100);
-    }
-    
-    updateFooterVisibility() {
-        // Trigger footer check when content changes
-        setTimeout(() => {
-            window.dispatchEvent(new Event('scroll'));
-        }, 100);
     }
 }
 
