@@ -1,91 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-    <!-- Preload Critical Resources -->
-    <link rel="preconnect" href="https://topembed.pw">
-    <link rel="dns-prefetch" href="https://topembed.pw">
-    
-    <!-- Critical CSS Inlined -->
-    <style>
-        /* Critical above-fold styles */
-        .skeleton-loader { 
-            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-        }
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .initial-loading {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%);
-        }
-    </style>
-    
-    <!-- Defer Non-Critical CSS -->
-    <link rel="preload" href="style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="style.css"></noscript>
-
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BMEYY62XPX"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-BMEYY62XPX', {
-        'anonymize_ip': true
-      });
+      gtag('config', 'G-BMEYY62XPX', {'anonymize_ip': true});
     </script>
     
-    <!-- Umami Analytics -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="99504c84-7b63-4718-8718-3b8117a7d0ce"></script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
-    <!-- iOS Status Bar -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Theme Color -->
     <meta name="theme-color" content="#0f3460">
     
-    <title>9kilo8 - Live Sports Streams & Schedules</title>
-    
-    <!-- Structured Data for SEO -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "SportsEvent",
-        "name": "Live Sports Streams",
-        "description": "Watch live sports streams from around the world",
-        "url": "https://yourdomain.com",
-        "sport": "Multiple Sports"
-    }
-    </script>
+    <title>9kilo - Live Sports</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Initial Loading -->
-    <div id="initial-loading" class="initial-loading">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p>Loading 9kilo Streams...</p>
-        </div>
-    </div>
-
-    <!-- Stream Central Dashboard -->
-    <div class="stream-central-dashboard" style="display: none;">
+    <div class="stream-central-dashboard">
         <header class="dashboard-header">
-            <h1>9kilo Stream</h1>
-            <p>Live Sports Match Schedules</p>
+            <h1>9kilo10 Stream</h1>
+            <p>Live Sports Schedules</p>
         </header>
         
-        <!-- Analytics Overview -->
         <div class="analytics-overview">
             <div class="stat-card">
                 <div class="stat-value" id="live-viewers">0</div>
@@ -105,11 +46,24 @@
             </div>
         </div>
 
-        <!-- Main Content Container -->
         <section class="psl-streams-section">
             <div id="psl-streams-container">
-                <!-- Content loads here via JavaScript -->
-                <div class="skeleton-loader" style="height: 200px; margin: 20px; border-radius: 12px;"></div>
+                <div class="main-menu">
+                    <div class="menu-grid">
+                        <div class="menu-button sports-button" onclick="matchScheduler.showSportsView()">
+                            <div class="button-title">LIVE SPORTS</div>
+                            <div class="button-subtitle">Games & schedules</div>
+                        </div>
+                        <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
+                            <div class="button-title">TV CHANNELS</div>
+                            <div class="button-subtitle">24/7 live streams</div>
+                        </div>
+                        <div class="menu-button community" onclick="matchScheduler.showCommunity()">
+                            <div class="button-title">COMMUNITY</div>
+                            <div class="button-subtitle">Fan discussions</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -119,21 +73,12 @@
                 <p class="legal-disclaimer">
                     KILOS is simply a database of embedded streams and HLS files available throughout the internet. 
                     WE does not host, control or upload any streams and/or media files. Please contact appropriate 
-                    media owners or hosts. You will never have to download nor install anything to access the 
-                    available streams. This site is mainly for those who can't afford a paid subscription or 
-                    don't have access to certain events in their countries.
+                    media owners or hosts.
                 </p>
             </div>
-            <div class="last-updated">Last updated: <span id="update-time">Just now</span></div>
+            <div class="last-updated">Updated: <span id="update-time">Just now</span></div>
         </footer>
     </div>
-
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(console.error);
-        }
-    </script>
 
     <script src="script.js"></script>
 </body>
