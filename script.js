@@ -1,4 +1,4 @@
-// 9kilo Stream - Enhanced with Fixed Match Details & Performance
+// 9kilo Stream - Fixed for Your API Data Structure
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -11,21 +11,17 @@ class MatchScheduler {
         this.apiCache = {
             data: null,
             timestamp: 0,
-            duration: 300000 // 5 minutes
+            duration: 300000
         };
-        this.lazyLoader = new LazyStreamLoader();
         this.init();
     }
     
     async init() {
-        // Hide initial loading
         this.hideInitialLoading();
-        
         await this.loadMatches();
         this.showMainMenu();
         this.startAutoRefresh();
         this.initFooterVisibility();
-        this.setupErrorHandling();
     }
     
     hideInitialLoading() {
@@ -39,31 +35,15 @@ class MatchScheduler {
     }
     
     async loadMatches() {
-        // Check cache first
         if (this.isCacheValid()) {
             this.organizeMatches(this.apiCache.data);
             return;
         }
         
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-            
-            const response = await fetch('https://topembed.pw/api.php?format=json', {
-                signal: controller.signal,
-                headers: {
-                    'Accept': 'application/json',
-                    'Cache-Control': 'max-age=300'
-                }
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
+            const response = await fetch('https://topembed.pw/api.php?format=json');
             const apiData = await response.json();
             
-            // Update cache
             this.apiCache = {
                 data: apiData,
                 timestamp: Date.now(),
@@ -73,7 +53,6 @@ class MatchScheduler {
             this.organizeMatches(apiData);
         } catch (error) {
             console.warn('API load failed:', error);
-            // Try to use cached data if available
             if (this.apiCache.data) {
                 this.organizeMatches(this.apiCache.data);
             } else {
@@ -103,13 +82,11 @@ class MatchScheduler {
                         if (match?.match) {
                             const matchId = this.generateMatchId(match);
                             
-                            // Initialize stats if not exists
                             if (!this.matchStats.has(matchId)) {
                                 this.matchStats.set(matchId, {
                                     views: Math.floor(Math.random() * 10000) + 500,
                                     likes: Math.floor(Math.random() * 500) + 50,
-                                    dislikes: Math.floor(Math.random() * 100) + 10,
-                                    shares: Math.floor(Math.random() * 200) + 20
+                                    dislikes: Math.floor(Math.random() * 100) + 10
                                 });
                             }
                             
@@ -122,8 +99,7 @@ class MatchScheduler {
                                 streamUrl: match.channels?.[0] || null,
                                 isLive: this.checkIfLive(match),
                                 sport: this.classifySport(match),
-                                unixTimestamp: match.unix_timestamp,
-                                quality: this.determineStreamQuality(match)
+                                unixTimestamp: match.unix_timestamp
                             };
                             
                             this.allMatches.push(processedMatch);
@@ -133,7 +109,6 @@ class MatchScheduler {
                 }
             });
             
-            // Sort matches by timestamp
             this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
             this.updateAnalytics();
             
@@ -143,54 +118,60 @@ class MatchScheduler {
         }
     }
     
-    determineStreamQuality(match) {
-        const sources = match.channels || [];
-        if (sources.some(src => src.includes('hd') || src.includes('720') || src.includes('1080'))) {
-            return 'HD';
-        } else if (sources.some(src => src.includes('sd') || src.includes('480'))) {
-            return 'SD';
+    classifySport(match) {
+        const sport = (match.sport || '').toLowerCase();
+        const tournament = (match.tournament || '').toLowerCase();
+        
+        const sportMapping = {
+            'football': 'football',
+            'soccer': 'football',
+            'ice hockey': 'hockey',
+            'hockey': 'hockey',
+            'field hockey': 'hockey',
+            'basketball': 'basketball',
+            'baseball': 'baseball',
+            'tennis': 'tennis',
+            'badminton': 'badminton',
+            'golf': 'golf',
+            'snooker': 'snooker',
+            'cricket': 'cricket',
+            'handball': 'handball',
+            'darts': 'darts',
+            'rugby': 'rugby union',
+            'rugby union': 'rugby union',
+            'volleyball': 'volleyball',
+            'mma': 'mma',
+            'ufc': 'mma',
+            'equestrian': 'equestrian',
+            'horse racing': 'equestrian',
+            'winter sports': 'wintersports',
+            'skiing': 'wintersports',
+            'snowboarding': 'wintersports',
+            'motorsports': 'motorsports',
+            'f1': 'motorsports',
+            'formula 1': 'motorsports',
+            'nascar': 'motorsports'
+        };
+        
+        // First try exact match with sport field
+        if (sport && sportMapping[sport]) {
+            return sportMapping[sport];
         }
-        return 'AUTO';
+        
+        // Then try partial matching
+        for (const [key, value] of Object.entries(sportMapping)) {
+            if (sport.includes(key) || tournament.includes(key)) {
+                return value;
+            }
+        }
+        
+        return 'other';
     }
     
     generateMatchId(match) {
         const teams = (match.match || 'unknown').replace(/[^a-zA-Z0-9]/g, '-');
         const timestamp = match.unix_timestamp || Date.now();
         return `${teams}-${timestamp}-${Math.random().toString(36).substr(2, 6)}`;
-    }
-    
-    classifySport(match) {
-        const tournament = (match.tournament || '').toLowerCase();
-        const matchName = (match.match || '').toLowerCase();
-        
-        const sportPatterns = {
-            tennis: ['tennis', 'wimbledon', 'us open', 'australian open', 'french open', 'atp', 'wta'],
-            football: ['premier league', 'champions league', 'la liga', 'serie a', 'bundesliga', 'world cup', 
-                      'euro', 'mls', 'fa cup', 'ligue 1', 'europa league', 'copa america', 'afcon'],
-            badminton: ['badminton', 'bwf', 'all england', 'thomas cup', 'uber cup'],
-            golf: ['golf', 'pga', 'european tour', 'masters tournament', 'us open', 'the open'],
-            baseball: ['baseball', 'mlb', 'world series', 'major league baseball'],
-            basketball: ['nba', 'basketball', 'euroleague', 'wnba', 'ncaa'],
-            snooker: ['snooker', 'world snooker', 'uk championship', 'masters snooker'],
-            cricket: ['cricket', 'icc', 'ipl', 't20', 'test match', 'odi', 'big bash', 'psl'],
-            hockey: ['hockey', 'nhl', 'khl', 'stanley cup', 'ice hockey'],
-            handball: ['handball', 'euro handball', 'world handball'],
-            darts: ['darts', 'pdc', 'world darts', 'premier league darts'],
-            'rugby union': ['rugby union', 'six nations', 'super rugby', 'premiership'],
-            volleyball: ['volleyball', 'beach volleyball', 'fivb', 'world volleyball'],
-            mma: ['ufc', 'mma', 'mixed martial arts', 'bellator'],
-            equestrian: ['equestrian', 'horse racing', 'derby', 'grand national'],
-            wintersports: ['wintersports', 'skiing', 'snowboarding', 'biathlon'],
-            motorsports: ['f1', 'formula 1', 'nascar', 'motogp', 'indycar', 'wec']
-        };
-        
-        for (const [sport, patterns] of Object.entries(sportPatterns)) {
-            if (patterns.some(pattern => tournament.includes(pattern) || matchName.includes(pattern))) {
-                return sport;
-            }
-        }
-        
-        return tournament.includes('football') || matchName.includes('vs') ? 'football' : 'other';
     }
     
     convertUnixToLocalTime(unixTimestamp) {
@@ -207,14 +188,14 @@ class MatchScheduler {
         if (!match.unix_timestamp) return false;
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unix_timestamp;
-        const eventDuration = 3 * 60 * 60; // 3 hours window
+        const eventDuration = 3 * 60 * 60;
         
         return now >= matchTime && now <= (matchTime + eventDuration);
     }
     
     formatTeamNames(teamString) {
         if (!teamString) return 'Teams TBA';
-        return teamString.replace(/ - /g, ' vs ').replace(/\bvs\b/gi, 'VS');
+        return teamString.replace(/ - /g, ' vs ');
     }
     
     formatNumber(num) {
@@ -315,14 +296,14 @@ class MatchScheduler {
 
         const sports = [
             { id: 'football', name: 'Football' },
+            { id: 'hockey', name: 'Hockey' },
+            { id: 'basketball', name: 'Basketball' },
+            { id: 'baseball', name: 'Baseball' },
             { id: 'tennis', name: 'Tennis' },
             { id: 'badminton', name: 'Badminton' },
             { id: 'golf', name: 'Golf' },
-            { id: 'baseball', name: 'Baseball' },
-            { id: 'basketball', name: 'Basketball' },
             { id: 'snooker', name: 'Snooker' },
             { id: 'cricket', name: 'Cricket' },
-            { id: 'hockey', name: 'Hockey' },
             { id: 'handball', name: 'Handball' },
             { id: 'darts', name: 'Darts' },
             { id: 'rugby union', name: 'Rugby Union' },
@@ -494,7 +475,6 @@ class MatchScheduler {
         const sportName = this.getSportDisplayName();
         const displayDate = this.formatDisplayDate(this.currentDate);
         const liveCount = matches.filter(m => m.isLive).length;
-        const upcomingCount = matches.length - liveCount;
         
         container.innerHTML = `
             <div class="content-section">
@@ -518,12 +498,6 @@ class MatchScheduler {
                         '<div class="no-matches">No matches found for this date</div>'
                     }
                 </div>
-                
-                ${matches.length > 0 ? `
-                    <div class="schedule-summary">
-                        <p><strong>Summary:</strong> ${liveCount} live matches • ${upcomingCount} upcoming</p>
-                    </div>
-                ` : ''}
             </div>
         `;
         
@@ -539,18 +513,18 @@ class MatchScheduler {
         const streamAvailable = match.streamUrl && match.streamUrl.startsWith('http');
         
         return `
-            <div class="match-row ${isLive ? 'live' : ''}" onclick="matchScheduler.handleMatchRowClick('${match.id}')">
+            <div class="match-row ${isLive ? 'live' : ''}">
                 <div class="match-time">
                     ${isLive ? '🔴 ' : ''}${match.time}
                 </div>
                 <div class="match-details">
                     <div class="team-names">${formattedTeams}</div>
-                    <div class="league-name">${match.league} • ${match.quality}</div>
+                    <div class="league-name">${match.league}</div>
                 </div>
                 <div class="watch-action">
                     ${streamAvailable ? 
                         `<button class="watch-btn ${isLive ? 'live' : ''}" 
-                                onclick="event.stopPropagation(); matchScheduler.showMatchDetails('${match.id}')">
+                                onclick="matchScheduler.showMatchDetails('${match.id}')">
                             ${isLive ? 'LIVE' : 'WATCH'}
                         </button>` :
                         '<span class="offline-text" style="color: var(--text-muted); font-size: 0.9em;">OFFLINE</span>'
@@ -558,15 +532,6 @@ class MatchScheduler {
                 </div>
             </div>
         `;
-    }
-    
-    handleMatchRowClick(matchId) {
-        // Optional: Add quick actions on row click
-        // For now, just show details if stream available
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (match && match.streamUrl) {
-            this.showMatchDetails(matchId);
-        }
     }
     
     showMatchDetails(matchId) {
@@ -577,10 +542,9 @@ class MatchScheduler {
         }
         
         const formattedTeams = this.formatTeamNames(match.teams);
-        const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0, shares: 0 };
+        const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const streamAvailable = match.streamUrl && match.streamUrl.startsWith('http');
         
-        // Initialize poll if not exists
         if (!this.matchPolls.has(matchId)) {
             const team1 = this.getTeamName(match.teams, 0);
             const team2 = this.getTeamName(match.teams, 1);
@@ -622,9 +586,6 @@ class MatchScheduler {
                                 <button class="player-fullscreen-btn" onclick="matchScheduler.toggleVideoFullscreen('${matchId}')">
                                     ⛶ Fullscreen
                                 </button>
-                                <span style="color: var(--text-muted); margin-left: auto; font-size: 0.9em;">
-                                    Quality: ${match.quality}
-                                </span>
                             </div>
                             
                             <div class="video-player" id="video-player-${matchId}">
@@ -635,12 +596,10 @@ class MatchScheduler {
                                         id="stream-iframe-${matchId}"
                                         allow="autoplay; fullscreen" 
                                         allowfullscreen
-                                        loading="lazy"
                                     ></iframe>` :
                                     `<div class="no-stream">
-                                        <h3>🚫 Stream Not Available</h3>
+                                        <h3>Stream Not Available</h3>
                                         <p>This match stream is currently offline or not available.</p>
-                                        <p><small>Check back closer to match time or try another match.</small></p>
                                     </div>`
                                 }
                             </div>
@@ -648,10 +607,10 @@ class MatchScheduler {
                             <div class="video-controls">
                                 <div class="video-title">${formattedTeams}</div>
                                 <div class="video-stats">
-                                    <span class="views-count">👁️ ${this.formatNumber(stats.views)} views</span>
+                                    <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                     ${match.isLive ? 
-                                        '<span class="live-badge-details">🔴 LIVE NOW</span>' : 
-                                        '<span class="match-status">⏰ UPCOMING</span>'
+                                        '<span class="live-badge-details">LIVE NOW</span>' : 
+                                        '<span class="match-status">UPCOMING</span>'
                                     }
                                     <span style="color: var(--text-muted);">• ${match.league}</span>
                                 </div>
@@ -664,10 +623,7 @@ class MatchScheduler {
                                         👎 <span class="dislike-count">${this.formatNumber(stats.dislikes)}</span>
                                     </button>
                                     <button class="action-btn" onclick="matchScheduler.handleShare('${matchId}')">
-                                        📤 Share <span class="share-count">${this.formatNumber(stats.shares)}</span>
-                                    </button>
-                                    <button class="action-btn" onclick="matchScheduler.copyStreamLink('${matchId}')">
-                                        🔗 Copy Link
+                                        📤 Share
                                     </button>
                                 </div>
                                 
@@ -678,7 +634,6 @@ class MatchScheduler {
                                     </div>
                                 </div>
                                 
-                                <!-- Poll Section -->
                                 <div class="poll-section">
                                     <div class="poll-title">${poll.question}</div>
                                     <div class="poll-options">
@@ -687,8 +642,7 @@ class MatchScheduler {
                                                 Math.round((option.votes / poll.totalVotes) * 100) : 0;
                                             return `
                                                 <div class="poll-option" onclick="matchScheduler.voteInPoll('${matchId}', ${index})">
-                                                    <input type="radio" name="poll-${matchId}" ${poll.userVoted ? 'disabled' : ''} 
-                                                           style="accent-color: var(--accent-gold);">
+                                                    <input type="radio" name="poll-${matchId}" ${poll.userVoted ? 'disabled' : ''}>
                                                     <div class="poll-label">${option.text}</div>
                                                     <div class="poll-percentage">${percentage}%</div>
                                                     ${poll.userVoted ? `
@@ -703,7 +657,7 @@ class MatchScheduler {
                                     <div class="poll-stats">
                                         <span>Total Votes: ${poll.totalVotes}</span>
                                         ${poll.userVoted ? 
-                                            '<span style="color: var(--accent-green);">✅ Thanks for voting!</span>' : 
+                                            '<span style="color: var(--accent-green);">Thanks for voting!</span>' : 
                                             '<span>Click your prediction to vote!</span>'
                                         }
                                     </div>
@@ -720,14 +674,7 @@ class MatchScheduler {
         this.currentView = 'match-details';
         this.hideStats();
         
-        // Increment views and track analytics
         this.incrementViews(matchId);
-        
-        // Setup lazy loading for the iframe
-        if (streamAvailable) {
-            this.lazyLoader.observe(document.getElementById(`stream-iframe-${matchId}`));
-        }
-        
         this.updateFooterVisibility();
     }
     
@@ -768,25 +715,16 @@ class MatchScheduler {
         const stats = this.matchStats.get(matchId);
         if (!stats) return;
         
-        // Update like button
         const likeBtn = document.querySelector('.like-btn .like-count');
         const dislikeBtn = document.querySelector('.dislike-btn .dislike-count');
-        const shareBtn = document.querySelector('.action-btn .share-count');
         
         if (likeBtn) likeBtn.textContent = this.formatNumber(stats.likes);
         if (dislikeBtn) dislikeBtn.textContent = this.formatNumber(stats.dislikes);
-        if (shareBtn) shareBtn.textContent = this.formatNumber(stats.shares);
     }
     
     handleShare(matchId) {
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
-        
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.shares++;
-            this.matchStats.set(matchId, stats);
-        }
         
         const shareUrl = window.location.href.split('?')[0] + `?match=${matchId}`;
         const shareText = `Watch ${this.formatTeamNames(match.teams)} live on 9kilo Stream!`;
@@ -796,39 +734,9 @@ class MatchScheduler {
                 title: `${this.formatTeamNames(match.teams)} - Live Stream`,
                 text: shareText,
                 url: shareUrl
-            }).catch(() => this.fallbackShare(shareUrl, shareText));
-        } else {
-            this.fallbackShare(shareUrl, shareText);
-        }
-    }
-    
-    fallbackShare(url, text) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(`${text} ${url}`).then(() => {
-                alert('Link copied to clipboard! Share it with your friends.');
-            }).catch(() => {
-                prompt('Copy this link to share:', url);
             });
         } else {
-            prompt('Copy this link to share:', url);
-        }
-    }
-    
-    copyStreamLink(matchId) {
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (!match || !match.streamUrl) {
-            alert('Stream link not available');
-            return;
-        }
-        
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(match.streamUrl).then(() => {
-                alert('Stream link copied to clipboard!');
-            }).catch(() => {
-                prompt('Copy the stream URL:', match.streamUrl);
-            });
-        } else {
-            prompt('Copy the stream URL:', match.streamUrl);
+            prompt('Copy this link to share:', shareUrl);
         }
     }
     
@@ -838,19 +746,10 @@ class MatchScheduler {
         
         const iframe = document.getElementById(`stream-iframe-${matchId}`);
         if (iframe) {
-            // Show loading state
-            const refreshBtn = document.querySelector('.player-refresh-btn');
-            const originalText = refreshBtn.textContent;
-            refreshBtn.textContent = '🔄 Refreshing...';
-            refreshBtn.disabled = true;
-            
-            // Reload iframe
             const currentSrc = iframe.src;
             iframe.src = '';
             setTimeout(() => {
                 iframe.src = currentSrc;
-                refreshBtn.textContent = originalText;
-                refreshBtn.disabled = false;
             }, 500);
         }
     }
@@ -888,7 +787,6 @@ class MatchScheduler {
     }
     
     updatePollUI(matchId) {
-        // Refresh the match details view to show updated poll
         this.showMatchDetails(matchId);
     }
     
@@ -932,8 +830,7 @@ class MatchScheduler {
             return date.toLocaleDateString('en-US', {
                 weekday: 'long',
                 month: 'long',
-                day: 'numeric',
-                year: 'numeric'
+                day: 'numeric'
             });
         } catch (error) {
             return dateString;
@@ -953,7 +850,6 @@ class MatchScheduler {
             return sum + (stats ? stats.views : 0);
         }, 0);
         
-        // Update DOM elements safely
         const updateElement = (id, value) => {
             const element = document.getElementById(id);
             if (element) element.textContent = value;
@@ -962,10 +858,6 @@ class MatchScheduler {
         updateElement('total-streams', this.verifiedMatches.length);
         updateElement('live-viewers', this.formatNumber(Math.floor(totalViewers / 100)));
         updateElement('update-time', new Date().toLocaleTimeString());
-        
-        // Update countries based on unique leagues
-        const uniqueLeagues = new Set(this.verifiedMatches.map(m => m.league)).size;
-        updateElement('countries', Math.max(1, Math.min(uniqueLeagues, 50)));
     }
     
     showError(message = 'Unable to load schedules') {
@@ -983,25 +875,13 @@ class MatchScheduler {
         }
     }
     
-    setupErrorHandling() {
-        window.addEventListener('error', (event) => {
-            console.error('Global error:', event.error);
-        });
-        
-        window.addEventListener('unhandledrejection', (event) => {
-            console.error('Unhandled promise rejection:', event.reason);
-        });
-    }
-    
     startLiveUpdates() {
-        // Update live status every 30 seconds
         this.liveUpdateInterval = setInterval(() => {
             this.updateLiveStatus();
         }, 30000);
     }
     
     startAutoRefresh() {
-        // Refresh data every 5 minutes
         this.autoRefreshInterval = setInterval(() => {
             this.loadMatches().then(() => {
                 if (this.currentView === 'matches') this.showMatchesView();
@@ -1012,7 +892,6 @@ class MatchScheduler {
         }, 300000);
     }
     
-    // Footer Visibility Control
     initFooterVisibility() {
         const footer = document.querySelector('.dashboard-footer');
         if (!footer) return;
@@ -1040,39 +919,9 @@ class MatchScheduler {
         }, 100);
     }
     
-    // Cleanup on page unload
     destroy() {
         if (this.liveUpdateInterval) clearInterval(this.liveUpdateInterval);
         if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
-    }
-}
-
-// Lazy Stream Loader
-class LazyStreamLoader {
-    constructor() {
-        this.observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    this.loadStream(entry.target);
-                    this.observer.unobserve(entry.target);
-                }
-            });
-        }, { 
-            rootMargin: '100px',
-            threshold: 0.1
-        });
-    }
-    
-    observe(element) {
-        if (element) {
-            this.observer.observe(element);
-        }
-    }
-    
-    loadStream(iframe) {
-        // Iframe is already loaded by src attribute
-        // This is just for tracking
-        console.log('Loading stream:', iframe.src);
     }
 }
 
@@ -1087,16 +936,3 @@ window.addEventListener('beforeunload', () => {
         window.matchScheduler.destroy();
     }
 });
-
-// Service Worker Registration
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('SW registered: ', registration);
-            })
-            .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}
