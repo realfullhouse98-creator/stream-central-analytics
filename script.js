@@ -1,4 +1,4 @@
-// 9kilo Stream - Fixed Layout & Clean Structure
+// 9kilo Stream - Enhanced Video Player with Channel Selector
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -8,17 +8,13 @@ class MatchScheduler {
         this.verifiedMatches = [];
         this.matchStats = new Map();
         this.matchPolls = new Map();
+        this.currentStreams = new Map(); // Track current stream for each match
         this.init();
     }
     
     async init() {
-        // Load matches in background
         this.loadMatches().catch(console.error);
-        
-        // Show main menu immediately
         this.showMainMenu();
-        
-        // Start background updates
         this.startAutoRefresh();
     }
     
@@ -52,13 +48,20 @@ class MatchScheduler {
                             });
                         }
                         
+                        // Set first channel as default
+                        const channels = match.channels || [];
+                        if (channels.length > 0 && !this.currentStreams.has(matchId)) {
+                            this.currentStreams.set(matchId, 0); // Default to first channel
+                        }
+                        
                         const processedMatch = {
                             id: matchId,
                             date: date,
                             time: this.convertUnixToLocalTime(match.unix_timestamp),
                             teams: match.match,
                             league: match.tournament || match.sport || 'Sports',
-                            streamUrl: match.channels?.[0] || null,
+                            streamUrl: channels[0] || null,
+                            channels: channels,
                             isLive: this.checkIfLive(match),
                             sport: this.classifySport(match),
                             unixTimestamp: match.unix_timestamp
@@ -80,35 +83,22 @@ class MatchScheduler {
         const tournament = (match.tournament || '').toLowerCase();
         
         const sportMapping = {
-            'football': 'football',
-            'soccer': 'football',
-            'ice hockey': 'hockey',
-            'hockey': 'hockey',
-            'basketball': 'basketball',
-            'baseball': 'baseball',
-            'tennis': 'tennis',
-            'badminton': 'badminton',
-            'golf': 'golf',
-            'snooker': 'snooker',
-            'cricket': 'cricket',
-            'handball': 'handball',
-            'darts': 'darts',
-            'rugby': 'rugby union',
-            'volleyball': 'volleyball',
-            'mma': 'mma',
-            'equestrian': 'equestrian',
-            'winter sports': 'wintersports',
+            'football': 'football', 'soccer': 'football',
+            'ice hockey': 'hockey', 'hockey': 'hockey',
+            'basketball': 'basketball', 'baseball': 'baseball',
+            'tennis': 'tennis', 'badminton': 'badminton',
+            'golf': 'golf', 'snooker': 'snooker',
+            'cricket': 'cricket', 'handball': 'handball',
+            'darts': 'darts', 'rugby': 'rugby union',
+            'volleyball': 'volleyball', 'mma': 'mma',
+            'equestrian': 'equestrian', 'winter sports': 'wintersports',
             'motorsports': 'motorsports'
         };
         
-        if (sport && sportMapping[sport]) {
-            return sportMapping[sport];
-        }
+        if (sport && sportMapping[sport]) return sportMapping[sport];
         
         for (const [key, value] of Object.entries(sportMapping)) {
-            if (sport.includes(key) || tournament.includes(key)) {
-                return value;
-            }
+            if (sport.includes(key) || tournament.includes(key)) return value;
         }
         
         return 'other';
@@ -121,9 +111,7 @@ class MatchScheduler {
     convertUnixToLocalTime(unixTimestamp) {
         if (!unixTimestamp) return 'TBD';
         return new Date(unixTimestamp * 1000).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
+            hour: '2-digit', minute: '2-digit', hour12: false
         });
     }
     
@@ -207,18 +195,13 @@ class MatchScheduler {
     showSportsView() {
         const container = document.getElementById('psl-streams-container');
         const sports = [
-            { id: 'football', name: 'Football' },
-            { id: 'hockey', name: 'Hockey' },
-            { id: 'basketball', name: 'Basketball' },
-            { id: 'baseball', name: 'Baseball' },
-            { id: 'tennis', name: 'Tennis' },
-            { id: 'badminton', name: 'Badminton' },
-            { id: 'golf', name: 'Golf' },
-            { id: 'cricket', name: 'Cricket' },
+            { id: 'football', name: 'Football' }, { id: 'hockey', name: 'Hockey' },
+            { id: 'basketball', name: 'Basketball' }, { id: 'baseball', name: 'Baseball' },
+            { id: 'tennis', name: 'Tennis' }, { id: 'badminton', name: 'Badminton' },
+            { id: 'golf', name: 'Golf' }, { id: 'cricket', name: 'Cricket' },
             { id: 'other', name: 'Other Sports' }
         ].map(sport => ({
-            ...sport,
-            count: this.getMatchesBySport(sport.id).length
+            ...sport, count: this.getMatchesBySport(sport.id).length
         })).filter(sport => sport.count > 0);
 
         container.innerHTML = `
@@ -234,7 +217,6 @@ class MatchScheduler {
                     ${sports.map(sport => `
                         <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
                             <div class="sport-name">${sport.name}</div>
-                            <!-- REMOVED match count from Choose page -->
                         </div>
                     `).join('')}
                 </div>
@@ -364,12 +346,59 @@ class MatchScheduler {
                     <div class="league-name">${match.league}</div>
                 </div>
                 <div class="watch-action">
-                    ${match.streamUrl ? 
+                    ${match.channels && match.channels.length > 0 ? 
                         `<button class="watch-btn ${isLive ? 'live' : ''}" onclick="matchScheduler.showMatchDetails('${match.id}')">
                             ${isLive ? 'LIVE' : 'WATCH'}
                         </button>` :
                         '<span style="color: var(--text-muted); font-size: 0.8em;">OFFLINE</span>'
                     }
+                </div>
+            </div>
+        `;
+    }
+    
+    // Generate channel selector HTML
+    generateChannelSelector(channels, matchId) {
+        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
+        const hasMultipleChannels = channels.length > 1;
+        
+        if (!hasMultipleChannels || channels.length === 0) {
+            return '';
+        }
+        
+        // For 1-2 channels, show buttons
+        if (channels.length <= 2) {
+            return `
+                <div class="channel-selector">
+                    <span class="channel-label">Source:</span>
+                    <div class="channel-buttons">
+                        ${channels.map((channel, index) => `
+                            <button class="channel-btn ${index === currentChannelIndex ? 'active' : ''}" 
+                                    onclick="matchScheduler.switchChannel('${matchId}', ${index})">
+                                Source ${index + 1}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // For 3+ channels, show dropdown
+        return `
+            <div class="channel-selector">
+                <span class="channel-label">Source:</span>
+                <div class="channel-dropdown">
+                    <button class="channel-dropdown-btn" onclick="matchScheduler.toggleDropdown('${matchId}')">
+                        Source ${currentChannelIndex + 1} of ${channels.length}
+                    </button>
+                    <div class="channel-dropdown-content" id="dropdown-${matchId}">
+                        ${channels.map((channel, index) => `
+                            <div class="channel-dropdown-item ${index === currentChannelIndex ? 'active' : ''}" 
+                                 onclick="matchScheduler.switchChannel('${matchId}', ${index})">
+                                Source ${index + 1}
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             </div>
         `;
@@ -381,22 +410,39 @@ class MatchScheduler {
         
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
+        const channels = match.channels || [];
+        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
+        const currentStreamUrl = channels[currentChannelIndex] || null;
+        
+        const channelSelectorHTML = this.generateChannelSelector(channels, matchId);
         
         const container = document.getElementById('psl-streams-container');
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
                     <div class="match-header">
-                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
+                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back to Matches</button>
                     </div>
                     
                     <div class="video-container">
-                        <div class="video-player">
-                            ${match.streamUrl ? 
-                                `<iframe src="${match.streamUrl}" class="stream-iframe" allowfullscreen></iframe>` :
+                        <!-- Enhanced Player Controls -->
+                        <div class="video-player-controls">
+                            <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
+                                🔄 Refresh Stream
+                            </button>
+                            <button class="player-control-btn fullscreen" onclick="matchScheduler.toggleFullscreen('${matchId}')">
+                                ⛶ Fullscreen
+                            </button>
+                            ${channelSelectorHTML}
+                        </div>
+                        
+                        <div class="video-player" id="video-player-${matchId}">
+                            ${currentStreamUrl ? 
+                                `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
+                                        allow="autoplay; fullscreen" allowfullscreen></iframe>` :
                                 `<div class="no-stream">
                                     <h3>Stream Offline</h3>
-                                    <p>Check back later</p>
+                                    <p>No streams available for this match</p>
                                 </div>`
                             }
                         </div>
@@ -405,7 +451,9 @@ class MatchScheduler {
                             <div class="video-title">${formattedTeams}</div>
                             <div class="video-stats">
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
-                                ${match.isLive ? '<span class="live-badge-details">LIVE</span>' : ''}
+                                ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
+                                <span style="color: var(--text-muted);">• ${match.league}</span>
+                                ${channels.length > 1 ? `<span style="color: var(--accent-gold);">• ${channels.length} sources</span>` : ''}
                             </div>
                             
                             <div class="video-actions">
@@ -422,7 +470,9 @@ class MatchScheduler {
                             
                             <div class="match-description">
                                 <div class="description-text">
-                                    ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} - ${match.league}
+                                    <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
+                                    ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
+                                    ${channels.length > 1 ? `Multiple streaming sources available.` : ''}
                                 </div>
                             </div>
                         </div>
@@ -433,6 +483,66 @@ class MatchScheduler {
         
         this.hideStats();
         this.incrementViews(matchId);
+    }
+    
+    // Channel management functions
+    switchChannel(matchId, channelIndex) {
+        this.currentStreams.set(matchId, channelIndex);
+        this.showMatchDetails(matchId); // Reload to update stream
+    }
+    
+    toggleDropdown(matchId) {
+        const dropdown = document.getElementById(`dropdown-${matchId}`);
+        const button = document.querySelector(`#dropdown-${matchId}`).previousElementSibling;
+        
+        if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+            button.classList.remove('open');
+        } else {
+            // Close any other open dropdowns
+            document.querySelectorAll('.channel-dropdown-content.show').forEach(dd => {
+                dd.classList.remove('show');
+                dd.previousElementSibling.classList.remove('open');
+            });
+            
+            dropdown.classList.add('show');
+            button.classList.add('open');
+        }
+    }
+    
+    refreshCurrentStream(matchId) {
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (!match) return;
+        
+        const iframe = document.getElementById(`stream-iframe-${matchId}`);
+        if (iframe) {
+            const currentSrc = iframe.src;
+            iframe.src = '';
+            setTimeout(() => {
+                iframe.src = currentSrc;
+                
+                // Show refresh feedback
+                const refreshBtn = document.querySelector('.player-control-btn.refresh');
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '🔄 Refreshing...';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                }, 1000);
+            }, 500);
+        }
+    }
+    
+    toggleFullscreen(matchId) {
+        const videoPlayer = document.getElementById(`video-player-${matchId}`);
+        if (!videoPlayer) return;
+        
+        if (!document.fullscreenElement) {
+            videoPlayer.requestFullscreen().catch(err => {
+                console.log('Fullscreen failed:', err);
+            });
+        } else {
+            document.exitFullscreen();
+        }
     }
     
     getTeamName(teamString, index) {
@@ -480,14 +590,10 @@ class MatchScheduler {
     
     getSportDisplayName() {
         const names = {
-            'football': 'Football',
-            'hockey': 'Hockey', 
-            'basketball': 'Basketball',
-            'baseball': 'Baseball',
-            'tennis': 'Tennis',
-            'badminton': 'Badminton',
-            'golf': 'Golf',
-            'cricket': 'Cricket',
+            'football': 'Football', 'hockey': 'Hockey', 
+            'basketball': 'Basketball', 'baseball': 'Baseball',
+            'tennis': 'Tennis', 'badminton': 'Badminton',
+            'golf': 'Golf', 'cricket': 'Cricket',
             'other': 'Other Sports'
         };
         return names[this.currentSport] || this.currentSport;
@@ -495,9 +601,7 @@ class MatchScheduler {
     
     formatDisplayDate(dateString) {
         return new Date(dateString + 'T00:00:00').toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric'
+            weekday: 'short', month: 'short', day: 'numeric'
         });
     }
     
@@ -523,4 +627,14 @@ class MatchScheduler {
 // Initialize immediately
 document.addEventListener('DOMContentLoaded', () => {
     window.matchScheduler = new MatchScheduler();
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.channel-dropdown')) {
+        document.querySelectorAll('.channel-dropdown-content.show').forEach(dropdown => {
+            dropdown.classList.remove('show');
+            dropdown.previousElementSibling.classList.remove('open');
+        });
+    }
 });
