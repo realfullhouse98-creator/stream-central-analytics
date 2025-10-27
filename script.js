@@ -1,4 +1,4 @@
-// 9kilo Stream - Fast Loading & Fixed UI
+// 9kilo Stream - Dynamic Footer & Professional Mobile
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -12,8 +12,10 @@ class MatchScheduler {
     }
     
     async init() {
-        // Load matches in background - don't block UI
+        // Load matches in background
         this.loadMatches().catch(console.error);
+        
+        // Initialize dynamic footer for both website and mobile
         this.initFooterVisibility();
         
         // Show main menu immediately
@@ -526,16 +528,37 @@ class MatchScheduler {
         }, 300000);
     }
     
+    // DYNAMIC FOOTER - Works on both website and mobile
     initFooterVisibility() {
-        // Footer is now always visible at bottom
         const footer = document.querySelector('.dashboard-footer');
-        if (footer) {
-            footer.style.display = 'block';
-        }
+        
+        if (!footer) return;
+        
+        const checkFooterVisibility = () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            // Show footer only when at bottom (within 50px)
+            if (scrollTop + windowHeight >= documentHeight - 50) {
+                footer.classList.add('visible');
+            } else {
+                footer.classList.remove('visible');
+            }
+        };
+        
+        window.addEventListener('scroll', checkFooterVisibility);
+        window.addEventListener('resize', checkFooterVisibility);
+        
+        // Initial check
+        setTimeout(checkFooterVisibility, 100);
     }
     
     updateFooterVisibility() {
-        // Footer is always visible now
+        // Trigger footer check when content changes
+        setTimeout(() => {
+            window.dispatchEvent(new Event('scroll'));
+        }, 100);
     }
 }
 
