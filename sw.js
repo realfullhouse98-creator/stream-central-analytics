@@ -1,31 +1,20 @@
-const CACHE_NAME = '9kilo-stream-v1.0';
+const CACHE_NAME = '9kilo-stream-v1';
 const urlsToCache = [
   '/',
-  '/index.html',
   '/style.css',
-  '/script.js',
-  '/manifest.json'
+  '/script.js'
 ];
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(function(cache) {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
-      .then(function(response) {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
+      .then(response => response || fetch(event.request))
   );
 });
