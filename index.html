@@ -1,6 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://topembed.pw">
+    <link rel="dns-prefetch" href="https://topembed.pw">
+    
+    <!-- Critical CSS Inlined -->
+    <style>
+        /* Critical above-fold styles */
+        .skeleton-loader { 
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .initial-loading {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%);
+        }
+    </style>
+    
+    <!-- Defer Non-Critical CSS -->
+    <link rel="preload" href="style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="style.css"></noscript>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BMEYY62XPX"></script>
     <script>
@@ -25,12 +55,31 @@
     <!-- Theme Color -->
     <meta name="theme-color" content="#0f3460">
     
-    <title>9kilo - Live Sports Schedules</title>
-    <link rel="stylesheet" href="style.css">
+    <title>9kilo - Live Sports Streams & Schedules</title>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "Live Sports Streams",
+        "description": "Watch live sports streams from around the world",
+        "url": "https://yourdomain.com",
+        "sport": "Multiple Sports"
+    }
+    </script>
 </head>
 <body>
+    <!-- Initial Loading -->
+    <div id="initial-loading" class="initial-loading">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Loading 9kilo Streams...</p>
+        </div>
+    </div>
+
     <!-- Stream Central Dashboard -->
-    <div class="stream-central-dashboard">
+    <div class="stream-central-dashboard" style="display: none;">
         <header class="dashboard-header">
             <h1>9kilo Stream</h1>
             <p>Live Sports Match Schedules</p>
@@ -60,6 +109,7 @@
         <section class="psl-streams-section">
             <div id="psl-streams-container">
                 <!-- Content loads here via JavaScript -->
+                <div class="skeleton-loader" style="height: 200px; margin: 20px; border-radius: 12px;"></div>
             </div>
         </section>
 
@@ -77,6 +127,13 @@
             <div class="last-updated">Last updated: <span id="update-time">Just now</span></div>
         </footer>
     </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(console.error);
+        }
+    </script>
 
     <script src="script.js"></script>
 </body>
