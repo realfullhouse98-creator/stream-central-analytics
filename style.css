@@ -1,4 +1,4 @@
-/* 9kilo Stream - Professional Mobile Layout */
+/* 9kilo Stream - Fixed Layout Structure */
 :root {
     --primary-bg: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%);
     --header-bg: rgba(15, 52, 96, 0.95);
@@ -36,25 +36,18 @@ body {
     background: var(--primary-bg);
     color: var(--text-primary);
     line-height: 1.6;
-    display: flex;
-    flex-direction: column;
 }
 
-/* Main Dashboard Layout */
+/* FIXED: Clean layout structure */
 .stream-central-dashboard {
-    flex: 1;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
 }
 
-/* Header */
 .dashboard-header {
     text-align: center;
-    padding: 15px 20px;
+    padding: 20px;
     background: var(--header-bg);
     border-bottom: 1px solid var(--border-light);
     backdrop-filter: blur(20px);
@@ -62,8 +55,8 @@ body {
 }
 
 .dashboard-header h1 {
-    margin: 0 0 5px 0;
-    font-size: 2.2em;
+    margin: 0 0 8px 0;
+    font-size: 2.5em;
     background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #3498db);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -73,75 +66,70 @@ body {
 
 .dashboard-header p {
     color: var(--text-secondary);
-    font-size: 0.9em;
+    font-size: 1.1em;
     margin: 0;
 }
 
-/* Analytics - Professional Mobile Layout */
 .analytics-overview {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
-    margin: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 20px;
     flex-shrink: 0;
 }
 
 .stat-card {
     background: var(--card-bg);
-    padding: 12px 8px;
-    border-radius: 10px;
+    padding: 15px 10px;
+    border-radius: 12px;
     text-align: center;
     backdrop-filter: blur(15px);
     border: 1px solid var(--border-light);
 }
 
 .stat-value {
-    font-size: 1.4em;
+    font-size: 1.6em;
     font-weight: 700;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
     color: var(--accent-gold);
 }
 
 .stat-label {
     color: var(--text-muted);
-    font-size: 0.65em;
+    font-size: 0.75em;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
 }
 
-/* Main Content Area */
-.psl-streams-section {
+/* FIXED: Main content area */
+.main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow-y: auto;
 }
 
 #psl-streams-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
 }
 
-/* Main Menu - Professional Mobile Layout */
 .main-menu {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 20px 15px;
-    gap: 15px;
-    min-height: 0;
+    padding: 30px 20px;
+    gap: 20px;
 }
 
 .menu-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    max-width: 400px;
+    gap: 20px;
+    max-width: 450px;
     margin: 0 auto;
     width: 100%;
 }
@@ -149,13 +137,12 @@ body {
 .menu-button {
     background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08));
     border: 1px solid var(--border-light);
-    border-radius: 14px;
-    padding: 25px 20px;
+    border-radius: 16px;
+    padding: 30px 25px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(20px);
-    flex-shrink: 0;
 }
 
 .menu-button:hover {
@@ -164,14 +151,14 @@ body {
 }
 
 .button-title {
-    font-size: 1.8em;
+    font-size: 2em;
     font-weight: 800;
     color: white;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .button-subtitle {
-    font-size: 0.9em;
+    font-size: 1em;
     color: rgba(255, 255, 255, 0.8);
 }
 
@@ -180,20 +167,19 @@ body {
     border: 1px solid rgba(155, 89, 182, 0.3);
 }
 
-/* Content Sections */
 .content-section {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    padding: 25px 20px;
     min-height: 0;
     overflow-y: auto;
 }
 
 .navigation-buttons {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 25px;
     align-items: center;
     flex-shrink: 0;
 }
@@ -202,42 +188,40 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-light);
     color: var(--text-primary);
-    padding: 10px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1.2em;
-    width: 40px;
-    height: 40px;
+    font-size: 1.3em;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* INCREASED FONT SIZES BY 50% */
 .section-header {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     flex-shrink: 0;
 }
 
 .section-header h2 {
-    margin: 0 0 8px 0;
-    font-size: 3em; /* Increased by 50% */
+    margin: 0 0 10px 0;
+    font-size: 2.2em;
     color: var(--accent-gold);
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .section-header p {
     color: var(--text-secondary);
-    font-size: 1.5em; /* Increased by 50% */
+    font-size: 1.2em;
     margin: 0;
-    font-weight: 500;
 }
 
 .sports-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
     flex: 1;
     align-content: start;
 }
@@ -245,11 +229,11 @@ body {
 .sport-button, .date-button {
     background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.06));
     border: 1px solid var(--border-light);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 25px 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-height: 90px;
+    min-height: 100px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -264,22 +248,21 @@ body {
 }
 
 .sport-name, .date-name {
-    font-size: 2.1em; /* Increased by 50% */
+    font-size: 1.6em;
     font-weight: 700;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
+/* FIXED: Half font size for match counts and removed from Choose page */
 .match-count {
-    font-size: 1.05em; /* Increased by 50% */
+    font-size: 0.8em;
     color: rgba(255, 255, 255, 0.6);
     background: rgba(255, 255, 255, 0.08);
-    padding: 4px 12px;
-    border-radius: 10px;
-    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 8px;
 }
 
-/* Matches Table */
 .matches-table {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
@@ -292,7 +275,7 @@ body {
     display: grid;
     grid-template-columns: 90px 1fr 100px;
     background: rgba(255, 255, 255, 0.08);
-    padding: 15px 20px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--border-light);
     font-weight: 600;
     font-size: 1.1em;
@@ -302,7 +285,7 @@ body {
 .match-row {
     display: grid;
     grid-template-columns: 90px 1fr 100px;
-    padding: 15px 20px;
+    padding: 14px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     align-items: center;
     gap: 15px;
@@ -316,22 +299,21 @@ body {
 .match-time {
     font-weight: 600;
     color: var(--accent-gold);
-    font-size: 1.1em;
+    font-size: 1em;
 }
 
 .team-names {
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 4px;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 .league-name {
     color: var(--text-muted);
-    font-size: 1em;
+    font-size: 0.9em;
 }
 
-/* FIXED: Yellow Watch Buttons + Red LIVE */
 .watch-btn {
     background: var(--accent-gold);
     color: #000;
@@ -357,7 +339,6 @@ body {
     100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
 }
 
-/* Match Details */
 .match-details-overlay {
     position: fixed;
     top: 0;
@@ -435,7 +416,7 @@ body {
 }
 
 .video-title {
-    font-size: 1.8em;
+    font-size: 1.6em;
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 10px;
@@ -451,7 +432,7 @@ body {
 
 .views-count {
     color: var(--text-secondary);
-    font-size: 1em;
+    font-size: 0.9em;
 }
 
 .live-badge-details {
@@ -459,7 +440,7 @@ body {
     color: white;
     padding: 4px 12px;
     border-radius: 12px;
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-weight: 600;
     animation: pulse 2s infinite;
 }
@@ -494,45 +475,38 @@ body {
 
 .description-text {
     color: var(--text-secondary);
-    font-size: 1em;
+    font-size: 0.9em;
     line-height: 1.4;
 }
 
-/* DYNAMIC FOOTER - Show only at bottom */
+/* FIXED: Static footer for both website and mobile */
 .dashboard-footer {
     text-align: center;
-    padding: 20px 15px;
+    padding: 25px 20px;
     color: var(--text-muted);
     border-top: 1px solid var(--border-light);
     background: var(--footer-bg);
     backdrop-filter: blur(20px);
-    display: none;
-    position: sticky;
-    bottom: 0;
-    width: 100%;
-}
-
-.dashboard-footer.visible {
-    display: block;
+    flex-shrink: 0;
 }
 
 .copyright {
-    font-size: 0.8em;
+    font-size: 0.9em;
     color: var(--text-secondary);
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
     font-weight: 600;
 }
 
 .legal-disclaimer {
-    font-size: 0.7em;
+    font-size: 0.75em;
     color: var(--text-muted);
-    line-height: 1.4;
+    line-height: 1.5;
     margin: 0;
 }
 
 .last-updated {
-    margin-top: 8px;
-    font-size: 0.7em;
+    margin-top: 10px;
+    font-size: 0.75em;
     color: var(--text-muted);
 }
 
@@ -559,71 +533,61 @@ body {
     color: var(--text-muted);
 }
 
-/* MOBILE RESPONSIVE - Professional Layout */
+/* FIXED: Mobile layout - No more button movement */
 @media (max-width: 768px) {
     .dashboard-header {
-        padding: 12px 15px;
+        padding: 15px;
     }
     
     .dashboard-header h1 {
-        font-size: 1.8em;
-    }
-    
-    .dashboard-header p {
-        font-size: 0.8em;
-    }
-    
-    /* Professional Mobile Stats - Compact */
-    .analytics-overview {
-        grid-template-columns: repeat(2, 1fr);
-        margin: 8px;
-        gap: 6px;
-    }
-    
-    .stat-card {
-        padding: 10px 6px;
-    }
-    
-    .stat-value {
-        font-size: 1.2em;
-    }
-    
-    .stat-label {
-        font-size: 0.6em;
-    }
-    
-    /* Main Menu - Full Screen Focus */
-    .main-menu {
-        padding: 15px 12px;
-        gap: 12px;
-        justify-content: flex-start;
-        margin-top: 10px;
-    }
-    
-    .menu-button {
-        padding: 30px 20px;
-        min-height: 100px;
-    }
-    
-    .button-title {
         font-size: 2em;
     }
     
-    .button-subtitle {
-        font-size: 1em;
+    .dashboard-header p {
+        font-size: 0.9em;
     }
     
-    /* Increased Mobile Font Sizes */
+    .analytics-overview {
+        grid-template-columns: repeat(2, 1fr);
+        margin: 15px;
+        gap: 10px;
+    }
+    
+    .stat-card {
+        padding: 12px 8px;
+    }
+    
+    .stat-value {
+        font-size: 1.4em;
+    }
+    
+    .stat-label {
+        font-size: 0.7em;
+    }
+    
+    .main-menu {
+        padding: 20px 15px;
+        gap: 15px;
+    }
+    
+    .menu-button {
+        padding: 25px 20px;
+    }
+    
+    .button-title {
+        font-size: 1.8em;
+    }
+    
     .content-section {
-        padding: 12px;
+        padding: 20px 15px;
     }
     
     .section-header h2 {
-        font-size: 2.4em; /* Increased for mobile */
+        font-size: 1.8em;
     }
     
     .section-header p {
-        font-size: 1.3em; /* Increased for mobile */
+        font-size: 1em;
     }
     
     .sports-grid {
@@ -632,27 +596,27 @@ body {
     }
     
     .sport-button, .date-button {
-        padding: 25px 18px;
-        min-height: 100px;
+        padding: 22px 18px;
+        min-height: 90px;
     }
     
     .sport-name, .date-name {
-        font-size: 1.8em; /* Increased for mobile */
+        font-size: 1.4em;
     }
     
     .match-count {
-        font-size: 0.9em;
+        font-size: 0.7em;
     }
     
     .table-header {
-        grid-template-columns: 70px 1fr 85px;
-        padding: 12px 15px;
+        grid-template-columns: 80px 1fr 90px;
+        padding: 14px 15px;
         font-size: 0.9em;
         gap: 10px;
     }
     
     .match-row {
-        grid-template-columns: 70px 1fr 85px;
+        grid-template-columns: 80px 1fr 90px;
         padding: 12px 15px;
         gap: 10px;
     }
@@ -670,7 +634,7 @@ body {
     }
     
     .watch-btn {
-        padding: 8px 12px;
+        padding: 8px 14px;
         font-size: 0.8em;
         min-width: 70px;
     }
@@ -682,38 +646,14 @@ body {
     .video-title {
         font-size: 1.4em;
     }
+    
+    .dashboard-footer {
+        padding: 20px 15px;
+    }
 }
 
 @media (max-width: 480px) {
     .analytics-overview {
         grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .dashboard-header h1 {
-        font-size: 1.6em;
-    }
-    
-    .section-header h2 {
-        font-size: 2em;
-    }
-    
-    .section-header p {
-        font-size: 1.1em;
-    }
-    
-    .sport-name, .date-name {
-        font-size: 1.6em;
-    }
-}
-
-/* iOS Safe Area Support */
-@supports (padding: max(0px)) {
-    .stream-central-dashboard {
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
-    }
-    
-    .dashboard-footer {
-        padding-bottom: max(20px, env(safe-area-inset-bottom));
     }
 }
