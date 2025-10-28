@@ -1,4 +1,4 @@
-// 9kilo Stream - Fully Optimized Production Version
+// 9kilo Stream - YouTube Live Replica
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -7,209 +7,113 @@ class MatchScheduler {
         this.currentDate = null;
         this.verifiedMatches = [];
         this.matchStats = new Map();
-        this.matchPolls = new Map();
         this.currentStreams = new Map();
-        
-        // Optimization Flags
-        this.isDataLoaded = false;
-        this.isLoading = false;
-        this.cacheKey = '9kilos-matches-cache';
-        this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
-        
-        // Performance Monitoring
-        this.performanceMetrics = {
-            pageLoadTime: 0,
-            apiResponseTime: 0,
-            userActions: []
+        this.liveChats = new Map();
+        this.livePolls = new Map();
+        this.userSettings = {
+            username: 'Viewer' + Math.floor(Math.random() * 10000),
+            chatColor: '#3ea6ff',
+            isSubscribed: false
         };
         
+        this.isDataLoaded = false;
+        this.isLoading = false;
+        this.cacheKey = '9kilos-cache';
         this.init();
     }
     
     async init() {
-        this.trackPerformance('pageStart');
         this.showMainMenu();
-        this.startPerformanceMonitoring();
-        this.trackPerformance('pageLoaded');
+        this.loadUserSettings();
     }
     
-    // ==================== OPTIMIZATION 1: LAZY LOADING ====================
+    loadUserSettings() {
+        const saved = localStorage.getItem('9kilos-settings');
+        if (saved) {
+            this.userSettings = {...this.userSettings, ...JSON.parse(saved)};
+        }
+    }
+    
+    saveUserSettings() {
+        localStorage.setItem('9kilos-settings', JSON.stringify(this.userSettings));
+    }
+    
     async ensureDataLoaded() {
         if (this.isDataLoaded) return true;
-        
-        if (this.isLoading) {
-            return new Promise(resolve => {
-                const checkInterval = setInterval(() => {
-                    if (this.isDataLoaded) {
-                        clearInterval(checkInterval);
-                        resolve(true);
-                    }
-                }, 100);
-            });
-        }
+        if (this.isLoading) return new Promise(r => {
+            const i = setInterval(() => {
+                if (this.isDataLoaded) { clearInterval(i); r(true); }
+            }, 100);
+        });
         
         this.isLoading = true;
         try {
             await this.loadMatches();
             this.isDataLoaded = true;
             return true;
-        } catch (error) {
-            console.error('Data loading failed:', error);
+        } catch (e) {
+            console.error('Load failed:', e);
             return false;
         } finally {
             this.isLoading = false;
         }
     }
     
-    // ==================== OPTIMIZATION 2: SMART CACHING ====================
     async loadMatches() {
-        const cacheStartTime = performance.now();
+        const cached = this.getCachedData();
+        if (cached) { this.organizeMatches(cached); return; }
         
-        // Try cache first
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            console.log('📦 Using cached data');
-            this.organizeMatches(cachedData);
-            this.trackPerformance('cacheHit', performance.now() - cacheStartTime);
-            return;
-        }
-        
-        // Cache miss, try API
         try {
-            const apiStartTime = performance.now();
             const apiData = await this.tryAllProxies();
             this.organizeMatches(apiData);
-            
-            // Cache successful response
             this.cacheData(apiData);
-            this.trackPerformance('apiSuccess', performance.now() - apiStartTime);
-            
-        } catch (error) {
-            console.warn('All API attempts failed:', error);
+        } catch (e) {
+            console.warn('API failed:', e);
             this.useFallbackData();
-            this.showErrorState('Connection failed. Using cached/demo data.');
-            this.trackPerformance('apiFailure');
         }
     }
     
     getCachedData() {
         try {
-            const cached = localStorage.getItem(this.cacheKey);
-            if (!cached) return null;
-            
-            const { data, timestamp } = JSON.parse(cached);
-            const isExpired = Date.now() - timestamp > this.cacheTimeout;
-            
-            return isExpired ? null : data;
-        } catch (error) {
-            return null;
-        }
+            const c = localStorage.getItem(this.cacheKey);
+            if (!c) return null;
+            const {data,t} = JSON.parse(c);
+            return (Date.now() - t < 300000) ? data : null;
+        } catch { return null; }
     }
     
     cacheData(data) {
         try {
-            const cacheItem = {
+            localStorage.setItem(this.cacheKey, JSON.stringify({
                 data: data,
-                timestamp: Date.now()
-            };
-            localStorage.setItem(this.cacheKey, JSON.stringify(cacheItem));
-        } catch (error) {
-            console.warn('Caching failed:', error);
-        }
+                t: Date.now()
+            }));
+        } catch {}
     }
     
-    // ==================== OPTIMIZATION 3: INTELLIGENT PRELOADING ====================
-    async preloadSportsData() {
-        if (this.isDataLoaded || this.isLoading) return;
-        
-        setTimeout(async () => {
-            try {
-                await this.loadMatches();
-            } catch (error) {
-                // Silent fail
-            }
-        }, 500);
-    }
-    
-    preloadMatchDetails(matchId) {
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (match && match.channels && match.channels.length > 0) {
-            fetch(match.channels[0], { mode: 'no-cors' }).catch(() => {});
-        }
-    }
-    
-    // ==================== OPTIMIZATION 4: PERFORMANCE MONITORING ====================
-    trackPerformance(event, duration = 0, extra = '') {
-        this.performanceMetrics.userActions.push({
-            event,
-            duration,
-            timestamp: Date.now(),
-            view: this.currentView,
-            extra
-        });
-        
-        if (this.performanceMetrics.userActions.length >= 5) {
-            this.flushPerformanceMetrics();
-        }
-        
-        console.log(`🎯 ${event}: ${duration}ms`);
-    }
-    
-    flushPerformanceMetrics() {
-        if (this.performanceMetrics.userActions.length > 0) {
-            console.log('Performance Metrics:', this.performanceMetrics.userActions);
-            this.performanceMetrics.userActions = [];
-        }
-    }
-    
-    startPerformanceMonitoring() {
-        if ('PerformanceObserver' in window) {
-            const observer = new PerformanceObserver((list) => {
-                list.getEntries().forEach(entry => {
-                    this.trackPerformance(entry.name, entry.duration);
-                });
-            });
-            observer.observe({ entryTypes: ['navigation', 'paint', 'largest-contentful-paint'] });
-        }
-    }
-    
-    // ==================== OPTIMIZATION 5: ENHANCED ERROR RECOVERY ====================
     async tryAllProxies() {
-        const targetUrl = 'https://topembed.pw/api.php?format=json';
-        
-        const proxyOptions = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            targetUrl
+        const url = 'https://topembed.pw/api.php?format=json';
+        const proxies = [
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+            `https://corsproxy.io/?${encodeURIComponent(url)}`,
+            url
         ];
         
-        for (const proxyUrl of proxyOptions) {
+        for (const proxy of proxies) {
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000);
-                
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    return await response.json();
-                }
-            } catch (error) {
-                console.warn(`Proxy failed: ${proxyUrl}`, error);
-                continue;
-            }
+                const timeout = setTimeout(() => controller.abort(), 4000);
+                const response = await fetch(proxy, {signal: controller.signal});
+                clearTimeout(timeout);
+                if (response.ok) return await response.json();
+            } catch { continue; }
         }
-        
-        throw new Error('All proxy attempts failed');
+        throw new Error('All proxies failed');
     }
     
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
-        const sampleMatches = {
+        this.organizeMatches({
             events: {
                 '2024-12-20': [
                     {
@@ -217,125 +121,538 @@ class MatchScheduler {
                         tournament: '9kilos Demo League',
                         sport: 'football',
                         unix_timestamp: now + 3600,
-                        channels: []
+                        channels: ['https://example.com/stream1']
                     },
                     {
                         match: 'Demo United - Test City FC',
-                        tournament: 'Research Championship',
-                        sport: 'football', 
+                        tournament: 'Research Championship', 
+                        sport: 'football',
                         unix_timestamp: now - 1800,
-                        channels: []
+                        channels: ['https://example.com/stream2']
                     }
                 ]
             }
-        };
-        this.organizeMatches(sampleMatches);
-    }
-    
-    showLoadingState() {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="loading-message">
-                    <div class="loading-spinner"></div>
-                    <p>Loading sports data...</p>
-                    <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 10px;">
-                        Optimized loading in progress
-                    </p>
-                </div>
-            </div>
-        `;
-    }
-    
-    showErrorState(errorMessage = '') {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="error-message">
-                    <h3>🔄 Smart Recovery Active</h3>
-                    <p>Using optimized fallback system</p>
-                    ${errorMessage ? `<p style="font-size: 0.8em; color: var(--accent-red); margin: 10px 0;">${errorMessage}</p>` : ''}
-                    <button class="retry-btn" onclick="matchScheduler.loadMatches()">
-                        Retry Live Data
-                    </button>
-                    <p style="margin-top: 20px; font-size: 0.8em; color: var(--text-muted);">
-                        Cached content available • Fast fallback system
-                    </p>
-                </div>
-            </div>
-        `;
-    }
-    
-    organizeMatches(apiData) {
-        if (!apiData || typeof apiData !== 'object' || !apiData.events) {
-            this.useFallbackData();
-            return;
-        }
-        
-        this.allMatches = [];
-        this.verifiedMatches = [];
-        
-        Object.entries(apiData.events).forEach(([date, matches]) => {
-            if (Array.isArray(matches)) {
-                matches.forEach(match => {
-                    if (match?.match) {
-                        const matchId = this.generateMatchId(match);
-                        
-                        if (!this.matchStats.has(matchId)) {
-                            this.matchStats.set(matchId, {
-                                views: Math.floor(Math.random() * 10000) + 500,
-                                likes: Math.floor(Math.random() * 500) + 50,
-                                dislikes: Math.floor(Math.random() * 100) + 10
-                            });
-                        }
-                        
-                        const channels = match.channels || [];
-                        if (channels.length > 0 && !this.currentStreams.has(matchId)) {
-                            this.currentStreams.set(matchId, 0);
-                        }
-                        
-                        const processedMatch = {
-                            id: matchId,
-                            date: date,
-                            time: this.convertUnixToLocalTime(match.unix_timestamp),
-                            teams: match.match,
-                            league: match.tournament || match.sport || 'Sports',
-                            streamUrl: channels[0] || null,
-                            channels: channels,
-                            isLive: this.checkIfLive(match),
-                            sport: this.classifySport(match),
-                            unixTimestamp: match.unix_timestamp
-                        };
-                        
-                        this.allMatches.push(processedMatch);
-                        this.verifiedMatches.push(processedMatch);
-                    }
-                });
-            }
         });
-        
-        if (this.verifiedMatches.length === 0) {
-            this.useFallbackData();
-            return;
-        }
-        
+    }
+    
+    organizeMatches(data) {
+        if (!data?.events) { this.useFallbackData(); return; }
+        this.allMatches = []; this.verifiedMatches = [];
+        Object.entries(data.events).forEach(([date, matches]) => {
+            if (Array.isArray(matches)) matches.forEach(match => {
+                if (match?.match) {
+                    const id = this.generateMatchId(match);
+                    if (!this.matchStats.has(id)) {
+                        this.matchStats.set(id, {
+                            views: Math.floor(Math.random() * 10000) + 500,
+                            likes: Math.floor(Math.random() * 500) + 50,
+                            liveViewers: Math.floor(Math.random() * 1000) + 100
+                        });
+                    }
+                    const ch = match.channels || [];
+                    if (ch.length > 0 && !this.currentStreams.has(id)) {
+                        this.currentStreams.set(id, 0);
+                    }
+                    this.verifiedMatches.push({
+                        id: id, date: date, time: this.convertTime(match.unix_timestamp),
+                        teams: match.match, league: match.tournament || match.sport || 'Sports',
+                        streamUrl: ch[0] || null, channels: ch,
+                        isLive: this.checkIfLive(match), sport: this.classifySport(match),
+                        unixTimestamp: match.unix_timestamp
+                    });
+                }
+            });
+        });
+        if (this.verifiedMatches.length === 0) { this.useFallbackData(); return; }
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
-        
         if (this.currentView !== 'main') {
             this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
         }
     }
     
-    // ==================== UI METHODS ====================
+    // ... (keep all the existing classification and utility methods from previous version)
+    classifySport(match) {
+        const sport = (match.sport || '').toLowerCase();
+        const tournament = (match.tournament || '').toLowerCase();
+        const map = {
+            football: 'football', soccer: 'football', hockey: 'hockey',
+            basketball: 'basketball', tennis: 'tennis', cricket: 'cricket',
+            baseball: 'baseball', golf: 'golf', other: 'other'
+        };
+        if (sport && map[sport]) return map[sport];
+        for (const [key, value] of Object.entries(map)) {
+            if (sport.includes(key) || tournament.includes(key)) return value;
+        }
+        return 'other';
+    }
+    
+    generateMatchId(match) {
+        return `${match.match}-${match.unix_timestamp}-${Math.random().toString(36).substr(2,6)}`;
+    }
+    
+    convertTime(timestamp) {
+        if (!timestamp) return 'TBD';
+        return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+    }
+    
+    checkIfLive(match) {
+        if (!match.unix_timestamp) return false;
+        const now = Math.floor(Date.now() / 1000);
+        return now >= match.unix_timestamp && now <= (match.unix_timestamp + 7200);
+    }
+    
+    formatTeamNames(teamString) { 
+        return teamString.replace(/ - /g, ' vs '); 
+    }
+    
+    formatNumber(num) { 
+        if (num >= 1000000) return (num/1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num/1000).toFixed(1) + 'K';
+        return num.toString();
+    }
+    
+    // YOUTUBE LIVE MATCH DETAILS
+    async showMatchDetails(matchId) {
+        await this.ensureDataLoaded();
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (!match) return;
+        
+        const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, liveViewers: 100 };
+        const channels = match.channels || [];
+        const currentChannel = this.currentStreams.get(matchId) || 0;
+        const streamUrl = channels[currentChannel] || null;
+        
+        // Initialize chat for this match
+        if (!this.liveChats.has(matchId)) {
+            this.liveChats.set(matchId, []);
+            this.initializeDemoChat(matchId);
+        }
+        
+        this.showInDynamic(`
+            <div class="youtube-live-container">
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                    <button class="top-back-button" onclick="matchScheduler.showMatchesView()">←</button>
+                </div>
+                
+                <div class="youtube-live-main">
+                    <!-- Left Side - Player -->
+                    <div class="youtube-player-section">
+                        <div class="player-container">
+                            <div class="video-player" id="video-player-${matchId}">
+                                ${streamUrl ? 
+                                    `<iframe src="${streamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
+                                            allow="autoplay; fullscreen" allowfullscreen></iframe>` :
+                                    `<div class="countdown-timer">
+                                        <div class="countdown-title">Match Starting In</div>
+                                        <div class="countdown-display" id="countdown-${matchId}">${this.getCountdownText(match)}</div>
+                                    </div>`
+                                }
+                            </div>
+                            <div class="yt-player-controls">
+                                <div class="yt-controls-bar">
+                                    <button class="yt-play-btn">▶</button>
+                                    <div class="yt-time-display">0:00 / 0:00</div>
+                                    <div class="yt-progress-bar">
+                                        <div class="yt-progress-fill"></div>
+                                    </div>
+                                    <div class="yt-controls-right">
+                                        <button class="yt-control-btn yt-theater-btn" onclick="matchScheduler.toggleTheaterMode()">⛶</button>
+                                        <button class="yt-control-btn" onclick="matchScheduler.toggleFullscreen('${matchId}')">⛶</button>
+                                        <button class="yt-control-btn" onclick="matchScheduler.showSettings('${matchId}')">⚙️</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stream Info -->
+                        <div class="stream-info">
+                            <div class="stream-title">${this.formatTeamNames(match.teams)} - ${match.league}</div>
+                            <div class="stream-meta">
+                                <span class="viewer-count">${this.formatNumber(stats.liveViewers)} watching</span>
+                                ${match.isLive ? '<span class="live-indicator">LIVE</span>' : '<span class="live-indicator">UPCOMING</span>'}
+                                <span>Started ${this.formatDisplayDate(match.date)}</span>
+                            </div>
+                            <div class="stream-actions">
+                                <button class="yt-action-btn subscribe ${this.userSettings.isSubscribed ? 'subscribed' : ''}" 
+                                        onclick="matchScheduler.toggleSubscribe()">
+                                    ${this.userSettings.isSubscribed ? '✓ Subscribed' : 'Subscribe'}
+                                </button>
+                                <button class="yt-action-btn" onclick="matchScheduler.likeStream('${matchId}')">
+                                    👍 ${this.formatNumber(stats.likes)}
+                                </button>
+                                <button class="yt-action-btn" onclick="matchScheduler.shareStream('${matchId}')">
+                                    📤 Share
+                                </button>
+                                <button class="yt-action-btn" onclick="matchScheduler.createClip('${matchId}')">
+                                    ✂️ Clip
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Live Poll -->
+                        ${this.renderLivePoll(matchId)}
+                    </div>
+                    
+                    <!-- Right Side - Chat -->
+                    <div class="youtube-chat-section">
+                        <div class="chat-header">
+                            <div class="chat-title">Live Chat</div>
+                            <button class="chat-settings" onclick="matchScheduler.showChatSettings('${matchId}')">⚙️</button>
+                        </div>
+                        <div class="chat-messages" id="chat-messages-${matchId}">
+                            ${this.renderChatMessages(matchId)}
+                        </div>
+                        <div class="chat-input-container">
+                            <div class="chat-input-row">
+                                <button class="emoji-btn" onclick="matchScheduler.toggleEmojiPicker('${matchId}')">😊</button>
+                                <textarea class="chat-input" id="chat-input-${matchId}" placeholder="Chat message..." 
+                                         onkeypress="matchScheduler.handleChatInput(event, '${matchId}')"></textarea>
+                                <button class="send-btn" onclick="matchScheduler.sendChatMessage('${matchId}')">Send</button>
+                            </div>
+                            <div class="emoji-picker-container" id="emoji-picker-${matchId}" style="display: none;">
+                                <emoji-picker></emoji-picker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Floating Chat Button -->
+                <button class="floating-chat-btn" onclick="matchScheduler.toggleMobileChat()">💬</button>
+            </div>
+        `);
+        
+        this.hideStats();
+        this.incrementViews(matchId);
+        
+        // Start countdown if not live
+        if (!match.isLive && match.unixTimestamp) {
+            this.startCountdown(matchId, match.unixTimestamp);
+        }
+        
+        // Start chat simulation
+        this.startChatSimulation(matchId);
+    }
+    
+    getCountdownText(match) {
+        if (!match.unixTimestamp) return 'TBD';
+        const now = Math.floor(Date.now() / 1000);
+        const diff = match.unixTimestamp - now;
+        
+        if (diff <= 0) return 'LIVE SOON';
+        
+        const hours = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = diff % 60;
+        
+        if (hours > 0) {
+            return `${hours}h ${minutes}m ${seconds}s`;
+        } else {
+            return `${minutes}m ${seconds}s`;
+        }
+    }
+    
+    startCountdown(matchId, targetTime) {
+        const countdownElement = document.getElementById(`countdown-${matchId}`);
+        if (!countdownElement) return;
+        
+        const updateCountdown = () => {
+            const now = Math.floor(Date.now() / 1000);
+            const diff = targetTime - now;
+            
+            if (diff <= 0) {
+                countdownElement.textContent = 'LIVE NOW';
+                countdownElement.style.color = '#ff0000';
+                return;
+            }
+            
+            const hours = Math.floor(diff / 3600);
+            const minutes = Math.floor((diff % 3600) / 60);
+            const seconds = diff % 60;
+            
+            if (hours > 0) {
+                countdownElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        };
+        
+        updateCountdown();
+        this.countdownInterval = setInterval(updateCountdown, 1000);
+    }
+    
+    // LIVE CHAT SYSTEM
+    initializeDemoChat(matchId) {
+        const demoMessages = [
+            {user: 'SportsFan42', text: 'Can\'t wait for this match! 🎉', type: 'normal', time: Date.now() - 120000},
+            {user: 'GoalHunter', text: 'Team A looking strong in warmups! ⚽', type: 'normal', time: Date.now() - 90000},
+            {user: 'SuperViewer', text: '💰 5.00 - LET\'S GO TEAM B! BRING IT HOME! 🏆', type: 'superchat', amount: 5.00, time: Date.now() - 60000},
+            {user: 'MatchMaster', text: 'Prediction: 2-1 for Team A', type: 'normal', time: Date.now() - 30000}
+        ];
+        
+        this.liveChats.set(matchId, demoMessages);
+    }
+    
+    renderChatMessages(matchId) {
+        const messages = this.liveChats.get(matchId) || [];
+        return messages.map(msg => `
+            <div class="chat-message ${msg.type === 'superchat' ? 'superchat-orange' : ''}">
+                <span class="message-user" style="color: ${this.getUserColor(msg.user)}">${msg.user}</span>
+                ${msg.type === 'superchat' ? `<span class="superchat-amount">$${msg.amount}</span>` : ''}
+                <span class="message-text">${msg.text}</span>
+                <span class="message-time">${this.formatTime(msg.time)}</span>
+            </div>
+        `).join('');
+    }
+    
+    getUserColor(username) {
+        // Simple hash-based color assignment
+        let hash = 0;
+        for (let i = 0; i < username.length; i++) {
+            hash = username.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const colors = ['#3ea6ff', '#ff6b6b', '#6bcf7f', '#ffd93d', '#9b59b6', '#3498db'];
+        return colors[Math.abs(hash) % colors.length];
+    }
+    
+    formatTime(timestamp) {
+        const diff = Date.now() - timestamp;
+        const minutes = Math.floor(diff / 60000);
+        if (minutes < 1) return 'now';
+        if (minutes < 60) return `${minutes}m ago`;
+        return `${Math.floor(minutes / 60)}h ago`;
+    }
+    
+    sendChatMessage(matchId) {
+        const input = document.getElementById(`chat-input-${matchId}`);
+        const text = input.value.trim();
+        
+        if (!text) return;
+        
+        const message = {
+            user: this.userSettings.username,
+            text: text,
+            type: 'normal',
+            time: Date.now()
+        };
+        
+        const messages = this.liveChats.get(matchId) || [];
+        messages.push(message);
+        this.liveChats.set(matchId, messages);
+        
+        this.updateChatDisplay(matchId);
+        input.value = '';
+        
+        // Simulate responses
+        setTimeout(() => this.simulateChatResponse(matchId), 2000);
+    }
+    
+    simulateChatResponse(matchId) {
+        const responses = [
+            'Great point! 🎯',
+            'I agree! 👏',
+            'This match is amazing! 🔥',
+            'What a play! 🙌',
+            'Team looking strong today! 💪'
+        ];
+        
+        const botUsers = ['ChatBot', 'AutoFan', 'AI_Commentator', 'Bot_3000'];
+        const randomUser = botUsers[Math.floor(Math.random() * botUsers.length)];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        
+        const message = {
+            user: randomUser,
+            text: randomResponse,
+            type: 'normal',
+            time: Date.now()
+        };
+        
+        const messages = this.liveChats.get(matchId) || [];
+        messages.push(message);
+        this.liveChats.set(matchId, messages);
+        
+        this.updateChatDisplay(matchId);
+    }
+    
+    updateChatDisplay(matchId) {
+        const chatContainer = document.getElementById(`chat-messages-${matchId}`);
+        if (chatContainer) {
+            chatContainer.innerHTML = this.renderChatMessages(matchId);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+    
+    startChatSimulation(matchId) {
+        // Add random chat messages every 5-15 seconds
+        this.chatInterval = setInterval(() => {
+            if (Math.random() > 0.3) { // 70% chance
+                this.simulateChatResponse(matchId);
+            }
+        }, 5000 + Math.random() * 10000);
+    }
+    
+    // POLL SYSTEM
+    renderLivePoll(matchId) {
+        if (!this.livePolls.has(matchId)) {
+            this.livePolls.set(matchId, {
+                question: 'Who will win this match?',
+                options: [
+                    {text: 'Team A', votes: 45, voted: false},
+                    {text: 'Team B', votes: 35, voted: false},
+                    {text: 'Draw', votes: 20, voted: false}
+                ],
+                totalVotes: 100
+            });
+        }
+        
+        const poll = this.livePolls.get(matchId);
+        
+        return `
+            <div class="live-poll">
+                <div class="poll-question">${poll.question}</div>
+                <div class="poll-options">
+                    ${poll.options.map((option, index) => `
+                        <div class="poll-option ${option.voted ? 'selected' : ''}" 
+                             onclick="matchScheduler.voteInPoll('${matchId}', ${index})">
+                            <div>${option.text}</div>
+                            <div class="poll-bar" style="width: ${(option.votes / poll.totalVotes) * 100}%"></div>
+                            <div style="font-size: 0.8em; color: var(--text-muted); margin-top: 2px;">
+                                ${option.votes} votes (${Math.round((option.votes / poll.totalVotes) * 100)}%)
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    voteInPoll(matchId, optionIndex) {
+        const poll = this.livePolls.get(matchId);
+        if (!poll || poll.options[optionIndex].voted) return;
+        
+        poll.options[optionIndex].voted = true;
+        poll.options[optionIndex].votes++;
+        poll.totalVotes++;
+        
+        this.livePolls.set(matchId, poll);
+        this.updatePollDisplay(matchId);
+    }
+    
+    updatePollDisplay(matchId) {
+        // In a real implementation, this would update the poll display
+        console.log('Poll updated for match:', matchId);
+    }
+    
+    // YOUTUBE CONTROLS
+    toggleTheaterMode() {
+        document.querySelector('.youtube-live-container').classList.toggle('theater-mode');
+    }
+    
+    toggleFullscreen(matchId) {
+        const player = document.getElementById(`video-player-${matchId}`);
+        if (!player) return;
+        
+        if (!document.fullscreenElement) {
+            player.requestFullscreen().catch(() => {});
+        } else {
+            document.exitFullscreen();
+        }
+    }
+    
+    toggleSubscribe() {
+        this.userSettings.isSubscribed = !this.userSettings.isSubscribed;
+        this.saveUserSettings();
+        this.updateSubscribeButton();
+    }
+    
+    updateSubscribeButton() {
+        const btn = document.querySelector('.yt-action-btn.subscribe');
+        if (btn) {
+            btn.textContent = this.userSettings.isSubscribed ? '✓ Subscribed' : 'Subscribe';
+            btn.classList.toggle('subscribed', this.userSettings.isSubscribed);
+        }
+    }
+    
+    likeStream(matchId) {
+        const stats = this.matchStats.get(matchId);
+        if (stats) {
+            stats.likes++;
+            this.matchStats.set(matchId, stats);
+            this.updateLikeButton(matchId);
+        }
+    }
+    
+    updateLikeButton(matchId) {
+        const stats = this.matchStats.get(matchId);
+        const btn = document.querySelector('.yt-action-btn:nth-child(2)');
+        if (btn && stats) {
+            btn.innerHTML = `👍 ${this.formatNumber(stats.likes)}`;
+        }
+    }
+    
+    shareStream(matchId) {
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (match && navigator.share) {
+            navigator.share({
+                title: `${this.formatTeamNames(match.teams)} - ${match.league}`,
+                text: `Watch ${this.formatTeamNames(match.teams)} live on 9kilos!`,
+                url: window.location.href
+            });
+        } else {
+            alert('Share this match: ' + window.location.href);
+        }
+    }
+    
+    createClip(matchId) {
+        alert('Clip feature coming soon! This would create a 30-second clip of the current stream.');
+    }
+    
+    toggleEmojiPicker(matchId) {
+        const picker = document.getElementById(`emoji-picker-${matchId}`);
+        if (picker) {
+            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+    
+    toggleMobileChat() {
+        document.querySelector('.youtube-live-container').classList.toggle('chat-mobile-hidden');
+    }
+    
+    handleChatInput(event, matchId) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            this.sendChatMessage(matchId);
+        }
+    }
+    
+    // ... (keep all the remaining existing methods for navigation, sports views, etc.)
+    showInDynamic(html) {
+        document.getElementById('dynamic-content').innerHTML = html;
+    }
+    
+    showStats() { 
+        document.querySelector('.analytics-overview').style.display = 'grid'; 
+    }
+    
+    hideStats() { 
+        document.querySelector('.analytics-overview').style.display = 'none'; 
+    }
+    
+    preloadSportsData() {
+        if (this.isDataLoaded || this.isLoading) return;
+        setTimeout(() => { this.loadMatches().catch(() => {}); }, 500);
+    }
+    
     showMainMenu() {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
+        this.showInDynamic(`
             <div class="main-menu">
                 <div class="menu-grid">
                     <div class="menu-button sports-button" onmouseover="matchScheduler.preloadSportsData()" onclick="matchScheduler.showSportsView()">
                         <div class="button-title">LIVE SPORTS</div>
-                        <div class="button-subtitle">${this.isDataLoaded ? this.verifiedMatches.length + ' matches' : 'Games & schedules'}</div>
+                        <div class="button-subtitle">Games & schedules</div>
                     </div>
                     <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
                         <div class="button-title">TV CHANNELS</div>
@@ -346,48 +663,29 @@ class MatchScheduler {
                         <div class="button-subtitle">Fan discussions</div>
                     </div>
                 </div>
-                ${!this.isDataLoaded ? `
-                    <div style="text-align: center; margin-top: 20px;">
-                        <p style="color: var(--text-muted); font-size: 0.8em;">
-                            ⚡ Optimized Loading • Data loads on demand
-                        </p>
-                    </div>
-                ` : ''}
             </div>
-        `;
-        
-        this.showStats();
+        `);
+        this.showStats(); 
         this.currentView = 'main';
-        this.trackPerformance('mainMenuView');
     }
     
     async showSportsView() {
-        this.trackPerformance('sportsViewStart');
-        const success = await this.ensureDataLoaded();
+        if (!await this.ensureDataLoaded()) return;
+        const sports = ['football','hockey','basketball','tennis','cricket','baseball','golf','other']
+            .map(sport => ({
+                id: sport, 
+                name: sport.charAt(0).toUpperCase() + sport.slice(1), 
+                count: this.getMatchesBySport(sport).length
+            }))
+            .filter(sport => sport.count > 0);
         
-        if (!success) {
-            this.showErrorState('Failed to load sports data');
-            return;
-        }
-        
-        const container = document.getElementById('dynamic-content');
-        const sports = [
-            { id: 'football', name: 'Football' }, { id: 'hockey', name: 'Hockey' },
-            { id: 'basketball', name: 'Basketball' }, { id: 'baseball', name: 'Baseball' },
-            { id: 'tennis', name: 'Tennis' }, { id: 'badminton', name: 'Badminton' },
-            { id: 'golf', name: 'Golf' }, { id: 'cricket', name: 'Cricket' },
-            { id: 'other', name: 'Other Sports' }
-        ].map(sport => ({
-            ...sport, count: this.getMatchesBySport(sport.id).length
-        })).filter(sport => sport.count > 0);
-
-        container.innerHTML = `
+        this.showInDynamic(`
             <div class="content-section">
                 <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Choose</h2>
+                    <h2>Choose Sport</h2>
                     <p>Select category</p>
                 </div>
                 <div class="sports-grid">
@@ -399,21 +697,18 @@ class MatchScheduler {
                     `).join('')}
                 </div>
             </div>
-        `;
-        
-        this.hideStats();
+        `);
+        this.hideStats(); 
         this.currentView = 'sports';
-        this.trackPerformance('sportsViewLoaded');
     }
     
     async showDatesView() {
         await this.ensureDataLoaded();
-        const container = document.getElementById('dynamic-content');
         const matches = this.getMatchesBySport(this.currentSport);
         const dates = [...new Set(matches.map(match => match.date))].sort();
-        const sportName = this.getSportDisplayName();
+        const sportName = this.currentSport.charAt(0).toUpperCase() + this.currentSport.slice(1);
         
-        container.innerHTML = `
+        this.showInDynamic(`
             <div class="content-section">
                 <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
@@ -436,20 +731,18 @@ class MatchScheduler {
                     }).join('')}
                 </div>
             </div>
-        `;
-        
-        this.hideStats();
+        `);
+        this.hideStats(); 
         this.currentView = 'dates';
     }
     
     async showMatchesView() {
         await this.ensureDataLoaded();
-        const container = document.getElementById('dynamic-content');
         const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
-        const sportName = this.getSportDisplayName();
+        const sportName = this.currentSport.charAt(0).toUpperCase() + this.currentSport.slice(1);
         const displayDate = this.formatDisplayDate(this.currentDate);
         
-        container.innerHTML = `
+        this.showInDynamic(`
             <div class="content-section">
                 <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
@@ -472,21 +765,20 @@ class MatchScheduler {
                     }
                 </div>
             </div>
-        `;
-        
-        this.hideStats();
+        `);
+        this.hideStats(); 
         this.currentView = 'matches';
     }
     
     renderMatchRow(match) {
         const isLive = match.isLive;
-        const formattedTeams = this.formatTeamNames(match.teams);
+        const teams = this.formatTeamNames(match.teams);
         
         return `
-            <div class="match-row ${isLive ? 'live' : ''}" onmouseover="matchScheduler.preloadMatchDetails('${match.id}')">
+            <div class="match-row ${isLive ? 'live' : ''}">
                 <div class="match-time">${match.time}</div>
                 <div class="match-details">
-                    <div class="team-names">${formattedTeams}</div>
+                    <div class="team-names">${teams}</div>
                     <div class="league-name">${match.league}</div>
                 </div>
                 <div class="watch-action">
@@ -501,245 +793,44 @@ class MatchScheduler {
         `;
     }
     
-    async showMatchDetails(matchId) {
-        await this.ensureDataLoaded();
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (!match) return;
-        
-        const formattedTeams = this.formatTeamNames(match.teams);
-        const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
-        const channels = match.channels || [];
-        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const currentStreamUrl = channels[currentChannelIndex] || null;
-        
-        const channelSelectorHTML = this.generateChannelSelector(channels, matchId);
-        
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
-            <div class="match-details-overlay">
-                <div class="match-details-modal">
-                    <div class="match-header">
-                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
-                    </div>
-                    
-                    <div class="video-container">
-                        <div class="video-player-controls">
-                            ${channelSelectorHTML}
-                            <div class="control-buttons-right">
-                                <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
-                                    Refresh
-                                </button>
-                                <button class="player-control-btn fullscreen" onclick="matchScheduler.toggleFullscreen('${matchId}')">
-                                    ⛶
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="video-player-wrapper">
-                            <div class="video-player" id="video-player-${matchId}">
-                                ${currentStreamUrl ? 
-                                    `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
-                                            allow="autoplay; fullscreen" allowfullscreen></iframe>` :
-                                    `<div class="no-stream">
-                                        <h3>Stream Offline</h3>
-                                        <p>No streams available for this match</p>
-                                    </div>`
-                                }
-                            </div>
-                        </div>
-                        
-                        <div class="video-controls">
-                            <div class="video-title">${formattedTeams}</div>
-                            <div class="video-stats">
-                                <span class="views-count">${this.formatNumber(stats.views)} views</span>
-                                ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
-                                <span style="color: var(--text-muted);">• ${match.league}</span>
-                                ${channels.length > 1 ? `<span style="color: var(--accent-gold);">• ${channels.length} sources</span>` : ''}
-                            </div>
-                            
-                            <div class="video-actions">
-                                <button class="action-btn like-btn" onclick="matchScheduler.handleLike('${matchId}')">
-                                    👍 ${this.formatNumber(stats.likes)}
-                                </button>
-                                <button class="action-btn dislike-btn" onclick="matchScheduler.handleDislike('${matchId}')">
-                                    👎 ${this.formatNumber(stats.dislikes)}
-                                </button>
-                                <button class="action-btn" onclick="matchScheduler.handleShare('${matchId}')">
-                                    📤 Share
-                                </button>
-                            </div>
-                            
-                            <div class="match-description">
-                                <div class="description-text">
-                                    <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
-                                    ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
-                                    ${channels.length > 1 ? `Multiple streaming sources available.` : ''}
-                                    ${this.verifiedMatches.length < 5 ? '<br><br><em>⚠️ Research Mode: Demo data active</em>' : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <footer class="dashboard-footer">
-                        <div class="footer-legal">
-                            <p class="copyright">© 2025 9KILOS. All rights reserved.</p>
-                            <p class="legal-disclaimer">
-                                KILOS is simply a database of embedded streams and HLS files available throughout the internet. 
-                                WE does not host, control or upload any streams and/or media files. Please contact appropriate 
-                                media owners or hosts.
-                            </p>
-                        </div>
-                        <div class="last-updated">Updated: <span id="update-time-details">Just now</span></div>
-                    </footer>
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('update-time-details').textContent = new Date().toLocaleTimeString();
-        this.hideStats();
-        this.incrementViews(matchId);
-        this.trackPerformance('matchDetailsView', 0, matchId);
+    selectSport(sport) { 
+        this.currentSport = sport; 
+        this.showDatesView(); 
     }
     
-    generateChannelSelector(channels, matchId) {
-        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const hasMultipleChannels = channels.length > 1;
+    selectDate(date) { 
+        this.currentDate = date; 
+        this.showMatchesView(); 
+    }
+    
+    getMatchesBySport(sport) { 
+        return this.verifiedMatches.filter(match => match.sport === sport); 
+    }
+    
+    getMatchesBySportAndDate(sport, date) { 
+        return this.getMatchesBySport(sport).filter(match => match.date === date); 
+    }
+    
+    formatDisplayDate(dateString) {
+        return new Date(dateString + 'T00:00:00').toLocaleDateString('en-US', {
+            weekday: 'short', month: 'short', day: 'numeric'
+        });
+    }
+    
+    updateAnalytics() {
+        const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
+        const totalViewers = this.verifiedMatches.reduce((sum, match) => {
+            const stats = this.matchStats.get(match.id);
+            return sum + (stats ? stats.views : 0);
+        }, 0);
         
-        if (!hasMultipleChannels || channels.length === 0) {
-            return '';
-        }
-        
-        if (channels.length <= 2) {
-            return `
-                <div class="channel-selector">
-                    <span class="channel-label">Source:</span>
-                    <div class="channel-buttons">
-                        ${channels.map((channel, index) => `
-                            <button class="channel-btn ${index === currentChannelIndex ? 'active' : ''}" 
-                                    onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                                Source ${index + 1}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-        
-        return `
-            <div class="channel-selector">
-                <span class="channel-label">Source:</span>
-                <div class="channel-dropdown">
-                    <button class="channel-dropdown-btn" onclick="matchScheduler.toggleDropdown('${matchId}')">
-                        Source ${currentChannelIndex + 1} of ${channels.length}
-                    </button>
-                    <div class="channel-dropdown-content" id="dropdown-${matchId}">
-                        ${channels.map((channel, index) => `
-                            <div class="channel-dropdown-item ${index === currentChannelIndex ? 'active' : ''}" 
-                                 onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                                Source ${index + 1}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    
-    switchChannel(matchId, channelIndex) {
-        this.currentStreams.set(matchId, channelIndex);
-        this.showMatchDetails(matchId);
-    }
-    
-    toggleDropdown(matchId) {
-        const dropdown = document.getElementById(`dropdown-${matchId}`);
-        const button = document.querySelector(`#dropdown-${matchId}`).previousElementSibling;
-        
-        if (dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show');
-            button.classList.remove('open');
-        } else {
-            document.querySelectorAll('.channel-dropdown-content.show').forEach(dd => {
-                dd.classList.remove('show');
-                dd.previousElementSibling.classList.remove('open');
-            });
-            
-            dropdown.classList.add('show');
-            button.classList.add('open');
-        }
-    }
-    
-    refreshCurrentStream(matchId) {
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (!match) return;
-        
-        const iframe = document.getElementById(`stream-iframe-${matchId}`);
-        if (iframe) {
-            const currentSrc = iframe.src;
-            iframe.src = '';
-            setTimeout(() => {
-                iframe.src = currentSrc;
-                
-                const refreshBtn = document.querySelector('.player-control-btn.refresh');
-                const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = 'Refreshing...';
-                setTimeout(() => {
-                    refreshBtn.innerHTML = originalText;
-                }, 1000);
-            }, 500);
-        }
-    }
-    
-    toggleFullscreen(matchId) {
-        const videoPlayer = document.getElementById(`video-player-${matchId}`);
-        if (!videoPlayer) return;
-        
-        if (!document.fullscreenElement) {
-            videoPlayer.requestFullscreen().catch(err => {
-                console.log('Fullscreen failed:', err);
-            });
-        } else {
-            document.exitFullscreen();
-        }
-    }
-    
-    getTeamName(teamString, index) {
-        const teams = teamString.split(' - ');
-        return teams[index] || `Team ${index + 1}`;
-    }
-    
-    incrementViews(matchId) {
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.views++;
-            this.matchStats.set(matchId, stats);
-        }
-    }
-    
-    handleLike(matchId) {
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.likes++;
-            this.matchStats.set(matchId, stats);
-            this.showMatchDetails(matchId);
-        }
-    }
-    
-    handleDislike(matchId) {
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.dislikes++;
-            this.matchStats.set(matchId, stats);
-            this.showMatchDetails(matchId);
-        }
-    }
-    
-    handleShare(matchId) {
-        alert('Share feature coming soon!');
+        document.getElementById('total-streams').textContent = this.verifiedMatches.length;
+        document.getElementById('live-viewers').textContent = this.formatNumber(Math.floor(totalViewers / 100));
+        document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
     
     showTVChannels() {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
+        this.showInDynamic(`
             <div class="content-section">
                 <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
@@ -759,13 +850,12 @@ class MatchScheduler {
                     </div>
                 </div>
             </div>
-        `;
+        `);
         this.hideStats();
     }
     
     showCommunity() {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
+        this.showInDynamic(`
             <div class="content-section">
                 <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
@@ -785,117 +875,13 @@ class MatchScheduler {
                     </div>
                 </div>
             </div>
-        `;
+        `);
         this.hideStats();
     }
     
-    selectSport(sport) {
-        this.currentSport = sport;
-        this.showDatesView();
-    }
-    
-    selectDate(date) {
-        this.currentDate = date;
-        this.showMatchesView();
-    }
-    
-    getMatchesBySport(sport) {
-        return this.verifiedMatches.filter(match => match.sport === sport);
-    }
-    
-    getMatchesBySportAndDate(sport, date) {
-        return this.getMatchesBySport(sport).filter(match => match.date === date);
-    }
-    
-    getSportDisplayName() {
-        const names = {
-            'football': 'Football', 'hockey': 'Hockey', 
-            'basketball': 'Basketball', 'baseball': 'Baseball',
-            'tennis': 'Tennis', 'badminton': 'Badminton',
-            'golf': 'Golf', 'cricket': 'Cricket',
-            'other': 'Other Sports'
-        };
-        return names[this.currentSport] || this.currentSport;
-    }
-    
-    classifySport(match) {
-        const sport = (match.sport || '').toLowerCase();
-        const tournament = (match.tournament || '').toLowerCase();
-        const sportMapping = {
-            'football': 'football', 'soccer': 'football',
-            'ice hockey': 'hockey', 'hockey': 'hockey',
-            'basketball': 'basketball', 'baseball': 'baseball',
-            'tennis': 'tennis', 'badminton': 'badminton',
-            'golf': 'golf', 'cricket': 'cricket',
-            'other': 'other'
-        };
-        if (sport && sportMapping[sport]) return sportMapping[sport];
-        for (const [key, value] of Object.entries(sportMapping)) {
-            if (sport.includes(key) || tournament.includes(key)) return value;
-        }
-        return 'other';
-    }
-    
-    generateMatchId(match) {
-        return `${match.match}-${match.unix_timestamp}-${Math.random().toString(36).substr(2, 6)}`;
-    }
-    
-    convertUnixToLocalTime(unixTimestamp) {
-        if (!unixTimestamp) return 'TBD';
-        return new Date(unixTimestamp * 1000).toLocaleTimeString('en-US', {
-            hour: '2-digit', minute: '2-digit', hour12: false
-        });
-    }
-    
-    checkIfLive(match) {
-        if (!match.unix_timestamp) return false;
-        const now = Math.floor(Date.now() / 1000);
-        const matchTime = match.unix_timestamp;
-        return now >= matchTime && now <= (matchTime + 7200);
-    }
-    
-    formatTeamNames(teamString) {
-        return teamString.replace(/ - /g, ' vs ');
-    }
-    
-    formatNumber(num) {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-        return num.toString();
-    }
-    
-    formatDisplayDate(dateString) {
-        return new Date(dateString + 'T00:00:00').toLocaleDateString('en-US', {
-            weekday: 'short', month: 'short', day: 'numeric'
-        });
-    }
-    
-    showStats() {
-        document.querySelector('.analytics-overview').style.display = 'grid';
-    }
-    
-    hideStats() {
-        document.querySelector('.analytics-overview').style.display = 'none';
-    }
-    
-    updateAnalytics() {
-        const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
-        const totalViewers = this.verifiedMatches.reduce((sum, match) => {
-            const stats = this.matchStats.get(match.id);
-            return sum + (stats ? stats.views : 0);
-        }, 0);
-        
-        document.getElementById('total-streams').textContent = this.verifiedMatches.length;
-        document.getElementById('live-viewers').textContent = this.formatNumber(Math.floor(totalViewers / 100));
-        document.getElementById('countries').textContent = this.verifiedMatches.length < 5 ? '3' : '1';
-        document.getElementById('uptime').textContent = this.verifiedMatches.length < 5 ? 'Research' : '100%';
-        document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
-    }
-    
-    startAutoRefresh() {
-        setInterval(() => {
-            this.loadMatches();
-        }, 300000);
+    incrementViews(matchId) {
+        const stats = this.matchStats.get(matchId);
+        if (stats) stats.views++;
     }
 }
 
@@ -904,25 +890,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.matchScheduler = new MatchScheduler();
 });
 
-// Close dropdowns when clicking outside
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.channel-dropdown')) {
-        document.querySelectorAll('.channel-dropdown-content.show').forEach(dropdown => {
-            dropdown.classList.remove('show');
-            dropdown.previousElementSibling.classList.remove('open');
-        });
+// Cleanup intervals when leaving match details
+window.addEventListener('beforeunload', () => {
+    if (window.matchScheduler) {
+        clearInterval(window.matchScheduler.countdownInterval);
+        clearInterval(window.matchScheduler.chatInterval);
     }
 });
-
-// PWA Service Worker Registration
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('SW registered: ', registration);
-            })
-            .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}
