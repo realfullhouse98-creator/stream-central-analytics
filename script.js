@@ -1,4 +1,4 @@
-// 9kilo Stream - Enhanced Professional Layout with Error Handling
+// 9kilo Stream - Enhanced Professional Layout with Multiple Fallbacks
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -22,30 +22,54 @@ class MatchScheduler {
         this.showLoadingState();
         
         try {
-            // Using CORS proxy to bypass restrictions
-            const proxyUrl = 'https://corsproxy.io/?';
-            const targetUrl = 'https://topembed.pw/api.php?format=json';
-            const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
-                headers: {
-                    'Accept': 'application/json',
-                },
-                timeout: 10000
-            });
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
-            const apiData = await response.json();
+            // Try multiple CORS proxy options
+            const apiData = await this.tryAllProxies();
             this.organizeMatches(apiData);
             
         } catch (error) {
-            console.warn('API load failed, using fallback data:', error);
+            console.warn('All API attempts failed:', error);
             this.useFallbackData();
-            this.showErrorState(error.message);
+            this.showErrorState('All connection attempts failed. Using demo data.');
         }
+    }
+    
+    async tryAllProxies() {
+        const targetUrl = 'https://topembed.pw/api.php?format=json';
+        
+        // List of CORS proxy options to try
+        const proxyOptions = [
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            `https://proxy.cors.sh/${targetUrl}`,
+            targetUrl // Direct attempt (might work in some environments)
+        ];
+        
+        for (const proxyUrl of proxyOptions) {
+            try {
+                console.log(`Trying proxy: ${proxyUrl}`);
+                const response = await fetch(proxyUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    signal: AbortSignal.timeout(8000) // 8 second timeout
+                });
+                
+                if (response.ok) {
+                    console.log(`Success with proxy: ${proxyUrl}`);
+                    return await response.json();
+                }
+            } catch (error) {
+                console.warn(`Proxy failed: ${proxyUrl}`, error);
+                // Continue to next proxy
+            }
+        }
+        
+        throw new Error('All proxy attempts failed');
     }
     
     useFallbackData() {
         // Create realistic sample data for demo/research purposes
+        const now = Math.floor(Date.now() / 1000);
         const sampleMatches = {
             events: {
                 '2024-12-20': [
@@ -53,23 +77,46 @@ class MatchScheduler {
                         match: 'Research Team A - Research Team B',
                         tournament: '9kilos Demo League',
                         sport: 'football',
-                        unix_timestamp: Math.floor(Date.now() / 1000) + 3600,
+                        unix_timestamp: now + 3600, // 1 hour from now
+                        channels: []
+                    },
+                    {
+                        match: 'Demo United - Test City FC',
+                        tournament: 'Research Championship',
+                        sport: 'football', 
+                        unix_timestamp: now - 1800, // 30 minutes ago (LIVE)
                         channels: ['https://example.com/stream1']
                     },
                     {
-                        match: 'Demo United - Test City',
-                        tournament: 'Research Championship',
-                        sport: 'football', 
-                        unix_timestamp: Math.floor(Date.now() / 1000) - 1800,
-                        channels: ['https://example.com/stream2']
+                        match: 'Tech Giants - Innovation Stars',
+                        tournament: 'Digital Cup',
+                        sport: 'football',
+                        unix_timestamp: now + 7200, // 2 hours from now
+                        channels: []
                     }
                 ],
                 '2024-12-21': [
                     {
                         match: 'Basketball Research - Tech Demos',
-                        tournament: 'Demo Games',
+                        tournament: 'Demo Games 2024',
                         sport: 'basketball',
-                        unix_timestamp: Math.floor(Date.now() / 1000) + 7200,
+                        unix_timestamp: now + 86400, // Tomorrow
+                        channels: []
+                    },
+                    {
+                        match: 'Tennis Pros - Future Stars',
+                        tournament: 'International Open',
+                        sport: 'tennis',
+                        unix_timestamp: now + 90000,
+                        channels: []
+                    }
+                ],
+                '2024-12-22': [
+                    {
+                        match: 'Hockey Legends - New Generation',
+                        tournament: 'Winter Classic',
+                        sport: 'hockey',
+                        unix_timestamp: now + 172800,
                         channels: []
                     }
                 ]
@@ -89,6 +136,9 @@ class MatchScheduler {
                         <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 10px;">
                             9kilos Research Project - Testing API Integration
                         </p>
+                        <p style="font-size: 0.7em; color: var(--text-muted); margin-top: 5px;">
+                            Attempting to connect to data source...
+                        </p>
                     </div>
                 </div>
             `;
@@ -103,23 +153,22 @@ class MatchScheduler {
                     <div class="error-message">
                         <h3>🔧 Research Mode Active</h3>
                         <p>We're testing API reliability. Using demo data for research purposes.</p>
-                        ${errorMessage ? `<p style="font-size: 0.8em; color: var(--accent-red);">Error: ${errorMessage}</p>` : ''}
-                        <button class="retry-btn" onclick="matchScheduler.loadMatches()">
-                            Retry Live Data
-                        </button>
+                        ${errorMessage ? `<p style="font-size: 0.8em; color: var(--accent-red); margin: 10px 0;">${errorMessage}</p>` : ''}
+                        <div style="margin: 20px 0;">
+                            <button class="retry-btn" onclick="matchScheduler.loadMatches()" style="margin: 5px;">
+                                Retry Live Data
+                            </button>
+                            <button class="retry-btn" onclick="matchScheduler.useFallbackData(); matchScheduler.showMainMenu();" style="margin: 5px; background: var(--accent-blue);">
+                                Use Demo Data
+                            </button>
+                        </div>
                         <p style="margin-top: 20px; font-size: 0.8em; color: var(--text-muted);">
-                            This is expected during our research phase. Demo content is being shown.
+                            This is expected during our research phase. The site is fully functional with demo content.
                         </p>
                     </div>
                 </div>
             `;
         }
-        
-        // Update analytics to show demo mode
-        document.getElementById('live-viewers').textContent = '1.2K';
-        document.getElementById('total-streams').textContent = this.verifiedMatches.length;
-        document.getElementById('countries').textContent = '3';
-        document.getElementById('uptime').textContent = 'Research';
     }
     
     organizeMatches(apiData) {
@@ -190,7 +239,10 @@ class MatchScheduler {
         
         // Refresh current view if needed
         if (this.currentView !== 'main') {
-            this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
+            this.showMainMenu();
+        } else {
+            // Force refresh main menu to show the loaded data
+            this.showMainMenu();
         }
     }
     
@@ -263,7 +315,7 @@ class MatchScheduler {
                 <div class="menu-grid">
                     <div class="menu-button sports-button" onclick="matchScheduler.showSportsView()">
                         <div class="button-title">LIVE SPORTS</div>
-                        <div class="button-subtitle">Games & schedules</div>
+                        <div class="button-subtitle">${this.verifiedMatches.length} matches loaded</div>
                     </div>
                     <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
                         <div class="button-title">TV CHANNELS</div>
@@ -274,6 +326,16 @@ class MatchScheduler {
                         <div class="button-subtitle">Fan discussions</div>
                     </div>
                 </div>
+                ${this.verifiedMatches.length < 5 ? `
+                    <div style="text-align: center; margin-top: 20px;">
+                        <p style="color: var(--text-muted); font-size: 0.8em;">
+                            🔬 Research Mode: Demo data active | 
+                            <button onclick="matchScheduler.loadMatches()" style="background: none; border: none; color: var(--accent-gold); cursor: pointer; text-decoration: underline;">
+                                Retry Live Data
+                            </button>
+                        </p>
+                    </div>
+                ` : ''}
             </div>
         `;
         
@@ -744,6 +806,8 @@ class MatchScheduler {
         
         document.getElementById('total-streams').textContent = this.verifiedMatches.length;
         document.getElementById('live-viewers').textContent = this.formatNumber(Math.floor(totalViewers / 100));
+        document.getElementById('countries').textContent = this.verifiedMatches.length < 5 ? '3' : '1';
+        document.getElementById('uptime').textContent = this.verifiedMatches.length < 5 ? 'Research' : '100%';
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
     
@@ -752,6 +816,15 @@ class MatchScheduler {
             this.loadMatches();
         }, 300000); // 5 minutes
     }
+}
+
+// Add timeout support for fetch
+if (!AbortSignal.timeout) {
+    AbortSignal.timeout = function(ms) {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(new Error("Timeout")), ms);
+        return controller.signal;
+    };
 }
 
 // Initialize immediately
