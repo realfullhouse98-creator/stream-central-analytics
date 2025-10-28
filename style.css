@@ -686,6 +686,51 @@ body {
     line-height: 1.5;
 }
 
+/* Loading and Error States */
+.loading-message, .error-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.loading-spinner {
+    border: 3px solid var(--border-light);
+    border-top: 3px solid var(--accent-gold);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.retry-btn {
+    background: var(--accent-gold);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
+}
+
+.error-message h3 {
+    color: var(--accent-gold);
+    margin-bottom: 15px;
+    font-size: 1.4em;
+}
+
 .dashboard-footer {
     text-align: center;
     padding: 25px 20px;
@@ -721,17 +766,6 @@ body {
     text-align: center;
     padding: 40px 20px;
     color: var(--text-secondary);
-}
-
-.retry-btn {
-    background: var(--accent-gold);
-    color: #000;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    margin-top: 15px;
 }
 
 .no-matches {
@@ -908,6 +942,11 @@ body {
     
     .dashboard-footer {
         padding: 20px 15px;
+    }
+    
+    /* Mobile loading states */
+    .loading-message, .error-message {
+        padding: 40px 15px;
     }
 }
 
