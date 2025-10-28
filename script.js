@@ -1,4 +1,4 @@
-// 9kilo Stream - Final Professional Layout with Dynamic Back Button
+// 9kilo Stream - Enhanced Professional Layout
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -16,7 +16,6 @@ class MatchScheduler {
         this.loadMatches().catch(console.error);
         this.showMainMenu();
         this.startAutoRefresh();
-        this.setupScrollHandler();
     }
     
     async loadMatches() {
@@ -417,20 +416,20 @@ class MatchScheduler {
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
-                    <div class="match-header" id="match-header">
+                    <div class="match-header">
                         <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                     </div>
                     
                     <div class="video-container">
-                        <!-- Enhanced Player Controls - Same as Website -->
+                        <!-- Enhanced Player Controls -->
                         <div class="video-player-controls">
                             ${channelSelectorHTML}
                             <div class="control-buttons-right">
                                 <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
-                                    🔄 Refresh Stream
+                                    Refresh
                                 </button>
                                 <button class="player-control-btn fullscreen" onclick="matchScheduler.toggleFullscreen('${matchId}')">
-                                    ⛶ Fullscreen
+                                    ⛶
                                 </button>
                             </div>
                         </div>
@@ -501,49 +500,6 @@ class MatchScheduler {
         
         this.hideStats();
         this.incrementViews(matchId);
-        this.setupDynamicBackButton();
-    }
-    
-    setupDynamicBackButton() {
-        const matchHeader = document.getElementById('match-header');
-        
-        const handleScroll = () => {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > 100) {
-                matchHeader.style.background = 'rgba(15, 52, 96, 0.95)';
-                matchHeader.style.backdropFilter = 'blur(20px)';
-                matchHeader.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
-            } else {
-                matchHeader.style.background = 'rgba(255, 255, 255, 0.05)';
-                matchHeader.style.backdropFilter = 'blur(20px)';
-                matchHeader.style.boxShadow = 'none';
-            }
-        };
-        
-        // Remove existing listener and add new one
-        window.removeEventListener('scroll', handleScroll);
-        window.addEventListener('scroll', handleScroll);
-    }
-    
-    setupScrollHandler() {
-        // Global scroll handler for dynamic elements
-        window.addEventListener('scroll', () => {
-            const matchHeader = document.getElementById('match-header');
-            if (matchHeader) {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                if (scrollTop > 100) {
-                    matchHeader.style.background = 'rgba(15, 52, 96, 0.95)';
-                    matchHeader.style.backdropFilter = 'blur(20px)';
-                    matchHeader.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
-                } else {
-                    matchHeader.style.background = 'rgba(255, 255, 255, 0.05)';
-                    matchHeader.style.backdropFilter = 'blur(20px)';
-                    matchHeader.style.boxShadow = 'none';
-                }
-            }
-        });
     }
     
     switchChannel(matchId, channelIndex) {
@@ -582,7 +538,7 @@ class MatchScheduler {
                 
                 const refreshBtn = document.querySelector('.player-control-btn.refresh');
                 const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = '🔄 Refreshing...';
+                refreshBtn.innerHTML = 'Refreshing...';
                 setTimeout(() => {
                     refreshBtn.innerHTML = originalText;
                 }, 1000);
