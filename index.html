@@ -30,7 +30,7 @@
     <div class="stream-central-dashboard">
         <!-- STATIC HEADER - Always Visible -->
         <header class="dashboard-header">
-            <h1>9kilo44 Stream</h1>
+            <h1>9kilo2 Stream</h1>
             <p>Live Sports Schedules</p>
         </header>
         
@@ -60,9 +60,15 @@
                 <!-- Initial content will be loaded here -->
                 <div class="main-menu">
                     <div class="menu-grid">
-                        <div class="menu-button sports-button" onmouseover="matchScheduler.preloadSportsData()" onclick="matchScheduler.showSportsView()">
+                        <div class="menu-button sports-button" 
+                             onmouseenter="matchScheduler.preloadSportsData()" 
+                             onclick="matchScheduler.showSportsViewWithFeedback(event)">
                             <div class="button-title">LIVE SPORTS</div>
-                            <div class="button-subtitle">Games & schedules</div>
+                            <div class="button-subtitle" id="sports-subtitle">Games & schedules</div>
+                            <div class="button-loading">
+                                <div class="mini-spinner"></div>
+                                Loading...
+                            </div>
                         </div>
                         <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
                             <div class="button-title">TV CHANNELS</div>
