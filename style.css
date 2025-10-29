@@ -177,7 +177,7 @@ body {
     overflow-y: auto;
 }
 
-/* ==================== STICKY NAVIGATION BUTTONS ==================== */
+/* ==================== STICKY NAVIGATION BUTTONS - ALL PAGES ==================== */
 .navigation-buttons {
     display: flex;
     gap: 12px;
@@ -269,9 +269,60 @@ body {
     margin-bottom: 6px;
 }
 
-/* REMOVED MATCH-COUNT FROM SPORTS GRID */
+/* ONLY REMOVE from Sports selection page */
+.sports-grid .sport-button .match-count {
+    display: none;
+}
 
-/* ==================== WEB SCHEDULE TABLE - LARGER FONTS ==================== */
+/* KEEP Football Dates page with match counts */
+.date-button .match-count {
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 3px 10px;
+    border-radius: 8px;
+}
+
+/* ==================== SCHEDULE TABLE WITH FILTER ==================== */
+.matches-table-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.table-filter {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+    padding: 0 5%;
+}
+
+.filter-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 70px;
+    text-align: center;
+}
+
+.filter-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.filter-toggle.active {
+    background: var(--accent-red);
+    color: white;
+    border-color: var(--accent-red);
+    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+}
+
 .matches-table {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
@@ -359,7 +410,7 @@ body {
     border-bottom: 1px solid var(--border-light);
     align-items: center;
     flex-wrap: wrap;
-    justify-content: flex-end; /* Right-aligned for refresh button */
+    justify-content: flex-end;
 }
 
 /* Control buttons on right */
@@ -377,21 +428,18 @@ body {
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.9em;
-    font-weight: 500;
-}
-
-.player-control-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--accent-gold);
-    transform: translateY(-1px);
+    gap: 0;
 }
 
 .player-control-btn.refresh {
-    background: rgba(255, 255, 255, 0.1);
+    font-size: 0.7em;
+    color: var(--text-secondary);
+    padding: 5px;
+}
+
+.player-control-btn.refresh:hover {
+    color: var(--accent-gold);
+    transform: scale(1.1);
 }
 
 /* ==================== INLINE CHANNEL SELECTOR IN VIDEO STATS ==================== */
@@ -849,7 +897,18 @@ body {
         font-size: 1.4em;
     }
     
-    /* OPTIMIZED MOBILE SCHEDULE TABLE */
+    /* MOBILE SCHEDULE TABLE WITH FILTER */
+    .table-filter {
+        padding: 0 2%;
+        margin-bottom: 12px;
+    }
+    
+    .filter-toggle {
+        padding: 6px 12px;
+        font-size: 0.8em;
+        min-width: 60px;
+    }
+    
     .matches-table {
         margin: 0 2%;
     }
@@ -891,7 +950,7 @@ body {
     .video-player-controls {
         padding: 12px 15px;
         gap: 8px;
-        justify-content: flex-end; /* Right-aligned on mobile too */
+        justify-content: flex-end;
     }
     
     .control-buttons-right {
