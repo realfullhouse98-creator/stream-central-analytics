@@ -177,12 +177,20 @@ body {
     overflow-y: auto;
 }
 
+/* ==================== STICKY NAVIGATION BUTTONS ==================== */
 .navigation-buttons {
     display: flex;
     gap: 12px;
     margin-bottom: 25px;
     align-items: center;
     flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--primary-bg);
+    padding: 15px 0;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-light);
 }
 
 .home-button, .top-back-button {
@@ -198,6 +206,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.home-button:hover, .top-back-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
 }
 
 .section-header {
@@ -263,7 +277,7 @@ body {
     border-radius: 8px;
 }
 
-/* OPTIMIZED SCHEDULE TABLE FOR MOBILE */
+/* ==================== WEB SCHEDULE TABLE - LARGER FONTS ==================== */
 .matches-table {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
@@ -275,22 +289,22 @@ body {
 
 .table-header {
     display: grid;
-    grid-template-columns: 80px 1fr 90px;
+    grid-template-columns: 90px 1fr 100px;
     background: rgba(255, 255, 255, 0.08);
-    padding: 18px 20px;
+    padding: 20px 25px;
     border-bottom: 1px solid var(--border-light);
     font-weight: 600;
-    font-size: 1.2em;
-    gap: 15px;
+    font-size: 1.3em;
+    gap: 20px;
 }
 
 .match-row {
     display: grid;
-    grid-template-columns: 80px 1fr 90px;
-    padding: 16px 20px;
+    grid-template-columns: 90px 1fr 100px;
+    padding: 18px 25px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .match-row.live {
@@ -301,32 +315,32 @@ body {
 .match-time {
     font-weight: 600;
     color: var(--accent-gold);
-    font-size: 1.1em;
+    font-size: 1.3em;
 }
 
 .team-names {
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 4px;
-    font-size: 1.1em;
+    margin-bottom: 6px;
+    font-size: 1.4em;
     line-height: 1.3;
 }
 
 .league-name {
     color: var(--text-muted);
-    font-size: 0.9em;
+    font-size: 1.1em;
 }
 
 .watch-btn {
     background: var(--accent-gold);
     color: #000;
     border: none;
-    padding: 10px 16px;
-    border-radius: 16px;
+    padding: 12px 20px;
+    border-radius: 18px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 0.9em;
-    min-width: 80px;
+    font-size: 1.1em;
+    min-width: 90px;
     transition: all 0.3s ease;
 }
 
@@ -342,7 +356,7 @@ body {
     100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
 }
 
-/* Enhanced Video Player Controls - Compact */
+/* ==================== VIDEO CONTROLS POSITIONING ==================== */
 .video-player-controls {
     display: flex;
     gap: 15px;
@@ -351,57 +365,24 @@ body {
     border-bottom: 1px solid var(--border-light);
     align-items: center;
     flex-wrap: wrap;
+    justify-content: space-between;
 }
 
-/* Compact control buttons on right side */
-.control-buttons-right {
-    margin-left: auto;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.player-control-btn {
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0;
-}
-
-.player-control-btn.refresh {
-    font-size: 0.7em;
-    color: var(--text-secondary);
-    padding: 5px;
-}
-
-.player-control-btn.fullscreen {
-    font-size: 0.9em;
-    color: var(--text-secondary);
-    padding: 5px;
-}
-
-.player-control-btn:hover {
-    color: var(--accent-gold);
-    transform: scale(1.1);
-}
-
-/* Enhanced Channel Selector with Purple Accent */
+/* Channel selector on left with purple styling */
 .channel-selector {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+    margin-right: auto;
 }
 
 .channel-label {
-    color: var(--text-secondary);
+    color: var(--accent-purple);
     font-size: 0.9em;
     font-weight: 600;
     white-space: nowrap;
+    text-decoration: underline;
 }
 
 .channel-buttons {
@@ -413,7 +394,7 @@ body {
 .channel-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-light);
-    color: #9b59b6; /* Purple color */
+    color: var(--accent-purple);
     padding: 8px 14px;
     border-radius: 6px;
     cursor: pointer;
@@ -447,7 +428,7 @@ body {
 .channel-dropdown-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-light);
-    color: #9b59b6; /* Purple color */
+    color: var(--accent-purple);
     padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
@@ -471,7 +452,7 @@ body {
     font-size: 0.7em;
     margin-left: 8px;
     transition: transform 0.3s ease;
-    color: #9b59b6;
+    color: var(--accent-purple);
 }
 
 .channel-dropdown-btn.open::after {
@@ -502,7 +483,7 @@ body {
     padding: 10px 14px;
     cursor: pointer;
     font-size: 0.85em;
-    color: #9b59b6; /* Purple color */
+    color: var(--accent-purple);
     transition: all 0.3s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     text-decoration: underline;
@@ -521,6 +502,86 @@ body {
     color: white;
     font-weight: 600;
     text-decoration: none;
+}
+
+/* Control buttons on right - HORIZONTAL LINE */
+.control-buttons-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-left: 0;
+}
+
+.player-control-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.player-control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-gold);
+    transform: translateY(-1px);
+}
+
+.player-control-btn.refresh {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.player-control-btn.fullscreen {
+    background: rgba(255, 217, 61, 0.2);
+}
+
+/* ==================== FULLSCREEN MODE ==================== */
+.match-details-modal.fullscreen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    background: #000;
+}
+
+.match-details-modal.fullscreen-mode .match-header,
+.match-details-modal.fullscreen-mode .video-controls,
+.match-details-modal.fullscreen-mode .dashboard-footer {
+    display: none !important;
+}
+
+.match-details-modal.fullscreen-mode .video-player-wrapper {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+}
+
+.match-details-modal.fullscreen-mode .video-player {
+    min-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+}
+
+.match-details-modal.fullscreen-mode .stream-iframe {
+    height: 100vh;
+}
+
+.match-details-modal.fullscreen-mode .video-player-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10001;
+    background: rgba(0, 0, 0, 0.9);
 }
 
 /* YouTube-style Match Details with Body Content */
@@ -550,6 +611,10 @@ body {
     background: rgba(255, 255, 255, 0.05);
     border-bottom: 1px solid var(--border-light);
     flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
 }
 
 .back-btn {
@@ -904,26 +969,26 @@ body {
     .video-player-controls {
         padding: 12px 15px;
         gap: 8px;
-    }
-    
-    .player-control-btn.refresh {
-        font-size: 0.6em;
-    }
-    
-    .player-control-btn.fullscreen {
-        font-size: 0.8em;
+        flex-direction: column;
+        align-items: stretch;
     }
     
     .channel-selector {
-        margin-left: 0;
-        width: 100%;
+        margin-right: 0;
         justify-content: center;
-        order: -1;
+        order: 1;
         margin-bottom: 10px;
     }
     
-    .channel-buttons {
+    .control-buttons-right {
         justify-content: center;
+        order: 2;
+        gap: 10px;
+    }
+    
+    .player-control-btn {
+        font-size: 0.8em;
+        padding: 6px 10px;
     }
     
     .channel-btn {
@@ -963,6 +1028,16 @@ body {
     .loading-message, .error-message {
         padding: 40px 15px;
     }
+    
+    /* Mobile sticky buttons */
+    .navigation-buttons {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--primary-bg);
+        padding: 12px 0;
+        margin-bottom: 20px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -972,22 +1047,6 @@ body {
     
     .matches-table {
         margin: 0 1%;
-    }
-    
-    .video-player-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .control-buttons-right {
-        margin-left: 0;
-        justify-content: center;
-        order: -1;
-        margin-bottom: 10px;
-    }
-    
-    .channel-selector {
-        order: 0;
     }
     
     /* Extra small devices */
