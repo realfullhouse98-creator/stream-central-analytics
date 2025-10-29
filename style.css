@@ -141,11 +141,17 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(20px);
+    position: relative;
 }
 
 .menu-button:hover {
     transform: translateY(-2px);
     border-color: var(--accent-gold);
+}
+
+.menu-button:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
 }
 
 .button-title {
@@ -158,6 +164,31 @@ body {
 .button-subtitle {
     font-size: 1em;
     color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+/* Enhanced Loading States */
+.button-loading {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+    color: var(--accent-gold);
+    font-size: 0.9em;
+}
+
+.button-loading.show {
+    display: flex;
+}
+
+.mini-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid var(--accent-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 .menu-button.community {
@@ -729,6 +760,28 @@ body {
     color: var(--accent-gold);
     margin-bottom: 15px;
     font-size: 1.4em;
+}
+
+/* Enhanced loading states */
+.optimized-loading {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+}
+
+.optimized-loading .features {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 15px;
+    font-size: 0.8em;
+}
+
+.optimized-loading .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
 }
 
 .dashboard-footer {
