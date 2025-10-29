@@ -16,7 +16,7 @@ class MatchScheduler {
         this.cacheKey = '9kilos-matches-cache';
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         
-        // Filter state
+        // Filter state - will reset on refresh
         this.showLiveOnly = false;
         
         // Performance Monitoring
@@ -402,7 +402,8 @@ class MatchScheduler {
 
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <!-- STICKY NAVIGATION - No blur background -->
+                <div class="navigation-buttons" style="position: sticky; top: 0; z-index: 1000; background: transparent; backdrop-filter: none; border-bottom: none; padding: 15px 0; margin-bottom: 0;">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
@@ -433,7 +434,8 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <!-- STICKY NAVIGATION - No blur background -->
+                <div class="navigation-buttons" style="position: sticky; top: 0; z-index: 1000; background: transparent; backdrop-filter: none; border-bottom: none; padding: 15px 0; margin-bottom: 0;">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                     <button class="top-back-button" onclick="matchScheduler.showSportsView()">←</button>
                 </div>
@@ -467,14 +469,15 @@ class MatchScheduler {
         const sportName = this.getSportDisplayName();
         const displayDate = this.formatDisplayDate(this.currentDate);
         
-        // Reset filter state when entering matches view
+        // Reset filter state when entering matches view (fixes issue #2)
         this.showLiveOnly = false;
         
         const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <!-- STICKY NAVIGATION - No blur background -->
+                <div class="navigation-buttons" style="position: sticky; top: 0; z-index: 1000; background: transparent; backdrop-filter: none; border-bottom: none; padding: 15px 0; margin-bottom: 0;">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                     <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
                 </div>
@@ -553,7 +556,7 @@ class MatchScheduler {
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
-                    <div class="match-header">
+                    <div class="match-header" style="backdrop-filter: none; background: rgba(255, 255, 255, 0.05);">
                         <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                     </div>
                     
@@ -646,7 +649,8 @@ class MatchScheduler {
                 <div class="channel-buttons-inline">
                     ${channels.map((channel, index) => `
                         <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
-                                onclick="matchScheduler.switchChannel('${matchId}', ${index})">
+                                onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                style="text-decoration: none !important;">
                             Source ${index + 1}
                         </button>
                     `).join('')}
@@ -656,13 +660,15 @@ class MatchScheduler {
         
         return `
             <div class="channel-dropdown-inline">
-                <button class="channel-dropdown-btn-inline" onclick="matchScheduler.toggleDropdown('${matchId}')">
+                <button class="channel-dropdown-btn-inline" onclick="matchScheduler.toggleDropdown('${matchId}')"
+                        style="text-decoration: none !important;">
                     Source ${currentChannelIndex + 1} of ${channels.length}
                 </button>
                 <div class="channel-dropdown-content-inline" id="dropdown-${matchId}">
                     ${channels.map((channel, index) => `
                         <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
-                             onclick="matchScheduler.switchChannel('${matchId}', ${index})">
+                             onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                             style="text-decoration: none !important;">
                             Source ${index + 1}
                         </div>
                     `).join('')}
@@ -754,7 +760,8 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <!-- STICKY NAVIGATION - No blur background -->
+                <div class="navigation-buttons" style="position: sticky; top: 0; z-index: 1000; background: transparent; backdrop-filter: none; border-bottom: none; padding: 15px 0; margin-bottom: 0;">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
@@ -778,7 +785,8 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <!-- STICKY NAVIGATION - No blur background -->
+                <div class="navigation-buttons" style="position: sticky; top: 0; z-index: 1000; background: transparent; backdrop-filter: none; border-bottom: none; padding: 15px 0; margin-bottom: 0;">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
