@@ -1,4 +1,4 @@
-// 9kilo Stream - Fully Optimized Production Version
+// 9kilo Stream - Optimized Production Version with GitHub Pages Fix
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -31,6 +31,22 @@ class MatchScheduler {
         this.showMainMenu();
         this.startPerformanceMonitoring();
         this.trackPerformance('pageLoaded');
+        
+        // Safe Service Worker Registration
+        this.registerServiceWorker();
+    }
+    
+    // Safe Service Worker Registration for GitHub Pages
+    registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        }
     }
     
     // ==================== OPTIMIZATION 1: LAZY LOADING ====================
@@ -913,16 +929,3 @@ document.addEventListener('click', (e) => {
         });
     }
 });
-
-// PWA Service Worker Registration
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('SW registered: ', registration);
-            })
-            .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}
