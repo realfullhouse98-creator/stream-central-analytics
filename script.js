@@ -410,7 +410,6 @@ class MatchScheduler {
                     ${sports.map(sport => `
                         <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
                             <div class="sport-name">${sport.name}</div>
-                            <div class="match-count">${sport.count} matches</div>
                         </div>
                     `).join('')}
                 </div>
@@ -543,10 +542,10 @@ class MatchScheduler {
                             ${channelSelectorHTML}
                             <div class="control-buttons-right">
                                 <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
-                                    Refresh
+                                    🔄 Refresh
                                 </button>
                                 <button class="player-control-btn fullscreen" onclick="matchScheduler.toggleFullscreen('${matchId}')">
-                                    ⛶
+                                    ⛶ Fullscreen
                                 </button>
                             </div>
                         </div>
@@ -697,7 +696,7 @@ class MatchScheduler {
                 
                 const refreshBtn = document.querySelector('.player-control-btn.refresh');
                 const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = 'Refreshing...';
+                refreshBtn.innerHTML = '🔄 Refreshing...';
                 setTimeout(() => {
                     refreshBtn.innerHTML = originalText;
                 }, 1000);
@@ -706,15 +705,21 @@ class MatchScheduler {
     }
     
     toggleFullscreen(matchId) {
-        const videoPlayer = document.getElementById(`video-player-${matchId}`);
-        if (!videoPlayer) return;
+        const matchDetailsModal = document.querySelector('.match-details-modal');
+        
+        if (!matchDetailsModal) return;
         
         if (!document.fullscreenElement) {
-            videoPlayer.requestFullscreen().catch(err => {
+            // Enter fullscreen - hide everything except video player
+            matchDetailsModal.classList.add('fullscreen-mode');
+            document.documentElement.requestFullscreen().catch(err => {
                 console.log('Fullscreen failed:', err);
+                matchDetailsModal.classList.remove('fullscreen-mode');
             });
         } else {
+            // Exit fullscreen
             document.exitFullscreen();
+            matchDetailsModal.classList.remove('fullscreen-mode');
         }
     }
     
@@ -926,6 +931,15 @@ document.addEventListener('click', (e) => {
         document.querySelectorAll('.channel-dropdown-content.show').forEach(dropdown => {
             dropdown.classList.remove('show');
             dropdown.previousElementSibling.classList.remove('open');
+        });
+    }
+});
+
+// Handle fullscreen change events
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        document.querySelectorAll('.match-details-modal').forEach(modal => {
+            modal.classList.remove('fullscreen-mode');
         });
     }
 });
