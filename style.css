@@ -177,20 +177,13 @@ body {
     overflow-y: auto;
 }
 
-/* ==================== STICKY NAVIGATION BUTTONS - ALL PAGES ==================== */
+/* ==================== NAVIGATION BUTTONS ==================== */
 .navigation-buttons {
     display: flex;
     gap: 12px;
     margin-bottom: 25px;
     align-items: center;
     flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: var(--primary-bg);
-    padding: 15px 0;
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-light);
 }
 
 .home-button, .top-back-button {
@@ -295,6 +288,7 @@ body {
     justify-content: flex-end;
     margin-bottom: 15px;
     padding: 0 5%;
+    margin-right: 85px; /* FIXED: Move filter button left to align with Watch column */
 }
 
 .filter-toggle {
@@ -442,7 +436,7 @@ body {
     transform: scale(1.1);
 }
 
-/* ==================== FIXED CHANNEL SOURCES - NO UNDERLINE ==================== */
+/* ==================== CHANNEL SOURCES ==================== */
 .channel-buttons-inline {
     display: inline-flex;
     gap: 8px;
@@ -453,7 +447,7 @@ body {
 .channel-btn-inline {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-light);
-    color: var(--accent-purple) !important;
+    color: var(--accent-purple);
     padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
@@ -461,7 +455,6 @@ body {
     font-weight: 500;
     transition: all 0.3s ease;
     white-space: nowrap;
-    text-decoration: none !important;
 }
 
 .channel-btn-inline:hover {
@@ -471,10 +464,9 @@ body {
 
 .channel-btn-inline.active {
     background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    color: white !important;
+    color: white;
     border-color: #9b59b6;
     font-weight: 600;
-    text-decoration: none !important;
     box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
 }
 
@@ -487,14 +479,13 @@ body {
 .channel-dropdown-btn-inline {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-light);
-    color: var(--accent-purple) !important;
+    color: var(--accent-purple);
     padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.8em;
     font-weight: 500;
     transition: all 0.3s ease;
-    text-decoration: none !important;
 }
 
 .channel-dropdown-btn-inline:hover {
@@ -537,10 +528,9 @@ body {
     padding: 6px 10px;
     cursor: pointer;
     font-size: 0.8em;
-    color: var(--accent-purple) !important;
+    color: var(--accent-purple);
     transition: all 0.3s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    text-decoration: none !important;
 }
 
 .channel-dropdown-item-inline:last-child {
@@ -553,9 +543,8 @@ body {
 
 .channel-dropdown-item-inline.active {
     background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    color: white !important;
+    color: white;
     font-weight: 600;
-    text-decoration: none !important;
 }
 
 /* YouTube-style Match Details with Body Content */
@@ -585,10 +574,6 @@ body {
     background: rgba(255, 255, 255, 0.05);
     border-bottom: 1px solid var(--border-light);
     flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    backdrop-filter: blur(20px);
 }
 
 .back-btn {
@@ -901,6 +886,7 @@ body {
     .table-filter {
         padding: 0 2%;
         margin-bottom: 12px;
+        margin-right: 60px; /* Adjusted for mobile */
     }
     
     .filter-toggle {
@@ -1009,16 +995,6 @@ body {
     /* Mobile loading states */
     .loading-message, .error-message {
         padding: 40px 15px;
-    }
-    
-    /* Mobile sticky buttons - FIXED */
-    .navigation-buttons {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: var(--primary-bg);
-        padding: 12px 0;
-        margin-bottom: 20px;
     }
 }
 
