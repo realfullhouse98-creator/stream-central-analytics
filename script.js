@@ -1,4 +1,4 @@
-// 9kilo Stream - Optimized Production Version with GitHub Pages Fix
+// 9kilo Stream - Clean Fix Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -402,7 +402,7 @@ class MatchScheduler {
 
         container.innerHTML = `
             <div class="content-section">
-                <div class="sticky-navigation">
+                <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
@@ -433,7 +433,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="sticky-navigation">
+                <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                     <button class="top-back-button" onclick="matchScheduler.showSportsView()">←</button>
                 </div>
@@ -472,7 +472,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="sticky-navigation">
+                <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                     <button class="top-back-button" onclick="matchScheduler.showDatesView()">←</button>
                 </div>
@@ -551,7 +551,7 @@ class MatchScheduler {
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
-                    <div class="sticky-navigation player-nav">
+                    <div class="match-header">
                         <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                     </div>
                     
@@ -752,7 +752,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
             <div class="content-section">
-                <div class="sticky-navigation">
+                <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
@@ -776,7 +776,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
             <div class="content-section">
-                <div class="sticky-navigation">
+                <div class="navigation-buttons">
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
