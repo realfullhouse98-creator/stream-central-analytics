@@ -236,14 +236,14 @@ class MatchScheduler {
                         tournament: '9kilos Demo League',
                         sport: 'football',
                         unix_timestamp: now + 3600,
-                        channels: []
+                        channels: ['https://example.com/stream1', 'https://example.com/stream2']
                     },
                     {
                         match: 'Demo United - Test City FC',
                         tournament: 'Research Championship',
                         sport: 'football', 
                         unix_timestamp: now - 1800,
-                        channels: []
+                        channels: ['https://example.com/stream1']
                     }
                 ]
             }
@@ -470,6 +470,8 @@ class MatchScheduler {
         // Reset filter state when entering matches view
         this.showLiveOnly = false;
         
+        const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
+        
         container.innerHTML = `
             <div class="content-section">
                 <div class="navigation-buttons">
@@ -493,8 +495,8 @@ class MatchScheduler {
                             <div>Match</div>
                             <div>Watch</div>
                         </div>
-                        ${this.getFilteredMatches(matches).length > 0 ? 
-                            this.getFilteredMatches(matches).map(match => this.renderMatchRow(match)).join('') :
+                        ${filteredMatches.length > 0 ? 
+                            filteredMatches.map(match => this.renderMatchRow(match)).join('') :
                             '<div class="no-matches">No matches found</div>'
                         }
                     </div>
@@ -504,13 +506,6 @@ class MatchScheduler {
         
         this.hideStats();
         this.currentView = 'matches';
-    }
-    
-    getFilteredMatches(matches) {
-        if (this.showLiveOnly) {
-            return matches.filter(match => match.isLive);
-        }
-        return matches;
     }
     
     toggleLiveFilter() {
