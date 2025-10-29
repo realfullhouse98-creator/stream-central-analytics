@@ -30,247 +30,91 @@ class MatchScheduler {
         this.sportsReference = {
             // 1. FOOTBALL (SOCCER)
             football: {
-                keywords: [
-                    // Leagues
-                    'premier league', 'champions league', 'europa league', 'conference league', 'la liga', 
-                    'serie a', 'bundesliga', 'ligue 1', 'mls', 'eredivisie', 'primeira liga', 'super lig',
-                    'liga mx', 'argentina primera', 'brasileirão', 'scottish premiership', 'belgian pro league',
-                    'copa libertadores', 'copa sudamericana', 'afc champions league', 'concacaf champions league',
-                    'world cup', 'euro', 'copa america', 'african cup', 'asian cup', 'gold cup',
-                    'fa cup', 'carabao cup', 'dfb pokal', 'coppa italia', 'copa del rey', 'super cup',
-                    'uefa', 'fifa', 'concacaf', 'conmebol',
-                    
-                    // Teams (Soccer)
-                    'manchester', 'liverpool', 'chelsea', 'arsenal', 'tottenham', 'city', 'united',
-                    'real madrid', 'barcelona', 'atletico', 'sevilla', 'valencia', 'villarreal',
-                    'juventus', 'milan', 'inter', 'roma', 'napoli', 'lazio', 'fiorentina', 'atalanta',
-                    'bayern', 'dortmund', 'leipzig', 'leverkusen', 'schalke', 'frankfurt',
-                    'psg', 'lyon', 'marseille', 'monaco', 'lille', 'nice', 'rennes',
-                    'ajax', 'psv', 'feyenoord', 'benfica', 'porto', 'sporting', 'celtic', 'rangers',
-                    
-                    // Generic soccer terms
-                    'fc', 'cf', 'afc', 'as', 'club', 'football club', 'soccer', 'goal', 'penalty', 'futbol'
-                ],
+                keywords: [],
                 displayName: '⚽ Football'
             },
             
             // 2. AMERICAN FOOTBALL
             american_football: {
-                keywords: [
-                    // Leagues
-                    'nfl', 'super bowl', 'afc', 'nfc', 'pro bowl', 'college football', 'ncaa football', 'xfl', 'usfl',
-                    'madden', 'espn nfl', 'nfl network', 'nfl redzone', 'nfl sunday ticket',
-                    
-                    // Teams
-                    'patriots', 'cowboys', 'packers', 'chiefs', 'bills', 'eagles', '49ers', 'steelers', 'broncos',
-                    'seahawks', 'ravens', 'vikings', 'saints', 'rams', 'chargers', 'raiders', 'bears', 'giants',
-                    'jets', 'dolphins', 'falcons', 'panthers', 'bengals', 'browns', 'buccaneers', 'cardinals',
-                    'colts', 'jaguars', 'lions', 'texans', 'titans', 'commanders', 'football team',
-                    
-                    // Terms
-                    'touchdown', 'quarterback', 'running back', 'wide receiver', 'offensive line', 'defensive line'
-                ],
+                keywords: [],
                 displayName: '🏈 American Football'
             },
             
             // 3. BASKETBALL
             basketball: {
-                keywords: [
-                    // Leagues
-                    'nba', 'euroleague', 'fiba', 'wnba', 'ncaa basketball', 'march madness', 'final four',
-                    'acb', 'lega basket', 'bbl', 'lnb', 'nbl',
-                    
-                    // Teams
-                    'lakers', 'celtics', 'warriors', 'bulls', 'knicks', 'heat', 'spurs', 'mavericks',
-                    'nets', 'suns', 'bucks', '76ers', 'trail blazers', 'jazz', 'nuggets', 'clippers',
-                    'rockets', 'thunder', 'pistons', 'kings', 'pacers', 'hawks', 'hornets', 'cavaliers',
-                    'magic', 'timberwolves', 'pelicans', 'raptors', 'grizzlies', 'wizards',
-                    
-                    // Terms
-                    'basketball', 'hoops', 'dunk', 'three-pointer', 'free throw', 'rebound', 'nba tv'
-                ],
+                keywords: [],
                 displayName: '🏀 Basketball'
             },
             
             // 4. BASEBALL
             baseball: {
-                keywords: [
-                    // Leagues
-                    'mlb', 'world series', 'american league', 'national league', 'minor league',
-                    'npb', 'kbo', 'cpbl', 'mlb network',
-                    
-                    // Teams
-                    'yankees', 'red sox', 'dodgers', 'cubs', 'giants', 'cardinals', 'mets', 'phillies',
-                    'braves', 'astros', 'white sox', 'angels', 'tigers', 'brewers', 'padres', 'mariners',
-                    'rangers', 'guardians', 'royals', 'twins', 'athletics', 'orioles', 'rays', 'blue jays',
-                    'nationals', 'pirates', 'reds', 'diamondbacks', 'rockies', 'marlins',
-                    
-                    // Terms
-                    'home run', 'world series', 'all-star game', 'baseball', 'inning', 'pitcher'
-                ],
+                keywords: [],
                 displayName: '⚾ Baseball'
             },
             
             // 5. HOCKEY
             hockey: {
-                keywords: [
-                    // Leagues
-                    'nhl', 'stanley cup', 'khl', 'ahl', 'shl', 'liiga', 'nhl hockey', 'ice hockey',
-                    
-                    // Teams
-                    'maple leafs', 'canadiens', 'bruins', 'red wings', 'blackhawks', 'rangers', 'flyers',
-                    'oilers', 'canucks', 'flames', 'stars', 'avalanche', 'devils', 'penguins', 'capitals',
-                    'lightning', 'sabres', 'senators', 'predators', 'blues', 'kings', 'sharks', 'wild',
-                    'jets', 'blue jackets', 'ducks', 'coyotes', 'panthers', 'hurricanes', 'islanders',
-                    'golden knights', 'kraken',
-                    
-                    // Terms
-                    'hockey', 'nhl network', 'stanley cup playoffs', 'power play', 'penalty kill', 'hockey night'
-                ],
+                keywords: [],
                 displayName: '🏒 Hockey'
             },
             
             // 6. TENNIS
             tennis: {
-                keywords: [
-                    // Tournaments
-                    'wimbledon', 'us open', 'french open', 'australian open', 'atp', 'wta',
-                    'davis cup', 'fed cup', 'grand slam', 'tennis',
-                    
-                    // Players & Terms
-                    'djokovic', 'nadal', 'federer', 'murray', 'williams', 'tennis', 'grand slam', 'master', 'open'
-                ],
+                keywords: [],
                 displayName: '🎾 Tennis'
             },
             
             // 7. CRICKET
             cricket: {
-                keywords: [
-                    // Tournaments
-                    'ipl', 'big bash', 't20', 'test match', 'odi', 'world cup', 'ashes', 'county championship',
-                    
-                    // Teams
-                    'india', 'australia', 'england', 'pakistan', 'south africa', 'west indies', 'new zealand',
-                    'sri lanka', 'bangladesh',
-                    
-                    // Terms
-                    'cricket', 'wicket', 'innings', 'overs', 'six', 'four', 'bowler', 'batsman'
-                ],
+                keywords: [],
                 displayName: '🏏 Cricket'
             },
             
             // 8. RUGBY
             rugby: {
-                keywords: [
-                    // Tournaments
-                    'six nations', 'rugby championship', 'world cup', 'super rugby', 'premiership', 'top 14', 'pro14',
-                    
-                    // Teams
-                    'all blacks', 'springboks', 'wallabies', 'england rugby', 'wales rugby', 'ireland rugby',
-                    'scotland rugby', 'france rugby',
-                    
-                    // Terms
-                    'rugby', 'try', 'conversion', 'scrum', 'lineout', 'ruck', 'maul'
-                ],
+                keywords: [],
                 displayName: '🏉 Rugby'
             },
             
             // 9. GOLF
             golf: {
-                keywords: [
-                    // Tournaments
-                    'masters', 'us open', 'pga championship', 'open championship', 'ryder cup',
-                    'presidents cup', 'pga tour', 'european tour',
-                    
-                    // Terms
-                    'golf', 'pga', 'masters tournament', 'green jacket', 'birdie', 'eagle', 'putt'
-                ],
+                keywords: [],
                 displayName: '⛳ Golf'
             },
             
             // 10. MMA & BOXING
             fighting: {
-                keywords: [
-                    // Organizations
-                    'ufc', 'boxing', 'espn boxing', 'top rank', 'premier boxing', 'bellator',
-                    'one championship', 'pfl',
-                    
-                    // Terms
-                    'knockout', 'ko', 'tko', 'championship fight', 'pay-per-view', 'heavyweight'
-                ],
+                keywords: [],
                 displayName: '🥊 MMA & Boxing'
             },
             
             // 11. RACING
             racing: {
-                keywords: [
-                    // Series
-                    'formula 1', 'f1', 'nascar', 'indycar', 'motogp', 'wrc', 'formula e', 'supercars', 'dtm',
-                    
-                    // Events
-                    'daytona 500', 'monaco grand prix', 'indianapolis 500', 'le mans', 'dakar rally',
-                    
-                    // Terms
-                    'grand prix', 'qualifying', 'race', 'lap', 'pit stop', 'pole position'
-                ],
+                keywords: [],
                 displayName: '🏎️ Racing'
             },
             
             // 12. EQUESTRIAN
             equestrian: {
-                keywords: [
-                    // Events
-                    'equestrian', 'horse racing', 'derby', 'kentucky derby', 'preakness', 'belmont stakes',
-                    'royal ascot', 'dubai world cup', 'breeders cup', 'grand national', 'show jumping',
-                    'dressage', 'eventing', 'cross country',
-                    
-                    // Terms
-                    'thoroughbred', 'jockey', 'steeplechase', 'furlong', 'handicap', 'triple crown'
-                ],
+                keywords: [],
                 displayName: '🏇 Equestrian'
             },
             
             // 13. VOLLEYBALL
             volleyball: {
-                keywords: [
-                    // Leagues/Events
-                    'volleyball', 'beach volleyball', 'fivb', 'ncaa volleyball', 'cev', 'world championship',
-                    'olympics volleyball', 'vnl', 'club world championship', 'volley',
-                    
-                    // Terms
-                    'spike', 'block', 'dig', 'set', 'serve', 'rotation', 'libero'
-                ],
+                keywords: [],
                 displayName: '🏐 Volleyball'
             },
             
             // 14. AUSTRALIAN FOOTBALL
             australian_football: {
-                keywords: [
-                    // Leagues
-                    'afl', 'australian football', 'aussie rules', 'afl premiership', 'afl grand final',
-                    'aflw', 'vfl', 'sanfl', 'wafl',
-                    
-                    // Teams
-                    'collingwood', 'carlton', 'essendon', 'richmond', 'hawthorn', 'geelong', 'melbourne',
-                    'sydney', 'west coast', 'fremantle', 'adelaide', 'port adelaide', 'brisbane',
-                    'gold coast', 'gws', 'st kilda', 'western bulldogs', 'north melbourne',
-                    
-                    // Terms
-                    'footy', 'mark', 'behind', 'goal', 'ruck', 'rover', 'brownlow medal'
-                ],
+                keywords: [],
                 displayName: '🇦🇺 Australian Football'
             },
             
             // 15. BADMINTON
             badminton: {
-                keywords: [
-                    // Tournaments
-                    'badminton', 'bwf', 'all england', 'world championships', 'thomas cup', 'uber cup',
-                    'sudirman cup', 'olympics badminton',
-                    
-                    // Terms
-                    'shuttlecock', 'racket', 'smash', 'drop shot', 'clear', 'drive', 'singles'
-                ],
+                keywords: [],
                 displayName: '🏸 Badminton'
             },
             
@@ -608,79 +452,47 @@ class MatchScheduler {
         }
     }
 
-    // ==================== IMPROVED SPORTS CLASSIFICATION ====================
+    // ==================== SIMPLE SPORTS CLASSIFICATION ====================
     classifySport(match) {
-        // Use the original sport field if it exists and is valid
+        // Use the original sport field and normalize it
         const originalSport = (match.sport || '').toLowerCase().trim();
         
-        // If original sport already matches one of our categories, use it
-        if (originalSport && this.sportsReference[originalSport]) {
-            console.log(`✅ Using original sport: ${originalSport} for "${match.match}"`);
-            return originalSport;
-        }
-        
-        // Normalize search text for better matching
-        const searchString = (match.match + ' ' + match.tournament + ' ' + (match.sport || ''))
-            .toLowerCase()
-            .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Remove accents
-        
-        console.log(`🔍 Classifying: "${match.match}" - Search: ${searchString}`);
-        
-        // Check each sport category for keywords (excluding 'other')
-        for (const [sportId, sportData] of Object.entries(this.sportsReference)) {
-            if (sportId === 'other') continue;
-            
-            for (const keyword of sportData.keywords) {
-                const normalizedKeyword = keyword.toLowerCase().trim();
-                if (searchString.includes(normalizedKeyword)) {
-                    console.log(`✅ Classified "${match.match}" as ${sportId} (keyword: ${keyword})`);
-                    return sportId;
-                }
-            }
-            
-            // Also check if sport name itself is in the search string
-            const sportName = sportData.displayName.toLowerCase();
-            if (searchString.includes(sportName.replace(/[^a-z\s]/g, ''))) {
-                console.log(`✅ Classified "${match.match}" as ${sportId} (sport name match)`);
-                return sportId;
-            }
-        }
-        
-        // Try to map common sport names to our categories
+        // Simple mapping from data sport names to our category IDs
         const sportMappings = {
+            'football': 'football',
             'soccer': 'football',
-            'nfl football': 'american_football',
-            'college football': 'american_football', 
-            'nhl hockey': 'hockey',
+            'basketball': 'basketball', 
             'ice hockey': 'hockey',
-            'nba basketball': 'basketball',
-            'college basketball': 'basketball',
-            'mlb baseball': 'baseball',
-            'atp tennis': 'tennis',
-            'wta tennis': 'tennis',
-            'grand slam': 'tennis',
-            'iplt20': 'cricket',
-            't20': 'cricket',
-            'test cricket': 'cricket',
-            'one day international': 'cricket',
-            'ufc fight': 'fighting',
-            'boxing match': 'fighting',
-            'formula1': 'racing',
-            'f1 grand prix': 'racing',
-            'nascar cup': 'racing',
+            'hockey': 'hockey',
+            'nhl': 'hockey',
+            'nhl hockey': 'hockey',
+            'american football': 'american_football',
+            'nfl': 'american_football',
+            'baseball': 'baseball',
+            'mlb': 'baseball',
+            'tennis': 'tennis',
+            'cricket': 'cricket',
+            'rugby': 'rugby',
+            'volleyball': 'volleyball',
+            'badminton': 'badminton',
+            'golf': 'golf',
+            'mma': 'fighting',
+            'boxing': 'fighting',
+            'racing': 'racing',
+            'formula 1': 'racing',
+            'f1': 'racing',
+            'nascar': 'racing',
+            'equestrian': 'equestrian',
             'horse racing': 'equestrian',
-            'afl football': 'australian_football'
+            'australian football': 'australian_football',
+            'afl': 'australian_football'
         };
         
-        for (const [key, sportId] of Object.entries(sportMappings)) {
-            if (searchString.includes(key)) {
-                console.log(`✅ Mapped "${match.match}" from ${key} to ${sportId}`);
-                return sportId;
-            }
-        }
+        // Use mapping or fallback to original sport
+        const sportId = sportMappings[originalSport] || originalSport || 'other';
         
-        console.log(`❓ No classification found for "${match.match}", using 'other'`);
-        return 'other';
+        console.log(`🏷️ "${match.match}" -> ${originalSport} -> ${sportId}`);
+        return sportId;
     }
 
     getSportDisplayName(sportId = this.currentSport) {
@@ -691,7 +503,7 @@ class MatchScheduler {
             return sportData.displayName;
         }
         
-        // Fallback: capitalize the sport ID
+        // Simple fallback: capitalize the sport ID
         return sportId.charAt(0).toUpperCase() + sportId.slice(1);
     }
 
@@ -1111,7 +923,7 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>TV Channels</h2>
+                    <h2>TV CHANNELS</h2>
                     <p>24/7 live streams</p>
                 </div>
                 <div class="sports-grid">
