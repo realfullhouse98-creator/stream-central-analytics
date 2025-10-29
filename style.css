@@ -29,6 +29,7 @@ html, body {
     padding: 0;
     background: var(--primary-bg);
     overflow-x: hidden;
+    background-attachment: fixed !important;
 }
 
 body {
@@ -36,12 +37,14 @@ body {
     background: var(--primary-bg);
     color: var(--text-primary);
     line-height: 1.6;
+    background-attachment: fixed !important;
 }
 
 .stream-central-dashboard {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: inherit;
 }
 
 .dashboard-header {
@@ -774,8 +777,18 @@ body {
     color: var(--text-muted);
 }
 
+/* ==================== MOBILE BACKGROUND FIX ==================== */
 /* Mobile responsive */
 @media (max-width: 768px) {
+    html, body {
+        background: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%) fixed !important;
+        background-size: cover !important;
+    }
+    
+    .stream-central-dashboard {
+        background: inherit;
+    }
+    
     .dashboard-header {
         padding: 15px;
     }
@@ -974,4 +987,10 @@ body {
     .channel-selector {
         order: 0;
     }
+}
+
+/* Ensure background consistency across all devices */
+body {
+    background: var(--primary-bg) !important;
+    background-attachment: fixed !important;
 }
