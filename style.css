@@ -292,7 +292,7 @@ body {
 
 .table-filter {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center; /* FIXED: Center align with Watch column */
     margin-bottom: 15px;
     padding: 0 5%;
 }
@@ -442,7 +442,7 @@ body {
     transform: scale(1.1);
 }
 
-/* ==================== FIXED CHANNEL SOURCES IN VIDEO STATS ==================== */
+/* ==================== FIXED CHANNEL SOURCES - NO UNDERLINE ==================== */
 .channel-buttons-inline {
     display: inline-flex;
     gap: 8px;
@@ -461,7 +461,7 @@ body {
     font-weight: 500;
     transition: all 0.3s ease;
     white-space: nowrap;
-    text-decoration: underline !important;
+    text-decoration: none !important; /* FIXED: Remove underline */
 }
 
 .channel-btn-inline:hover {
@@ -494,7 +494,7 @@ body {
     font-size: 0.8em;
     font-weight: 500;
     transition: all 0.3s ease;
-    text-decoration: underline !important;
+    text-decoration: none !important; /* FIXED: Remove underline */
 }
 
 .channel-dropdown-btn-inline:hover {
@@ -540,7 +540,7 @@ body {
     color: var(--accent-purple) !important;
     transition: all 0.3s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    text-decoration: underline !important;
+    text-decoration: none !important; /* FIXED: Remove underline */
 }
 
 .channel-dropdown-item-inline:last-child {
@@ -1077,20 +1077,4 @@ body {
 body {
     background: var(--primary-bg) !important;
     background-attachment: fixed !important;
-}
-/* ==================== STICKY NAVIGATION ==================== */
-.sticky-navigation {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: transparent;
-    padding: 15px 0;
-    margin-bottom: 20px;
-    border-bottom: none;
-    backdrop-filter: none;
-}
-
-.sticky-navigation.player-nav {
-    background: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid var(--border-light);
 }
