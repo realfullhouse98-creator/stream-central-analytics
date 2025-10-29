@@ -16,6 +16,9 @@ class MatchScheduler {
         this.cacheKey = '9kilos-matches-cache';
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         
+        // Filter state
+        this.showLiveOnly = false;
+        
         // Performance Monitoring
         this.performanceMetrics = {
             pageLoadTime: 0,
@@ -464,6 +467,9 @@ class MatchScheduler {
         const sportName = this.getSportDisplayName();
         const displayDate = this.formatDisplayDate(this.currentDate);
         
+        // Reset filter state when entering matches view
+        this.showLiveOnly = false;
+        
         container.innerHTML = `
             <div class="content-section">
                 <div class="navigation-buttons">
@@ -475,22 +481,41 @@ class MatchScheduler {
                     <p>${displayDate}</p>
                 </div>
                 
-                <div class="matches-table">
-                    <div class="table-header">
-                        <div>Time</div>
-                        <div>Match</div>
-                        <div>Watch</div>
+                <div class="matches-table-container">
+                    <div class="table-filter">
+                        <button class="filter-toggle ${this.showLiveOnly ? 'active' : ''}" onclick="matchScheduler.toggleLiveFilter()">
+                            ${this.showLiveOnly ? 'LIVE' : 'ALL'}
+                        </button>
                     </div>
-                    ${matches.length > 0 ? 
-                        matches.map(match => this.renderMatchRow(match)).join('') :
-                        '<div class="no-matches">No matches found for this date</div>'
-                    }
+                    <div class="matches-table">
+                        <div class="table-header">
+                            <div>Time</div>
+                            <div>Match</div>
+                            <div>Watch</div>
+                        </div>
+                        ${this.getFilteredMatches(matches).length > 0 ? 
+                            this.getFilteredMatches(matches).map(match => this.renderMatchRow(match)).join('') :
+                            '<div class="no-matches">No matches found</div>'
+                        }
+                    </div>
                 </div>
             </div>
         `;
         
         this.hideStats();
         this.currentView = 'matches';
+    }
+    
+    getFilteredMatches(matches) {
+        if (this.showLiveOnly) {
+            return matches.filter(match => match.isLive);
+        }
+        return matches;
+    }
+    
+    toggleLiveFilter() {
+        this.showLiveOnly = !this.showLiveOnly;
+        this.showMatchesView(); // Refresh the view with new filter
     }
     
     renderMatchRow(match) {
@@ -541,7 +566,7 @@ class MatchScheduler {
                         <div class="video-player-controls">
                             <div class="control-buttons-right">
                                 <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
-                                    🔄 Refresh
+                                    Refresh
                                 </button>
                             </div>
                         </div>
@@ -687,7 +712,7 @@ class MatchScheduler {
                 
                 const refreshBtn = document.querySelector('.player-control-btn.refresh');
                 const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = '🔄 Refreshing...';
+                refreshBtn.innerHTML = 'Refreshing...';
                 setTimeout(() => {
                     refreshBtn.innerHTML = originalText;
                 }, 1000);
