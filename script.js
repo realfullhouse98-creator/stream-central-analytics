@@ -539,13 +539,9 @@ class MatchScheduler {
                     
                     <div class="video-container">
                         <div class="video-player-controls">
-                            ${channelSelectorHTML}
                             <div class="control-buttons-right">
                                 <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
                                     🔄 Refresh
-                                </button>
-                                <button class="player-control-btn fullscreen" onclick="matchScheduler.toggleFullscreen('${matchId}')">
-                                    ⛶ Fullscreen
                                 </button>
                             </div>
                         </div>
@@ -570,6 +566,7 @@ class MatchScheduler {
                                 ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
                                 <span style="color: var(--text-muted);">• ${match.league}</span>
                                 ${channels.length > 1 ? `<span style="color: var(--accent-gold);">• ${channels.length} sources</span>` : ''}
+                                ${channelSelectorHTML}
                             </div>
                             
                             <div class="video-actions">
@@ -626,35 +623,29 @@ class MatchScheduler {
         
         if (channels.length <= 2) {
             return `
-                <div class="channel-selector">
-                    <span class="channel-label">Source:</span>
-                    <div class="channel-buttons">
-                        ${channels.map((channel, index) => `
-                            <button class="channel-btn ${index === currentChannelIndex ? 'active' : ''}" 
-                                    onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                                Source ${index + 1}
-                            </button>
-                        `).join('')}
-                    </div>
+                <div class="channel-buttons-inline">
+                    ${channels.map((channel, index) => `
+                        <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                onclick="matchScheduler.switchChannel('${matchId}', ${index})">
+                            Source ${index + 1}
+                        </button>
+                    `).join('')}
                 </div>
             `;
         }
         
         return `
-            <div class="channel-selector">
-                <span class="channel-label">Source:</span>
-                <div class="channel-dropdown">
-                    <button class="channel-dropdown-btn" onclick="matchScheduler.toggleDropdown('${matchId}')">
-                        Source ${currentChannelIndex + 1} of ${channels.length}
-                    </button>
-                    <div class="channel-dropdown-content" id="dropdown-${matchId}">
-                        ${channels.map((channel, index) => `
-                            <div class="channel-dropdown-item ${index === currentChannelIndex ? 'active' : ''}" 
-                                 onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                                Source ${index + 1}
-                            </div>
-                        `).join('')}
-                    </div>
+            <div class="channel-dropdown-inline">
+                <button class="channel-dropdown-btn-inline" onclick="matchScheduler.toggleDropdown('${matchId}')">
+                    Source ${currentChannelIndex + 1} of ${channels.length}
+                </button>
+                <div class="channel-dropdown-content-inline" id="dropdown-${matchId}">
+                    ${channels.map((channel, index) => `
+                        <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                             onclick="matchScheduler.switchChannel('${matchId}', ${index})">
+                            Source ${index + 1}
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
@@ -673,7 +664,7 @@ class MatchScheduler {
             dropdown.classList.remove('show');
             button.classList.remove('open');
         } else {
-            document.querySelectorAll('.channel-dropdown-content.show').forEach(dd => {
+            document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
                 dd.classList.remove('show');
                 dd.previousElementSibling.classList.remove('open');
             });
@@ -701,25 +692,6 @@ class MatchScheduler {
                     refreshBtn.innerHTML = originalText;
                 }, 1000);
             }, 500);
-        }
-    }
-    
-    toggleFullscreen(matchId) {
-        const matchDetailsModal = document.querySelector('.match-details-modal');
-        
-        if (!matchDetailsModal) return;
-        
-        if (!document.fullscreenElement) {
-            // Enter fullscreen - hide everything except video player
-            matchDetailsModal.classList.add('fullscreen-mode');
-            document.documentElement.requestFullscreen().catch(err => {
-                console.log('Fullscreen failed:', err);
-                matchDetailsModal.classList.remove('fullscreen-mode');
-            });
-        } else {
-            // Exit fullscreen
-            document.exitFullscreen();
-            matchDetailsModal.classList.remove('fullscreen-mode');
         }
     }
     
@@ -772,11 +744,9 @@ class MatchScheduler {
                 <div class="sports-grid">
                     <div class="sport-button" onclick="alert('Sky Sports - Coming soon!')">
                         <div class="sport-name">Sky Sports</div>
-                        <div class="match-count">Sports</div>
                     </div>
                     <div class="sport-button" onclick="alert('ESPN - Coming soon!')">
                         <div class="sport-name">ESPN</div>
-                        <div class="match-count">Sports</div>
                     </div>
                 </div>
             </div>
@@ -798,11 +768,9 @@ class MatchScheduler {
                 <div class="sports-grid">
                     <div class="sport-button" onclick="alert('Coming soon!')">
                         <div class="sport-name">Fan Zone</div>
-                        <div class="match-count">Live Chat</div>
                     </div>
                     <div class="sport-button" onclick="alert('Coming soon!')">
                         <div class="sport-name">Match Reactions</div>
-                        <div class="match-count">Community</div>
                     </div>
                 </div>
             </div>
@@ -927,19 +895,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
-    if (!e.target.closest('.channel-dropdown')) {
-        document.querySelectorAll('.channel-dropdown-content.show').forEach(dropdown => {
+    if (!e.target.closest('.channel-dropdown-inline')) {
+        document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dropdown => {
             dropdown.classList.remove('show');
             dropdown.previousElementSibling.classList.remove('open');
-        });
-    }
-});
-
-// Handle fullscreen change events
-document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement) {
-        document.querySelectorAll('.match-details-modal').forEach(modal => {
-            modal.classList.remove('fullscreen-mode');
         });
     }
 });
