@@ -38,7 +38,7 @@ class MatchScheduler {
                     'copa libertadores', 'copa sudamericana', 'afc champions league', 'concacaf champions league',
                     'world cup', 'euro', 'copa america', 'african cup', 'asian cup', 'gold cup',
                     'fa cup', 'carabao cup', 'dfb pokal', 'coppa italia', 'copa del rey', 'super cup',
-                    'uefa', 'fifa', 'concacaf',
+                    'uefa', 'fifa', 'concacaf', 'conmebol',
                     
                     // Teams (Soccer)
                     'manchester', 'liverpool', 'chelsea', 'arsenal', 'tottenham', 'city', 'united',
@@ -49,7 +49,7 @@ class MatchScheduler {
                     'ajax', 'psv', 'feyenoord', 'benfica', 'porto', 'sporting', 'celtic', 'rangers',
                     
                     // Generic soccer terms
-                    'fc', 'cf', 'afc', 'as', 'club', 'football club', 'soccer', 'goal', 'penalty'
+                    'fc', 'cf', 'afc', 'as', 'club', 'football club', 'soccer', 'goal', 'penalty', 'futbol'
                 ],
                 displayName: '⚽ Football'
             },
@@ -115,7 +115,7 @@ class MatchScheduler {
             hockey: {
                 keywords: [
                     // Leagues
-                    'nhl', 'stanley cup', 'khl', 'ahl', 'shl', 'liiga',
+                    'nhl', 'stanley cup', 'khl', 'ahl', 'shl', 'liiga', 'nhl hockey', 'ice hockey',
                     
                     // Teams
                     'maple leafs', 'canadiens', 'bruins', 'red wings', 'blackhawks', 'rangers', 'flyers',
@@ -125,7 +125,7 @@ class MatchScheduler {
                     'golden knights', 'kraken',
                     
                     // Terms
-                    'hockey', 'nhl network', 'stanley cup playoffs', 'power play', 'penalty kill'
+                    'hockey', 'nhl network', 'stanley cup playoffs', 'power play', 'penalty kill', 'hockey night'
                 ],
                 displayName: '🏒 Hockey'
             },
@@ -135,10 +135,10 @@ class MatchScheduler {
                 keywords: [
                     // Tournaments
                     'wimbledon', 'us open', 'french open', 'australian open', 'atp', 'wta',
-                    'davis cup', 'fed cup', 'grand slam',
+                    'davis cup', 'fed cup', 'grand slam', 'tennis',
                     
                     // Players & Terms
-                    'djokovic', 'nadal', 'federer', 'murray', 'williams', 'tennis', 'grand slam', 'master'
+                    'djokovic', 'nadal', 'federer', 'murray', 'williams', 'tennis', 'grand slam', 'master', 'open'
                 ],
                 displayName: '🎾 Tennis'
             },
@@ -234,11 +234,11 @@ class MatchScheduler {
             volleyball: {
                 keywords: [
                     // Leagues/Events
-                    'volleyball', 'fivb', 'ncaa volleyball', 'cev', 'world championship',
-                    'olympics volleyball', 'vnl', 'club world championship',
+                    'volleyball', 'beach volleyball', 'fivb', 'ncaa volleyball', 'cev', 'world championship',
+                    'olympics volleyball', 'vnl', 'club world championship', 'volley',
                     
                     // Terms
-                    'spike', 'block', 'dig', 'set', 'serve', 'rotation', 'libero', 'beach volleyball'
+                    'spike', 'block', 'dig', 'set', 'serve', 'rotation', 'libero'
                 ],
                 displayName: '🏐 Volleyball'
             },
@@ -610,34 +610,89 @@ class MatchScheduler {
 
     // ==================== IMPROVED SPORTS CLASSIFICATION ====================
     classifySport(match) {
-        const searchString = (match.match + ' ' + match.tournament + ' ' + (match.sport || '')).toLowerCase();
+        // Use the original sport field if it exists and is valid
+        const originalSport = (match.sport || '').toLowerCase().trim();
+        
+        // If original sport already matches one of our categories, use it
+        if (originalSport && this.sportsReference[originalSport]) {
+            console.log(`✅ Using original sport: ${originalSport} for "${match.match}"`);
+            return originalSport;
+        }
+        
+        // Normalize search text for better matching
+        const searchString = (match.match + ' ' + match.tournament + ' ' + (match.sport || ''))
+            .toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Remove accents
+        
+        console.log(`🔍 Classifying: "${match.match}" - Search: ${searchString}`);
         
         // Check each sport category for keywords (excluding 'other')
         for (const [sportId, sportData] of Object.entries(this.sportsReference)) {
             if (sportId === 'other') continue;
             
             for (const keyword of sportData.keywords) {
-                if (searchString.includes(keyword.toLowerCase())) {
+                const normalizedKeyword = keyword.toLowerCase().trim();
+                if (searchString.includes(normalizedKeyword)) {
                     console.log(`✅ Classified "${match.match}" as ${sportId} (keyword: ${keyword})`);
                     return sportId;
                 }
             }
+            
+            // Also check if sport name itself is in the search string
+            const sportName = sportData.displayName.toLowerCase();
+            if (searchString.includes(sportName.replace(/[^a-z\s]/g, ''))) {
+                console.log(`✅ Classified "${match.match}" as ${sportId} (sport name match)`);
+                return sportId;
+            }
         }
         
-        // Fallback to original sport if no keywords matched
-        const originalSport = (match.sport || '').toLowerCase();
-        if (originalSport && originalSport !== 'other') {
-            console.log(`⚠️ Using original sport: ${originalSport} for "${match.match}"`);
-            return originalSport;
+        // Try to map common sport names to our categories
+        const sportMappings = {
+            'soccer': 'football',
+            'nfl football': 'american_football',
+            'college football': 'american_football', 
+            'nhl hockey': 'hockey',
+            'ice hockey': 'hockey',
+            'nba basketball': 'basketball',
+            'college basketball': 'basketball',
+            'mlb baseball': 'baseball',
+            'atp tennis': 'tennis',
+            'wta tennis': 'tennis',
+            'grand slam': 'tennis',
+            'iplt20': 'cricket',
+            't20': 'cricket',
+            'test cricket': 'cricket',
+            'one day international': 'cricket',
+            'ufc fight': 'fighting',
+            'boxing match': 'fighting',
+            'formula1': 'racing',
+            'f1 grand prix': 'racing',
+            'nascar cup': 'racing',
+            'horse racing': 'equestrian',
+            'afl football': 'australian_football'
+        };
+        
+        for (const [key, sportId] of Object.entries(sportMappings)) {
+            if (searchString.includes(key)) {
+                console.log(`✅ Mapped "${match.match}" from ${key} to ${sportId}`);
+                return sportId;
+            }
         }
         
         console.log(`❓ No classification found for "${match.match}", using 'other'`);
         return 'other';
     }
 
-    getSportDisplayName() {
-        const sportData = this.sportsReference[this.currentSport];
-        return sportData ? sportData.displayName : this.currentSport;
+    getSportDisplayName(sportId = this.currentSport) {
+        if (!sportId) return 'Unknown Sport';
+        
+        const sportData = this.sportsReference[sportId];
+        if (sportData) {
+            return sportData.displayName;
+        }
+        
+        // Fallback: capitalize the sport ID
+        return sportId.charAt(0).toUpperCase() + sportId.slice(1);
     }
 
     // ==================== UI METHODS ====================
@@ -690,11 +745,10 @@ class MatchScheduler {
         
         // Create sports list with counts and proper display names
         const sports = uniqueSports.map(sportId => {
-            const sportData = this.sportsReference[sportId] || { displayName: sportId };
             const count = this.getMatchesBySport(sportId).length;
             return {
                 id: sportId,
-                name: sportData.displayName,
+                name: this.getSportDisplayName(sportId),
                 count: count
             };
         }).filter(sport => sport.count > 0)
@@ -1175,6 +1229,15 @@ class MatchScheduler {
         setInterval(() => {
             this.loadMatches();
         }, 300000);
+    }
+    
+    // Debug method to check sports classification
+    debugSportsClassification() {
+        console.log('=== SPORTS CLASSIFICATION DEBUG ===');
+        this.verifiedMatches.forEach(match => {
+            console.log(`"${match.match}" -> ${match.sport}`);
+        });
+        console.log('=== END DEBUG ===');
     }
 }
 
