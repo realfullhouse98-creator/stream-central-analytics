@@ -1,20 +1,31 @@
-const CACHE_NAME = '9kilo-stream-v1';
+// 9kilos Service Worker - Minimal Version
+const CACHE_NAME = '9kilos-v1';
 const urlsToCache = [
   '/',
-  '/style.css',
-  '/script.js'
+  '/index.html',
+  '/style.css', 
+  '/script.js',
+  '/manifest.json'
 ];
 
-self.addEventListener('install', event => {
+self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+      .then(function(cache) {
+        return cache.addAll(urlsToCache);
+      })
   );
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request)
-      .then(response => response || fetch(event.request))
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
+    )
   );
 });
