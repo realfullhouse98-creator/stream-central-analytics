@@ -201,9 +201,12 @@ class MatchScheduler {
     // ==================== SIMPLIFIED SPORTS CLASSIFICATION ====================
   // ==================== ENHANCED SPORTS CLASSIFICATION ====================
 classifySport(match) {
-    // First check if it's a college football match by team names/tournament
-    if (this.isCollegeFootball(match)) {
-        console.log(`🔄 Manual reclassification to American Football: "${match.match}"`);
+    // First check if it's a college football match
+    const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+    
+    if (searchString.includes('middle tennessee') || 
+        searchString.includes('jacksonville state') ||
+        searchstring.includes('college football')) {
         return 'American Football';
     }
     
@@ -211,7 +214,6 @@ classifySport(match) {
     const sportFromApi = match.sport || 'Other';
     const normalizedSport = this.normalizeSportName(sportFromApi);
     
-    console.log(`✅ Using API sport: "${sportFromApi}" -> "${normalizedSport}" for "${match.match}"`);
     return normalizedSport;
 }
 
