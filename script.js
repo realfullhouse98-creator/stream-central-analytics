@@ -199,16 +199,35 @@ class MatchScheduler {
     }
     
     // ==================== SIMPLIFIED SPORTS CLASSIFICATION ====================
-    classifySport(match) {
-        // Just use the sport field from API with simple normalization
-        const sportFromApi = match.sport || 'Other';
-        
-        // Simple normalization - capitalize first letter, handle common variations
-        const normalizedSport = this.normalizeSportName(sportFromApi);
-        
-        console.log(`✅ Using API sport: "${sportFromApi}" -> "${normalizedSport}" for "${match.match}"`);
-        return normalizedSport;
+  // ==================== ENHANCED SPORTS CLASSIFICATION ====================
+classifySport(match) {
+    // First check if it's a college football match by team names/tournament
+    if (this.isCollegeFootball(match)) {
+        console.log(`🔄 Manual reclassification to American Football: "${match.match}"`);
+        return 'American Football';
     }
+    
+    // Then use the sport field from API with simple normalization
+    const sportFromApi = match.sport || 'Other';
+    const normalizedSport = this.normalizeSportName(sportFromApi);
+    
+    console.log(`✅ Using API sport: "${sportFromApi}" -> "${normalizedSport}" for "${match.match}"`);
+    return normalizedSport;
+}
+
+isCollegeFootball(match) {
+    const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+    
+    const collegeFootballIndicators = [
+        'middle tennessee', 'jacksonville state', 'college football', 
+        'ncaa football', 'fbs', 'fcs', 'bowl game', 'cotton bowl',
+        'rose bowl', 'orange bowl', 'sugar bowl'
+    ];
+    
+    return collegeFootballIndicators.some(indicator => 
+        searchString.includes(indicator)
+    );
+}
     
     normalizeSportName(sport) {
         if (!sport) return 'Other';
