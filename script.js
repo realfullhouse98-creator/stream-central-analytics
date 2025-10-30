@@ -23,8 +23,35 @@ class MatchScheduler {
     }
     
     async init() {
+        console.log('🚀 MatchScheduler initialized!');
         this.showMainMenu();
+        this.setupEventListeners();
         this.registerServiceWorker();
+    }
+
+    // ==================== EVENT LISTENERS SETUP ====================
+    setupEventListeners() {
+        // Use event delegation for better performance
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.sports-button')) {
+                this.showSportsView();
+            }
+            else if (e.target.closest('.tv-button')) {
+                this.showTVChannels();
+            }
+            else if (e.target.closest('.community')) {
+                this.showCommunity();
+            }
+        });
+        
+        // Mouseover for sports preloading
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('.sports-button')) {
+                this.preloadSportsData();
+            }
+        });
+        
+        console.log('✅ Event listeners setup complete');
     }
     
     // Safe Service Worker Registration for GitHub Pages
@@ -188,8 +215,9 @@ class MatchScheduler {
         
         const sportLower = sport.toLowerCase().trim();
         
-        // Simple mapping for common variations====================================================================================================SPORTS CLASSIFICATION
+        // Simple mapping for common variations
         const sportMap = {
+            // Basic sport normalization
             'football': 'Football',
             'soccer': 'Football',
             'basketball': 'Basketball',
@@ -210,24 +238,22 @@ class MatchScheduler {
             'volleyball': 'Volleyball',
             'australian football': 'Australian Football',
             'afl': 'Australian Football',
-            'badminton': 'Badminton'
-
-             // ==================== MANUAL RE-CLASSIFICATIONS ====================
-        //  American Football
-        'college football': 'American Football',
-        'ncaa football': 'American Football',
-        
-        // NFL teams
-        'nfl': 'American Football',
-        'super bowl': 'American Football',
-        'patriots': 'American Football',
-        'cowboys': 'American Football',
-        'packers': 'American Football',
-        
-        // Add more specific cases as you discover them...
+            'badminton': 'Badminton',
+            
+            // ==================== MANUAL FIXES ====================
+            // American Football fixes
+            'american football': 'American Football',
+            'college football': 'American Football',
+            'ncaa football': 'American Football',
+            'nfl': 'American Football',
+            
+            // Add any other misclassified sports here as you find them
+            'handball': 'Handball',
+            'table tennis': 'Table Tennis',
+            'beach volleyball': 'Beach Volleyball'
         };
         
-        // Return mapped sport or capitalize the original
+        // Simple lookup - if found in map, use it, otherwise capitalize
         return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
     }
     
@@ -303,21 +329,21 @@ class MatchScheduler {
         }
     }
 
-    // ==================== UI METHODS (UNCHANGED) ====================
+    // ==================== UI METHODS ====================
     showMainMenu() {
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
             <div class="main-menu">
                 <div class="menu-grid">
-                    <div class="menu-button sports-button" onmouseover="matchScheduler.preloadSportsData()" onclick="matchScheduler.showSportsView()">
+                    <div class="menu-button sports-button">
                         <div class="button-title">LIVE SPORTS</div>
                         <div class="button-subtitle">${this.isDataLoaded ? this.verifiedMatches.length + ' matches' : 'Games & schedules'}</div>
                     </div>
-                    <div class="menu-button tv-button" onclick="matchScheduler.showTVChannels()">
+                    <div class="menu-button tv-button">
                         <div class="button-title">TV CHANNELS</div>
                         <div class="button-subtitle">24/7 live streams</div>
                     </div>
-                    <div class="menu-button community" onclick="matchScheduler.showCommunity()">
+                    <div class="menu-button community">
                         <div class="button-title">COMMUNITY</div>
                         <div class="button-subtitle">Fan discussions</div>
                     </div>
@@ -337,6 +363,7 @@ class MatchScheduler {
     }
 
     async showSportsView() {
+        console.log('🎯 Sports button clicked!');
         const success = await this.ensureDataLoaded();
         
         if (!success) {
@@ -708,6 +735,7 @@ class MatchScheduler {
     }
     
     showTVChannels() {
+        console.log('📺 TV Channels button clicked!');
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
             <div class="content-section">
@@ -732,6 +760,7 @@ class MatchScheduler {
     }
     
     showCommunity() {
+        console.log('👥 Community button clicked!');
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
             <div class="content-section">
