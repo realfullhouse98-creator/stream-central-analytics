@@ -1,4 +1,4 @@
-/* 9kilo Stream - Enhanced Professional Layout */
+/* 9kilo Stream - Enhanced Professional Layout with TV Channels */
 :root {
     --primary-bg: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%);
     --header-bg: rgba(15, 52, 96, 0.95);
@@ -168,44 +168,190 @@ body {
     border: 1px solid rgba(155, 89, 182, 0.3);
 }
 
-/* ==================== COMPACT SPACING ==================== */
-.content-section {
-    padding: 15px 12px;
-    gap: 0;
+/* ==================== TV CHANNELS STYLES ==================== */
+.countries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+    padding: 0 20px;
 }
 
-.navigation-buttons {
+.country-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 30px 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(15px);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.country-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-gold);
+    box-shadow: 0 10px 30px rgba(255, 217, 61, 0.2);
+}
+
+.country-flag {
+    font-size: 3em;
     margin-bottom: 15px;
-    gap: 8px;
 }
 
-.section-header {
-    margin-bottom: 20px;
+.country-name {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
 }
 
-.section-header h2 {
+.channel-count {
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+.channels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+    padding: 0 20px;
+}
+
+.channel-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(15px);
+}
+
+.channel-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-gold);
+    box-shadow: 0 5px 20px rgba(255, 217, 61, 0.1);
+}
+
+.channel-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.channel-logo {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.3em;
+    color: black;
+    flex-shrink: 0;
+}
+
+.channel-info {
+    flex: 1;
+}
+
+.channel-name {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: white;
     margin-bottom: 5px;
-    font-size: 1.8em;
+    line-height: 1.2;
 }
 
-.section-header p {
-    margin-bottom: 0;
+.channel-category {
+    color: var(--accent-gold);
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.channel-description {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.watch-button {
+    width: 100%;
+    background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+    color: black;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.watch-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 217, 61, 0.3);
+}
+
+.tv-player-container {
+    margin: 20px 0;
+    padding: 0 20px;
+}
+
+.tv-video-player {
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#tv-player {
+    width: 100%;
+    height: 500px;
+    border: none;
+}
+
+.tv-channel-info {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 25px;
+    margin: 25px 20px;
+    border-left: 4px solid var(--accent-gold);
+}
+
+.tv-info-item {
+    margin: 12px 0;
+    color: var(--text-secondary);
     font-size: 1em;
 }
 
-.matches-table-container {
-    margin-top: 8px;
+.tv-info-item strong {
+    color: var(--accent-gold);
 }
 
-.table-filter {
-    margin-bottom: 10px;
+/* ==================== CONTENT SECTIONS ==================== */
+.content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
 }
 
-/* ==================== NAVIGATION BUTTONS ==================== */
 .navigation-buttons {
     display: flex;
     gap: 12px;
     margin-bottom: 25px;
+    padding: 0 20px;
     align-items: center;
     flex-shrink: 0;
 }
@@ -234,6 +380,7 @@ body {
 .section-header {
     text-align: center;
     margin-bottom: 30px;
+    padding: 0 20px;
     flex-shrink: 0;
 }
 
@@ -250,10 +397,12 @@ body {
     margin: 0;
 }
 
+/* ==================== SPORTS STYLES ==================== */
 .sports-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 16px;
+    padding: 0 20px;
     flex: 1;
     align-content: start;
 }
@@ -305,14 +454,14 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    padding: 0 20px;
 }
 
 .table-filter {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 15px;
-    padding: 0 5%;
-    margin-right: 55px; /* FIXED: Move filter button left to align with Watch column */
+    margin-right: 55px;
 }
 
 .filter-toggle {
@@ -347,7 +496,6 @@ body {
     border: 1px solid var(--border-light);
     overflow: hidden;
     flex-shrink: 0;
-    margin: 0 5%;
 }
 
 .table-header {
@@ -880,30 +1028,86 @@ body {
         font-size: 1.8em;
     }
     
+    /* TV Channels Mobile */
+    .countries-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 0 15px;
+    }
+    
+    .country-card {
+        padding: 25px 20px;
+        min-height: 150px;
+    }
+    
+    .country-flag {
+        font-size: 2.5em;
+    }
+    
+    .country-name {
+        font-size: 1.3em;
+    }
+    
+    .channels-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 0 15px;
+    }
+    
+    .channel-card {
+        padding: 20px;
+    }
+    
+    .channel-logo {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2em;
+    }
+    
+    .channel-name {
+        font-size: 1.2em;
+    }
+    
+    #tv-player {
+        height: 300px;
+    }
+    
+    .tv-player-container {
+        padding: 0 15px;
+    }
+    
+    .tv-channel-info {
+        margin: 20px 15px;
+        padding: 20px;
+    }
+    
     /* COMPACT MOBILE SPACING */
     .content-section {
-        padding: 12px 10px;
+        padding: 15px 0;
     }
     
     .navigation-buttons {
-        margin-bottom: 12px;
+        margin-bottom: 20px;
+        padding: 0 15px;
     }
     
     .section-header {
-        margin-bottom: 15px;
+        margin-bottom: 25px;
+        padding: 0 15px;
     }
     
     .section-header h2 {
-        font-size: 1.5em;
+        font-size: 1.8em;
     }
     
     .section-header p {
-        font-size: 0.9em;
+        font-size: 1em;
     }
     
     .sports-grid {
         grid-template-columns: 1fr;
         gap: 12px;
+        padding: 0 15px;
     }
     
     .sport-button, .date-button {
@@ -916,20 +1120,19 @@ body {
     }
     
     /* Mobile SCHEDULE TABLE WITH FILTER */
+    .matches-table-container {
+        padding: 0 15px;
+    }
+    
     .table-filter {
-        padding: 0 2%;
         margin-bottom: 12px;
-        margin-right: 20px; /* Adjusted for mobile */
+        margin-right: 20px;
     }
     
     .filter-toggle {
         padding: 6px 12px;
         font-size: 0.8em;
         min-width: 60px;
-    }
-    
-    .matches-table {
-        margin: 0 2%;
     }
     
     .table-header {
@@ -965,7 +1168,7 @@ body {
         border-radius: 14px;
     }
     
-    /* Mobile video player controls - RIGHT ALIGNED REFRESH */
+    /* Mobile video player controls */
     .video-player-controls {
         padding: 12px 15px;
         gap: 8px;
@@ -1037,7 +1240,7 @@ body {
     }
     
     .matches-table {
-        margin: 0 1%;
+        margin: 0;
     }
     
     /* Extra small devices */
