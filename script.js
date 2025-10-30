@@ -188,7 +188,7 @@ class MatchScheduler {
         
         const sportLower = sport.toLowerCase().trim();
         
-        // Simple mapping for common variations
+        // Simple mapping for common variations====================================================================================================SPORTS CLASSIFICATION
         const sportMap = {
             'football': 'Football',
             'soccer': 'Football',
@@ -211,6 +211,22 @@ class MatchScheduler {
             'australian football': 'Australian Football',
             'afl': 'Australian Football',
             'badminton': 'Badminton'
+
+             // ==================== MANUAL RE-CLASSIFICATIONS ====================
+        // College Football teams that should be American Football
+        'middle tennessee': 'American Football',
+        'jacksonville state': 'American Football',
+        'college football': 'American Football',
+        'ncaa football': 'American Football',
+        
+        // NFL teams
+        'nfl': 'American Football',
+        'super bowl': 'American Football',
+        'patriots': 'American Football',
+        'cowboys': 'American Football',
+        'packers': 'American Football',
+        
+        // Add more specific cases as you discover them...
         };
         
         // Return mapped sport or capitalize the original
