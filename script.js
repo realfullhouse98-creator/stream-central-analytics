@@ -213,9 +213,7 @@ class MatchScheduler {
             'badminton': 'Badminton'
 
              // ==================== MANUAL RE-CLASSIFICATIONS ====================
-        // College Football teams that should be American Football
-        'middle tennessee': 'American Football',
-        'jacksonville state': 'American Football',
+        //  American Football
         'college football': 'American Football',
         'ncaa football': 'American Football',
         
