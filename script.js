@@ -1,4 +1,4 @@
-// 9kilo Stream - Complete Working Version
+// 9kilo Stream - Complete Fixed Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -116,6 +116,39 @@ class MatchScheduler {
         };
         
         return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+    }
+
+    // ==================== FIXED MAIN MENU ====================
+    showMainMenu() {
+        const container = document.getElementById('dynamic-content');
+        
+        // ALWAYS show "Games & schedules" - never show match count on main menu
+        container.innerHTML = `
+            <div class="main-menu">
+                <div class="menu-grid">
+                    <div class="menu-button sports-button">
+                        <div class="button-title">LIVE SPORTS</div>
+                        <div class="button-subtitle">Games & schedules</div>
+                    </div>
+                    <div class="menu-button tv-button">
+                        <div class="button-title">TV CHANNELS</div>
+                        <div class="button-subtitle">24/7 live streams</div>
+                    </div>
+                    <div class="menu-button community">
+                        <div class="button-title">COMMUNITY</div>
+                        <div class="button-subtitle">Fan discussions</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <p style="color: var(--text-muted); font-size: 0.8em;">
+                        ⚡ Click Live Sports to load matches
+                    </p>
+                </div>
+            </div>
+        `;
+        
+        this.showStats();
+        this.currentView = 'main';
     }
 
     // ==================== INSTANT NAVIGATION ====================
@@ -491,38 +524,6 @@ class MatchScheduler {
     }
 
     // ==================== UI METHODS ====================
-    showMainMenu() {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
-            <div class="main-menu">
-                <div class="menu-grid">
-                    <div class="menu-button sports-button">
-                        <div class="button-title">LIVE SPORTS</div>
-                        <div class="button-subtitle">${this.isDataLoaded ? this.verifiedMatches.length + ' matches' : 'Games & schedules'}</div>
-                    </div>
-                    <div class="menu-button tv-button">
-                        <div class="button-title">TV CHANNELS</div>
-                        <div class="button-subtitle">24/7 live streams</div>
-                    </div>
-                    <div class="menu-button community">
-                        <div class="button-title">COMMUNITY</div>
-                        <div class="button-subtitle">Fan discussions</div>
-                    </div>
-                </div>
-                ${!this.isDataLoaded ? `
-                    <div style="text-align: center; margin-top: 20px;">
-                        <p style="color: var(--text-muted); font-size: 0.8em;">
-                            ⚡ Optimized Loading • Data loads on demand
-                        </p>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-        
-        this.showStats();
-        this.currentView = 'main';
-    }
-    
     async showDatesView() {
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
@@ -637,6 +638,15 @@ class MatchScheduler {
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
         
+        // DEBUG: Log channel info
+        console.log('🔍 Match Channels Debug:', {
+            match: match.teams,
+            isLive: match.isLive,
+            channels: match.channels,
+            channelsCount: match.channels ? match.channels.length : 0,
+            hasMultiple: match.channels && match.channels.length > 1
+        });
+        
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const channels = match.channels || [];
@@ -681,7 +691,6 @@ class MatchScheduler {
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                 ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
                                 <span style="color: var(--text-muted);">• ${match.league}</span>
-                                ${channels.length > 1 ? `<span style="color: var(--accent-gold);">• ${channels.length} sources</span>` : ''}
                                 ${channelSelectorHTML}
                             </div>
                             
@@ -701,7 +710,6 @@ class MatchScheduler {
                                 <div class="description-text">
                                     <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
                                     ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
-                                    ${channels.length > 1 ? `Multiple streaming sources available.` : ''}
                                 </div>
                             </div>
                         </div>
@@ -715,16 +723,24 @@ class MatchScheduler {
         this.incrementViews(matchId);
     }
     
+    // ==================== IMPROVED CHANNEL SELECTOR ====================
     generateChannelSelector(channels, matchId) {
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const hasMultipleChannels = channels.length > 1;
         
-        if (!hasMultipleChannels || channels.length === 0) {
-            return '';
+        if (!channels || channels.length === 0) {
+            return '<span style="color: var(--text-muted); font-size: 0.8em;">No streams</span>';
         }
         
-        if (channels.length <= 2) {
+        // Always show source count
+        const sourceInfo = `<span style="color: var(--accent-gold); margin-left: 10px;">• ${channels.length} source${channels.length !== 1 ? 's' : ''}</span>`;
+        
+        if (channels.length === 1) {
+            return sourceInfo; // Just show count for single source
+        }
+        
+        if (channels.length <= 3) {
             return `
+                ${sourceInfo}
                 <div class="channel-buttons-inline">
                     ${channels.map((channel, index) => `
                         <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
@@ -736,7 +752,9 @@ class MatchScheduler {
             `;
         }
         
+        // Dropdown for 4+ sources
         return `
+            ${sourceInfo}
             <div class="channel-dropdown-inline">
                 <button class="channel-dropdown-btn-inline" onclick="matchScheduler.toggleDropdown('${matchId}')">
                     Source ${currentChannelIndex + 1} of ${channels.length}
@@ -760,19 +778,33 @@ class MatchScheduler {
     
     toggleDropdown(matchId) {
         const dropdown = document.getElementById(`dropdown-${matchId}`);
-        const button = document.querySelector(`#dropdown-${matchId}`).previousElementSibling;
+        const button = document.querySelector(`[onclick="matchScheduler.toggleDropdown('${matchId}')"]`);
         
-        if (dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show');
-            button.classList.remove('open');
-        } else {
-            document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
-                dd.classList.remove('show');
-                dd.previousElementSibling.classList.remove('open');
-            });
-            
+        if (!dropdown || !button) return;
+        
+        const isShowing = dropdown.classList.contains('show');
+        
+        // Close all other dropdowns first
+        document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
+            dd.classList.remove('show');
+            dd.previousElementSibling.classList.remove('open');
+        });
+        
+        if (!isShowing) {
             dropdown.classList.add('show');
             button.classList.add('open');
+            
+            // Close on outside click (mobile friendly)
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                        dropdown.classList.remove('show');
+                        button.classList.remove('open');
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 0);
         }
     }
     
