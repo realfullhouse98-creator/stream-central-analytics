@@ -19,15 +19,24 @@
     <meta name="theme-color" content="#0f3460">
     <link rel="manifest" href="manifest.json">
     
-    <title>9kilo - Live Sports</title>
+    <title>9kilo - Live Sports & TV</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Error Boundary Container -->
+    <div id="error-boundary" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a1a; z-index: 10000; color: white; padding: 20px; text-align: center;">
+        <div style="margin-top: 100px;">
+            <h2 style="color: #ff6b6b;">Something went wrong</h2>
+            <p id="error-message" style="margin: 20px 0;"></p>
+            <button onclick="location.reload()" style="background: #ffd93d; color: black; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Reload Page</button>
+        </div>
+    </div>
+
     <div class="stream-central-dashboard">
         <!-- STATIC HEADER - Always Visible -->
         <header class="dashboard-header">
-            <h1>9kilo97 Stream</h1>
-            <p>Live Sports Schedules</p>
+            <h1>9kilo95 Stream</h1>
+            <p>Live Sports & TV Channels</p>
         </header>
         
         <!-- STATIC STATS - Always Visible -->
@@ -38,7 +47,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="total-streams">0</div>
-                <div class="stat-label">Active Matches</div>
+                <div class="stat-label">Active Streams</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="countries">1</div>
@@ -56,7 +65,7 @@
                 <!-- Initial content will be loaded here -->
                 <div class="main-menu">
                     <div class="menu-grid">
-                        <div class="menu-button sports-button" data-action="sports" onmouseover="matchScheduler.preloadSportsData()">
+                        <div class="menu-button sports-button" data-action="sports">
                             <div class="button-title">LIVE SPORTS</div>
                             <div class="button-subtitle">Games & schedules</div>
                         </div>
