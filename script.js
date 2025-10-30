@@ -1,4 +1,4 @@
-// 9kilo Stream - Simplified Sports Classification
+// 9kilo Stream - Enhanced Sports Classification
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -67,6 +67,213 @@ class MatchScheduler {
         }
     }
     
+    // ==================== ENHANCED SPORTS CLASSIFICATION ====================
+    classifySport(match) {
+        // First check if it's a college football match by team names/tournament
+        if (this.isCollegeFootball(match)) {
+            console.log(`🔄 Manual reclassification to American Football: "${match.match}"`);
+            return 'American Football';
+        }
+        
+        // Then use the sport field from API with simple normalization
+        const sportFromApi = match.sport || 'Other';
+        const normalizedSport = this.normalizeSportName(sportFromApi);
+        
+        console.log(`✅ Using API sport: "${sportFromApi}" -> "${normalizedSport}" for "${match.match}"`);
+        return normalizedSport;
+    }
+
+    isCollegeFootball(match) {
+        const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+        
+        const collegeFootballIndicators = [
+            'middle tennessee', 'jacksonville state', 'college football', 
+            'ncaa football', 'fbs', 'fcs', 'bowl game', 'cotton bowl',
+            'rose bowl', 'orange bowl', 'sugar bowl'
+        ];
+        
+        return collegeFootballIndicators.some(indicator => 
+            searchString.includes(indicator)
+        );
+    }
+
+    normalizeSportName(sport) {
+        if (!sport) return 'Other';
+        
+        const sportLower = sport.toLowerCase().trim();
+        
+        // Simple mapping for common variations
+        const sportMap = {
+            // Basic sport normalization
+            'football': 'Football',
+            'soccer': 'Football',
+            'basketball': 'Basketball',
+            'baseball': 'Baseball',
+            'hockey': 'Ice Hockey',
+            'ice hockey': 'Ice Hockey',
+            'tennis': 'Tennis',
+            'cricket': 'Cricket',
+            'rugby': 'Rugby',
+            'golf': 'Golf',
+            'boxing': 'Boxing',
+            'mma': 'MMA',
+            'ufc': 'MMA',
+            'formula 1': 'Racing',
+            'f1': 'Racing',
+            'nascar': 'Racing',
+            'motogp': 'Racing',
+            'volleyball': 'Volleyball',
+            'australian football': 'Australian Football',
+            'afl': 'Australian Football',
+            'badminton': 'Badminton',
+            
+            // ==================== MANUAL FIXES ====================
+            // American Football fixes
+            'american football': 'American Football',
+            'college football': 'American Football',
+            'ncaa football': 'American Football',
+            'nfl': 'American Football',
+            
+            // Add any other misclassified sports here as you find them
+            'handball': 'Handball',
+            'table tennis': 'Table Tennis',
+            'beach volleyball': 'Beach Volleyball'
+        };
+        
+        // Simple lookup - if found in map, use it, otherwise capitalize
+        return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+    }
+    
+    getSportDisplayName(sport) {
+        return sport || 'Sports';
+    }
+    
+    // ==================== ENHANCED BULLETPROOF NAVIGATION ====================
+    async showSportsView() {
+        console.log('🎯 Sports button clicked - Enhanced bulletproof version');
+        
+        // 1. IMMEDIATE UI Response (under 100ms)
+        this.showSportsLoadingUI();
+        
+        // 2. Set a safety timeout - never get stuck loading
+        const safetyTimeout = setTimeout(() => {
+            console.log('⚡ Safety timeout: Showing available data');
+            this.showSportsDataUI(); // Show whatever we have
+        }, 3000); // 3 second max wait
+        
+        // 3. Try to load fresh data
+        try {
+            const success = await this.ensureDataLoaded();
+            clearTimeout(safetyTimeout); // Cancel timeout if successful
+            
+            if (success) {
+                console.log('✅ Data loaded successfully');
+                this.showSportsDataUI();
+            } else {
+                console.log('⚠️ Using cached/fallback data');
+                this.showSportsDataUI(); // Still show UI with available data
+            }
+        } catch (error) {
+            clearTimeout(safetyTimeout);
+            console.log('🛡️ Error handled gracefully:', error.message);
+            this.showSportsDataUI(); // UI always works, even with errors
+        }
+    }
+
+    showSportsLoadingUI() {
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                </div>
+                <div class="section-header">
+                    <h2>Sports Categories</h2>
+                    <p>Loading sports data...</p>
+                </div>
+                <div class="sports-grid">
+                    <div class="sport-button" style="opacity: 0.7; cursor: wait;">
+                        <div class="sport-name">Loading Sports</div>
+                        <div class="match-count">Please wait a moment</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        this.hideStats();
+        this.currentView = 'sports';
+    }
+
+    showSportsDataUI() {
+        if (!this.verifiedMatches || this.verifiedMatches.length === 0) {
+            this.showSportsEmptyState();
+            return;
+        }
+        
+        const container = document.getElementById('dynamic-content');
+        const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
+        
+        // Create sports list with counts
+        const sports = uniqueSports.map(sportId => {
+            const count = this.getMatchesBySport(sportId).length;
+            return {
+                id: sportId,
+                name: sportId, // Just use the sport name directly
+                count: count
+            };
+        }).filter(sport => sport.count > 0)
+          .sort((a, b) => b.count - a.count);
+
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                </div>
+                <div class="section-header">
+                    <h2>Sports Categories</h2>
+                    <p>${uniqueSports.length} categories • ${this.verifiedMatches.length} total matches</p>
+                </div>
+                <div class="sports-grid">
+                    ${sports.map(sport => `
+                        <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
+                            <div class="sport-name">${sport.name}</div>
+                            <div class="match-count">${sport.count} match${sport.count !== 1 ? 'es' : ''}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        this.hideStats();
+        this.currentView = 'sports';
+    }
+
+    showSportsEmptyState() {
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                </div>
+                <div class="section-header">
+                    <h2>Sports Categories</h2>
+                    <p>No sports data available</p>
+                </div>
+                <div class="sports-grid">
+                    <div class="sport-button" onclick="matchScheduler.retryLoadMatches()" style="cursor: pointer;">
+                        <div class="sport-name">Retry Loading</div>
+                        <div class="match-count">Click to refresh data</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    retryLoadMatches() {
+        this.isDataLoaded = false;
+        this.showSportsView();
+    }
+    
     // ==================== SIMPLIFIED DATA LOADING ====================
     async ensureDataLoaded() {
         if (this.isDataLoaded) return true;
@@ -110,7 +317,6 @@ class MatchScheduler {
         } catch (error) {
             console.warn('All API attempts failed:', error);
             this.useFallbackData();
-            this.showErrorState('Connection failed. Using cached/demo data.');
         }
     }
     
@@ -196,90 +402,6 @@ class MatchScheduler {
             }
         };
         this.organizeMatches(sampleMatches);
-    }
-    
-    // ==================== SIMPLIFIED SPORTS CLASSIFICATION ====================
-  // ==================== ENHANCED SPORTS CLASSIFICATION ====================
-classifySport(match) {
-    // First check if it's a college football match
-    const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
-    
-    if (searchString.includes('middle tennessee') || 
-        searchString.includes('jacksonville state') ||
-        searchstring.includes('college football')) {
-        return 'American Football';
-    }
-    
-    // Then use the sport field from API with simple normalization
-    const sportFromApi = match.sport || 'Other';
-    const normalizedSport = this.normalizeSportName(sportFromApi);
-    
-    return normalizedSport;
-}
-
-isCollegeFootball(match) {
-    const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
-    
-    const collegeFootballIndicators = [
-        'middle tennessee', 'jacksonville state', 'college football', 
-        'ncaa football', 'fbs', 'fcs', 'bowl game', 'cotton bowl',
-        'rose bowl', 'orange bowl', 'sugar bowl'
-    ];
-    
-    return collegeFootballIndicators.some(indicator => 
-        searchString.includes(indicator)
-    );
-}
-    
-    normalizeSportName(sport) {
-        if (!sport) return 'Other';
-        
-        const sportLower = sport.toLowerCase().trim();
-        
-        // Simple mapping for common variations
-        const sportMap = {
-            // Basic sport normalization
-            'football': 'Football',
-            'soccer': 'Football',
-            'basketball': 'Basketball',
-            'baseball': 'Baseball',
-            'hockey': 'Ice Hockey',
-            'ice hockey': 'Ice Hockey',
-            'tennis': 'Tennis',
-            'cricket': 'Cricket',
-            'rugby': 'Rugby',
-            'golf': 'Golf',
-            'boxing': 'Boxing',
-            'mma': 'MMA',
-            'ufc': 'MMA',
-            'formula 1': 'Racing',
-            'f1': 'Racing',
-            'nascar': 'Racing',
-            'motogp': 'Racing',
-            'volleyball': 'Volleyball',
-            'australian football': 'Australian Football',
-            'afl': 'Australian Football',
-            'badminton': 'Badminton',
-            
-            // ==================== MANUAL FIXES ====================
-            // American Football fixes
-            'american football': 'American Football',
-            'college football': 'American Football',
-            'ncaa football': 'American Football',
-            'nfl': 'American Football',
-            
-            // Add any other misclassified sports here as you find them
-            'handball': 'Handball',
-            'table tennis': 'Table Tennis',
-            'beach volleyball': 'Beach Volleyball'
-        };
-        
-        // Simple lookup - if found in map, use it, otherwise capitalize
-        return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
-    }
-    
-    getSportDisplayName(sport) {
-        return sport || 'Sports';
     }
     
     organizeMatches(apiData) {
@@ -381,55 +503,6 @@ isCollegeFootball(match) {
         
         this.showStats();
         this.currentView = 'main';
-    }
-
-    async showSportsView() {
-        console.log('🎯 Sports button clicked!');
-        const success = await this.ensureDataLoaded();
-        
-        if (!success) {
-            this.showErrorState('Failed to load sports data');
-            return;
-        }
-        
-        const container = document.getElementById('dynamic-content');
-        
-        // Get unique sports from actual matches
-        const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
-        
-        // Create sports list with counts
-        const sports = uniqueSports.map(sportId => {
-            const count = this.getMatchesBySport(sportId).length;
-            return {
-                id: sportId,
-                name: sportId, // Just use the sport name directly
-                count: count
-            };
-        }).filter(sport => sport.count > 0)
-          .sort((a, b) => b.count - a.count);
-
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
-                </div>
-                <div class="section-header">
-                    <h2>Sports Categories</h2>
-                    <p>${uniqueSports.length} categories • ${this.verifiedMatches.length} total matches</p>
-                </div>
-                <div class="sports-grid">
-                    ${sports.map(sport => `
-                        <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
-                            <div class="sport-name">${sport.name}</div>
-                            <div class="match-count">${sport.count} match${sport.count !== 1 ? 'es' : ''}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-        
-        this.hideStats();
-        this.currentView = 'sports';
     }
     
     async showDatesView() {
@@ -877,18 +950,6 @@ isCollegeFootball(match) {
         document.getElementById('countries').textContent = this.verifiedMatches.length < 5 ? '3' : '1';
         document.getElementById('uptime').textContent = this.verifiedMatches.length < 5 ? 'Research' : '100%';
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
-    }
-    
-    showLoadingState() {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="loading-message">
-                    <div class="loading-spinner"></div>
-                    <p>Loading sports data...</p>
-                </div>
-            </div>
-        `;
     }
     
     showErrorState(errorMessage = '') {
