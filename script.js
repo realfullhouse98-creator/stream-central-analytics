@@ -16,6 +16,10 @@ class MatchScheduler {
         this.cacheKey = '9kilos-matches-cache';
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         
+        // Caching
+        this.preloadedSports = null;
+        this.lastDataUpdate = null;
+        
         // Filter state
         this.showLiveOnly = false;
         
@@ -147,37 +151,52 @@ class MatchScheduler {
     getSportDisplayName(sport) {
         return sport || 'Sports';
     }
-    
-    // ==================== ENHANCED BULLETPROOF NAVIGATION ====================
+
+    // ==================== OPTION A: INSTANT NAVIGATION ====================
     async showSportsView() {
-        console.log('🎯 Sports button clicked - Enhanced bulletproof version');
+        console.log('🎯 Sports button clicked - Instant cached version');
         
-        // 1. IMMEDIATE UI Response (under 100ms)
-        this.showSportsLoadingUI();
-        
-        // 2. Set a safety timeout - never get stuck loading
-        const safetyTimeout = setTimeout(() => {
-            console.log('⚡ Safety timeout: Showing available data');
-            this.showSportsDataUI(); // Show whatever we have
-        }, 3000); // 3 second max wait
-        
-        // 3. Try to load fresh data
-        try {
-            const success = await this.ensureDataLoaded();
-            clearTimeout(safetyTimeout); // Cancel timeout if successful
-            
-            if (success) {
-                console.log('✅ Data loaded successfully');
-                this.showSportsDataUI();
-            } else {
-                console.log('⚠️ Using cached/fallback data');
-                this.showSportsDataUI(); // Still show UI with available data
-            }
-        } catch (error) {
-            clearTimeout(safetyTimeout);
-            console.log('🛡️ Error handled gracefully:', error.message);
-            this.showSportsDataUI(); // UI always works, even with errors
+        // 1. INSTANT UI - Show cached sports immediately
+        if (this.preloadedSports && this.preloadedSports.length > 0) {
+            this.showSportsUIWithCachedData();
+        } else {
+            this.showSportsLoadingUI();
         }
+        
+        // 2. BACKGROUND - Refresh data silently
+        this.loadSportsDataBackground();
+    }
+
+    showSportsUIWithCachedData() {
+        const container = document.getElementById('dynamic-content');
+        const sports = this.preloadedSports.map(sport => ({
+            id: sport,
+            name: sport,
+            count: 'Loading...'
+        }));
+        
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
+                </div>
+                <div class="section-header">
+                    <h2>Categories</h2>
+                    <p>Select</p>
+                </div>
+                <div class="sports-grid">
+                    ${sports.map(sport => `
+                        <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
+                            <div class="sport-name">${sport.name}</div>
+                            <div class="match-count">${sport.count}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        this.hideStats();
+        this.currentView = 'sports';
     }
 
     showSportsLoadingUI() {
@@ -188,13 +207,13 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Sports Categories</h2>
-                    <p>Loading sports data...</p>
+                    <h2>Categories</h2>
+                    <p>Loading...</p>
                 </div>
                 <div class="sports-grid">
                     <div class="sport-button" style="opacity: 0.7; cursor: wait;">
-                        <div class="sport-name">Loading Sports</div>
-                        <div class="match-count">Please wait a moment</div>
+                        <div class="sport-name">Loading Categories</div>
+                        <div class="match-count">Please wait</div>
                     </div>
                 </div>
             </div>
@@ -202,6 +221,31 @@ class MatchScheduler {
         
         this.hideStats();
         this.currentView = 'sports';
+    }
+
+    async loadSportsDataBackground() {
+        // Set a safety timeout - never get stuck loading
+        const safetyTimeout = setTimeout(() => {
+            console.log('⚡ Safety timeout: Showing available data');
+            this.showSportsDataUI();
+        }, 3000);
+
+        try {
+            const success = await this.ensureDataLoaded();
+            clearTimeout(safetyTimeout);
+            
+            if (success) {
+                console.log('✅ Data loaded successfully');
+                this.showSportsDataUI();
+            } else {
+                console.log('⚠️ Using cached/fallback data');
+                this.showSportsDataUI();
+            }
+        } catch (error) {
+            clearTimeout(safetyTimeout);
+            console.log('🛡️ Error handled gracefully:', error.message);
+            this.showSportsDataUI();
+        }
     }
 
     showSportsDataUI() {
@@ -218,7 +262,7 @@ class MatchScheduler {
             const count = this.getMatchesBySport(sportId).length;
             return {
                 id: sportId,
-                name: sportId, // Just use the sport name directly
+                name: sportId,
                 count: count
             };
         }).filter(sport => sport.count > 0)
@@ -230,8 +274,8 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Sports Categories</h2>
-                    <p>${uniqueSports.length} categories • ${this.verifiedMatches.length} total matches</p>
+                    <h2>Categories</h2>
+                    <p>Select</p>
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
@@ -256,17 +300,40 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Sports Categories</h2>
-                    <p>No sports data available</p>
+                    <h2>Categories</h2>
+                    <p>No data available</p>
                 </div>
                 <div class="sports-grid">
                     <div class="sport-button" onclick="matchScheduler.retryLoadMatches()" style="cursor: pointer;">
                         <div class="sport-name">Retry Loading</div>
-                        <div class="match-count">Click to refresh data</div>
+                        <div class="match-count">Click to refresh</div>
                     </div>
                 </div>
             </div>
         `;
+    }
+
+    extractAndCacheSports(apiData) {
+        if (!apiData?.events) return;
+        
+        const sports = new Set();
+        Object.values(apiData.events).forEach(matches => {
+            matches.forEach(match => {
+                if (match?.sport) {
+                    const sport = this.classifySport(match);
+                    sports.add(sport);
+                }
+            });
+        });
+        
+        this.preloadedSports = Array.from(sports);
+        this.lastDataUpdate = Date.now();
+        console.log('📊 Sports categories cached:', this.preloadedSports);
+        
+        // Update UI if we're currently on sports view
+        if (this.currentView === 'sports' && this.preloadedSports.length > 0) {
+            this.showSportsUIWithCachedData();
+        }
     }
 
     retryLoadMatches() {
@@ -409,6 +476,9 @@ class MatchScheduler {
             this.useFallbackData();
             return;
         }
+        
+        // EXTRACT SPORTS CATEGORIES FIRST (for instant navigation)
+        this.extractAndCacheSports(apiData);
         
         this.allMatches = [];
         this.verifiedMatches = [];
