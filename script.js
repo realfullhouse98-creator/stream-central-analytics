@@ -1,4 +1,4 @@
-// 9kilo Stream - Complete Sports Classification System
+// 9kilo Stream - Simplified Sports Classification
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -16,125 +16,14 @@ class MatchScheduler {
         this.cacheKey = '9kilos-matches-cache';
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         
-        // Filter state - will reset on refresh
+        // Filter state
         this.showLiveOnly = false;
-        
-        // Performance Monitoring
-        this.performanceMetrics = {
-            pageLoadTime: 0,
-            apiResponseTime: 0,
-            userActions: []
-        };
-        
-        // SPORTS REFERENCE DATABASE - 16 CATEGORIES
-        this.sportsReference = {
-            // 1. FOOTBALL (SOCCER)
-            football: {
-                keywords: [],
-                displayName: '⚽ Football'
-            },
-            
-            // 2. AMERICAN FOOTBALL
-            american_football: {
-                keywords: [],
-                displayName: '🏈 American Football'
-            },
-            
-            // 3. BASKETBALL
-            basketball: {
-                keywords: [],
-                displayName: '🏀 Basketball'
-            },
-            
-            // 4. BASEBALL
-            baseball: {
-                keywords: [],
-                displayName: '⚾ Baseball'
-            },
-            
-            // 5. HOCKEY
-            hockey: {
-                keywords: [],
-                displayName: '🏒 Hockey'
-            },
-            
-            // 6. TENNIS
-            tennis: {
-                keywords: [],
-                displayName: '🎾 Tennis'
-            },
-            
-            // 7. CRICKET
-            cricket: {
-                keywords: [],
-                displayName: '🏏 Cricket'
-            },
-            
-            // 8. RUGBY
-            rugby: {
-                keywords: [],
-                displayName: '🏉 Rugby'
-            },
-            
-            // 9. GOLF
-            golf: {
-                keywords: [],
-                displayName: '⛳ Golf'
-            },
-            
-            // 10. MMA & BOXING
-            fighting: {
-                keywords: [],
-                displayName: '🥊 MMA & Boxing'
-            },
-            
-            // 11. RACING
-            racing: {
-                keywords: [],
-                displayName: '🏎️ Racing'
-            },
-            
-            // 12. EQUESTRIAN
-            equestrian: {
-                keywords: [],
-                displayName: '🏇 Equestrian'
-            },
-            
-            // 13. VOLLEYBALL
-            volleyball: {
-                keywords: [],
-                displayName: '🏐 Volleyball'
-            },
-            
-            // 14. AUSTRALIAN FOOTBALL
-            australian_football: {
-                keywords: [],
-                displayName: '🇦🇺 Australian Football'
-            },
-            
-            // 15. BADMINTON
-            badminton: {
-                keywords: [],
-                displayName: '🏸 Badminton'
-            },
-            
-            // 16. OTHER (fallback)
-            other: {
-                keywords: [],
-                displayName: '🎯 Other Sports'
-            }
-        };
         
         this.init();
     }
     
     async init() {
-        this.trackPerformance('pageStart');
         this.showMainMenu();
-        this.startPerformanceMonitoring();
-        this.trackPerformance('pageLoaded');
-        
-        // Safe Service Worker Registration
         this.registerServiceWorker();
     }
     
@@ -151,7 +40,7 @@ class MatchScheduler {
         }
     }
     
-    // ==================== OPTIMIZATION 1: LAZY LOADING ====================
+    // ==================== SIMPLIFIED DATA LOADING ====================
     async ensureDataLoaded() {
         if (this.isDataLoaded) return true;
         
@@ -179,34 +68,22 @@ class MatchScheduler {
         }
     }
     
-    // ==================== OPTIMIZATION 2: SMART CACHING ====================
     async loadMatches() {
-        const cacheStartTime = performance.now();
-        
-        // Try cache first
         const cachedData = this.getCachedData();
         if (cachedData) {
             console.log('📦 Using cached data');
             this.organizeMatches(cachedData);
-            this.trackPerformance('cacheHit', performance.now() - cacheStartTime);
             return;
         }
         
-        // Cache miss, try API
         try {
-            const apiStartTime = performance.now();
             const apiData = await this.tryAllProxies();
             this.organizeMatches(apiData);
-            
-            // Cache successful response
             this.cacheData(apiData);
-            this.trackPerformance('apiSuccess', performance.now() - apiStartTime);
-            
         } catch (error) {
             console.warn('All API attempts failed:', error);
             this.useFallbackData();
             this.showErrorState('Connection failed. Using cached/demo data.');
-            this.trackPerformance('apiFailure');
         }
     }
     
@@ -236,62 +113,6 @@ class MatchScheduler {
         }
     }
     
-    // ==================== OPTIMIZATION 3: INTELLIGENT PRELOADING ====================
-    async preloadSportsData() {
-        if (this.isDataLoaded || this.isLoading) return;
-        
-        setTimeout(async () => {
-            try {
-                await this.loadMatches();
-            } catch (error) {
-                // Silent fail
-            }
-        }, 500);
-    }
-    
-    preloadMatchDetails(matchId) {
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (match && match.channels && match.channels.length > 0) {
-            fetch(match.channels[0], { mode: 'no-cors' }).catch(() => {});
-        }
-    }
-    
-    // ==================== OPTIMIZATION 4: PERFORMANCE MONITORING ====================
-    trackPerformance(event, duration = 0, extra = '') {
-        this.performanceMetrics.userActions.push({
-            event,
-            duration,
-            timestamp: Date.now(),
-            view: this.currentView,
-            extra
-        });
-        
-        if (this.performanceMetrics.userActions.length >= 5) {
-            this.flushPerformanceMetrics();
-        }
-        
-        console.log(`🎯 ${event}: ${duration}ms`);
-    }
-    
-    flushPerformanceMetrics() {
-        if (this.performanceMetrics.userActions.length > 0) {
-            console.log('Performance Metrics:', this.performanceMetrics.userActions);
-            this.performanceMetrics.userActions = [];
-        }
-    }
-    
-    startPerformanceMonitoring() {
-        if ('PerformanceObserver' in window) {
-            const observer = new PerformanceObserver((list) => {
-                list.getEntries().forEach(entry => {
-                    this.trackPerformance(entry.name, entry.duration);
-                });
-            });
-            observer.observe({ entryTypes: ['navigation', 'paint', 'largest-contentful-paint'] });
-        }
-    }
-    
-    // ==================== OPTIMIZATION 5: ENHANCED ERROR RECOVERY ====================
     async tryAllProxies() {
         const targetUrl = 'https://topembed.pw/api.php?format=json';
         
@@ -333,14 +154,14 @@ class MatchScheduler {
                     {
                         match: 'Research Team A - Research Team B',
                         tournament: '9kilos Demo League',
-                        sport: 'football',
+                        sport: 'Football',
                         unix_timestamp: now + 3600,
                         channels: ['https://example.com/stream1', 'https://example.com/stream2']
                     },
                     {
                         match: 'Demo United - Test City FC',
                         tournament: 'Research Championship',
-                        sport: 'football', 
+                        sport: 'Football', 
                         unix_timestamp: now - 1800,
                         channels: ['https://example.com/stream1']
                     }
@@ -350,38 +171,54 @@ class MatchScheduler {
         this.organizeMatches(sampleMatches);
     }
     
-    showLoadingState() {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="loading-message">
-                    <div class="loading-spinner"></div>
-                    <p>Loading sports data...</p>
-                    <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 10px;">
-                        Optimized loading in progress
-                    </p>
-                </div>
-            </div>
-        `;
+    // ==================== SIMPLIFIED SPORTS CLASSIFICATION ====================
+    classifySport(match) {
+        // Just use the sport field from API with simple normalization
+        const sportFromApi = match.sport || 'Other';
+        
+        // Simple normalization - capitalize first letter, handle common variations
+        const normalizedSport = this.normalizeSportName(sportFromApi);
+        
+        console.log(`✅ Using API sport: "${sportFromApi}" -> "${normalizedSport}" for "${match.match}"`);
+        return normalizedSport;
     }
     
-    showErrorState(errorMessage = '') {
-        const container = document.getElementById('dynamic-content');
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="error-message">
-                    <h3>Smart Recovery Active</h3>
-                    <p>Using optimized fallback system</p>
-                    ${errorMessage ? `<p style="font-size: 0.8em; color: var(--accent-red); margin: 10px 0;">${errorMessage}</p>` : ''}
-                    <button class="retry-btn" onclick="matchScheduler.loadMatches()">
-                        Retry Live Data
-                    </button>
-                    <p style="margin-top: 20px; font-size: 0.8em; color: var(--text-muted);">
-                        Cached content available • Fast fallback system
-                    </p>
-                </div>
-            </div>
-        `;
+    normalizeSportName(sport) {
+        if (!sport) return 'Other';
+        
+        const sportLower = sport.toLowerCase().trim();
+        
+        // Simple mapping for common variations
+        const sportMap = {
+            'football': 'Football',
+            'soccer': 'Football',
+            'basketball': 'Basketball',
+            'baseball': 'Baseball',
+            'hockey': 'Ice Hockey',
+            'ice hockey': 'Ice Hockey',
+            'tennis': 'Tennis',
+            'cricket': 'Cricket',
+            'rugby': 'Rugby',
+            'golf': 'Golf',
+            'boxing': 'Boxing',
+            'mma': 'MMA',
+            'ufc': 'MMA',
+            'formula 1': 'Racing',
+            'f1': 'Racing',
+            'nascar': 'Racing',
+            'motogp': 'Racing',
+            'volleyball': 'Volleyball',
+            'australian football': 'Australian Football',
+            'afl': 'Australian Football',
+            'badminton': 'Badminton'
+        };
+        
+        // Return mapped sport or capitalize the original
+        return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+    }
+    
+    getSportDisplayName(sport) {
+        return sport || 'Sports';
     }
     
     organizeMatches(apiData) {
@@ -417,7 +254,7 @@ class MatchScheduler {
                             date: date,
                             time: this.convertUnixToLocalTime(match.unix_timestamp),
                             teams: match.match,
-                            league: match.tournament || match.sport || 'Sports',
+                            league: match.tournament || 'Sports',
                             streamUrl: channels[0] || null,
                             channels: channels,
                             isLive: this.checkIfLive(match),
@@ -440,74 +277,19 @@ class MatchScheduler {
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
         
-        // Log sports classification results
+        // Log simple sports classification results
         const sportsCount = {};
         this.verifiedMatches.forEach(match => {
             sportsCount[match.sport] = (sportsCount[match.sport] || 0) + 1;
         });
-        console.log('🏆 Sports Classification Results:', sportsCount);
+        console.log('🏆 Simple Sports Classification:', sportsCount);
         
         if (this.currentView !== 'main') {
             this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
         }
     }
 
-    // ==================== SIMPLE SPORTS CLASSIFICATION ====================
-    classifySport(match) {
-        // Use the original sport field and normalize it
-        const originalSport = (match.sport || '').toLowerCase().trim();
-        
-        // Simple mapping from data sport names to our category IDs
-        const sportMappings = {
-            'football': 'football',
-            'soccer': 'football',
-            'basketball': 'basketball', 
-            'ice hockey': 'hockey',
-            'hockey': 'hockey',
-            'nhl': 'hockey',
-            'nhl hockey': 'hockey',
-            'american football': 'american_football',
-            'nfl': 'american_football',
-            'baseball': 'baseball',
-            'mlb': 'baseball',
-            'tennis': 'tennis',
-            'cricket': 'cricket',
-            'rugby': 'rugby',
-            'volleyball': 'volleyball',
-            'badminton': 'badminton',
-            'golf': 'golf',
-            'mma': 'fighting',
-            'boxing': 'fighting',
-            'racing': 'racing',
-            'formula 1': 'racing',
-            'f1': 'racing',
-            'nascar': 'racing',
-            'equestrian': 'equestrian',
-            'horse racing': 'equestrian',
-            'australian football': 'australian_football',
-            'afl': 'australian_football'
-        };
-        
-        // Use mapping or fallback to original sport
-        const sportId = sportMappings[originalSport] || originalSport || 'other';
-        
-        console.log(`🏷️ "${match.match}" -> ${originalSport} -> ${sportId}`);
-        return sportId;
-    }
-
-    getSportDisplayName(sportId = this.currentSport) {
-        if (!sportId) return 'Unknown Sport';
-        
-        const sportData = this.sportsReference[sportId];
-        if (sportData) {
-            return sportData.displayName;
-        }
-        
-        // Simple fallback: capitalize the sport ID
-        return sportId.charAt(0).toUpperCase() + sportId.slice(1);
-    }
-
-    // ==================== UI METHODS ====================
+    // ==================== UI METHODS (UNCHANGED) ====================
     showMainMenu() {
         const container = document.getElementById('dynamic-content');
         container.innerHTML = `
@@ -538,11 +320,9 @@ class MatchScheduler {
         
         this.showStats();
         this.currentView = 'main';
-        this.trackPerformance('mainMenuView');
     }
 
     async showSportsView() {
-        this.trackPerformance('sportsViewStart');
         const success = await this.ensureDataLoaded();
         
         if (!success) {
@@ -555,16 +335,16 @@ class MatchScheduler {
         // Get unique sports from actual matches
         const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
         
-        // Create sports list with counts and proper display names
+        // Create sports list with counts
         const sports = uniqueSports.map(sportId => {
             const count = this.getMatchesBySport(sportId).length;
             return {
                 id: sportId,
-                name: this.getSportDisplayName(sportId),
+                name: sportId, // Just use the sport name directly
                 count: count
             };
         }).filter(sport => sport.count > 0)
-          .sort((a, b) => b.count - a.count); // Sort by match count (most first)
+          .sort((a, b) => b.count - a.count);
 
         container.innerHTML = `
             <div class="content-section">
@@ -588,7 +368,6 @@ class MatchScheduler {
         
         this.hideStats();
         this.currentView = 'sports';
-        this.trackPerformance('sportsViewLoaded');
     }
     
     async showDatesView() {
@@ -596,7 +375,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         const matches = this.getMatchesBySport(this.currentSport);
         const dates = [...new Set(matches.map(match => match.date))].sort();
-        const sportName = this.getSportDisplayName();
+        const sportName = this.currentSport;
         
         container.innerHTML = `
             <div class="content-section">
@@ -631,10 +410,9 @@ class MatchScheduler {
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
         const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
-        const sportName = this.getSportDisplayName();
+        const sportName = this.currentSport;
         const displayDate = this.formatDisplayDate(this.currentDate);
         
-        // Always start with ALL matches when entering matches view
         const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
         
         container.innerHTML = `
@@ -675,7 +453,7 @@ class MatchScheduler {
     
     toggleLiveFilter() {
         this.showLiveOnly = !this.showLiveOnly;
-        this.showMatchesView(); // Refresh the view with new filter
+        this.showMatchesView();
     }
     
     renderMatchRow(match) {
@@ -683,7 +461,7 @@ class MatchScheduler {
         const formattedTeams = this.formatTeamNames(match.teams);
         
         return `
-            <div class="match-row ${isLive ? 'live' : ''}" onmouseover="matchScheduler.preloadMatchDetails('${match.id}')">
+            <div class="match-row ${isLive ? 'live' : ''}">
                 <div class="match-time">${match.time}</div>
                 <div class="match-details">
                     <div class="team-names">${formattedTeams}</div>
@@ -795,7 +573,6 @@ class MatchScheduler {
         document.getElementById('update-time-details').textContent = new Date().toLocaleTimeString();
         this.hideStats();
         this.incrementViews(matchId);
-        this.trackPerformance('matchDetailsView', 0, matchId);
     }
     
     generateChannelSelector(channels, matchId) {
@@ -880,6 +657,7 @@ class MatchScheduler {
         }
     }
     
+    // ==================== UTILITY METHODS ====================
     getTeamName(teamString, index) {
         const teams = teamString.split(' - ');
         return teams[index] || `Team ${index + 1}`;
@@ -923,7 +701,7 @@ class MatchScheduler {
                     <button class="home-button" onclick="matchScheduler.showMainMenu()">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>TV CHANNELS</h2>
+                    <h2>TV Channels</h2>
                     <p>24/7 live streams</p>
                 </div>
                 <div class="sports-grid">
@@ -1037,19 +815,44 @@ class MatchScheduler {
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
     
-    startAutoRefresh() {
-        setInterval(() => {
-            this.loadMatches();
-        }, 300000);
+    showLoadingState() {
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="loading-message">
+                    <div class="loading-spinner"></div>
+                    <p>Loading sports data...</p>
+                </div>
+            </div>
+        `;
     }
     
-    // Debug method to check sports classification
-    debugSportsClassification() {
-        console.log('=== SPORTS CLASSIFICATION DEBUG ===');
-        this.verifiedMatches.forEach(match => {
-            console.log(`"${match.match}" -> ${match.sport}`);
-        });
-        console.log('=== END DEBUG ===');
+    showErrorState(errorMessage = '') {
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="error-message">
+                    <h3>Connection Issue</h3>
+                    <p>Using fallback data</p>
+                    ${errorMessage ? `<p style="font-size: 0.8em; color: var(--accent-red); margin: 10px 0;">${errorMessage}</p>` : ''}
+                    <button class="retry-btn" onclick="matchScheduler.loadMatches()">
+                        Retry Live Data
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    async preloadSportsData() {
+        if (this.isDataLoaded || this.isLoading) return;
+        
+        setTimeout(async () => {
+            try {
+                await this.loadMatches();
+            } catch (error) {
+                // Silent fail
+            }
+        }, 500);
     }
 }
 
