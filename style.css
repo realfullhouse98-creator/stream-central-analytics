@@ -40,11 +40,6 @@ body {
     background-attachment: fixed !important;
 }
 
-body.tv-section .dashboard-header,
-body.tv-section .analytics-overview {
-    display: none !important;
-}
-
 .stream-central-dashboard {
     min-height: 100vh;
     display: flex;
@@ -174,22 +169,6 @@ body.tv-section .analytics-overview {
 }
 
 /* ==================== TV CHANNELS STYLES ==================== */
-.tv-navigation-header {
-    background: var(--header-bg);
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--border-light);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    backdrop-filter: blur(20px);
-    flex-shrink: 0;
-}
-
-.tv-navigation-header .home-button,
-.tv-navigation-header .top-back-button {
-    margin: 0;
-}
-
 .countries-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -265,20 +244,6 @@ body.tv-section .analytics-overview {
     align-items: center;
     gap: 15px;
     margin-bottom: 15px;
-}
-
-.channel-logo {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #ff6b6b, #ffd93d);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 1.3em;
-    color: black;
-    flex-shrink: 0;
 }
 
 .channel-info {
@@ -475,7 +440,8 @@ body.tv-section .analytics-overview {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 0 20px;
+    margin: 0 10%;
+    padding: 0;
 }
 
 .table-filter {
@@ -517,6 +483,7 @@ body.tv-section .analytics-overview {
     border: 1px solid var(--border-light);
     overflow: hidden;
     flex-shrink: 0;
+    margin: 0 10%;
 }
 
 .table-header {
@@ -1050,10 +1017,6 @@ body.tv-section .analytics-overview {
     }
     
     /* TV Channels Mobile */
-    .tv-navigation-header {
-        padding: 12px 15px;
-    }
-    
     .countries-grid {
         grid-template-columns: 1fr;
         gap: 15px;
@@ -1081,12 +1044,6 @@ body.tv-section .analytics-overview {
     
     .channel-card {
         padding: 20px;
-    }
-    
-    .channel-logo {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2em;
     }
     
     .channel-name {
@@ -1146,7 +1103,12 @@ body.tv-section .analytics-overview {
     
     /* Mobile SCHEDULE TABLE WITH FILTER */
     .matches-table-container {
-        padding: 0 15px;
+        margin: 0 5%;
+        padding: 0;
+    }
+    
+    .matches-table {
+        margin: 0 5%;
     }
     
     .table-filter {
