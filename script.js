@@ -899,6 +899,9 @@ class MatchScheduler {
         const displayDate = this.formatDisplayDate(this.currentDate);
         
         // FIXED FILTER - ORIGINAL WORKING VERSION
+        console.log('Total matches:', matches.length);
+console.log('Live matches count:', matches.filter(match => match.isLive === true).length);
+console.log('Filter setting:', this.showLiveOnly);
         const filteredMatches = this.showLiveOnly ? 
             matches.filter(match => match.isLive === true) : 
             matches;
