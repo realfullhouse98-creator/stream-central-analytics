@@ -928,7 +928,7 @@ console.log('Filtered matches count:', filteredMatches.length);
                 
                 <div class="matches-table-container">
                     <div class="table-filter">
-                        <button class="filter-toggle ${this.showLiveOnly ? 'active' : ''}" onclick="matchScheduler.toggleLiveFilter()">
+                        <button class="filter-toggle ${this.showLiveOnly ? 'active' : ''}" onclick="window.matchScheduler.toggleLiveFilter()">
                             ${this.showLiveOnly ? 'LIVE' : 'ALL'}
                         </button>
                     </div>
@@ -974,15 +974,38 @@ console.log('Filtered matches count:', filteredMatches.length);
         `;
     }
 
-   toggleLiveFilter() {
-    console.log('BEFORE toggle:', this.showLiveOnly);
+toggleLiveFilter() {
+    // Simple, guaranteed working version
     this.showLiveOnly = !this.showLiveOnly;
-    console.log('AFTER toggle:', this.showLiveOnly);
     
-    // Add a small delay to ensure DOM is ready
-    setTimeout(() => {
-        this.showMatchesView();
-    }, 10);
+    // Force immediate visual update
+    const container = document.getElementById('dynamic-content');
+    if (!container) return;
+    
+    const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
+    const filteredMatches = this.showLiveOnly ? 
+        matches.filter(match => match.isLive === true) : 
+        matches;
+    
+    // Update JUST the matches table, not the whole page
+    const matchesTable = container.querySelector('.matches-table');
+    if (matchesTable) {
+        const tableBody = matchesTable.querySelector('.table-header').nextElementSibling;
+        if (tableBody) {
+            tableBody.innerHTML = filteredMatches.length > 0 ? 
+                filteredMatches.map(match => this.renderMatchRow(match)).join('') :
+                '<div class="no-matches">No matches found</div>';
+        }
+    }
+    
+    // Update filter button text
+    const filterBtn = container.querySelector('.filter-toggle');
+    if (filterBtn) {
+        filterBtn.textContent = this.showLiveOnly ? 'LIVE' : 'ALL';
+        filterBtn.classList.toggle('active', this.showLiveOnly);
+    }
+    
+    console.log('FILTER UPDATED:', this.showLiveOnly ? 'LIVE' : 'ALL');
 }
 
     async showMatchDetails(matchId) {
