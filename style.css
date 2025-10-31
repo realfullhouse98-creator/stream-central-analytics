@@ -169,6 +169,22 @@ body {
 }
 
 /* ==================== TV CHANNELS STYLES ==================== */
+.tv-section .dashboard-header,
+.tv-section .analytics-overview {
+    display: none !important;
+}
+
+.tv-navigation {
+    background: var(--header-bg);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+}
+
 .countries-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1017,6 +1033,10 @@ body {
     }
     
     /* TV Channels Mobile */
+    .tv-navigation {
+        padding: 12px 15px;
+    }
+    
     .countries-grid {
         grid-template-columns: 1fr;
         gap: 15px;
