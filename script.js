@@ -1,4 +1,4 @@
-// 9kilo Stream - Complete Version with TV Channels & Sports
+// 9kilo Stream - Complete Working Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -7,12 +7,12 @@ class MatchScheduler {
         this.currentDate = null;
         this.verifiedMatches = [];
         this.matchStats = new Map();
-        this.matchPolls = new Map();
         this.currentStreams = new Map();
         
         // TV Channels State
         this.currentCountry = '';
         this.currentTVChannel = null;
+        this.tvChannelsData = null;
         
         // Optimization Flags
         this.isDataLoaded = false;
@@ -22,278 +22,208 @@ class MatchScheduler {
         
         // Caching
         this.preloadedSports = null;
-        this.lastDataUpdate = null;
-        
-        // Filter state
         this.showLiveOnly = false;
-        
-        // DOM ready state
         this.isDOMReady = false;
         
-        console.log('🚀 MatchScheduler initialized with TV Channels!');
+        console.log('🚀 MatchScheduler initialized!');
     }
     
     async init() {
         await this.waitForDOMReady();
-        this.setupGlobalErrorHandling();
         this.setupEventListeners();
         this.showMainMenu();
-        this.registerServiceWorker();
         
         // Start preloading in background
         this.backgroundPreload();
     }
 
-    // ==================== TV CHANNELS DATA ====================
-    getTVChannelsData() {
-        return {
-            "South Africa": [
-                {
-                    name: "SuperSportRugby",
-                    displayName: "SuperSport Rugby",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportRugby%5BSouthAfrica%5D",
-                    category: "Rugby",
-                    description: "Live rugby matches, highlights, and analysis"
-                },
-                {
-                    name: "SuperSportTennis",
-                    displayName: "SuperSport Tennis", 
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportTennis%5BSouthAfrica%5D",
-                    category: "Tennis",
-                    description: "Tennis tournaments and matches"
-                },
-                {
-                    name: "SuperSportSoccer",
-                    displayName: "SuperSport Soccer",
-                    country: "South Africa", 
-                    streamUrl: "https://topembed.pw/channel/SuperSportSoccer%5BSouthAfrica%5D",
-                    category: "Football",
-                    description: "Football matches and leagues"
-                },
-                {
-                    name: "SuperSportCricket",
-                    displayName: "SuperSport Cricket",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportCricket%5BSouthAfrica%5D",
-                    category: "Cricket", 
-                    description: "Cricket matches and tournaments"
-                },
-                {
-                    name: "SuperSportAction",
-                    displayName: "SuperSport Action",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportAction%5BSouthAfrica%5D",
-                    category: "Multi-sport",
-                    description: "24/7 sports action and events"
-                },
-                {
-                    name: "SuperSportVariety1",
-                    displayName: "SuperSport Variety 1",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportVariety1%5BSouthAfrica%5D",
-                    category: "Multi-sport",
-                    description: "Variety sports programming"
-                }
-            ],
-            "USA": [
-                {
-                    name: "FanDuelSportsMidwest",
-                    displayName: "FanDuel Sports Midwest",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/FanDuelSportsMidwest%5BUSA%5D",
-                    category: "Multi-sport",
-                    description: "Regional sports coverage"
-                },
-                {
-                    name: "ESPN",
-                    displayName: "ESPN",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/ESPN%5BUSA%5D", 
-                    category: "Multi-sport",
-                    description: "Worldwide sports leader"
-                },
-                {
-                    name: "FoxSports",
-                    displayName: "Fox Sports",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/FoxSports%5BUSA%5D",
-                    category: "Multi-sport",
-                    description: "National sports coverage"
-                },
-                {
-                    name: "NBASports",
-                    displayName: "NBA TV",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/NBASports%5BUSA%5D",
-                    category: "Basketball",
-                    description: "Basketball games and analysis"
-                }
-            ],
-            "UK": [
-                {
-                    name: "SkySportsMain",
-                    displayName: "Sky Sports Main Event",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/SkySportsMain%5BUK%5D",
-                    category: "Multi-sport",
-                    description: "Premier sports coverage"
-                },
-                {
-                    name: "BTSport1",
-                    displayName: "BT Sport 1",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/BTSport1%5BUK%5D",
-                    category: "Multi-sport", 
-                    description: "Live sports and events"
-                },
-                {
-                    name: "PremierSports",
-                    displayName: "Premier Sports",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/PremierSports%5BUK%5D",
-                    category: "Football",
-                    description: "Premier League and football"
-                }
-            ]
-        };
+    // ==================== TV CHANNELS ====================
+    async getTVChannelsData() {
+        try {
+            const response = await fetch('tv-channels.json');
+            return await response.json();
+        } catch (error) {
+            console.error('TV channels load failed:', error);
+            return {};
+        }
     }
 
-    // ==================== TV CHANNELS NAVIGATION ====================
-    showTVChannels() {
-        console.log('🎯 TV Channels button clicked');
+    async showTVChannels() {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        this.showCountriesView();
-    }
-
-    showCountriesView() {
-        const container = document.getElementById('dynamic-content');
-        if (!container) return;
-        
-        const tvData = this.getTVChannelsData();
-        
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button">⌂</button>
+        try {
+            const tvData = await this.getTVChannelsData();
+            
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                    </div>
+                    <div class="section-header">
+                        <h2>📺 TV Channels</h2>
+                        <p>Select a country to browse channels</p>
+                    </div>
+                    
+                    <div class="countries-grid">
+                        ${Object.entries(tvData).map(([country, channels]) => `
+                            <div class="country-card" onclick="matchScheduler.showCountryChannels('${country}')">
+                                <div class="country-flag">${this.getCountryFlag(country)}</div>
+                                <div class="country-name">${country}</div>
+                                <div class="channel-count">${channels.length} channels</div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
-                <div class="section-header">
-                    <h2>📺 TV Channels</h2>
-                    <p>Select a country to browse channels</p>
+            `;
+            
+        } catch (error) {
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                    </div>
+                    <div class="error-message">
+                        <h3>Unable to load TV channels</h3>
+                        <button class="retry-btn" onclick="matchScheduler.showTVChannels()">Retry</button>
+                    </div>
                 </div>
-                
-                <div class="countries-grid">
-                    ${Object.entries(tvData).map(([country, channels]) => `
-                        <div class="country-card" onclick="matchScheduler.showCountryChannels('${country}')">
-                            <div class="country-flag">${this.getCountryFlag(country)}</div>
-                            <div class="country-name">${country}</div>
-                            <div class="channel-count">${channels.length} channels</div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
+            `;
+        }
         
         this.hideStats();
         this.currentView = 'tv-countries';
     }
 
-    showCountryChannels(country) {
+    async showCountryChannels(country) {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
         this.currentCountry = country;
-        const tvData = this.getTVChannelsData();
-        const channels = tvData[country] || [];
         
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button">⌂</button>
-                    <button class="top-back-button">←</button>
-                </div>
-                <div class="section-header">
-                    <h2>${this.getCountryFlag(country)} ${country}</h2>
-                    <p>${channels.length} channels available</p>
-                </div>
-                
-                <div class="channels-grid">
-                    ${channels.map(channel => `
-                        <div class="channel-card">
-                            <div class="channel-header">
-                                <div class="channel-logo">${this.getChannelLogo(channel.name)}</div>
-                                <div class="channel-info">
-                                    <div class="channel-name">${channel.displayName}</div>
-                                    <div class="channel-category">${channel.category}</div>
+        try {
+            const tvData = await this.getTVChannelsData();
+            const channels = tvData[country] || [];
+            
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                        <button class="top-back-button">←</button>
+                    </div>
+                    <div class="section-header">
+                        <h2>${this.getCountryFlag(country)} ${country}</h2>
+                        <p>${channels.length} channels available</p>
+                    </div>
+                    
+                    <div class="channels-grid">
+                        ${channels.map(channel => `
+                            <div class="channel-card">
+                                <div class="channel-header">
+                                    <div class="channel-logo">${this.getChannelLogo(channel.name)}</div>
+                                    <div class="channel-info">
+                                        <div class="channel-name">${channel.displayName}</div>
+                                        <div class="channel-category">${channel.category}</div>
+                                    </div>
                                 </div>
+                                <div class="channel-description">${channel.description}</div>
+                                <button class="watch-button" onclick="matchScheduler.playTVChannel('${channel.name}')">
+                                    ▶ Watch Live
+                                </button>
                             </div>
-                            <div class="channel-description">${channel.description}</div>
-                            <button class="watch-button" onclick="matchScheduler.playTVChannel('${channel.name}')">
-                                ▶ Watch Live
-                            </button>
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+            
+        } catch (error) {
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                        <button class="top-back-button">←</button>
+                    </div>
+                    <div class="error-message">
+                        <h3>Unable to load channels</h3>
+                        <button class="retry-btn" onclick="matchScheduler.showCountryChannels('${country}')">Retry</button>
+                    </div>
+                </div>
+            `;
+        }
         
         this.hideStats();
         this.currentView = 'tv-channels';
     }
 
-    playTVChannel(channelName) {
+    async playTVChannel(channelName) {
         const country = this.currentCountry;
-        const tvData = this.getTVChannelsData();
-        const channel = tvData[country].find(c => c.name === channelName);
         
-        if (!channel) return;
-        
-        this.currentTVChannel = channel;
-        const container = document.getElementById('dynamic-content');
-        if (!container) return;
-        
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button">⌂</button>
-                    <button class="top-back-button">←</button>
-                </div>
-                
-                <div class="section-header">
-                    <h2>${channel.displayName}</h2>
-                    <p>Live TV Channel from ${channel.country}</p>
-                </div>
-                
-                <div class="tv-player-container">
-                    <div class="tv-video-player">
-                        <iframe id="tv-player" title="${channel.name}[${channel.country}]" 
-                                frameborder="0" allowfullscreen 
-                                allow="encrypted-media; picture-in-picture;"
-                                src="${channel.streamUrl}">
-                        </iframe>
+        try {
+            const tvData = await this.getTVChannelsData();
+            const countryChannels = tvData[country] || [];
+            const channel = countryChannels.find(c => c.name === channelName);
+            
+            if (!channel) throw new Error('Channel not found');
+            
+            this.currentTVChannel = channel;
+            const container = document.getElementById('dynamic-content');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="match-details-overlay">
+                    <div class="match-details-modal">
+                        <div class="match-header">
+                            <button class="back-btn" onclick="matchScheduler.showCountryChannels('${country}')">← Back</button>
+                        </div>
+                        
+                        <div class="video-container">
+                            <div class="video-player-controls">
+                                <div class="control-buttons-right">
+                                    <button class="player-control-btn refresh" onclick="matchScheduler.refreshTVStream()">
+                                        Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="video-player-wrapper">
+                                <div class="video-player">
+                                    <iframe src="${channel.streamUrl}" class="stream-iframe" id="tv-player"
+                                            allow="autoplay; fullscreen" allowfullscreen
+                                            title="${channel.displayName}">
+                                    </iframe>
+                                </div>
+                            </div>
+                            
+                            <div class="video-controls">
+                                <div class="video-title">${channel.displayName}</div>
+                                <div class="video-stats">
+                                    <span class="views-count">Live TV Channel</span>
+                                    <span class="live-badge-details">LIVE NOW</span>
+                                    <span style="color: var(--text-muted);">• ${channel.country}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="tv-channel-info">
-                    <div class="tv-info-item"><strong>Channel:</strong> ${channel.name}</div>
-                    <div class="tv-info-item"><strong>Country:</strong> ${channel.country}</div>
-                    <div class="tv-info-item"><strong>Live Now:</strong> ${channel.name}</div>
-                    <div class="tv-info-item"><strong>Category:</strong> ${channel.category}</div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="watch-button" onclick="matchScheduler.refreshTVStream()" style="margin: 5px;">
-                        🔄 Refresh Stream
-                    </button>
-                    <button class="watch-button" onclick="matchScheduler.showCountryChannels('${country}')" style="background: var(--accent-blue); margin: 5px;">
-                        ← Back to Channels
-                    </button>
-                </div>
-            </div>
-        `;
+            `;
+            
+        } catch (error) {
+            const container = document.getElementById('dynamic-content');
+            if (container) {
+                container.innerHTML = `
+                    <div class="content-section">
+                        <div class="navigation-buttons">
+                            <button class="home-button">⌂</button>
+                            <button class="top-back-button">←</button>
+                        </div>
+                        <div class="error-message">
+                            <h3>Channel Unavailable</h3>
+                            <button class="retry-btn" onclick="matchScheduler.playTVChannel('${channelName}')">Retry</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
         
         this.hideStats();
         this.currentView = 'tv-player';
@@ -312,9 +242,12 @@ class MatchScheduler {
 
     getCountryFlag(country) {
         const flags = {
-            'South Africa': '🇿🇦',
-            'USA': '🇺🇸',
-            'UK': '🇬🇧'
+            'South Africa': '🇿🇦', 'USA': '🇺🇸', 'UK': '🇬🇧',
+            'Belgium': '🇧🇪', 'Brazil': '🇧🇷', 'Ireland': '🇮🇪',
+            'Germany': '🇩🇪', 'France': '🇫🇷', 'Spain': '🇪🇸',
+            'Italy': '🇮🇹', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱',
+            'Canada': '🇨🇦', 'Australia': '🇦🇺', 'New Zealand': '🇳🇿',
+            'Mexico': '🇲🇽', 'Argentina': '🇦🇷', 'India': '🇮🇳'
         };
         return flags[country] || '🌍';
     }
@@ -337,43 +270,26 @@ class MatchScheduler {
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => {
                     this.isDOMReady = true;
-                    console.log('✅ DOM fully loaded and parsed');
                     resolve();
                 });
             } else {
                 this.isDOMReady = true;
-                console.log('✅ DOM already ready');
                 resolve();
             }
         });
     }
 
     setupEventListeners() {
-        if (!this.isDOMReady) {
-            setTimeout(() => this.setupEventListeners(), 100);
-            return;
-        }
-
-        console.log('🎯 Setting up event listeners...');
-        
-        // Global click handler
         document.addEventListener('click', (e) => {
             this.handleGlobalClick(e);
         });
-
-        console.log('✅ Event listeners setup complete');
     }
 
     handleGlobalClick(e) {
         // Menu buttons
         const menuButton = e.target.closest('.menu-button');
         if (menuButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            
             const action = menuButton.getAttribute('data-action');
-            console.log(`🎯 Menu button: ${action}`);
-            
             switch(action) {
                 case 'sports':
                     this.showSportsView();
@@ -388,19 +304,16 @@ class MatchScheduler {
             return;
         }
 
-        // Navigation buttons
+        // Home button
         const homeButton = e.target.closest('.home-button');
         if (homeButton) {
-            e.preventDefault();
-            e.stopPropagation();
             this.showMainMenu();
             return;
         }
 
+        // Back button
         const backButton = e.target.closest('.top-back-button');
         if (backButton) {
-            e.preventDefault();
-            e.stopPropagation();
             this.handleBackButton();
             return;
         }
@@ -408,54 +321,30 @@ class MatchScheduler {
         // Sports navigation
         const sportButton = e.target.closest('.sport-button');
         if (sportButton && !sportButton.hasAttribute('data-action')) {
-            e.preventDefault();
-            e.stopPropagation();
             const sportName = sportButton.querySelector('.sport-name')?.textContent;
-            if (sportName) {
-                this.selectSport(sportName);
-            }
+            if (sportName) this.selectSport(sportName);
             return;
         }
 
         const dateButton = e.target.closest('.date-button');
         if (dateButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const dateElement = dateButton.querySelector('.date-name');
-            if (dateElement) {
-                const dateText = dateElement.textContent;
-                const matches = this.verifiedMatches;
-                const match = matches.find(m => this.formatDisplayDate(m.date) === dateText);
-                if (match) {
-                    this.selectDate(match.date);
-                }
-            }
+            const dateText = dateButton.querySelector('.date-name')?.textContent;
+            const match = this.verifiedMatches.find(m => this.formatDisplayDate(m.date) === dateText);
+            if (match) this.selectDate(match.date);
             return;
         }
 
         const watchButton = e.target.closest('.watch-btn');
         if (watchButton) {
-            e.preventDefault();
-            e.stopPropagation();
             const matchRow = watchButton.closest('.match-row');
-            if (matchRow) {
-                const teamNames = matchRow.querySelector('.team-names')?.textContent;
-                if (teamNames) {
-                    const match = this.verifiedMatches.find(m => 
-                        this.formatTeamNames(m.teams) === teamNames
-                    );
-                    if (match) {
-                        this.showMatchDetails(match.id);
-                    }
-                }
-            }
+            const teamNames = matchRow?.querySelector('.team-names')?.textContent;
+            const match = this.verifiedMatches.find(m => this.formatTeamNames(m.teams) === teamNames);
+            if (match) this.showMatchDetails(match.id);
             return;
         }
 
         const filterToggle = e.target.closest('.filter-toggle');
         if (filterToggle) {
-            e.preventDefault();
-            e.stopPropagation();
             this.toggleLiveFilter();
             return;
         }
@@ -484,31 +373,8 @@ class MatchScheduler {
         }
     }
 
-    setupGlobalErrorHandling() {
-        window.addEventListener('error', (e) => {
-            console.error('Global error caught:', e);
-            this.showErrorUI('Something went wrong. Please refresh the page.');
-        });
-
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('Unhandled promise rejection:', e);
-            this.showErrorUI('Application error occurred.');
-        });
-    }
-
-    showErrorUI(message) {
-        const errorBoundary = document.getElementById('error-boundary');
-        const errorMessage = document.getElementById('error-message');
-        if (errorBoundary && errorMessage) {
-            errorMessage.textContent = message;
-            errorBoundary.style.display = 'block';
-        }
-    }
-
     // ==================== SPORTS FUNCTIONALITY ====================
     showSportsView() {
-        console.log('🎯 Sports view loading...');
-        
         // INSTANT UI UPDATE
         this.showSportsUIWithCachedData();
         
@@ -523,6 +389,7 @@ class MatchScheduler {
         let sportsHTML;
         
         if (this.preloadedSports && this.preloadedSports.length > 0) {
+            // SHOW ACTUAL SPORTS CATEGORIES IMMEDIATELY
             const sports = this.preloadedSports.map(sport => ({
                 id: sport,
                 name: sport,
@@ -536,6 +403,7 @@ class MatchScheduler {
                 </div>
             `).join('');
         } else {
+            // FALLBACK LOADING STATES
             sportsHTML = `
                 <div class="sport-button" style="opacity: 0.7;">
                     <div class="sport-name">Football</div>
@@ -618,6 +486,7 @@ class MatchScheduler {
         `;
     }
 
+    // ==================== DATA LOADING ====================
     async ensureDataLoaded() {
         if (this.isDataLoaded) return true;
         
@@ -733,13 +602,6 @@ class MatchScheduler {
                         sport: 'Football',
                         unix_timestamp: now + 3600,
                         channels: ['https://example.com/stream1', 'https://example.com/stream2']
-                    },
-                    {
-                        match: 'Demo United - Test City FC',
-                        tournament: 'Research Championship',
-                        sport: 'Football', 
-                        unix_timestamp: now - 1800,
-                        channels: ['https://example.com/stream1']
                     }
                 ]
             }
@@ -772,19 +634,14 @@ class MatchScheduler {
                             });
                         }
                         
-                        const channels = match.channels || [];
-                        if (channels.length > 0 && !this.currentStreams.has(matchId)) {
-                            this.currentStreams.set(matchId, 0);
-                        }
-                        
                         const processedMatch = {
                             id: matchId,
                             date: date,
                             time: this.convertUnixToLocalTime(match.unix_timestamp),
                             teams: match.match,
                             league: match.tournament || 'Sports',
-                            streamUrl: channels[0] || null,
-                            channels: channels,
+                            streamUrl: match.channels?.[0] || null,
+                            channels: match.channels || [],
                             isLive: this.checkIfLive(match),
                             sport: this.classifySport(match),
                             unixTimestamp: match.unix_timestamp
@@ -805,14 +662,8 @@ class MatchScheduler {
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
         
-        const sportsCount = {};
-        this.verifiedMatches.forEach(match => {
-            sportsCount[match.sport] = (sportsCount[match.sport] || 0) + 1;
-        });
-        console.log('🏆 Sports Classification:', sportsCount);
-        
         if (this.currentView !== 'main') {
-            this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
+            this.showSportsDataUI();
         }
     }
 
@@ -830,63 +681,12 @@ class MatchScheduler {
         });
         
         this.preloadedSports = Array.from(sports);
-        
-        if (this.currentView === 'sports' && this.preloadedSports.length > 0) {
-            this.showSportsDataUI();
-        }
     }
 
-    classifySport(match) {
-        const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
-        
-        if (searchString.includes('middle tennessee') || 
-            searchString.includes('jacksonville state') ||
-            searchString.includes('college football')) {
-            return 'American Football';
-        }
-        
-        const sportFromApi = match.sport || 'Other';
-        const normalizedSport = this.normalizeSportName(sportFromApi);
-        
-        return normalizedSport;
-    }
-
-    normalizeSportName(sport) {
-        if (!sport) return 'Other';
-        
-        const sportLower = sport.toLowerCase().trim();
-        const sportMap = {
-            'football': 'Football',
-            'soccer': 'Football',
-            'basketball': 'Basketball',
-            'baseball': 'Baseball',
-            'hockey': 'Ice Hockey',
-            'ice hockey': 'Ice Hockey',
-            'tennis': 'Tennis',
-            'cricket': 'Cricket',
-            'rugby': 'Rugby',
-            'golf': 'Golf',
-            'boxing': 'Boxing',
-            'mma': 'MMA',
-            'ufc': 'MMA',
-            'formula 1': 'Racing',
-            'f1': 'Racing',
-            'nascar': 'Racing',
-            'motogp': 'Racing',
-            'volleyball': 'Volleyball',
-            'australian football': 'Australian Football',
-            'afl': 'Australian Football',
-            'badminton': 'Badminton',
-            'american football': 'American Football',
-            'college football': 'American Football',
-            'ncaa football': 'American Football',
-            'nfl': 'American Football',
-            'handball': 'Handball',
-            'table tennis': 'Table Tennis',
-            'beach volleyball': 'Beach Volleyball'
-        };
-        
-        return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+    // ==================== SPORTS NAVIGATION ====================
+    selectSport(sport) {
+        this.currentSport = sport;
+        this.showDatesView();
     }
 
     async showDatesView() {
@@ -896,7 +696,6 @@ class MatchScheduler {
         
         const matches = this.getMatchesBySport(this.currentSport);
         const dates = [...new Set(matches.map(match => match.date))].sort();
-        const sportName = this.currentSport;
         
         container.innerHTML = `
             <div class="content-section">
@@ -905,7 +704,7 @@ class MatchScheduler {
                     <button class="top-back-button">←</button>
                 </div>
                 <div class="section-header">
-                    <h2>${sportName}</h2>
+                    <h2>${this.currentSport}</h2>
                     <p>Select date</p>
                 </div>
                 <div class="sports-grid">
@@ -927,15 +726,17 @@ class MatchScheduler {
         this.currentView = 'dates';
     }
 
+    selectDate(date) {
+        this.currentDate = date;
+        this.showMatchesView();
+    }
+
     async showMatchesView() {
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
         const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
-        const sportName = this.currentSport;
-        const displayDate = this.formatDisplayDate(this.currentDate);
-        
         const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
         
         container.innerHTML = `
@@ -946,7 +747,7 @@ class MatchScheduler {
                 </div>
                 <div class="section-header">
                     <h2>Schedule</h2>
-                    <p>${displayDate}</p>
+                    <p>${this.formatDisplayDate(this.currentDate)}</p>
                 </div>
                 
                 <div class="matches-table-container">
@@ -1012,15 +813,13 @@ class MatchScheduler {
         
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
-        const channels = match.channels || [];
-        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const currentStreamUrl = channels[currentChannelIndex] || null;
+        const currentStreamUrl = match.channels?.[0] || null;
         
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
                     <div class="match-header">
-                        <button class="back-btn">← Back</button>
+                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                     </div>
                     
                     <div class="video-container">
@@ -1033,9 +832,9 @@ class MatchScheduler {
                         </div>
                         
                         <div class="video-player-wrapper">
-                            <div class="video-player" id="video-player-${matchId}">
+                            <div class="video-player">
                                 ${currentStreamUrl ? 
-                                    `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
+                                    `<iframe src="${currentStreamUrl}" class="stream-iframe"
                                             allow="autoplay; fullscreen" allowfullscreen></iframe>` :
                                     `<div class="no-stream">
                                         <h3>Stream Offline</h3>
@@ -1052,25 +851,6 @@ class MatchScheduler {
                                 ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
                                 <span style="color: var(--text-muted);">• ${match.league}</span>
                             </div>
-                            
-                            <div class="video-actions">
-                                <button class="action-btn like-btn" onclick="matchScheduler.handleLike('${matchId}')">
-                                    👍 ${this.formatNumber(stats.likes)}
-                                </button>
-                                <button class="action-btn dislike-btn" onclick="matchScheduler.handleDislike('${matchId}')">
-                                    👎 ${this.formatNumber(stats.dislikes)}
-                                </button>
-                                <button class="action-btn" onclick="matchScheduler.handleShare('${matchId}')">
-                                    Share
-                                </button>
-                            </div>
-                            
-                            <div class="match-description">
-                                <div class="description-text">
-                                    <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
-                                    ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1082,22 +862,13 @@ class MatchScheduler {
     }
 
     refreshCurrentStream(matchId) {
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (!match) return;
-        
-        const iframe = document.getElementById(`stream-iframe-${matchId}`);
+        // Simple refresh - reload the iframe
+        const iframe = document.querySelector('.stream-iframe');
         if (iframe) {
             const currentSrc = iframe.src;
             iframe.src = '';
             setTimeout(() => {
                 iframe.src = currentSrc;
-                
-                const refreshBtn = document.querySelector('.player-control-btn.refresh');
-                const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = 'Refreshing...';
-                setTimeout(() => {
-                    refreshBtn.innerHTML = originalText;
-                }, 1000);
             }, 500);
         }
     }
@@ -1123,11 +894,6 @@ class MatchScheduler {
                         <div class="button-subtitle">Fan discussions</div>
                     </div>
                 </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <p style="color: var(--text-muted); font-size: 0.8em;">
-                        ⚡ Now with TV Channels! Click to explore
-                    </p>
-                </div>
             </div>
         `;
         
@@ -1152,23 +918,10 @@ class MatchScheduler {
                     <div class="sport-button" onclick="alert('Coming soon!')">
                         <div class="sport-name">Fan Zone</div>
                     </div>
-                    <div class="sport-button" onclick="alert('Coming soon!')">
-                        <div class="sport-name">Match Reactions</div>
-                    </div>
                 </div>
             </div>
         `;
         this.hideStats();
-    }
-
-    selectSport(sport) {
-        this.currentSport = sport;
-        this.showDatesView();
-    }
-
-    selectDate(date) {
-        this.currentDate = date;
-        this.showMatchesView();
     }
 
     getMatchesBySport(sport) {
@@ -1197,14 +950,18 @@ class MatchScheduler {
         return now >= matchTime && now <= (matchTime + 7200);
     }
 
-    formatTeamNames(teamString) {
-        return teamString.replace(/ - /g, ' vs ');
+    classifySport(match) {
+        const sportFromApi = match.sport || 'Other';
+        const sportMap = {
+            'football': 'Football', 'soccer': 'Football',
+            'basketball': 'Basketball', 'baseball': 'Baseball',
+            'tennis': 'Tennis', 'cricket': 'Cricket', 'rugby': 'Rugby'
+        };
+        return sportMap[sportFromApi.toLowerCase()] || sportFromApi;
     }
 
-    formatNumber(num) {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-        return num.toString();
+    formatTeamNames(teamString) {
+        return teamString.replace(/ - /g, ' vs ');
     }
 
     formatDisplayDate(dateString) {
@@ -1213,39 +970,15 @@ class MatchScheduler {
         });
     }
 
-    getTeamName(teamString, index) {
-        const teams = teamString.split(' - ');
-        return teams[index] || `Team ${index + 1}`;
+    formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
     }
 
     incrementViews(matchId) {
         const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.views++;
-            this.matchStats.set(matchId, stats);
-        }
-    }
-
-    handleLike(matchId) {
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.likes++;
-            this.matchStats.set(matchId, stats);
-            this.showMatchDetails(matchId);
-        }
-    }
-
-    handleDislike(matchId) {
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.dislikes++;
-            this.matchStats.set(matchId, stats);
-            this.showMatchDetails(matchId);
-        }
-    }
-
-    handleShare(matchId) {
-        alert('Share feature coming soon!');
+        if (stats) stats.views++;
     }
 
     showStats() {
@@ -1267,106 +1000,27 @@ class MatchScheduler {
         
         document.getElementById('total-streams').textContent = this.verifiedMatches.length;
         document.getElementById('live-viewers').textContent = this.formatNumber(Math.floor(totalViewers / 100));
-        document.getElementById('countries').textContent = this.verifiedMatches.length < 5 ? '3' : '1';
-        document.getElementById('uptime').textContent = this.verifiedMatches.length < 5 ? 'Research' : '100%';
+        document.getElementById('countries').textContent = '22';
+        document.getElementById('uptime').textContent = '100%';
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
 
     backgroundPreload() {
         setTimeout(() => {
-            this.preloadSportsData().catch(() => {});
+            this.loadMatches().catch(() => {});
         }, 1000);
-    }
-
-    async preloadSportsData() {
-        if (this.isDataLoaded || this.isLoading) return;
-        
-        this.isLoading = true;
-        try {
-            const cachedData = this.getCachedData();
-            if (cachedData) {
-                this.extractAndCacheSports(cachedData);
-                return;
-            }
-            
-            const fastData = await this.tryFastProxies();
-            if (fastData) {
-                this.extractAndCacheSports(fastData);
-                this.cacheData(fastData);
-            }
-        } catch (error) {
-            // Silent fail
-        } finally {
-            this.isLoading = false;
-        }
-    }
-
-    async tryFastProxies() {
-        const targetUrl = 'https://topembed.pw/api.php?format=json';
-        
-        const fastProxies = [
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            targetUrl
-        ];
-        
-        for (const proxyUrl of fastProxies) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2000);
-                
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('🚀 Fast data loaded from:', proxyUrl);
-                    return data;
-                }
-            } catch (error) {
-                continue;
-            }
-        }
-        return null;
-    }
-
-    registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('SW registered: ', registration);
-                })
-                .catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
-                });
-        }
     }
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM fully loaded, initializing MatchScheduler with TV Channels...');
+    console.log('🎯 DOM fully loaded, initializing MatchScheduler...');
     try {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
-            console.log('✅ 9kilos with TV Channels fully initialized!');
-        }).catch(error => {
-            console.error('❌ Initialization failed:', error);
+            console.log('✅ 9kilos fully initialized!');
         });
     } catch (error) {
-        console.error('❌ Critical initialization error:', error);
-    }
-});
-
-// Close dropdowns when clicking outside
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.channel-dropdown-inline')) {
-        document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dropdown => {
-            dropdown.classList.remove('show');
-            dropdown.previousElementSibling.classList.remove('open');
-        });
+        console.error('❌ Initialization failed:', error);
     }
 });
