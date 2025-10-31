@@ -102,8 +102,23 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        document.body.classList.add('tv-section');
+        // Hide main header for TV sections
+        this.hideMainHeader();
         this.showCountriesView();
+    }
+
+    hideMainHeader() {
+        const mainHeader = document.querySelector('.dashboard-header');
+        const analytics = document.querySelector('.analytics-overview');
+        if (mainHeader) mainHeader.style.display = 'none';
+        if (analytics) analytics.style.display = 'none';
+    }
+
+    showMainHeader() {
+        const mainHeader = document.querySelector('.dashboard-header');
+        const analytics = document.querySelector('.analytics-overview');
+        if (mainHeader) mainHeader.style.display = 'block';
+        if (analytics) analytics.style.display = 'grid';
     }
 
     showCountriesView() {
@@ -114,7 +129,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="tv-navigation">
+                <div class="navigation-buttons">
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
@@ -148,7 +163,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="tv-navigation">
+                <div class="navigation-buttons">
                     <button class="home-button">⌂</button>
                     <button class="top-back-button">←</button>
                 </div>
@@ -321,7 +336,7 @@ class MatchScheduler {
             return;
         }
 
-        // Navigation buttons - FIXED BACK BUTTON HANDLING
+        // Navigation buttons
         const homeButton = e.target.closest('.home-button');
         if (homeButton) {
             e.preventDefault();
@@ -338,7 +353,7 @@ class MatchScheduler {
             return;
         }
 
-        // Match details back button - NEW FIX
+        // Match details back button
         const matchBackBtn = e.target.closest('.back-btn');
         if (matchBackBtn) {
             e.preventDefault();
@@ -422,7 +437,6 @@ class MatchScheduler {
                 this.showCountryChannels(this.currentCountry);
                 break;
             case 'match-details':
-                // Go back to matches view
                 if (this.currentDate) {
                     this.showMatchesView();
                 } else {
@@ -458,12 +472,9 @@ class MatchScheduler {
     // ==================== SPORTS FUNCTIONALITY ====================
     showSportsView() {
         console.log('🎯 Sports view loading...');
-        document.body.classList.remove('tv-section');
+        this.showMainHeader();
         
-        // INSTANT UI UPDATE
         this.showSportsUIWithCachedData();
-        
-        // Load fresh data in background
         this.loadSportsDataBackground();
     }
 
@@ -887,7 +898,7 @@ class MatchScheduler {
         const sportName = this.currentSport;
         const displayDate = this.formatDisplayDate(this.currentDate);
         
-        // FIXED FILTER - Properly filter matches based on showLiveOnly state
+        // FIXED FILTER - ORIGINAL WORKING VERSION
         const filteredMatches = this.showLiveOnly ? 
             matches.filter(match => match.isLive === true) : 
             matches;
@@ -1062,7 +1073,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        document.body.classList.remove('tv-section');
+        this.showMainHeader();
         
         container.innerHTML = `
             <div class="main-menu">
@@ -1096,7 +1107,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        document.body.classList.remove('tv-section');
+        this.showMainHeader();
         
         container.innerHTML = `
             <div class="content-section">
