@@ -889,23 +889,26 @@ class MatchScheduler {
         this.currentView = 'dates';
     }
 
-    async showMatchesView() {
-        await this.ensureDataLoaded();
-        const container = document.getElementById('dynamic-content');
-        if (!container) return;
-        
-        const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
-        const sportName = this.currentSport;
-        const displayDate = this.formatDisplayDate(this.currentDate);
-        
-        // FIXED FILTER - ORIGINAL WORKING VERSION
-        console.log('Total matches:', matches.length);
-console.log('Live matches count:', matches.filter(match => match.isLive === true).length);
-console.log('Filter setting:', this.showLiveOnly);
-        const filteredMatches = this.showLiveOnly ? 
-            matches.filter(match => match.isLive === true) : 
-            matches;
-        
+   async showMatchesView() {
+    await this.ensureDataLoaded();
+    const container = document.getElementById('dynamic-content');
+    if (!container) return;
+    
+    const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
+    
+    // ADD THESE 3 DEBUG LINES HERE:
+    console.log('=== DEBUG FILTER ===');
+    console.log('Total matches:', matches.length);
+    console.log('Live matches:', matches.filter(m => m.isLive).length);
+    console.log('Filter setting:', this.showLiveOnly);
+    
+    const sportName = this.currentSport;
+    const displayDate = this.formatDisplayDate(this.currentDate);
+    
+    const filteredMatches = this.showLiveOnly ? 
+        matches.filter(match => match.isLive === true) : 
+        matches;
+       
         container.innerHTML = `
             <div class="content-section">
                 <div class="navigation-buttons">
