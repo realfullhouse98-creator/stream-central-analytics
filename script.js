@@ -323,112 +323,80 @@ class MatchScheduler {
     }
 
     // ==================== EVENT LISTENERS ====================
-    waitForDOMReady() {
-        return new Promise((resolve) => {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => {
-                    this.isDOMReady = true;
-                    resolve();
-                });
-            } else {
-                this.isDOMReady = true;
-                resolve();
-            }
-        });
+    // ==================== EVENT LISTENERS ====================
+setupEventListeners() {
+    console.log('🎯 Setting up event listeners...');
+    
+    // Use event delegation on the dynamic content container
+    document.addEventListener('click', (e) => {
+        this.handleGlobalClick(e);
+    });
+
+    console.log('✅ Event listeners setup complete');
+}
+
+handleGlobalClick(e) {
+    console.log('🖱️ Click detected:', e.target);
+    
+    // Menu buttons - FIXED
+    const menuButton = e.target.closest('.menu-button');
+    if (menuButton) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const action = menuButton.getAttribute('data-action');
+        console.log(`🎯 Menu button clicked: ${action}`);
+        
+        switch(action) {
+            case 'sports':
+                this.showSportsView();
+                break;
+            case 'tv':
+                this.showTVChannels();
+                break;
+            case 'community':
+                this.showCommunity();
+                break;
+        }
+        return;
     }
 
-    setupEventListeners() {
-        document.addEventListener('click', (e) => {
-            this.handleGlobalClick(e);
-        });
+    // Home button - FIXED
+    const homeButton = e.target.closest('.home-button');
+    if (homeButton) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🏠 Home button clicked');
+        this.showMainMenu();
+        return;
     }
 
-    handleGlobalClick(e) {
-        // Menu buttons
-        const menuButton = e.target.closest('.menu-button');
-        if (menuButton) {
-            const action = menuButton.getAttribute('data-action');
-            switch(action) {
-                case 'sports':
-                    this.showSportsView();
-                    break;
-                case 'tv':
-                    this.showTVChannels();
-                    break;
-                case 'community':
-                    this.showCommunity();
-                    break;
-            }
-            return;
-        }
-
-        // Navigation buttons
-        const homeButton = e.target.closest('.home-button');
-        if (homeButton) {
-            this.showMainMenu();
-            return;
-        }
-
-        const backButton = e.target.closest('.top-back-button');
-        if (backButton) {
-            this.handleBackButton();
-            return;
-        }
-
-        // Sports navigation
-        const sportButton = e.target.closest('.sport-button');
-        if (sportButton && !sportButton.hasAttribute('data-action')) {
-            const sportName = sportButton.querySelector('.sport-name')?.textContent;
-            if (sportName) {
-                this.selectSport(sportName);
-            }
-            return;
-        }
-
-        const dateButton = e.target.closest('.date-button');
-        if (dateButton) {
-            const dateElement = dateButton.querySelector('.date-name');
-            if (dateElement) {
-                const dateText = dateElement.textContent;
-                const matches = this.verifiedMatches;
-                const match = matches.find(m => this.formatDisplayDate(m.date) === dateText);
-                if (match) {
-                    this.selectDate(match.date);
-                }
-            }
-            return;
-        }
-
-        const watchButton = e.target.closest('.watch-btn');
-        if (watchButton) {
-            const matchRow = watchButton.closest('.match-row');
-            if (matchRow) {
-                const teamNames = matchRow.querySelector('.team-names')?.textContent;
-                if (teamNames) {
-                    const match = this.verifiedMatches.find(m => 
-                        this.formatTeamNames(m.teams) === teamNames
-                    );
-                    if (match) {
-                        this.showMatchDetails(match.id);
-                    }
-                }
-            }
-            return;
-        }
-
-        const filterToggle = e.target.closest('.filter-toggle');
-        if (filterToggle) {
-            this.toggleLiveFilter();
-            return;
-        }
-
-        // TV Player back button
-        const tvBackButton = e.target.closest('.back-btn');
-        if (tvBackButton && this.currentView === 'tv-player') {
-            this.showCountryChannels(this.currentCountry);
-            return;
-        }
+    // Back button - FIXED
+    const backButton = e.target.closest('.top-back-button, .back-btn');
+    if (backButton) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('↩️ Back button clicked');
+        this.handleBackButton();
+        return;
     }
+
+    // Rest of your original click handling...
+    const sportButton = e.target.closest('.sport-button');
+    if (sportButton && !sportButton.hasAttribute('data-action')) {
+        e.preventDefault();
+        e.stopPropagation();
+        const sportName = sportButton.querySelector('.sport-name')?.textContent;
+        if (sportName) {
+            console.log(`⚽ Sport selected: ${sportName}`);
+            this.selectSport(sportName);
+        }
+        return;
+    }
+
+    // ... rest of your original click handlers
+
+    
 
     handleBackButton() {
         switch(this.currentView) {
