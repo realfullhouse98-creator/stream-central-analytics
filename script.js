@@ -61,6 +61,7 @@ class MatchScheduler {
                 if (success) {
                     this.isDataLoaded = true;
                     this.lastSyncTime = Date.now();
+                    console.log(`✅ Data loaded via ${strategy.name}`);
                     return;
                 }
             } catch (error) {
@@ -72,13 +73,17 @@ class MatchScheduler {
         // Ultimate fallback
         this.useEmergencyData();
         this.isDataLoaded = true;
+        console.log('🆘 Using ultimate fallback data');
     }
 
     // LAYER 1: Fresh localStorage cache
     async loadFromFreshCache() {
         try {
             const cache = localStorage.getItem('9kilos-matches-cache');
-            if (!cache) return false;
+            if (!cache) {
+                console.log('❌ No cache found');
+                return false;
+            }
             
             const { data, timestamp, version = 1 } = JSON.parse(cache);
             const cacheAge = Date.now() - timestamp;
@@ -93,8 +98,10 @@ class MatchScheduler {
                 return true;
             }
             
+            console.log('❌ Cache too old');
             return false;
         } catch (error) {
+            console.log('❌ Cache parse error');
             return false;
         }
     }
@@ -150,6 +157,7 @@ class MatchScheduler {
             console.log('✅ Layer 3: Emergency backup loaded');
             return this.verifiedMatches.length > 0;
         } catch (error) {
+            console.log('❌ Emergency backup failed');
             return false;
         }
     }
@@ -195,12 +203,18 @@ class MatchScheduler {
                 }
             }
         });
+
+        console.log('🔄 Background sync system started');
     }
 
     async silentSync() {
-        if (!navigator.onLine) return;
+        if (!navigator.onLine) {
+            console.log('🔌 Offline - skipping sync');
+            return;
+        }
         
         try {
+            console.log('🔄 Running silent sync...');
             const apiData = await this.tryFastProxies();
             if (apiData && this.hasNewData(apiData)) {
                 this.verifiedMatches = this.processAPIData(apiData);
@@ -211,10 +225,12 @@ class MatchScheduler {
                 this.refreshCurrentView();
                 this.updateAnalytics();
                 
-                console.log('🔄 Background sync: Data updated');
+                console.log('✅ Background sync: Data updated');
+            } else {
+                console.log('ℹ️ Background sync: No new data');
             }
         } catch (error) {
-            // Completely silent fail
+            console.log('🔇 Background sync failed silently');
         }
     }
 
@@ -229,8 +245,9 @@ class MatchScheduler {
         
         try {
             localStorage.setItem('9kilos-matches-cache', JSON.stringify(cacheData));
+            console.log(`💾 Cached data from ${source}`);
         } catch (e) {
-            // Ignore storage errors
+            console.log('❌ Cache storage failed');
         }
     }
 
@@ -238,7 +255,10 @@ class MatchScheduler {
         // Simple check - compare match counts
         const currentCount = this.verifiedMatches.length;
         const newCount = this.countMatchesInAPI(apiData);
-        return newCount > currentCount * 0.8; // 80% threshold
+        const hasNewData = newCount > currentCount * 0.8; // 80% threshold
+        
+        console.log(`📊 Data check: ${currentCount} current vs ${newCount} new`);
+        return hasNewData;
     }
 
     countMatchesInAPI(apiData) {
@@ -251,14 +271,16 @@ class MatchScheduler {
         try {
             const response = await fetch('tv-channels.json');
             const data = await response.json();
+            console.log('✅ TV channels loaded');
             return data;
         } catch (error) {
-            console.error('TV channels load failed:', error);
+            console.error('❌ TV channels load failed:', error);
             return {};
         }
     }
 
     async showTVChannels() {
+        console.log('📺 Loading TV channels...');
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
@@ -480,15 +502,12 @@ class MatchScheduler {
 
     // ==================== SPORTS SYSTEM ====================
     showSportsView() {
+        console.log('⚽ Loading sports view...');
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        if (this.isDataLoaded && this.verifiedMatches.length > 0) {
-            this.showSportsDataUI();
-        } else {
-            this.showSportsUIWithCachedData();
-            // Data will appear when loaded via background sync
-        }
+        // ALWAYS show instant UI, data will load in background
+        this.showSportsUIWithCachedData();
         
         this.hideStats();
         this.currentView = 'sports';
@@ -496,7 +515,7 @@ class MatchScheduler {
 
     showSportsDataUI() {
         const container = document.getElementById('dynamic-content');
-        if (!container) return;
+        if (!container || this.currentView !== 'sports') return;
         
         const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
         const sports = uniqueSports.map(sportId => {
@@ -517,7 +536,7 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories</h2>
+                    <h2>Live Sports</h2>
                     <p>Select your sport</p>
                 </div>
                 <div class="sports-grid">
@@ -525,34 +544,87 @@ class MatchScheduler {
                 </div>
             </div>
         `;
+        
+        console.log('✅ Sports data UI updated');
     }
 
     showSportsUIWithCachedData() {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
+        // Show INSTANT UI with refresh option
         container.innerHTML = `
             <div class="content-section">
                 <div class="navigation-buttons">
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories</h2>
+                    <h2>Live Sports</h2>
                     <p>Loading sports data...</p>
                 </div>
                 <div class="sports-grid">
-                    <div class="sport-button" style="opacity: 0.7;">
-                        <div class="sport-name">Loading...</div>
-                        <div class="match-count">Please wait</div>
+                    <div class="sport-button" style="opacity: 0.7; cursor: not-allowed;">
+                        <div class="sport-name">Loading Sports</div>
+                        <div class="match-count">Please wait...</div>
                     </div>
+                    <div class="sport-button" style="opacity: 0.7; cursor: not-allowed;">
+                        <div class="sport-name">Data Loading</div>
+                        <div class="match-count">Stand by</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="watch-button" onclick="matchScheduler.forceRefreshData()" style="background: var(--accent-blue);">
+                        🔄 Refresh Data
+                    </button>
                 </div>
             </div>
         `;
+        
+        // If data is already loaded, update immediately
+        if (this.isDataLoaded && this.verifiedMatches.length > 0) {
+            console.log('✅ Data already loaded, updating UI...');
+            setTimeout(() => this.showSportsDataUI(), 100);
+        }
+    }
+
+    async forceRefreshData() {
+        console.log('🔄 Manual refresh requested...');
+        this.isDataLoaded = false;
+        this.verifiedMatches = [];
+        
+        const container = document.getElementById('dynamic-content');
+        if (container) {
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                    </div>
+                    <div class="section-header">
+                        <h2>Live Sports</h2>
+                        <p>Refreshing data...</p>
+                    </div>
+                    <div class="loading-message">
+                        <div class="loading-spinner"></div>
+                        <p>Fetching latest matches</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        await this.loadMatchesData();
+        this.updateAnalytics();
+        
+        if (this.currentView === 'sports') {
+            this.showSportsView();
+        }
     }
 
     // ==================== DATA PROCESSING ====================
     processAPIData(apiData) {
-        if (!apiData?.events) return [];
+        if (!apiData?.events) {
+            console.log('❌ No events in API data');
+            return [];
+        }
         
         const processedMatches = [];
         
@@ -589,6 +661,7 @@ class MatchScheduler {
             }
         });
         
+        console.log(`✅ Processed ${processedMatches.length} matches`);
         return processedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
     }
 
@@ -598,10 +671,12 @@ class MatchScheduler {
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => {
                     this.isDOMReady = true;
+                    console.log('✅ DOM ready');
                     resolve();
                 });
             } else {
                 this.isDOMReady = true;
+                console.log('✅ DOM already ready');
                 resolve();
             }
         });
@@ -611,12 +686,14 @@ class MatchScheduler {
         document.addEventListener('click', (e) => {
             this.handleGlobalClick(e);
         });
+        console.log('✅ Event listeners setup');
     }
 
     handleGlobalClick(e) {
         const menuButton = e.target.closest('.menu-button');
         if (menuButton) {
             const action = menuButton.getAttribute('data-action');
+            console.log(`🎯 Menu action: ${action}`);
             switch(action) {
                 case 'sports': this.showSportsView(); break;
                 case 'tv': this.showTVChannels(); break;
@@ -627,12 +704,14 @@ class MatchScheduler {
 
         const homeButton = e.target.closest('.home-button');
         if (homeButton) {
+            console.log('🏠 Home button clicked');
             this.showMainMenu();
             return;
         }
 
         const backButton = e.target.closest('.top-back-button, .back-btn');
         if (backButton) {
+            console.log('↩️ Back button clicked');
             this.handleBackButton();
             return;
         }
@@ -640,7 +719,10 @@ class MatchScheduler {
         const sportButton = e.target.closest('.sport-button');
         if (sportButton && !sportButton.hasAttribute('data-action')) {
             const sportName = sportButton.querySelector('.sport-name')?.textContent;
-            if (sportName) this.selectSport(sportName);
+            if (sportName) {
+                console.log(`⚽ Sport selected: ${sportName}`);
+                this.selectSport(sportName);
+            }
             return;
         }
 
@@ -669,6 +751,7 @@ class MatchScheduler {
     }
 
     handleBackButton() {
+        console.log(`↩️ Navigating back from: ${this.currentView}`);
         switch(this.currentView) {
             case 'sports': case 'tv-countries': this.showMainMenu(); break;
             case 'dates': this.showSportsView(); break;
@@ -704,10 +787,12 @@ class MatchScheduler {
         
         this.showStats();
         this.currentView = 'main';
+        console.log('🏠 Main menu shown');
     }
 
     // ==================== SPORTS NAVIGATION ====================
     selectSport(sport) {
+        console.log(`⚽ Selected sport: ${sport}`);
         this.currentSport = sport;
         this.showDatesView();
     }
@@ -749,6 +834,7 @@ class MatchScheduler {
     }
 
     selectDate(date) {
+        console.log(`📅 Selected date: ${date}`);
         this.currentDate = date;
         this.showMatchesView();
     }
@@ -821,6 +907,7 @@ class MatchScheduler {
 
     toggleLiveFilter() {
         this.showLiveOnly = !this.showLiveOnly;
+        console.log(`🔀 Live filter: ${this.showLiveOnly ? 'ON' : 'OFF'}`);
         this.showMatchesView();
     }
 
@@ -898,6 +985,7 @@ class MatchScheduler {
         
         this.hideStats();
         this.incrementViews(matchId);
+        console.log(`🎥 Match details: ${formattedTeams}`);
     }
 
     refreshCurrentStream(matchId) {
@@ -1048,11 +1136,18 @@ class MatchScheduler {
         document.getElementById('countries').textContent = '22';
         document.getElementById('uptime').textContent = '100%';
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
+        
+        console.log(`📊 Analytics updated: ${this.verifiedMatches.length} matches, ${liveMatches} live`);
     }
 
     refreshCurrentView() {
-        if (this.currentView === 'sports') this.showSportsDataUI();
-        else if (this.currentView === 'matches') this.showMatchesView();
+        if (this.currentView === 'sports') {
+            console.log('🔄 Refreshing sports view');
+            this.showSportsDataUI();
+        } else if (this.currentView === 'matches') {
+            console.log('🔄 Refreshing matches view');
+            this.showMatchesView();
+        }
     }
 
     // ==================== TV CHANNELS UTILS ====================
@@ -1098,10 +1193,10 @@ class MatchScheduler {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then(registration => {
-                    console.log('SW registered');
+                    console.log('✅ Service Worker registered');
                 })
                 .catch(error => {
-                    console.log('SW failed:', error);
+                    console.log('❌ Service Worker failed:', error);
                 });
         }
     }
@@ -1134,6 +1229,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
             console.log('✅ 9kilos Fully Operational!');
+        }).catch(error => {
+            console.error('❌ Initialization failed:', error);
         });
     } catch (error) {
         console.error('❌ Critical Error:', error);
