@@ -909,6 +909,10 @@ class MatchScheduler {
     const filteredMatches = this.showLiveOnly ? 
         matches.filter(match => match.isLive === true) : 
         matches;
+
+       // ADD THIS LINE:
+console.log('Filtered matches count:', filteredMatches.length);
+       
        
         container.innerHTML = `
             <div class="content-section">
