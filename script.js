@@ -102,6 +102,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
+        document.body.classList.add('tv-section');
         this.showCountriesView();
     }
 
@@ -113,7 +114,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <div class="tv-navigation">
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
@@ -147,7 +148,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <div class="tv-navigation">
                     <button class="home-button">⌂</button>
                     <button class="top-back-button">←</button>
                 </div>
@@ -457,6 +458,7 @@ class MatchScheduler {
     // ==================== SPORTS FUNCTIONALITY ====================
     showSportsView() {
         console.log('🎯 Sports view loading...');
+        document.body.classList.remove('tv-section');
         
         // INSTANT UI UPDATE
         this.showSportsUIWithCachedData();
@@ -885,7 +887,10 @@ class MatchScheduler {
         const sportName = this.currentSport;
         const displayDate = this.formatDisplayDate(this.currentDate);
         
-        const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
+        // FIXED FILTER - Properly filter matches based on showLiveOnly state
+        const filteredMatches = this.showLiveOnly ? 
+            matches.filter(match => match.isLive === true) : 
+            matches;
         
         container.innerHTML = `
             <div class="content-section">
@@ -1057,6 +1062,8 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
+        document.body.classList.remove('tv-section');
+        
         container.innerHTML = `
             <div class="main-menu">
                 <div class="menu-grid">
@@ -1088,6 +1095,8 @@ class MatchScheduler {
     showCommunity() {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
+        
+        document.body.classList.remove('tv-section');
         
         container.innerHTML = `
             <div class="content-section">
