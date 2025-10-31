@@ -316,6 +316,7 @@ class MatchScheduler {
         // Menu buttons
         const menuButton = e.target.closest('.menu-button');
         if (menuButton) {
+            console.log('FILTER BUTTON CLICKED!');
             e.preventDefault();
             e.stopPropagation();
             
