@@ -973,11 +973,15 @@ console.log('Filtered matches count:', filteredMatches.length);
         `;
     }
 
-    toggleLiveFilter() {
+   toggleLiveFilter() {
     console.log('BEFORE toggle:', this.showLiveOnly);
     this.showLiveOnly = !this.showLiveOnly;
     console.log('AFTER toggle:', this.showLiveOnly);
-    this.showMatchesView();
+    
+    // Add a small delay to ensure DOM is ready
+    setTimeout(() => {
+        this.showMatchesView();
+    }, 10);
 }
 
     async showMatchDetails(matchId) {
