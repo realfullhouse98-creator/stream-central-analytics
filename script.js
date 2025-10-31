@@ -1162,9 +1162,11 @@ class MatchScheduler {
 
     checkIfLive(match) {
         if (!match.unix_timestamp) return false;
-        const now = Math.floor(Date.now() / 1000);
-        const matchTime = match.unix_timestamp;
-        return now >= matchTime && now <= (matchTime + 7200);
+    const now = Math.floor(Date.now() / 1000);
+    const matchTime = match.unix_timestamp;
+    
+    // Make the live window longer - 6 hours instead of 2
+    return now >= matchTime && now <= (matchTime + 21600);
     }
 
     formatTeamNames(teamString) {
