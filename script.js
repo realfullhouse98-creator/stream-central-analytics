@@ -102,24 +102,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        this.hideMainHeader();
         this.showCountriesView();
-    }
-
-    hideMainHeader() {
-        const mainHeader = document.getElementById('main-header');
-        const analytics = document.querySelector('.analytics-overview');
-        if (mainHeader) mainHeader.style.display = 'none';
-        if (analytics) analytics.style.display = 'none';
-        document.body.classList.add('tv-section');
-    }
-
-    showMainHeader() {
-        const mainHeader = document.getElementById('main-header');
-        const analytics = document.querySelector('.analytics-overview');
-        if (mainHeader) mainHeader.style.display = 'block';
-        if (analytics) analytics.style.display = 'grid';
-        document.body.classList.remove('tv-section');
     }
 
     showCountriesView() {
@@ -130,7 +113,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="tv-navigation-header">
+                <div class="navigation-buttons">
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
@@ -150,6 +133,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'tv-countries';
     }
 
@@ -163,7 +147,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="tv-navigation-header">
+                <div class="navigation-buttons">
                     <button class="home-button">⌂</button>
                     <button class="top-back-button">←</button>
                 </div>
@@ -176,7 +160,6 @@ class MatchScheduler {
                     ${channels.map(channel => `
                         <div class="channel-card">
                             <div class="channel-header">
-                                <div class="channel-logo">${this.getChannelLogo(channel.name)}</div>
                                 <div class="channel-info">
                                     <div class="channel-name">${channel.displayName}</div>
                                     <div class="channel-category">${channel.category}</div>
@@ -192,6 +175,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'tv-channels';
     }
 
@@ -247,18 +231,8 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'tv-player';
-    }
-
-    refreshTVStream() {
-        const iframe = document.getElementById('stream-iframe-tv');
-        if (iframe) {
-            const currentSrc = iframe.src;
-            iframe.src = '';
-            setTimeout(() => {
-                iframe.src = currentSrc;
-            }, 500);
-        }
     }
 
     getCountryFlag(country) {
@@ -287,24 +261,6 @@ class MatchScheduler {
             'Spain': '🇪🇸'
         };
         return flags[country] || '🌍';
-    }
-
-    getChannelLogo(channelName) {
-        if (channelName.includes('SuperSport')) return 'SS';
-        if (channelName.includes('FanDuel')) return 'FD';
-        if (channelName.includes('ESPN')) return 'ES';
-        if (channelName.includes('Fox')) return 'FX';
-        if (channelName.includes('Sky')) return 'SK';
-        if (channelName.includes('BT')) return 'BT';
-        if (channelName.includes('Premier')) return 'PL';
-        if (channelName.includes('NBA')) return 'NB';
-        if (channelName.includes('Eleven')) return '11';
-        if (channelName.includes('SporTV')) return 'ST';
-        if (channelName.includes('RTE')) return 'RT';
-        if (channelName.includes('DAZN')) return 'DZ';
-        if (channelName.includes('beIN')) return 'bN';
-        if (channelName.includes('Eurosport')) return 'EU';
-        return 'TV';
     }
 
     // ==================== EVENT LISTENERS ====================
@@ -501,7 +457,6 @@ class MatchScheduler {
     // ==================== SPORTS FUNCTIONALITY ====================
     showSportsView() {
         console.log('🎯 Sports view loading...');
-        this.showMainHeader();
         
         // INSTANT UI UPDATE
         this.showSportsUIWithCachedData();
@@ -561,6 +516,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'sports';
     }
 
@@ -916,6 +872,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'dates';
     }
 
@@ -928,7 +885,6 @@ class MatchScheduler {
         const sportName = this.currentSport;
         const displayDate = this.formatDisplayDate(this.currentDate);
         
-        // FIXED FILTER FUNCTIONALITY
         const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
         
         container.innerHTML = `
@@ -963,6 +919,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'matches';
     }
 
@@ -1069,6 +1026,7 @@ class MatchScheduler {
             </div>
         `;
         
+        this.hideStats();
         this.currentView = 'match-details';
         this.incrementViews(matchId);
     }
@@ -1099,8 +1057,6 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        this.showMainHeader();
-        
         container.innerHTML = `
             <div class="main-menu">
                 <div class="menu-grid">
@@ -1125,14 +1081,13 @@ class MatchScheduler {
             </div>
         `;
         
+        this.showStats();
         this.currentView = 'main';
     }
 
     showCommunity() {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
-        
-        this.showMainHeader();
         
         container.innerHTML = `
             <div class="content-section">
@@ -1153,6 +1108,7 @@ class MatchScheduler {
                 </div>
             </div>
         `;
+        this.hideStats();
     }
 
     selectSport(sport) {
@@ -1240,6 +1196,16 @@ class MatchScheduler {
 
     handleShare(matchId) {
         alert('Share feature coming soon!');
+    }
+
+    showStats() {
+        const analytics = document.querySelector('.analytics-overview');
+        if (analytics) analytics.style.display = 'grid';
+    }
+
+    hideStats() {
+        const analytics = document.querySelector('.analytics-overview');
+        if (analytics) analytics.style.display = 'none';
     }
 
     updateAnalytics() {
