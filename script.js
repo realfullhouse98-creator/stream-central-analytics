@@ -117,8 +117,8 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>📺 TV Channels</h2>
-                    <p>Select a country to browse channels</p>
+                    <h2>Country</h2>
+                    <p>Select country for TV channels</p>
                 </div>
                 
                 <div class="countries-grid">
@@ -152,8 +152,8 @@ class MatchScheduler {
                     <button class="top-back-button">←</button>
                 </div>
                 <div class="section-header">
-                    <h2>${this.getCountryFlag(country)} ${country}</h2>
-                    <p>${channels.length} channels available</p>
+                    <h2>TV Channels</h2>
+                    <p>Browse ${country} channels</p>
                 </div>
                 
                 <div class="channels-grid">
@@ -192,41 +192,53 @@ class MatchScheduler {
         if (!container) return;
         
         container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button">⌂</button>
-                    <button class="top-back-button">←</button>
-                </div>
-                
-                <div class="section-header">
-                    <h2>${channel.displayName}</h2>
-                    <p>Live TV Channel from ${channel.country}</p>
-                </div>
-                
-                <div class="tv-player-container">
-                    <div class="tv-video-player">
-                        <iframe id="tv-player" title="${channel.name}[${channel.country}]" 
-                                frameborder="0" allowfullscreen 
-                                allow="encrypted-media; picture-in-picture;"
-                                src="${channel.streamUrl}">
-                        </iframe>
+            <div class="match-details-overlay">
+                <div class="match-details-modal">
+                    <div class="match-header">
+                        <button class="back-btn">← Back to Channels</button>
                     </div>
-                </div>
-                
-                <div class="tv-channel-info">
-                    <div class="tv-info-item"><strong>Channel:</strong> ${channel.name}</div>
-                    <div class="tv-info-item"><strong>Country:</strong> ${channel.country}</div>
-                    <div class="tv-info-item"><strong>Live Now:</strong> ${channel.name}</div>
-                    <div class="tv-info-item"><strong>Category:</strong> ${channel.category}</div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="watch-button" onclick="matchScheduler.refreshTVStream()" style="margin: 5px;">
-                        🔄 Refresh Stream
-                    </button>
-                    <button class="watch-button" onclick="matchScheduler.showCountryChannels('${country}')" style="background: var(--accent-blue); margin: 5px;">
-                        ← Back to Channels
-                    </button>
+                    
+                    <div class="video-container">
+                        <div class="video-player-controls">
+                            <div class="control-buttons-right">
+                                <button class="player-control-btn refresh" onclick="matchScheduler.refreshTVStream()">
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="video-player-wrapper">
+                            <div class="video-player" id="video-player-tv">
+                                <iframe src="${channel.streamUrl}" class="stream-iframe" id="stream-iframe-tv"
+                                        allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                        
+                        <div class="video-controls">
+                            <div class="video-title">${channel.displayName}</div>
+                            <div class="video-stats">
+                                <span class="views-count">Live TV Channel</span>
+                                <span class="live-badge-details">LIVE NOW</span>
+                                <span style="color: var(--text-muted);">• ${channel.country}</span>
+                            </div>
+                            
+                            <div class="video-actions">
+                                <button class="action-btn" onclick="matchScheduler.refreshTVStream()">
+                                    🔄 Refresh Stream
+                                </button>
+                                <button class="action-btn" onclick="matchScheduler.showCountryChannels('${country}')">
+                                    📺 More Channels
+                                </button>
+                            </div>
+                            
+                            <div class="match-description">
+                                <div class="description-text">
+                                    <strong>Channel Info:</strong> ${channel.displayName} from ${channel.country}. 
+                                    ${channel.description} Live 24/7 broadcast.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -236,12 +248,19 @@ class MatchScheduler {
     }
 
     refreshTVStream() {
-        const iframe = document.getElementById('tv-player');
+        const iframe = document.getElementById('stream-iframe-tv');
         if (iframe) {
             const currentSrc = iframe.src;
             iframe.src = '';
             setTimeout(() => {
                 iframe.src = currentSrc;
+                
+                const refreshBtn = document.querySelector('.player-control-btn.refresh');
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = 'Refreshing...';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                }, 1000);
             }, 500);
         }
     }
@@ -1094,8 +1113,8 @@ class MatchScheduler {
                         <div class="button-subtitle">Games & schedules</div>
                     </div>
                     <div class="menu-button tv-button" data-action="tv">
-                        <div class="button-title">TV CHANNELS</div>
-                        <div class="button-subtitle">24/7 live streams</div>
+                        <div class="button-title">COUNTRY</div>
+                        <div class="button-subtitle">Select country for TV channels</div>
                     </div>
                     <div class="menu-button community" data-action="community">
                         <div class="button-title">COMMUNITY</div>
