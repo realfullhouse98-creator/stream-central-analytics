@@ -300,41 +300,55 @@ class MatchScheduler {
             if (!container) return;
             
             container.innerHTML = `
-                <div class="content-section">
-                    <div class="navigation-buttons">
-                        <button class="home-button">⌂</button>
-                        <button class="top-back-button">←</button>
-                    </div>
-                    
-                    <div class="section-header">
-                        <h2>${channel.displayName}</h2>
-                        <p>Live TV Channel from ${channel.country}</p>
-                    </div>
-                    
-                    <div class="tv-player-container">
-                        <div class="tv-video-player">
-                            <iframe id="tv-player" title="${channel.name}[${channel.country}]" 
-                                    frameborder="0" allowfullscreen 
-                                    allow="encrypted-media; picture-in-picture;"
-                                    src="${channel.streamUrl}">
-                            </iframe>
+                <div class="match-details-overlay">
+                    <div class="match-details-modal">
+                        <div class="match-header">
+                            <button class="back-btn">← Back</button>
                         </div>
-                    </div>
-                    
-                    <div class="tv-channel-info">
-                        <div class="tv-info-item"><strong>Channel:</strong> ${channel.name}</div>
-                        <div class="tv-info-item"><strong>Country:</strong> ${channel.country}</div>
-                        <div class="tv-info-item"><strong>Live Now:</strong> ${channel.name}</div>
-                        <div class="tv-info-item"><strong>Category:</strong> ${channel.category}</div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="watch-button" onclick="matchScheduler.refreshTVStream()" style="margin: 5px;">
-                            🔄 Refresh Stream
-                        </button>
-                        <button class="watch-button" onclick="matchScheduler.showCountryChannels('${country}')" style="background: var(--accent-blue); margin: 5px;">
-                            ← Back to Channels
-                        </button>
+                        
+                        <div class="video-container">
+                            <div class="video-player-controls">
+                                <div class="control-buttons-right">
+                                    <button class="player-control-btn refresh" onclick="matchScheduler.refreshTVStream()">
+                                        Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="video-player-wrapper">
+                                <div class="video-player" id="video-player-${channel.name}">
+                                    <iframe src="${channel.streamUrl}" class="stream-iframe" id="tv-player"
+                                            allow="autoplay; fullscreen" allowfullscreen
+                                            title="${channel.displayName}">
+                                    </iframe>
+                                </div>
+                            </div>
+                            
+                            <div class="video-controls">
+                                <div class="video-title">${channel.displayName}</div>
+                                <div class="video-stats">
+                                    <span class="views-count">Live TV Channel</span>
+                                    <span class="live-badge-details">LIVE NOW</span>
+                                    <span style="color: var(--text-muted);">• ${channel.country}</span>
+                                </div>
+                                
+                                <div class="video-actions">
+                                    <button class="action-btn" onclick="matchScheduler.handleLikeTV('${channel.name}')">
+                                        👍 Like
+                                    </button>
+                                    <button class="action-btn" onclick="matchScheduler.handleShareTV('${channel.name}')">
+                                        Share
+                                    </button>
+                                </div>
+                                
+                                <div class="match-description">
+                                    <div class="description-text">
+                                        <strong>Channel Info:</strong> ${channel.displayName} from ${channel.country}. 
+                                        ${channel.description} Category: ${channel.category}.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -373,8 +387,23 @@ class MatchScheduler {
             iframe.src = '';
             setTimeout(() => {
                 iframe.src = currentSrc;
+                
+                const refreshBtn = document.querySelector('.player-control-btn.refresh');
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = 'Refreshing...';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                }, 1000);
             }, 500);
         }
+    }
+
+    handleLikeTV(channelName) {
+        alert('Like feature coming soon for TV channels!');
+    }
+
+    handleShareTV(channelName) {
+        alert('Share feature coming soon for TV channels!');
     }
 
     getCountryFlag(country) {
@@ -400,7 +429,11 @@ class MatchScheduler {
             'Japan': '🇯🇵',
             'South Korea': '🇰🇷',
             'China': '🇨🇳',
-            'India': '🇮🇳'
+            'India': '🇮🇳',
+            'Pakistan': '🇵🇰',
+            'Poland': '🇵🇱',
+            'Romania': '🇷🇴',
+            'Serbia': '🇷🇸'
         };
         return flags[country] || '🌍';
     }
@@ -546,6 +579,15 @@ class MatchScheduler {
             e.preventDefault();
             e.stopPropagation();
             this.toggleLiveFilter();
+            return;
+        }
+
+        // TV Player back button
+        const tvBackButton = e.target.closest('.back-btn');
+        if (tvBackButton && this.currentView === 'tv-player') {
+            e.preventDefault();
+            e.stopPropagation();
+            this.showCountryChannels(this.currentCountry);
             return;
         }
     }
