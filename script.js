@@ -102,7 +102,24 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
+        this.hideMainHeader();
         this.showCountriesView();
+    }
+
+    hideMainHeader() {
+        const mainHeader = document.getElementById('main-header');
+        const analytics = document.querySelector('.analytics-overview');
+        if (mainHeader) mainHeader.style.display = 'none';
+        if (analytics) analytics.style.display = 'none';
+        document.body.classList.add('tv-section');
+    }
+
+    showMainHeader() {
+        const mainHeader = document.getElementById('main-header');
+        const analytics = document.querySelector('.analytics-overview');
+        if (mainHeader) mainHeader.style.display = 'block';
+        if (analytics) analytics.style.display = 'grid';
+        document.body.classList.remove('tv-section');
     }
 
     showCountriesView() {
@@ -113,7 +130,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <div class="tv-navigation-header">
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
@@ -133,7 +150,6 @@ class MatchScheduler {
             </div>
         `;
         
-        this.hideStats();
         this.currentView = 'tv-countries';
     }
 
@@ -147,7 +163,7 @@ class MatchScheduler {
         
         container.innerHTML = `
             <div class="content-section">
-                <div class="navigation-buttons">
+                <div class="tv-navigation-header">
                     <button class="home-button">⌂</button>
                     <button class="top-back-button">←</button>
                 </div>
@@ -176,7 +192,6 @@ class MatchScheduler {
             </div>
         `;
         
-        this.hideStats();
         this.currentView = 'tv-channels';
     }
 
@@ -199,14 +214,6 @@ class MatchScheduler {
                     </div>
                     
                     <div class="video-container">
-                        <div class="video-player-controls">
-                            <div class="control-buttons-right">
-                                <button class="player-control-btn refresh" onclick="matchScheduler.refreshTVStream()">
-                                    Refresh
-                                </button>
-                            </div>
-                        </div>
-                        
                         <div class="video-player-wrapper">
                             <div class="video-player" id="video-player-tv">
                                 <iframe src="${channel.streamUrl}" class="stream-iframe" id="stream-iframe-tv"
@@ -223,9 +230,6 @@ class MatchScheduler {
                             </div>
                             
                             <div class="video-actions">
-                                <button class="action-btn" onclick="matchScheduler.refreshTVStream()">
-                                    🔄 Refresh Stream
-                                </button>
                                 <button class="action-btn" onclick="matchScheduler.showCountryChannels('${country}')">
                                     📺 More Channels
                                 </button>
@@ -243,7 +247,6 @@ class MatchScheduler {
             </div>
         `;
         
-        this.hideStats();
         this.currentView = 'tv-player';
     }
 
@@ -254,13 +257,6 @@ class MatchScheduler {
             iframe.src = '';
             setTimeout(() => {
                 iframe.src = currentSrc;
-                
-                const refreshBtn = document.querySelector('.player-control-btn.refresh');
-                const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = 'Refreshing...';
-                setTimeout(() => {
-                    refreshBtn.innerHTML = originalText;
-                }, 1000);
             }, 500);
         }
     }
@@ -505,6 +501,7 @@ class MatchScheduler {
     // ==================== SPORTS FUNCTIONALITY ====================
     showSportsView() {
         console.log('🎯 Sports view loading...');
+        this.showMainHeader();
         
         // INSTANT UI UPDATE
         this.showSportsUIWithCachedData();
@@ -564,7 +561,6 @@ class MatchScheduler {
             </div>
         `;
         
-        this.hideStats();
         this.currentView = 'sports';
     }
 
@@ -920,7 +916,6 @@ class MatchScheduler {
             </div>
         `;
         
-        this.hideStats();
         this.currentView = 'dates';
     }
 
@@ -933,6 +928,7 @@ class MatchScheduler {
         const sportName = this.currentSport;
         const displayDate = this.formatDisplayDate(this.currentDate);
         
+        // FIXED FILTER FUNCTIONALITY
         const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
         
         container.innerHTML = `
@@ -967,7 +963,6 @@ class MatchScheduler {
             </div>
         `;
         
-        this.hideStats();
         this.currentView = 'matches';
     }
 
@@ -1074,7 +1069,6 @@ class MatchScheduler {
             </div>
         `;
         
-        this.hideStats();
         this.currentView = 'match-details';
         this.incrementViews(matchId);
     }
@@ -1105,6 +1099,8 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
+        this.showMainHeader();
+        
         container.innerHTML = `
             <div class="main-menu">
                 <div class="menu-grid">
@@ -1113,8 +1109,8 @@ class MatchScheduler {
                         <div class="button-subtitle">Games & schedules</div>
                     </div>
                     <div class="menu-button tv-button" data-action="tv">
-                        <div class="button-title">COUNTRY</div>
-                        <div class="button-subtitle">Select country for TV channels</div>
+                        <div class="button-title">TV CHANNELS</div>
+                        <div class="button-subtitle">24/7 live streams</div>
                     </div>
                     <div class="menu-button community" data-action="community">
                         <div class="button-title">COMMUNITY</div>
@@ -1129,13 +1125,14 @@ class MatchScheduler {
             </div>
         `;
         
-        this.showStats();
         this.currentView = 'main';
     }
 
     showCommunity() {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
+        
+        this.showMainHeader();
         
         container.innerHTML = `
             <div class="content-section">
@@ -1156,7 +1153,6 @@ class MatchScheduler {
                 </div>
             </div>
         `;
-        this.hideStats();
     }
 
     selectSport(sport) {
@@ -1244,16 +1240,6 @@ class MatchScheduler {
 
     handleShare(matchId) {
         alert('Share feature coming soon!');
-    }
-
-    showStats() {
-        const analytics = document.querySelector('.analytics-overview');
-        if (analytics) analytics.style.display = 'grid';
-    }
-
-    hideStats() {
-        const analytics = document.querySelector('.analytics-overview');
-        if (analytics) analytics.style.display = 'none';
     }
 
     updateAnalytics() {
