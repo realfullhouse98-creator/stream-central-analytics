@@ -969,9 +969,11 @@ class MatchScheduler {
     }
 
     toggleLiveFilter() {
-        this.showLiveOnly = !this.showLiveOnly;
-        this.showMatchesView();
-    }
+    console.log('BEFORE toggle:', this.showLiveOnly);
+    this.showLiveOnly = !this.showLiveOnly;
+    console.log('AFTER toggle:', this.showLiveOnly);
+    this.showMatchesView();
+}
 
     async showMatchDetails(matchId) {
         await this.ensureDataLoaded();
