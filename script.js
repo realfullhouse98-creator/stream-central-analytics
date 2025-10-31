@@ -13,6 +13,9 @@ class MatchScheduler {
         // TV Channels State
         this.currentCountry = '';
         this.currentTVChannel = null;
+        this.tvChannelsData = null;
+        this.isTVDataLoaded = false;
+        this.tvDataLoading = false;
         
         // Optimization Flags
         this.isDataLoaded = false;
@@ -42,139 +45,84 @@ class MatchScheduler {
         
         // Start preloading in background
         this.backgroundPreload();
+        // Preload TV channels data
+        this.preloadTVChannelsData();
     }
 
     // ==================== TV CHANNELS DATA ====================
-    getTVChannelsData() {
-        return {
-            "South Africa": [
-                {
-                    name: "SuperSportRugby",
-                    displayName: "SuperSport Rugby",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportRugby%5BSouthAfrica%5D",
-                    category: "Rugby",
-                    description: "Live rugby matches, highlights, and analysis"
-                },
-                {
-                    name: "SuperSportTennis",
-                    displayName: "SuperSport Tennis", 
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportTennis%5BSouthAfrica%5D",
-                    category: "Tennis",
-                    description: "Tennis tournaments and matches"
-                },
-                {
-                    name: "SuperSportSoccer",
-                    displayName: "SuperSport Soccer",
-                    country: "South Africa", 
-                    streamUrl: "https://topembed.pw/channel/SuperSportSoccer%5BSouthAfrica%5D",
-                    category: "Football",
-                    description: "Football matches and leagues"
-                },
-                {
-                    name: "SuperSportCricket",
-                    displayName: "SuperSport Cricket",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportCricket%5BSouthAfrica%5D",
-                    category: "Cricket", 
-                    description: "Cricket matches and tournaments"
-                },
-                {
-                    name: "SuperSportAction",
-                    displayName: "SuperSport Action",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportAction%5BSouthAfrica%5D",
-                    category: "Multi-sport",
-                    description: "24/7 sports action and events"
-                },
-                {
-                    name: "SuperSportVariety1",
-                    displayName: "SuperSport Variety 1",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportVariety1%5BSouthAfrica%5D",
-                    category: "Multi-sport",
-                    description: "Variety sports programming"
-                }
-            ],
-            "USA": [
-                {
-                    name: "FanDuelSportsMidwest",
-                    displayName: "FanDuel Sports Midwest",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/FanDuelSportsMidwest%5BUSA%5D",
-                    category: "Multi-sport",
-                    description: "Regional sports coverage"
-                },
-                {
-                    name: "ESPN",
-                    displayName: "ESPN",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/ESPN%5BUSA%5D", 
-                    category: "Multi-sport",
-                    description: "Worldwide sports leader"
-                },
-                {
-                    name: "FoxSports",
-                    displayName: "Fox Sports",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/FoxSports%5BUSA%5D",
-                    category: "Multi-sport",
-                    description: "National sports coverage"
-                },
-                {
-                    name: "NBASports",
-                    displayName: "NBA TV",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/NBASports%5BUSA%5D",
-                    category: "Basketball",
-                    description: "Basketball games and analysis"
-                }
-            ],
-            "UK": [
-                {
-                    name: "SkySportsMain",
-                    displayName: "Sky Sports Main Event",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/SkySportsMain%5BUK%5D",
-                    category: "Multi-sport",
-                    description: "Premier sports coverage"
-                },
-                {
-                    name: "BTSport1",
-                    displayName: "BT Sport 1",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/BTSport1%5BUK%5D",
-                    category: "Multi-sport", 
-                    description: "Live sports and events"
-                },
-                {
-                    name: "PremierSports",
-                    displayName: "Premier Sports",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/PremierSports%5BUK%5D",
-                    category: "Football",
-                    description: "Premier League and football"
-                }
-            ]
-        };
+    async getTVChannelsData() {
+        // Return cached data if already loaded
+        if (this.tvChannelsData && this.isTVDataLoaded) {
+            return this.tvChannelsData;
+        }
+        
+        // If already loading, wait for it
+        if (this.tvDataLoading) {
+            return new Promise((resolve) => {
+                const checkInterval = setInterval(() => {
+                    if (this.isTVDataLoaded) {
+                        clearInterval(checkInterval);
+                        resolve(this.tvChannelsData);
+                    }
+                }, 100);
+            });
+        }
+        
+        // Load from JSON file
+        return await this.loadTVChannelsFromJSON();
+    }
+
+    async loadTVChannelsFromJSON() {
+        this.tvDataLoading = true;
+        
+        try {
+            const response = await fetch('tv-channels.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            this.tvChannelsData = data;
+            this.isTVDataLoaded = true;
+            console.log('✅ TV Channels data loaded from JSON:', Object.keys(data).length, 'countries');
+            return data;
+            
+        } catch (error) {
+            console.error('❌ Failed to load TV channels JSON:', error);
+            // Fallback to empty data to prevent crashes
+            this.tvChannelsData = {};
+            this.isTVDataLoaded = true;
+            return {};
+        } finally {
+            this.tvDataLoading = false;
+        }
+    }
+
+    async preloadTVChannelsData() {
+        // Preload in background without blocking
+        setTimeout(async () => {
+            try {
+                await this.loadTVChannelsFromJSON();
+            } catch (error) {
+                console.log('Background TV data preloading failed, will retry when needed');
+            }
+        }, 2000);
     }
 
     // ==================== TV CHANNELS NAVIGATION ====================
-    showTVChannels() {
+    async showTVChannels() {
         console.log('🎯 TV Channels button clicked');
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        this.showCountriesView();
+        await this.showCountriesView();
     }
 
-    showCountriesView() {
+    async showCountriesView() {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
-        const tvData = this.getTVChannelsData();
-        
+        // Show loading state
         container.innerHTML = `
             <div class="content-section">
                 <div class="navigation-buttons">
@@ -182,33 +130,75 @@ class MatchScheduler {
                 </div>
                 <div class="section-header">
                     <h2>📺 TV Channels</h2>
-                    <p>Select a country to browse channels</p>
+                    <p>Loading countries...</p>
                 </div>
-                
-                <div class="countries-grid">
-                    ${Object.entries(tvData).map(([country, channels]) => `
-                        <div class="country-card" onclick="matchScheduler.showCountryChannels('${country}')">
-                            <div class="country-flag">${this.getCountryFlag(country)}</div>
-                            <div class="country-name">${country}</div>
-                            <div class="channel-count">${channels.length} channels</div>
-                        </div>
-                    `).join('')}
+                <div class="loading-message">
+                    <div class="loading-spinner"></div>
+                    <p>Loading TV channels data</p>
                 </div>
             </div>
         `;
+        
+        try {
+            const tvData = await this.getTVChannelsData();
+            
+            if (!tvData || Object.keys(tvData).length === 0) {
+                throw new Error('No TV channels data available');
+            }
+            
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                    </div>
+                    <div class="section-header">
+                        <h2>📺 TV Channels</h2>
+                        <p>Select a country to browse channels</p>
+                    </div>
+                    
+                    <div class="countries-grid">
+                        ${Object.entries(tvData).map(([country, channels]) => `
+                            <div class="country-card" onclick="matchScheduler.showCountryChannels('${country}')">
+                                <div class="country-flag">${this.getCountryFlag(country)}</div>
+                                <div class="country-name">${country}</div>
+                                <div class="channel-count">${channels.length} channel${channels.length !== 1 ? 's' : ''}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+        } catch (error) {
+            console.error('Error loading countries view:', error);
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                    </div>
+                    <div class="section-header">
+                        <h2>📺 TV Channels</h2>
+                        <p>Select a country to browse channels</p>
+                    </div>
+                    <div class="error-message">
+                        <h3>Unable to load TV channels</h3>
+                        <p>Please check your connection and try again</p>
+                        <button class="retry-btn" onclick="matchScheduler.showCountriesView()">Retry</button>
+                    </div>
+                </div>
+            `;
+        }
         
         this.hideStats();
         this.currentView = 'tv-countries';
     }
 
-    showCountryChannels(country) {
+    async showCountryChannels(country) {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
         this.currentCountry = country;
-        const tvData = this.getTVChannelsData();
-        const channels = tvData[country] || [];
         
+        // Show loading state
         container.innerHTML = `
             <div class="content-section">
                 <div class="navigation-buttons">
@@ -217,83 +207,160 @@ class MatchScheduler {
                 </div>
                 <div class="section-header">
                     <h2>${this.getCountryFlag(country)} ${country}</h2>
-                    <p>${channels.length} channels available</p>
+                    <p>Loading channels...</p>
                 </div>
-                
-                <div class="channels-grid">
-                    ${channels.map(channel => `
-                        <div class="channel-card">
-                            <div class="channel-header">
-                                <div class="channel-logo">${this.getChannelLogo(channel.name)}</div>
-                                <div class="channel-info">
-                                    <div class="channel-name">${channel.displayName}</div>
-                                    <div class="channel-category">${channel.category}</div>
-                                </div>
-                            </div>
-                            <div class="channel-description">${channel.description}</div>
-                            <button class="watch-button" onclick="matchScheduler.playTVChannel('${channel.name}')">
-                                ▶ Watch Live
-                            </button>
-                        </div>
-                    `).join('')}
+                <div class="loading-message">
+                    <div class="loading-spinner"></div>
+                    <p>Loading channels for ${country}</p>
                 </div>
             </div>
         `;
+        
+        try {
+            const tvData = await this.getTVChannelsData();
+            const channels = tvData[country] || [];
+            
+            if (channels.length === 0) {
+                throw new Error(`No channels found for ${country}`);
+            }
+            
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                        <button class="top-back-button">←</button>
+                    </div>
+                    <div class="section-header">
+                        <h2>${this.getCountryFlag(country)} ${country}</h2>
+                        <p>${channels.length} channel${channels.length !== 1 ? 's' : ''} available</p>
+                    </div>
+                    
+                    <div class="channels-grid">
+                        ${channels.map(channel => `
+                            <div class="channel-card">
+                                <div class="channel-header">
+                                    <div class="channel-logo">${this.getChannelLogo(channel.name)}</div>
+                                    <div class="channel-info">
+                                        <div class="channel-name">${channel.displayName}</div>
+                                        <div class="channel-category">${channel.category}</div>
+                                    </div>
+                                </div>
+                                <div class="channel-description">${channel.description}</div>
+                                <button class="watch-button" onclick="matchScheduler.playTVChannel('${channel.name}')">
+                                    ▶ Watch Live
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+        } catch (error) {
+            console.error(`Error loading channels for ${country}:`, error);
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                        <button class="top-back-button">←</button>
+                    </div>
+                    <div class="section-header">
+                        <h2>${this.getCountryFlag(country)} ${country}</h2>
+                        <p>Unable to load channels</p>
+                    </div>
+                    <div class="error-message">
+                        <h3>No channels available</h3>
+                        <p>There are no channels available for ${country} at the moment.</p>
+                        <button class="retry-btn" onclick="matchScheduler.showCountryChannels('${country}')">Retry</button>
+                        <button class="retry-btn" onclick="matchScheduler.showCountriesView()" style="background: var(--accent-blue); margin-left: 10px;">
+                            Back to Countries
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
         
         this.hideStats();
         this.currentView = 'tv-channels';
     }
 
-    playTVChannel(channelName) {
+    async playTVChannel(channelName) {
         const country = this.currentCountry;
-        const tvData = this.getTVChannelsData();
-        const channel = tvData[country].find(c => c.name === channelName);
         
-        if (!channel) return;
-        
-        this.currentTVChannel = channel;
-        const container = document.getElementById('dynamic-content');
-        if (!container) return;
-        
-        container.innerHTML = `
-            <div class="content-section">
-                <div class="navigation-buttons">
-                    <button class="home-button">⌂</button>
-                    <button class="top-back-button">←</button>
-                </div>
-                
-                <div class="section-header">
-                    <h2>${channel.displayName}</h2>
-                    <p>Live TV Channel from ${channel.country}</p>
-                </div>
-                
-                <div class="tv-player-container">
-                    <div class="tv-video-player">
-                        <iframe id="tv-player" title="${channel.name}[${channel.country}]" 
-                                frameborder="0" allowfullscreen 
-                                allow="encrypted-media; picture-in-picture;"
-                                src="${channel.streamUrl}">
-                        </iframe>
+        try {
+            const tvData = await this.getTVChannelsData();
+            const countryChannels = tvData[country] || [];
+            const channel = countryChannels.find(c => c.name === channelName);
+            
+            if (!channel) {
+                throw new Error(`Channel ${channelName} not found in ${country}`);
+            }
+            
+            this.currentTVChannel = channel;
+            const container = document.getElementById('dynamic-content');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="content-section">
+                    <div class="navigation-buttons">
+                        <button class="home-button">⌂</button>
+                        <button class="top-back-button">←</button>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2>${channel.displayName}</h2>
+                        <p>Live TV Channel from ${channel.country}</p>
+                    </div>
+                    
+                    <div class="tv-player-container">
+                        <div class="tv-video-player">
+                            <iframe id="tv-player" title="${channel.name}[${channel.country}]" 
+                                    frameborder="0" allowfullscreen 
+                                    allow="encrypted-media; picture-in-picture;"
+                                    src="${channel.streamUrl}">
+                            </iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="tv-channel-info">
+                        <div class="tv-info-item"><strong>Channel:</strong> ${channel.name}</div>
+                        <div class="tv-info-item"><strong>Country:</strong> ${channel.country}</div>
+                        <div class="tv-info-item"><strong>Live Now:</strong> ${channel.name}</div>
+                        <div class="tv-info-item"><strong>Category:</strong> ${channel.category}</div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="watch-button" onclick="matchScheduler.refreshTVStream()" style="margin: 5px;">
+                            🔄 Refresh Stream
+                        </button>
+                        <button class="watch-button" onclick="matchScheduler.showCountryChannels('${country}')" style="background: var(--accent-blue); margin: 5px;">
+                            ← Back to Channels
+                        </button>
                     </div>
                 </div>
-                
-                <div class="tv-channel-info">
-                    <div class="tv-info-item"><strong>Channel:</strong> ${channel.name}</div>
-                    <div class="tv-info-item"><strong>Country:</strong> ${channel.country}</div>
-                    <div class="tv-info-item"><strong>Live Now:</strong> ${channel.name}</div>
-                    <div class="tv-info-item"><strong>Category:</strong> ${channel.category}</div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="watch-button" onclick="matchScheduler.refreshTVStream()" style="margin: 5px;">
-                        🔄 Refresh Stream
-                    </button>
-                    <button class="watch-button" onclick="matchScheduler.showCountryChannels('${country}')" style="background: var(--accent-blue); margin: 5px;">
-                        ← Back to Channels
-                    </button>
-                </div>
-            </div>
-        `;
+            `;
+            
+        } catch (error) {
+            console.error('Error playing TV channel:', error);
+            const container = document.getElementById('dynamic-content');
+            if (container) {
+                container.innerHTML = `
+                    <div class="content-section">
+                        <div class="navigation-buttons">
+                            <button class="home-button">⌂</button>
+                            <button class="top-back-button">←</button>
+                        </div>
+                        <div class="error-message">
+                            <h3>Channel Unavailable</h3>
+                            <p>Unable to load ${channelName} from ${country}</p>
+                            <button class="retry-btn" onclick="matchScheduler.playTVChannel('${channelName}')">Retry</button>
+                            <button class="retry-btn" onclick="matchScheduler.showCountryChannels('${country}')" style="background: var(--accent-blue); margin-left: 10px;">
+                                Back to Channels
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
         
         this.hideStats();
         this.currentView = 'tv-player';
@@ -314,7 +381,26 @@ class MatchScheduler {
         const flags = {
             'South Africa': '🇿🇦',
             'USA': '🇺🇸',
-            'UK': '🇬🇧'
+            'UK': '🇬🇧',
+            'Belgium': '🇧🇪',
+            'Brazil': '🇧🇷',
+            'Ireland': '🇮🇪',
+            'Germany': '🇩🇪',
+            'France': '🇫🇷',
+            'Spain': '🇪🇸',
+            'Italy': '🇮🇹',
+            'Portugal': '🇵🇹',
+            'Netherlands': '🇳🇱',
+            'Canada': '🇨🇦',
+            'Australia': '🇦🇺',
+            'New Zealand': '🇳🇿',
+            'Mexico': '🇲🇽',
+            'Argentina': '🇦🇷',
+            'Chile': '🇨🇱',
+            'Japan': '🇯🇵',
+            'South Korea': '🇰🇷',
+            'China': '🇨🇳',
+            'India': '🇮🇳'
         };
         return flags[country] || '🌍';
     }
@@ -328,6 +414,9 @@ class MatchScheduler {
         if (channelName.includes('BT')) return 'BT';
         if (channelName.includes('Premier')) return 'PL';
         if (channelName.includes('NBA')) return 'NB';
+        if (channelName.includes('Eleven')) return '11';
+        if (channelName.includes('SporTV')) return 'ST';
+        if (channelName.includes('RTE')) return 'RT';
         return 'TV';
     }
 
