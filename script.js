@@ -1,4 +1,4 @@
-// 9kilo Stream - Complete Version with TV Channels & Sports
+// 9kilo Stream - Complete Working Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -7,14 +7,12 @@ class MatchScheduler {
         this.currentDate = null;
         this.verifiedMatches = [];
         this.matchStats = new Map();
-        this.matchPolls = new Map();
         this.currentStreams = new Map();
         
         // TV Channels State
         this.currentCountry = '';
         this.currentTVChannel = null;
         this.tvChannelsData = null;
-        this.isTVDataLoaded = false;
         
         // Optimization Flags
         this.isDataLoaded = false;
@@ -24,69 +22,33 @@ class MatchScheduler {
         
         // Caching
         this.preloadedSports = null;
-        this.lastDataUpdate = null;
-        
-        // Filter state
         this.showLiveOnly = false;
-        
-        // DOM ready state
         this.isDOMReady = false;
         
-        console.log('🚀 MatchScheduler initialized with TV Channels!');
+        console.log('🚀 MatchScheduler initialized!');
     }
     
     async init() {
         await this.waitForDOMReady();
-        this.setupGlobalErrorHandling();
         this.setupEventListeners();
         this.showMainMenu();
-        this.registerServiceWorker();
         
         // Start preloading in background
         this.backgroundPreload();
-        // Preload TV channels data
-        this.preloadTVChannelsData();
     }
 
-    // ==================== TV CHANNELS DATA ====================
+    // ==================== TV CHANNELS ====================
     async getTVChannelsData() {
-        if (this.tvChannelsData && this.isTVDataLoaded) {
-            return this.tvChannelsData;
-        }
-        
         try {
             const response = await fetch('tv-channels.json');
-            if (!response.ok) throw new Error('TV channels load failed');
-            
-            const data = await response.json();
-            this.tvChannelsData = data;
-            this.isTVDataLoaded = true;
-            return data;
+            return await response.json();
         } catch (error) {
-            console.error('Failed to load TV channels:', error);
+            console.error('TV channels load failed:', error);
             return {};
         }
     }
 
-    async preloadTVChannelsData() {
-        setTimeout(async () => {
-            try {
-                await this.getTVChannelsData();
-            } catch (error) {
-                // Silent fail
-            }
-        }, 1000);
-    }
-
-    // ==================== TV CHANNELS NAVIGATION ====================
     async showTVChannels() {
-        const container = document.getElementById('dynamic-content');
-        if (!container) return;
-        
-        await this.showCountriesView();
-    }
-
-    async showCountriesView() {
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
@@ -123,7 +85,7 @@ class MatchScheduler {
                     </div>
                     <div class="error-message">
                         <h3>Unable to load TV channels</h3>
-                        <button class="retry-btn" onclick="matchScheduler.showCountriesView()">Retry</button>
+                        <button class="retry-btn" onclick="matchScheduler.showTVChannels()">Retry</button>
                     </div>
                 </div>
             `;
@@ -211,7 +173,7 @@ class MatchScheduler {
                 <div class="match-details-overlay">
                     <div class="match-details-modal">
                         <div class="match-header">
-                            <button class="back-btn">← Back</button>
+                            <button class="back-btn" onclick="matchScheduler.showCountryChannels('${country}')">← Back</button>
                         </div>
                         
                         <div class="video-container">
@@ -224,7 +186,7 @@ class MatchScheduler {
                             </div>
                             
                             <div class="video-player-wrapper">
-                                <div class="video-player" id="video-player-${channel.name}">
+                                <div class="video-player">
                                     <iframe src="${channel.streamUrl}" class="stream-iframe" id="tv-player"
                                             allow="autoplay; fullscreen" allowfullscreen
                                             title="${channel.displayName}">
@@ -238,22 +200,6 @@ class MatchScheduler {
                                     <span class="views-count">Live TV Channel</span>
                                     <span class="live-badge-details">LIVE NOW</span>
                                     <span style="color: var(--text-muted);">• ${channel.country}</span>
-                                </div>
-                                
-                                <div class="video-actions">
-                                    <button class="action-btn" onclick="matchScheduler.handleLikeTV('${channel.name}')">
-                                        👍 Like
-                                    </button>
-                                    <button class="action-btn" onclick="matchScheduler.handleShareTV('${channel.name}')">
-                                        Share
-                                    </button>
-                                </div>
-                                
-                                <div class="match-description">
-                                    <div class="description-text">
-                                        <strong>Channel Info:</strong> ${channel.displayName} from ${channel.country}. 
-                                        ${channel.description} Category: ${channel.category}.
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -301,8 +247,7 @@ class MatchScheduler {
             'Germany': '🇩🇪', 'France': '🇫🇷', 'Spain': '🇪🇸',
             'Italy': '🇮🇹', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱',
             'Canada': '🇨🇦', 'Australia': '🇦🇺', 'New Zealand': '🇳🇿',
-            'Mexico': '🇲🇽', 'Argentina': '🇦🇷', 'India': '🇮🇳',
-            'Pakistan': '🇵🇰', 'Poland': '🇵🇱', 'Romania': '🇷🇴', 'Serbia': '🇷🇸'
+            'Mexico': '🇲🇽', 'Argentina': '🇦🇷', 'India': '🇮🇳'
         };
         return flags[country] || '🌍';
     }
@@ -316,87 +261,94 @@ class MatchScheduler {
         if (channelName.includes('BT')) return 'BT';
         if (channelName.includes('Premier')) return 'PL';
         if (channelName.includes('NBA')) return 'NB';
-        if (channelName.includes('Eleven')) return '11';
-        if (channelName.includes('SporTV')) return 'ST';
-        if (channelName.includes('RTE')) return 'RT';
         return 'TV';
     }
 
     // ==================== EVENT LISTENERS ====================
-    // ==================== EVENT LISTENERS ====================
-setupEventListeners() {
-    console.log('🎯 Setting up event listeners...');
-    
-    // Use event delegation on the dynamic content container
-    document.addEventListener('click', (e) => {
-        this.handleGlobalClick(e);
-    });
+    waitForDOMReady() {
+        return new Promise((resolve) => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.isDOMReady = true;
+                    resolve();
+                });
+            } else {
+                this.isDOMReady = true;
+                resolve();
+            }
+        });
+    }
 
-    console.log('✅ Event listeners setup complete');
-}
+    setupEventListeners() {
+        document.addEventListener('click', (e) => {
+            this.handleGlobalClick(e);
+        });
+    }
 
-handleGlobalClick(e) {
-    console.log('🖱️ Click detected:', e.target);
-    
-    // Menu buttons - FIXED
-    const menuButton = e.target.closest('.menu-button');
-    if (menuButton) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const action = menuButton.getAttribute('data-action');
-        console.log(`🎯 Menu button clicked: ${action}`);
-        
-        switch(action) {
-            case 'sports':
-                this.showSportsView();
-                break;
-            case 'tv':
-                this.showTVChannels();
-                break;
-            case 'community':
-                this.showCommunity();
-                break;
+    handleGlobalClick(e) {
+        // Menu buttons
+        const menuButton = e.target.closest('.menu-button');
+        if (menuButton) {
+            const action = menuButton.getAttribute('data-action');
+            switch(action) {
+                case 'sports':
+                    this.showSportsView();
+                    break;
+                case 'tv':
+                    this.showTVChannels();
+                    break;
+                case 'community':
+                    this.showCommunity();
+                    break;
+            }
+            return;
         }
-        return;
-    }
 
-    // Home button - FIXED
-    const homeButton = e.target.closest('.home-button');
-    if (homeButton) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🏠 Home button clicked');
-        this.showMainMenu();
-        return;
-    }
-
-    // Back button - FIXED
-    const backButton = e.target.closest('.top-back-button, .back-btn');
-    if (backButton) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('↩️ Back button clicked');
-        this.handleBackButton();
-        return;
-    }
-
-    // Rest of your original click handling...
-    const sportButton = e.target.closest('.sport-button');
-    if (sportButton && !sportButton.hasAttribute('data-action')) {
-        e.preventDefault();
-        e.stopPropagation();
-        const sportName = sportButton.querySelector('.sport-name')?.textContent;
-        if (sportName) {
-            console.log(`⚽ Sport selected: ${sportName}`);
-            this.selectSport(sportName);
+        // Home button
+        const homeButton = e.target.closest('.home-button');
+        if (homeButton) {
+            this.showMainMenu();
+            return;
         }
-        return;
+
+        // Back button
+        const backButton = e.target.closest('.top-back-button');
+        if (backButton) {
+            this.handleBackButton();
+            return;
+        }
+
+        // Sports navigation
+        const sportButton = e.target.closest('.sport-button');
+        if (sportButton && !sportButton.hasAttribute('data-action')) {
+            const sportName = sportButton.querySelector('.sport-name')?.textContent;
+            if (sportName) this.selectSport(sportName);
+            return;
+        }
+
+        const dateButton = e.target.closest('.date-button');
+        if (dateButton) {
+            const dateText = dateButton.querySelector('.date-name')?.textContent;
+            const match = this.verifiedMatches.find(m => this.formatDisplayDate(m.date) === dateText);
+            if (match) this.selectDate(match.date);
+            return;
+        }
+
+        const watchButton = e.target.closest('.watch-btn');
+        if (watchButton) {
+            const matchRow = watchButton.closest('.match-row');
+            const teamNames = matchRow?.querySelector('.team-names')?.textContent;
+            const match = this.verifiedMatches.find(m => this.formatTeamNames(m.teams) === teamNames);
+            if (match) this.showMatchDetails(match.id);
+            return;
+        }
+
+        const filterToggle = e.target.closest('.filter-toggle');
+        if (filterToggle) {
+            this.toggleLiveFilter();
+            return;
+        }
     }
-
-    // ... rest of your original click handlers
-
-    
 
     handleBackButton() {
         switch(this.currentView) {
@@ -421,33 +373,12 @@ handleGlobalClick(e) {
         }
     }
 
-    setupGlobalErrorHandling() {
-        window.addEventListener('error', (e) => {
-            console.error('Global error caught:', e);
-            this.showErrorUI('Something went wrong. Please refresh the page.');
-        });
-
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('Unhandled promise rejection:', e);
-            this.showErrorUI('Application error occurred.');
-        });
-    }
-
-    showErrorUI(message) {
-        const errorBoundary = document.getElementById('error-boundary');
-        const errorMessage = document.getElementById('error-message');
-        if (errorBoundary && errorMessage) {
-            errorMessage.textContent = message;
-            errorBoundary.style.display = 'block';
-        }
-    }
-
     // ==================== SPORTS FUNCTIONALITY ====================
     showSportsView() {
-        // INSTANT UI UPDATE - ORIGINAL WORKING VERSION
+        // INSTANT UI UPDATE
         this.showSportsUIWithCachedData();
         
-        // Load fresh data in background - ORIGINAL WORKING VERSION
+        // Load fresh data in background
         this.loadSportsDataBackground();
     }
 
@@ -472,7 +403,7 @@ handleGlobalClick(e) {
                 </div>
             `).join('');
         } else {
-            // ORIGINAL LOADING STATES
+            // FALLBACK LOADING STATES
             sportsHTML = `
                 <div class="sport-button" style="opacity: 0.7;">
                     <div class="sport-name">Football</div>
@@ -555,6 +486,7 @@ handleGlobalClick(e) {
         `;
     }
 
+    // ==================== DATA LOADING ====================
     async ensureDataLoaded() {
         if (this.isDataLoaded) return true;
         
@@ -638,8 +570,7 @@ handleGlobalClick(e) {
         for (const proxyUrl of proxyOptions) {
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.ab
-                                const timeoutId = setTimeout(() => controller.abort(), 4000);
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
                 
                 const response = await fetch(proxyUrl, {
                     signal: controller.signal,
@@ -671,13 +602,6 @@ handleGlobalClick(e) {
                         sport: 'Football',
                         unix_timestamp: now + 3600,
                         channels: ['https://example.com/stream1', 'https://example.com/stream2']
-                    },
-                    {
-                        match: 'Demo United - Test City FC',
-                        tournament: 'Research Championship',
-                        sport: 'Football', 
-                        unix_timestamp: now - 1800,
-                        channels: ['https://example.com/stream1']
                     }
                 ]
             }
@@ -710,19 +634,14 @@ handleGlobalClick(e) {
                             });
                         }
                         
-                        const channels = match.channels || [];
-                        if (channels.length > 0 && !this.currentStreams.has(matchId)) {
-                            this.currentStreams.set(matchId, 0);
-                        }
-                        
                         const processedMatch = {
                             id: matchId,
                             date: date,
                             time: this.convertUnixToLocalTime(match.unix_timestamp),
                             teams: match.match,
                             league: match.tournament || 'Sports',
-                            streamUrl: channels[0] || null,
-                            channels: channels,
+                            streamUrl: match.channels?.[0] || null,
+                            channels: match.channels || [],
                             isLive: this.checkIfLive(match),
                             sport: this.classifySport(match),
                             unixTimestamp: match.unix_timestamp
@@ -743,14 +662,8 @@ handleGlobalClick(e) {
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
         
-        const sportsCount = {};
-        this.verifiedMatches.forEach(match => {
-            sportsCount[match.sport] = (sportsCount[match.sport] || 0) + 1;
-        });
-        console.log('🏆 Sports Classification:', sportsCount);
-        
         if (this.currentView !== 'main') {
-            this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
+            this.showSportsDataUI();
         }
     }
 
@@ -768,63 +681,12 @@ handleGlobalClick(e) {
         });
         
         this.preloadedSports = Array.from(sports);
-        
-        if (this.currentView === 'sports' && this.preloadedSports.length > 0) {
-            this.showSportsDataUI();
-        }
     }
 
-    classifySport(match) {
-        const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
-        
-        if (searchString.includes('middle tennessee') || 
-            searchString.includes('jacksonville state') ||
-            searchString.includes('college football')) {
-            return 'American Football';
-        }
-        
-        const sportFromApi = match.sport || 'Other';
-        const normalizedSport = this.normalizeSportName(sportFromApi);
-        
-        return normalizedSport;
-    }
-
-    normalizeSportName(sport) {
-        if (!sport) return 'Other';
-        
-        const sportLower = sport.toLowerCase().trim();
-        const sportMap = {
-            'football': 'Football',
-            'soccer': 'Football',
-            'basketball': 'Basketball',
-            'baseball': 'Baseball',
-            'hockey': 'Ice Hockey',
-            'ice hockey': 'Ice Hockey',
-            'tennis': 'Tennis',
-            'cricket': 'Cricket',
-            'rugby': 'Rugby',
-            'golf': 'Golf',
-            'boxing': 'Boxing',
-            'mma': 'MMA',
-            'ufc': 'MMA',
-            'formula 1': 'Racing',
-            'f1': 'Racing',
-            'nascar': 'Racing',
-            'motogp': 'Racing',
-            'volleyball': 'Volleyball',
-            'australian football': 'Australian Football',
-            'afl': 'Australian Football',
-            'badminton': 'Badminton',
-            'american football': 'American Football',
-            'college football': 'American Football',
-            'ncaa football': 'American Football',
-            'nfl': 'American Football',
-            'handball': 'Handball',
-            'table tennis': 'Table Tennis',
-            'beach volleyball': 'Beach Volleyball'
-        };
-        
-        return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+    // ==================== SPORTS NAVIGATION ====================
+    selectSport(sport) {
+        this.currentSport = sport;
+        this.showDatesView();
     }
 
     async showDatesView() {
@@ -834,7 +696,6 @@ handleGlobalClick(e) {
         
         const matches = this.getMatchesBySport(this.currentSport);
         const dates = [...new Set(matches.map(match => match.date))].sort();
-        const sportName = this.currentSport;
         
         container.innerHTML = `
             <div class="content-section">
@@ -843,7 +704,7 @@ handleGlobalClick(e) {
                     <button class="top-back-button">←</button>
                 </div>
                 <div class="section-header">
-                    <h2>${sportName}</h2>
+                    <h2>${this.currentSport}</h2>
                     <p>Select date</p>
                 </div>
                 <div class="sports-grid">
@@ -865,15 +726,17 @@ handleGlobalClick(e) {
         this.currentView = 'dates';
     }
 
+    selectDate(date) {
+        this.currentDate = date;
+        this.showMatchesView();
+    }
+
     async showMatchesView() {
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
         const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
-        const sportName = this.currentSport;
-        const displayDate = this.formatDisplayDate(this.currentDate);
-        
         const filteredMatches = this.showLiveOnly ? matches.filter(match => match.isLive) : matches;
         
         container.innerHTML = `
@@ -884,7 +747,7 @@ handleGlobalClick(e) {
                 </div>
                 <div class="section-header">
                     <h2>Schedule</h2>
-                    <p>${displayDate}</p>
+                    <p>${this.formatDisplayDate(this.currentDate)}</p>
                 </div>
                 
                 <div class="matches-table-container">
@@ -950,15 +813,13 @@ handleGlobalClick(e) {
         
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
-        const channels = match.channels || [];
-        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const currentStreamUrl = channels[currentChannelIndex] || null;
+        const currentStreamUrl = match.channels?.[0] || null;
         
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
                     <div class="match-header">
-                        <button class="back-btn">← Back</button>
+                        <button class="back-btn" onclick="matchScheduler.showMatchesView()">← Back</button>
                     </div>
                     
                     <div class="video-container">
@@ -971,9 +832,9 @@ handleGlobalClick(e) {
                         </div>
                         
                         <div class="video-player-wrapper">
-                            <div class="video-player" id="video-player-${matchId}">
+                            <div class="video-player">
                                 ${currentStreamUrl ? 
-                                    `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
+                                    `<iframe src="${currentStreamUrl}" class="stream-iframe"
                                             allow="autoplay; fullscreen" allowfullscreen></iframe>` :
                                     `<div class="no-stream">
                                         <h3>Stream Offline</h3>
@@ -990,25 +851,6 @@ handleGlobalClick(e) {
                                 ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
                                 <span style="color: var(--text-muted);">• ${match.league}</span>
                             </div>
-                            
-                            <div class="video-actions">
-                                <button class="action-btn like-btn" onclick="matchScheduler.handleLike('${matchId}')">
-                                    👍 ${this.formatNumber(stats.likes)}
-                                </button>
-                                <button class="action-btn dislike-btn" onclick="matchScheduler.handleDislike('${matchId}')">
-                                    👎 ${this.formatNumber(stats.dislikes)}
-                                </button>
-                                <button class="action-btn" onclick="matchScheduler.handleShare('${matchId}')">
-                                    Share
-                                </button>
-                            </div>
-                            
-                            <div class="match-description">
-                                <div class="description-text">
-                                    <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
-                                    ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1020,10 +862,8 @@ handleGlobalClick(e) {
     }
 
     refreshCurrentStream(matchId) {
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (!match) return;
-        
-        const iframe = document.getElementById(`stream-iframe-${matchId}`);
+        // Simple refresh - reload the iframe
+        const iframe = document.querySelector('.stream-iframe');
         if (iframe) {
             const currentSrc = iframe.src;
             iframe.src = '';
@@ -1078,23 +918,10 @@ handleGlobalClick(e) {
                     <div class="sport-button" onclick="alert('Coming soon!')">
                         <div class="sport-name">Fan Zone</div>
                     </div>
-                    <div class="sport-button" onclick="alert('Coming soon!')">
-                        <div class="sport-name">Match Reactions</div>
-                    </div>
                 </div>
             </div>
         `;
         this.hideStats();
-    }
-
-    selectSport(sport) {
-        this.currentSport = sport;
-        this.showDatesView();
-    }
-
-    selectDate(date) {
-        this.currentDate = date;
-        this.showMatchesView();
     }
 
     getMatchesBySport(sport) {
@@ -1123,14 +950,18 @@ handleGlobalClick(e) {
         return now >= matchTime && now <= (matchTime + 7200);
     }
 
-    formatTeamNames(teamString) {
-        return teamString.replace(/ - /g, ' vs ');
+    classifySport(match) {
+        const sportFromApi = match.sport || 'Other';
+        const sportMap = {
+            'football': 'Football', 'soccer': 'Football',
+            'basketball': 'Basketball', 'baseball': 'Baseball',
+            'tennis': 'Tennis', 'cricket': 'Cricket', 'rugby': 'Rugby'
+        };
+        return sportMap[sportFromApi.toLowerCase()] || sportFromApi;
     }
 
-    formatNumber(num) {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-        return num.toString();
+    formatTeamNames(teamString) {
+        return teamString.replace(/ - /g, ' vs ');
     }
 
     formatDisplayDate(dateString) {
@@ -1139,47 +970,15 @@ handleGlobalClick(e) {
         });
     }
 
-    getTeamName(teamString, index) {
-        const teams = teamString.split(' - ');
-        return teams[index] || `Team ${index + 1}`;
+    formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
     }
 
     incrementViews(matchId) {
         const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.views++;
-            this.matchStats.set(matchId, stats);
-        }
-    }
-
-    handleLike(matchId) {
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.likes++;
-            this.matchStats.set(matchId, stats);
-            this.showMatchDetails(matchId);
-        }
-    }
-
-    handleDislike(matchId) {
-        const stats = this.matchStats.get(matchId);
-        if (stats) {
-            stats.dislikes++;
-            this.matchStats.set(matchId, stats);
-            this.showMatchDetails(matchId);
-        }
-    }
-
-    handleShare(matchId) {
-        alert('Share feature coming soon!');
-    }
-
-    handleLikeTV() {
-        alert('Like feature coming soon for TV!');
-    }
-
-    handleShareTV() {
-        alert('Share feature coming soon for TV!');
+        if (stats) stats.views++;
     }
 
     showStats() {
@@ -1201,81 +1000,15 @@ handleGlobalClick(e) {
         
         document.getElementById('total-streams').textContent = this.verifiedMatches.length;
         document.getElementById('live-viewers').textContent = this.formatNumber(Math.floor(totalViewers / 100));
-        document.getElementById('countries').textContent = this.verifiedMatches.length < 5 ? '3' : '1';
-        document.getElementById('uptime').textContent = this.verifiedMatches.length < 5 ? 'Research' : '100%';
+        document.getElementById('countries').textContent = '22';
+        document.getElementById('uptime').textContent = '100%';
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
     }
 
     backgroundPreload() {
         setTimeout(() => {
-            this.preloadSportsData().catch(() => {});
+            this.loadMatches().catch(() => {});
         }, 1000);
-    }
-
-    async preloadSportsData() {
-        if (this.isDataLoaded || this.isLoading) return;
-        
-        this.isLoading = true;
-        try {
-            const cachedData = this.getCachedData();
-            if (cachedData) {
-                this.extractAndCacheSports(cachedData);
-                return;
-            }
-            
-            const fastData = await this.tryFastProxies();
-            if (fastData) {
-                this.extractAndCacheSports(fastData);
-                this.cacheData(fastData);
-            }
-        } catch (error) {
-            // Silent fail
-        } finally {
-            this.isLoading = false;
-        }
-    }
-
-    async tryFastProxies() {
-        const targetUrl = 'https://topembed.pw/api.php?format=json';
-        
-        const fastProxies = [
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            targetUrl
-        ];
-        
-        for (const proxyUrl of fastProxies) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2000);
-                
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    return data;
-                }
-            } catch (error) {
-                continue;
-            }
-        }
-        return null;
-    }
-
-    registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('SW registered: ', registration);
-                })
-                .catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
-                });
-        }
     }
 }
 
@@ -1286,20 +1019,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
             console.log('✅ 9kilos fully initialized!');
-        }).catch(error => {
-            console.error('❌ Initialization failed:', error);
         });
     } catch (error) {
-        console.error('❌ Critical initialization error:', error);
-    }
-});
-
-// Close dropdowns when clicking outside
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.channel-dropdown-inline')) {
-        document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dropdown => {
-            dropdown.classList.remove('show');
-            dropdown.previousElementSibling.classList.remove('open');
-        });
+        console.error('❌ Initialization failed:', error);
     }
 });
