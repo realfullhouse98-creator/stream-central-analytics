@@ -13,6 +13,7 @@ class MatchScheduler {
         // TV Channels State
         this.currentCountry = '';
         this.currentTVChannel = null;
+        this.tvChannelsData = null;
         
         // Optimization Flags
         this.isDataLoaded = false;
@@ -40,124 +41,59 @@ class MatchScheduler {
         this.showMainMenu();
         this.registerServiceWorker();
         
+        // Load TV channels data
+        await this.loadTVChannelsData();
+        
         // Start preloading in background
         this.backgroundPreload();
     }
 
     // ==================== TV CHANNELS DATA ====================
+    async loadTVChannelsData() {
+        try {
+            const response = await fetch('tv-channels.json');
+            this.tvChannelsData = await response.json();
+            console.log('✅ TV Channels data loaded:', Object.keys(this.tvChannelsData).length, 'countries');
+        } catch (error) {
+            console.error('❌ Failed to load TV channels data:', error);
+            // Fallback to minimal data
+            this.tvChannelsData = {
+                "South Africa": [
+                    {
+                        name: "SuperSportRugby",
+                        displayName: "SuperSport Rugby",
+                        country: "South Africa",
+                        streamUrl: "https://topembed.pw/channel/SuperSportRugby%5BSouthAfrica%5D",
+                        category: "Rugby",
+                        description: "Live rugby matches, highlights, and analysis"
+                    }
+                ],
+                "USA": [
+                    {
+                        name: "ESPN",
+                        displayName: "ESPN",
+                        country: "USA",
+                        streamUrl: "https://topembed.pw/channel/ESPN%5BUSA%5D", 
+                        category: "Multi-sport",
+                        description: "Worldwide sports leader"
+                    }
+                ],
+                "UK": [
+                    {
+                        name: "SkySportsMain",
+                        displayName: "Sky Sports Main Event",
+                        country: "UK",
+                        streamUrl: "https://topembed.pw/channel/SkySportsMain%5BUK%5D",
+                        category: "Multi-sport",
+                        description: "Premier sports coverage"
+                    }
+                ]
+            };
+        }
+    }
+
     getTVChannelsData() {
-        return {
-            "South Africa": [
-                {
-                    name: "SuperSportRugby",
-                    displayName: "SuperSport Rugby",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportRugby%5BSouthAfrica%5D",
-                    category: "Rugby",
-                    description: "Live rugby matches, highlights, and analysis"
-                },
-                {
-                    name: "SuperSportTennis",
-                    displayName: "SuperSport Tennis", 
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportTennis%5BSouthAfrica%5D",
-                    category: "Tennis",
-                    description: "Tennis tournaments and matches"
-                },
-                {
-                    name: "SuperSportSoccer",
-                    displayName: "SuperSport Soccer",
-                    country: "South Africa", 
-                    streamUrl: "https://topembed.pw/channel/SuperSportSoccer%5BSouthAfrica%5D",
-                    category: "Football",
-                    description: "Football matches and leagues"
-                },
-                {
-                    name: "SuperSportCricket",
-                    displayName: "SuperSport Cricket",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportCricket%5BSouthAfrica%5D",
-                    category: "Cricket", 
-                    description: "Cricket matches and tournaments"
-                },
-                {
-                    name: "SuperSportAction",
-                    displayName: "SuperSport Action",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportAction%5BSouthAfrica%5D",
-                    category: "Multi-sport",
-                    description: "24/7 sports action and events"
-                },
-                {
-                    name: "SuperSportVariety1",
-                    displayName: "SuperSport Variety 1",
-                    country: "South Africa",
-                    streamUrl: "https://topembed.pw/channel/SuperSportVariety1%5BSouthAfrica%5D",
-                    category: "Multi-sport",
-                    description: "Variety sports programming"
-                }
-            ],
-            "USA": [
-                {
-                    name: "FanDuelSportsMidwest",
-                    displayName: "FanDuel Sports Midwest",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/FanDuelSportsMidwest%5BUSA%5D",
-                    category: "Multi-sport",
-                    description: "Regional sports coverage"
-                },
-                {
-                    name: "ESPN",
-                    displayName: "ESPN",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/ESPN%5BUSA%5D", 
-                    category: "Multi-sport",
-                    description: "Worldwide sports leader"
-                },
-                {
-                    name: "FoxSports",
-                    displayName: "Fox Sports",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/FoxSports%5BUSA%5D",
-                    category: "Multi-sport",
-                    description: "National sports coverage"
-                },
-                {
-                    name: "NBASports",
-                    displayName: "NBA TV",
-                    country: "USA",
-                    streamUrl: "https://topembed.pw/channel/NBASports%5BUSA%5D",
-                    category: "Basketball",
-                    description: "Basketball games and analysis"
-                }
-            ],
-            "UK": [
-                {
-                    name: "SkySportsMain",
-                    displayName: "Sky Sports Main Event",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/SkySportsMain%5BUK%5D",
-                    category: "Multi-sport",
-                    description: "Premier sports coverage"
-                },
-                {
-                    name: "BTSport1",
-                    displayName: "BT Sport 1",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/BTSport1%5BUK%5D",
-                    category: "Multi-sport", 
-                    description: "Live sports and events"
-                },
-                {
-                    name: "PremierSports",
-                    displayName: "Premier Sports",
-                    country: "UK",
-                    streamUrl: "https://topembed.pw/channel/PremierSports%5BUK%5D",
-                    category: "Football",
-                    description: "Premier League and football"
-                }
-            ]
-        };
+        return this.tvChannelsData || {};
     }
 
     // ==================== TV CHANNELS NAVIGATION ====================
@@ -314,7 +250,26 @@ class MatchScheduler {
         const flags = {
             'South Africa': '🇿🇦',
             'USA': '🇺🇸',
-            'UK': '🇬🇧'
+            'UK': '🇬🇧',
+            'Argentina': '🇦🇷',
+            'Australia': '🇦🇺',
+            'Belgium': '🇧🇪',
+            'Brazil': '🇧🇷',
+            'Canada': '🇨🇦',
+            'France': '🇫🇷',
+            'Germany': '🇩🇪',
+            'India': '🇮🇳',
+            'Ireland': '🇮🇪',
+            'Italy': '🇮🇹',
+            'Mexico': '🇲🇽',
+            'Netherlands': '🇳🇱',
+            'New Zealand': '🇳🇿',
+            'Pakistan': '🇵🇰',
+            'Poland': '🇵🇱',
+            'Portugal': '🇵🇹',
+            'Romania': '🇷🇴',
+            'Serbia': '🇷🇸',
+            'Spain': '🇪🇸'
         };
         return flags[country] || '🌍';
     }
@@ -328,6 +283,12 @@ class MatchScheduler {
         if (channelName.includes('BT')) return 'BT';
         if (channelName.includes('Premier')) return 'PL';
         if (channelName.includes('NBA')) return 'NB';
+        if (channelName.includes('Eleven')) return '11';
+        if (channelName.includes('SporTV')) return 'ST';
+        if (channelName.includes('RTE')) return 'RT';
+        if (channelName.includes('DAZN')) return 'DZ';
+        if (channelName.includes('beIN')) return 'bN';
+        if (channelName.includes('Eurosport')) return 'EU';
         return 'TV';
     }
 
@@ -388,7 +349,7 @@ class MatchScheduler {
             return;
         }
 
-        // Navigation buttons
+        // Navigation buttons - FIXED BACK BUTTON HANDLING
         const homeButton = e.target.closest('.home-button');
         if (homeButton) {
             e.preventDefault();
@@ -399,6 +360,15 @@ class MatchScheduler {
 
         const backButton = e.target.closest('.top-back-button');
         if (backButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleBackButton();
+            return;
+        }
+
+        // Match details back button - NEW FIX
+        const matchBackBtn = e.target.closest('.back-btn');
+        if (matchBackBtn) {
             e.preventDefault();
             e.stopPropagation();
             this.handleBackButton();
@@ -478,6 +448,14 @@ class MatchScheduler {
                 break;
             case 'tv-player':
                 this.showCountryChannels(this.currentCountry);
+                break;
+            case 'match-details':
+                // Go back to matches view
+                if (this.currentDate) {
+                    this.showMatchesView();
+                } else {
+                    this.showMainMenu();
+                }
                 break;
             default:
                 this.showMainMenu();
@@ -1078,6 +1056,7 @@ class MatchScheduler {
         `;
         
         this.hideStats();
+        this.currentView = 'match-details';
         this.incrementViews(matchId);
     }
 
