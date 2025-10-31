@@ -30,6 +30,7 @@ class MatchScheduler {
         
         // DOM ready state
         this.isDOMReady = false;
+        this.toggleLiveFilter = this.toggleLiveFilter.bind(this);
         
         console.log('🚀 MatchScheduler initialized with TV Channels!');
     }
