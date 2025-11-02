@@ -983,22 +983,25 @@ if (watchButton) {
             </div>
         `;
 
-         // 🎯 SCROLL MEMORY: Restore position after page renders
-    setTimeout(() => {
-        const lastScrollPosition = localStorage.getItem('lastScrollPosition');
-        if (lastScrollPosition) {
-            console.log('📜 Restoring scroll to position:', lastScrollPosition);
-            const rows = document.querySelectorAll('.match-row');
-            if (rows[lastScrollPosition]) {
-                rows[lastScrollPosition].scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-            }
-            localStorage.removeItem('lastScrollPosition'); // Clear after use
+// 🎯 SCROLL MEMORY: Restore position after page renders
+setTimeout(() => {
+    const lastScrollPosition = localStorage.getItem('lastScrollPosition');
+    if (lastScrollPosition) {
+        console.log('📜 Restoring scroll to position:', lastScrollPosition);
+        const rows = document.querySelectorAll('.match-row');
+        if (rows[lastScrollPosition]) {
+            // Smoother scroll without jumpy behavior
+            const targetRow = rows[lastScrollPosition];
+            const targetPosition = targetRow.offsetTop - 100; // Offset from top
+            
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
         }
-    }, 100);
-        
+        localStorage.removeItem('lastScrollPosition'); // Clear after use
+    }
+}, 200); // Slightly longer delay for better rendering
         this.hideStats();
         this.currentView = 'matches';
     }
