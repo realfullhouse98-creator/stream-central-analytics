@@ -920,6 +920,14 @@ if (dateButton) {
         const sportName = this.currentSport;
         const today = new Date().toISOString().split('T')[0];
         const isToday = this.currentDate === today;
+
+            // ✅ ADD DEBUG HERE:
+    console.log('🔍 Date check:', {
+        currentDate: this.currentDate,
+        today: today,
+        isToday: isToday,
+        sportName: sportName
+    });
         
         // 🛡️ BULLETPROOF FILTER LOGIC
         const allMatches = matches;
