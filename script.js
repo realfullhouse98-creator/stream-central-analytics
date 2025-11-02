@@ -1,4 +1,4 @@
-// 9kilo Stream - Complete Hybrid Version (Old Polish + New TV Channels)
+// 9kilo Stream - Enhanced Hybrid Version with Simplified UI
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -507,7 +507,7 @@ class MatchScheduler {
             'ice hockey': 'Ice Hockey',
             'tennis': 'Tennis',
             'cricket': 'Cricket',
-            'rugby': 'Rugby',
+            'rubgy': 'Rugby',
             'golf': 'Golf',
             'boxing': 'Boxing',
             'mma': 'MMA',
@@ -577,7 +577,7 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Sports Categories</h2>
+                    <h2>Categories</h2>
                     <p>Loading sports data...</p>
                 </div>
                 <div class="sports-grid">
@@ -619,7 +619,7 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Sports Categories</h2>
+                    <h2>Categories</h2>
                     <p>${uniqueSports.length} categories • ${this.verifiedMatches.length} total matches</p>
                 </div>
                 <div class="sports-grid">
@@ -645,7 +645,7 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Sports Categories</h2>
+                    <h2>Categories</h2>
                     <p>No sports data available</p>
                 </div>
                 <div class="sports-grid">
@@ -906,9 +906,12 @@ class MatchScheduler {
                     ${dates.map(date => {
                         const dateMatches = matches.filter(m => m.date === date);
                         const liveCount = dateMatches.filter(m => m.isLive).length;
+                        const today = new Date().toISOString().split('T')[0];
+                        const isToday = date === today;
+                        
                         return `
                             <div class="date-button" onclick="matchScheduler.selectDate('${date}')">
-                                <div class="date-name">${this.formatDisplayDate(date)}</div>
+                                <div class="date-name">${this.formatDisplayDate(date)} ${isToday ? '• Today' : ''}</div>
                                 <div class="match-count">${dateMatches.length} match${dateMatches.length !== 1 ? 'es' : ''}${liveCount > 0 ? ` • ${liveCount} live` : ''}</div>
                             </div>
                         `;
@@ -929,11 +932,29 @@ class MatchScheduler {
         const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
         const sportName = this.currentSport;
         const displayDate = this.formatDisplayDate(this.currentDate);
+        const today = new Date().toISOString().split('T')[0];
+        const isToday = this.currentDate === today;
         
-        // FIXED FILTER - Properly filter matches based on showLiveOnly state
+        // Auto-default to LIVE if there are live matches (SMART FEATURE)
+        const hasLiveMatches = matches.some(match => match.isLive);
+        if (hasLiveMatches && !this.showLiveOnly) {
+            this.showLiveOnly = true;
+        }
+        
         const filteredMatches = this.showLiveOnly ? 
             matches.filter(match => match.isLive === true) : 
             matches;
+        
+        // Smart header based on content
+        let scheduleHeader = 'Schedule';
+        let scheduleSubtitle = displayDate;
+        
+        if (isToday) {
+            scheduleHeader = `Today's ${sportName} Schedule`;
+        } else {
+            scheduleHeader = `${sportName} Schedule`;
+            scheduleSubtitle = displayDate;
+        }
         
         container.innerHTML = `
             <div class="content-section">
@@ -942,14 +963,14 @@ class MatchScheduler {
                     <button class="top-back-button">←</button>
                 </div>
                 <div class="section-header">
-                    <h2>Schedule</h2>
-                    <p>${displayDate}</p>
+                    <h2>${scheduleHeader}</h2>
+                    <p>${scheduleSubtitle}</p>
                 </div>
                 
                 <div class="matches-table-container">
                     <div class="table-filter">
                         <button class="filter-toggle ${this.showLiveOnly ? 'active' : ''}" onclick="matchScheduler.toggleLiveFilter()">
-                            ${this.showLiveOnly ? 'LIVE' : 'ALL'}
+                            ${this.showLiveOnly ? 'LIVE NOW' : 'ALL MATCHES'}
                         </button>
                     </div>
                     <div class="matches-table">
@@ -960,7 +981,7 @@ class MatchScheduler {
                         </div>
                         ${filteredMatches.length > 0 ? 
                             filteredMatches.map(match => this.renderMatchRow(match)).join('') :
-                            '<div class="no-matches">No matches found</div>'
+                            this.renderEmptyState(this.showLiveOnly)
                         }
                     </div>
                 </div>
@@ -992,6 +1013,27 @@ class MatchScheduler {
                 </div>
             </div>
         `;
+    }
+
+    renderEmptyState(isLiveFilter) {
+        if (isLiveFilter) {
+            return `
+                <div class="no-matches">
+                    <h3>No Live Matches Right Now</h3>
+                    <p>Check back later for live games or view all matches</p>
+                    <button class="retry-btn" onclick="matchScheduler.toggleLiveFilter()">
+                        View All Matches
+                    </button>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="no-matches">
+                    <h3>No Matches Scheduled</h3>
+                    <p>Check other dates or sports categories</p>
+                </div>
+            `;
+        }
     }
 
     toggleLiveFilter() {
@@ -1453,7 +1495,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
-            console.log('✅ 9kilos Hybrid Version fully initialized!');
+            console.log('✅ 9kilos Enhanced Version fully initialized!');
         }).catch(error => {
             console.error('❌ Initialization failed:', error);
         });
