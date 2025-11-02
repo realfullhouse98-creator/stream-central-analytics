@@ -367,21 +367,26 @@ class MatchScheduler {
             return;
         }
 
-        const dateButton = e.target.closest('.date-button');
-        if (dateButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const dateElement = dateButton.querySelector('.date-name');
-            if (dateElement) {
-                const dateText = dateElement.textContent;
-                const matches = this.verifiedMatches;
-                const match = matches.find(m => m.date === dateText);
-                if (match) {
-                    this.selectDate(match.date);
-                }
-            }
-            return;
+      const dateButton = e.target.closest('.date-button');
+if (dateButton) {
+    e.preventDefault();
+    e.stopPropagation();
+    const dateElement = dateButton.querySelector('.date-name');
+    if (dateElement) {
+        const dateText = dateElement.textContent;
+        const matches = this.verifiedMatches;
+        // ✅ FIXED: Proper date comparison
+        const match = matches.find(m => {
+            const displayDate = this.formatDisplayDate(m.date);
+            return displayDate === dateText || 
+                   (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
+        });
+        if (match) {
+            this.selectDate(match.date);
         }
+    }
+    return;
+}
 
         const watchButton = e.target.closest('.watch-btn');
         if (watchButton) {
