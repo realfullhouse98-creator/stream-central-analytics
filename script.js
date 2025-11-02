@@ -937,7 +937,7 @@ if (dateButton) {
         const displayMatches = this.showLiveOnly ? liveMatches : allMatches;
         
         // SIMPLIFIED HEADER
-        const scheduleHeader = isToday ? `Today's ${sportName}` : `${sportName} Schedule`;
+        const scheduleHeader = `Today's ${sportName}`; // Force the correct title
         
         container.innerHTML = `
             <div class="content-section">
