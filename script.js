@@ -1,4 +1,5 @@
-// 9kilo Stream - Fixed Enhanced Version
+// 9kilo Stream - FINAL BULLETPROOF VERSION
+// 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -25,13 +26,13 @@ class MatchScheduler {
         this.preloadedSports = null;
         this.lastDataUpdate = null;
         
-        // Filter state
-        this.showLiveOnly = false;
+        // Filter state - SIMPLE BOOLEAN ONLY
+        this.showLiveOnly = false; // false = All Matches, true = Live Only
         
         // DOM ready state
         this.isDOMReady = false;
         
-        console.log('🚀 MatchScheduler initialized with Enhanced Features!');
+        console.log('🚀 MatchScheduler initialized with Bulletproof Features!');
     }
     
     async init() {
@@ -289,7 +290,7 @@ class MatchScheduler {
 
         console.log('🎯 Setting up enhanced event listeners...');
         
-        // Mouseover for sports preloading (RESTORED FROM OLD FILE)
+        // Mouseover for sports preloading
         document.addEventListener('mouseover', (e) => {
             if (e.target.closest('.sports-button')) {
                 this.preloadSportsData();
@@ -374,7 +375,7 @@ class MatchScheduler {
             if (dateElement) {
                 const dateText = dateElement.textContent;
                 const matches = this.verifiedMatches;
-                const match = matches.find(m => this.formatDisplayDate(m.date) === dateText);
+                const match = matches.find(m => m.date === dateText); // Simple match by date
                 if (match) {
                     this.selectDate(match.date);
                 }
@@ -401,11 +402,13 @@ class MatchScheduler {
             return;
         }
 
-        const filterToggle = e.target.closest('.filter-toggle');
-        if (filterToggle) {
+        // BULLETPROOF FILTER BUTTONS
+        const filterButton = e.target.closest('.filter-btn');
+        if (filterButton) {
             e.preventDefault();
             e.stopPropagation();
-            this.toggleLiveFilter();
+            const filterType = filterButton.getAttribute('data-filter');
+            this.setFilter(filterType);
             return;
         }
     }
@@ -461,19 +464,28 @@ class MatchScheduler {
         }
     }
 
-    // ==================== ENHANCED SPORTS CLASSIFICATION (RESTORED FROM OLD FILE) ====================
+    // ==================== BULLETPROOF FILTER SYSTEM ====================
+    setFilter(type) {
+        try {
+            // 🛡️ SIMPLE BOOLEAN LOGIC - IMPOSSIBLE TO BREAK
+            this.showLiveOnly = (type === 'live');
+            this.showMatchesView();
+        } catch (error) {
+            console.log('🛡️ Filter error - resetting to safe state');
+            this.showLiveOnly = false; // Reset to All Matches
+            this.showMatchesView();
+        }
+    }
+
+    // ==================== SIMPLIFIED SPORTS CLASSIFICATION ====================
     classifySport(match) {
-        // First check if it's a college football match by team names/tournament
         if (this.isCollegeFootball(match)) {
-            console.log(`🔄 Manual reclassification to American Football: "${match.match}"`);
             return 'American Football';
         }
         
-        // Then use the sport field from API with simple normalization
         const sportFromApi = match.sport || 'Other';
         const normalizedSport = this.normalizeSportName(sportFromApi);
         
-        console.log(`✅ Using API sport: "${sportFromApi}" -> "${normalizedSport}" for "${match.match}"`);
         return normalizedSport;
     }
 
@@ -496,9 +508,7 @@ class MatchScheduler {
         
         const sportLower = sport.toLowerCase().trim();
         
-        // Enhanced mapping for common variations (RESTORED FROM OLD FILE)
         const sportMap = {
-            // Basic sport normalization
             'football': 'Football',
             'soccer': 'Football',
             'basketball': 'Basketball',
@@ -520,15 +530,10 @@ class MatchScheduler {
             'australian football': 'Australian Football',
             'afl': 'Australian Football',
             'badminton': 'Badminton',
-            
-            // ==================== MANUAL FIXES (RESTORED) ====================
-            // American Football fixes
             'american football': 'American Football',
             'college football': 'American Football',
             'ncaa football': 'American Football',
             'nfl': 'American Football',
-            
-            // Add any other misclassified sports here as you find them
             'handball': 'Handball',
             'table tennis': 'Table Tennis',
             'beach volleyball': 'Beach Volleyball'
@@ -537,35 +542,32 @@ class MatchScheduler {
         return sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
     }
 
-    // ==================== BULLETPROOF SPORTS NAVIGATION (RESTORED FROM OLD FILE) ====================
+    // ==================== SIMPLIFIED SPORTS NAVIGATION ====================
     async showSportsView() {
-        console.log('🎯 Sports button clicked - Enhanced bulletproof version');
+        console.log('🎯 Sports button clicked - Simplified version');
         
-        // 1. IMMEDIATE UI Response (under 100ms)
+        // 1. IMMEDIATE UI Response
         this.showSportsLoadingUI();
         
-        // 2. Set a safety timeout - never get stuck loading (RESTORED FEATURE)
+        // 2. Safety timeout
         const safetyTimeout = setTimeout(() => {
             console.log('⚡ Safety timeout: Showing available data');
-            this.showSportsDataUI(); // Show whatever we have
-        }, 3000); // 3 second max wait
+            this.showSportsDataUI();
+        }, 3000);
         
         // 3. Try to load fresh data
         try {
             const success = await this.ensureDataLoaded();
-            clearTimeout(safetyTimeout); // Cancel timeout if successful
+            clearTimeout(safetyTimeout);
             
             if (success) {
-                console.log('✅ Data loaded successfully');
                 this.showSportsDataUI();
             } else {
-                console.log('⚠️ Using cached/fallback data');
-                this.showSportsDataUI(); // Still show UI with available data
+                this.showSportsDataUI();
             }
         } catch (error) {
             clearTimeout(safetyTimeout);
-            console.log('🛡️ Error handled gracefully:', error.message);
-            this.showSportsDataUI(); // UI always works, even with errors
+            this.showSportsDataUI();
         }
     }
 
@@ -577,13 +579,12 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories - select</h2>
-                    <p>Loading sports data...</p>
+                    <h2>Categories</h2>
+                    <p>select</p>
                 </div>
                 <div class="sports-grid">
                     <div class="sport-button" style="opacity: 0.7; cursor: wait;">
                         <div class="sport-name">Loading Sports</div>
-                        <div class="match-count">Please wait a moment</div>
                     </div>
                 </div>
             </div>
@@ -602,16 +603,13 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
         
-        // Create sports list with counts - ONLY ON SPORTS PAGE
+        // SIMPLIFIED: No counts, just sports
         const sports = uniqueSports.map(sportId => {
-            const count = this.getMatchesBySport(sportId).length;
             return {
                 id: sportId,
-                name: sportId,
-                count: count
+                name: sportId
             };
-        }).filter(sport => sport.count > 0)
-          .sort((a, b) => b.count - a.count);
+        }).filter(sport => sport.name).sort((a, b) => a.name.localeCompare(b.name));
 
         container.innerHTML = `
             <div class="content-section">
@@ -619,14 +617,13 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories - select</h2>
-                    <p>${uniqueSports.length} categories • ${this.verifiedMatches.length} total matches</p>
+                    <h2>Categories</h2>
+                    <p>select</p>
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
                         <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
                             <div class="sport-name">${sport.name}</div>
-                            <div class="match-count">${sport.count} match${sport.count !== 1 ? 'es' : ''}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -645,20 +642,19 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories - select</h2>
-                    <p>No sports data available</p>
+                    <h2>Categories</h2>
+                    <p>select</p>
                 </div>
                 <div class="sports-grid">
                     <div class="sport-button" onclick="matchScheduler.retryLoadMatches()" style="cursor: pointer;">
                         <div class="sport-name">Retry Loading</div>
-                        <div class="match-count">Click to refresh data</div>
                     </div>
                 </div>
             </div>
         `;
     }
 
-    // ==================== ENHANCED DATA LOADING WITH RECOVERY ====================
+    // ==================== DATA LOADING (CACHE SYSTEM PRESERVED) ====================
     retryLoadMatches() {
         this.isDataLoaded = false;
         this.showSportsView();
@@ -851,12 +847,6 @@ class MatchScheduler {
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
         
-        const sportsCount = {};
-        this.verifiedMatches.forEach(match => {
-            sportsCount[match.sport] = (sportsCount[match.sport] || 0) + 1;
-        });
-        console.log('🏆 Enhanced Sports Classification:', sportsCount);
-        
         if (this.currentView !== 'main') {
             this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
         }
@@ -882,7 +872,7 @@ class MatchScheduler {
         }
     }
 
-    // ==================== ENHANCED MATCH NAVIGATION ====================
+    // ==================== SIMPLIFIED MATCH NAVIGATION ====================
     async showDatesView() {
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
@@ -891,6 +881,7 @@ class MatchScheduler {
         const matches = this.getMatchesBySport(this.currentSport);
         const dates = [...new Set(matches.map(match => match.date))].sort();
         const sportName = this.currentSport;
+        const today = new Date().toISOString().split('T')[0];
         
         container.innerHTML = `
             <div class="content-section">
@@ -904,15 +895,12 @@ class MatchScheduler {
                 </div>
                 <div class="sports-grid">
                     ${dates.map(date => {
-                        const dateMatches = matches.filter(m => m.date === date);
-                        const liveCount = dateMatches.filter(m => m.isLive).length;
-                        const today = new Date().toISOString().split('T')[0];
                         const isToday = date === today;
-                        
                         return `
                             <div class="date-button" onclick="matchScheduler.selectDate('${date}')">
-                                <div class="date-name">${this.formatDisplayDate(date)} ${isToday ? '• Today' : ''}</div>
-                                <div class="match-count">${dateMatches.length} match${dateMatches.length !== 1 ? 'es' : ''}${liveCount > 0 ? ` • ${liveCount} live` : ''}</div>
+                                <div class="date-name">
+                                    ${isToday ? '<span class="today-badge">Today</span>' : this.formatDisplayDate(date)}
+                                </div>
                             </div>
                         `;
                     }).join('')}
@@ -931,31 +919,18 @@ class MatchScheduler {
         
         const matches = this.getMatchesBySportAndDate(this.currentSport, this.currentDate);
         const sportName = this.currentSport;
-        const displayDate = this.formatDisplayDate(this.currentDate);
         const today = new Date().toISOString().split('T')[0];
         const isToday = this.currentDate === today;
         
-        // FIXED LIVE FILTER: Properly count live matches
-        const liveMatches = matches.filter(match => match.isLive === true);
-        const hasLiveMatches = liveMatches.length > 0;
+        // 🛡️ BULLETPROOF FILTER LOGIC
+        const allMatches = matches;
+        const liveMatches = allMatches.filter(match => match.isLive === true);
         
-        // Auto-default to LIVE if there are live matches (SMART FEATURE)
-        if (hasLiveMatches && !this.showLiveOnly) {
-            this.showLiveOnly = true;
-        }
+        // Always use fresh data - no caching of filtered results
+        const displayMatches = this.showLiveOnly ? liveMatches : allMatches;
         
-        const filteredMatches = this.showLiveOnly ? liveMatches : matches;
-        
-        // Smart header based on content
-        let scheduleHeader = 'Schedule';
-        let scheduleSubtitle = displayDate;
-        
-        if (isToday) {
-            scheduleHeader = `Today's ${sportName} Schedule`;
-        } else {
-            scheduleHeader = `${sportName} Schedule`;
-            scheduleSubtitle = displayDate;
-        }
+        // SIMPLIFIED HEADER
+        const scheduleHeader = isToday ? `Today's ${sportName}` : `${sportName} Schedule`;
         
         container.innerHTML = `
             <div class="content-section">
@@ -965,23 +940,30 @@ class MatchScheduler {
                 </div>
                 <div class="section-header">
                     <h2>${scheduleHeader}</h2>
-                    <p>${scheduleSubtitle}</p>
+                    <p>${isToday ? '' : this.formatDisplayDate(this.currentDate)}</p>
                 </div>
                 
                 <div class="matches-table-container">
-                    <div class="table-filter">
-                        <button class="filter-toggle ${this.showLiveOnly ? 'active' : ''}" onclick="matchScheduler.toggleLiveFilter()">
-                            ${this.showLiveOnly ? 'LIVE NOW' : 'ALL MATCHES'}
+                    <!-- 🛡️ BULLETPROOF FILTER BUTTONS -->
+                    <div class="bulletproof-filter">
+                        <button class="filter-btn ${this.showLiveOnly ? '' : 'active'}" 
+                                data-filter="all" onclick="matchScheduler.setFilter('all')">
+                            All Matches
+                        </button>
+                        <button class="filter-btn ${this.showLiveOnly ? 'active' : ''}" 
+                                data-filter="live" onclick="matchScheduler.setFilter('live')">
+                            Live Only
                         </button>
                     </div>
+                    
                     <div class="matches-table">
                         <div class="table-header">
                             <div>Time</div>
                             <div>Match</div>
                             <div>Watch</div>
                         </div>
-                        ${filteredMatches.length > 0 ? 
-                            filteredMatches.map(match => this.renderMatchRow(match)).join('') :
+                        ${displayMatches.length > 0 ? 
+                            displayMatches.map(match => this.renderMatchRow(match)).join('') :
                             this.renderEmptyState(this.showLiveOnly)
                         }
                     </div>
@@ -1021,8 +1003,8 @@ class MatchScheduler {
             return `
                 <div class="no-matches">
                     <h3>No Live Matches Right Now</h3>
-                    <p>Check back later for live games or view all matches</p>
-                    <button class="retry-btn" onclick="matchScheduler.toggleLiveFilter()">
+                    <p>Check back later for live games</p>
+                    <button class="retry-btn" onclick="matchScheduler.setFilter('all')">
                         View All Matches
                     </button>
                 </div>
@@ -1037,12 +1019,7 @@ class MatchScheduler {
         }
     }
 
-    toggleLiveFilter() {
-        this.showLiveOnly = !this.showLiveOnly;
-        this.showMatchesView();
-    }
-
-    // ==================== ENHANCED MATCH DETAILS WITH MULTI-SOURCE STREAMS (RESTORED) ====================
+    // ==================== MATCH DETAILS (MULTI-SOURCE PRESERVED) ====================
     async showMatchDetails(matchId) {
         await this.ensureDataLoaded();
         const match = this.verifiedMatches.find(m => m.id === matchId);
@@ -1115,23 +1092,10 @@ class MatchScheduler {
                                     <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
                                     ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
                                     ${channels.length > 1 ? `Multiple streaming sources available.` : ''}
-                                    ${this.verifiedMatches.length < 5 ? '<br><br><em>Research Mode: Demo data active</em>' : ''}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <footer class="dashboard-footer">
-                        <div class="footer-legal">
-                            <p class="copyright">© 2025 9KILOS. All rights reserved.</p>
-                            <p class="legal-disclaimer">
-                                KILOS is simply a database of embedded streams and HLS files available throughout the internet. 
-                                WE does not host, control or upload any streams and/or media files. Please contact appropriate 
-                                media owners or hosts.
-                            </p>
-                        </div>
-                        <div class="last-updated">Updated: <span id="update-time-details">Just now</span></div>
-                    </footer>
                 </div>
             </div>
         `;
@@ -1141,7 +1105,6 @@ class MatchScheduler {
         this.incrementViews(matchId);
     }
 
-    // ==================== MULTI-SOURCE STREAMING SYSTEM (RESTORED FROM OLD FILE) ====================
     generateChannelSelector(channels, matchId) {
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
         const hasMultipleChannels = channels.length > 1;
@@ -1247,13 +1210,6 @@ class MatchScheduler {
                         <div class="button-subtitle">Fan discussions</div>
                     </div>
                 </div>
-                ${!this.isDataLoaded ? `
-                    <div style="text-align: center; margin-top: 20px;">
-                        <p style="color: var(--text-muted); font-size: 0.8em;">
-                            ⚡ Optimized Loading • Data loads on demand
-                        </p>
-                    </div>
-                ` : ''}
             </div>
         `;
         
@@ -1322,8 +1278,7 @@ class MatchScheduler {
         if (!match.unix_timestamp) return false;
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unix_timestamp;
-        // FIXED: Proper live detection - matches are live for 3 hours (10800 seconds)
-        return now >= matchTime && now <= (matchTime + 10800);
+        return now >= matchTime && now <= (matchTime + 10800); // 3-hour live window
     }
 
     formatTeamNames(teamString) {
@@ -1493,11 +1448,11 @@ class MatchScheduler {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM fully loaded, initializing Enhanced MatchScheduler...');
+    console.log('🎯 DOM fully loaded, initializing Bulletproof MatchScheduler...');
     try {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
-            console.log('✅ 9kilos Enhanced Version fully initialized!');
+            console.log('✅ 9kilos Bulletproof Version fully initialized!');
         }).catch(error => {
             console.error('❌ Initialization failed:', error);
         });
