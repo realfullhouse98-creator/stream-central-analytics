@@ -916,6 +916,11 @@ if (dateButton) {
     }
 
     async showMatchesView() {
+        console.log('🔍 showMatchesView called with:', {
+        sport: this.currentSport,
+        date: this.currentDate,
+        showLiveOnly: this.showLiveOnly
+    });
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
         if (!container) return;
