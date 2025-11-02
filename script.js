@@ -1,4 +1,4 @@
-// 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
+// 9kilo Stream - FINAL BULLETPROOF VERSION
 // 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
 class MatchScheduler {
     constructor() {
@@ -375,7 +375,7 @@ class MatchScheduler {
             if (dateElement) {
                 const dateText = dateElement.textContent;
                 const matches = this.verifiedMatches;
-                const match = matches.find(m => m.date === dateText);
+                const match = matches.find(m => m.date === dateText); // Simple match by date
                 if (match) {
                     this.selectDate(match.date);
                 }
@@ -944,8 +944,8 @@ class MatchScheduler {
                 </div>
                 
                 <div class="matches-table-container">
-                    <!-- 🎯 PROFESSIONAL FILTER BUTTONS - TOP RIGHT CORNER -->
-                    <div class="professional-filter">
+                    <!-- 🛡️ BULLETPROOF FILTER BUTTONS -->
+                    <div class="bulletproof-filter">
                         <button class="filter-btn ${this.showLiveOnly ? '' : 'active'}" 
                                 data-filter="all" onclick="matchScheduler.setFilter('all')">
                             All Matches
