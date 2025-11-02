@@ -413,35 +413,33 @@ class MatchScheduler {
         }
     }
 
-    handleBackButton() {
-        switch(this.currentView) {
-            case 'sports':
-            case 'tv-countries':
-                this.showMainMenu();
-                break;
-            case 'dates':
-                this.showSportsView();
-                break;
-            case 'matches':
-                this.showDatesView();
-                break;
-            case 'tv-channels':
-                this.showCountriesView();
-                break;
-            case 'tv-player':
-                this.showCountryChannels(this.currentCountry);
-                break;
-            case 'match-details':
-    if (this.currentDate && this.currentSport) {
-        this.showMatchesView(); // Go back to Today's Football/Sports page
-    } else {
-        this.showMainMenu();
+   handleBackButton() {
+    switch(this.currentView) {
+        case 'sports':
+        case 'tv-countries':
+            this.showMainMenu();
+            break;
+        case 'dates':
+            this.showSportsView();
+            break;
+        case 'matches':
+            this.showDatesView();
+            break;
+        case 'tv-channels':
+            this.showCountriesView();
+            break;
+        case 'tv-player':
+            this.showCountryChannels(this.currentCountry);
+            break;
+        case 'match-details':
+            // 🎯 SIMPLE FIX: Always go back to matches view
+            // The currentDate and currentSport are already set from where we came
+            this.showMatchesView();
+            break;
+        default:
+            this.showMainMenu();
     }
-    break;
-            default:
-                this.showMainMenu();
-        }
-    }
+}
 
     setupGlobalErrorHandling() {
         window.addEventListener('error', (e) => {
