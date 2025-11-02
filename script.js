@@ -394,6 +394,12 @@ if (dateButton) {
             e.stopPropagation();
             const matchRow = watchButton.closest('.match-row');
             if (matchRow) {
+                        // 🎯 SCROLL MEMORY: Save position before leaving
+        const rowIndex = Array.from(matchRow.parentNode.children).indexOf(matchRow) - 1; // -1 for header
+        localStorage.setItem('lastScrollPosition', rowIndex);
+        console.log('📜 Saving scroll position:', rowIndex);
+    }
+
                 const teamNames = matchRow.querySelector('.team-names')?.textContent;
                 if (teamNames) {
                     const match = this.verifiedMatches.find(m => 
@@ -977,6 +983,22 @@ if (dateButton) {
                 </div>
             </div>
         `;
+
+         // 🎯 SCROLL MEMORY: Restore position after page renders
+    setTimeout(() => {
+        const lastScrollPosition = localStorage.getItem('lastScrollPosition');
+        if (lastScrollPosition) {
+            console.log('📜 Restoring scroll to position:', lastScrollPosition);
+            const rows = document.querySelectorAll('.match-row');
+            if (rows[lastScrollPosition]) {
+                rows[lastScrollPosition].scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+            localStorage.removeItem('lastScrollPosition'); // Clear after use
+        }
+    }, 100);
         
         this.hideStats();
         this.currentView = 'matches';
