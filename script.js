@@ -432,12 +432,12 @@ class MatchScheduler {
                 this.showCountryChannels(this.currentCountry);
                 break;
             case 'match-details':
-                if (this.currentDate) {
-                    this.showMatchesView();
-                } else {
-                    this.showMainMenu();
-                }
-                break;
+    if (this.currentDate && this.currentSport) {
+        this.showMatchesView(); // Go back to Today's Football/Sports page
+    } else {
+        this.showMainMenu();
+    }
+    break;
             default:
                 this.showMainMenu();
         }
