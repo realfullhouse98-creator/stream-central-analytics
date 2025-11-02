@@ -1,4 +1,4 @@
-// 9kilo Stream - Enhanced Hybrid Version with Simplified UI
+// 9kilo Stream - Fixed Enhanced Version
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -507,7 +507,7 @@ class MatchScheduler {
             'ice hockey': 'Ice Hockey',
             'tennis': 'Tennis',
             'cricket': 'Cricket',
-            'rubgy': 'Rugby',
+            'rugby': 'Rugby',
             'golf': 'Golf',
             'boxing': 'Boxing',
             'mma': 'MMA',
@@ -577,7 +577,7 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories</h2>
+                    <h2>Categories - select</h2>
                     <p>Loading sports data...</p>
                 </div>
                 <div class="sports-grid">
@@ -602,7 +602,7 @@ class MatchScheduler {
         const container = document.getElementById('dynamic-content');
         const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
         
-        // Create sports list with counts
+        // Create sports list with counts - ONLY ON SPORTS PAGE
         const sports = uniqueSports.map(sportId => {
             const count = this.getMatchesBySport(sportId).length;
             return {
@@ -619,7 +619,7 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories</h2>
+                    <h2>Categories - select</h2>
                     <p>${uniqueSports.length} categories • ${this.verifiedMatches.length} total matches</p>
                 </div>
                 <div class="sports-grid">
@@ -645,7 +645,7 @@ class MatchScheduler {
                     <button class="home-button">⌂</button>
                 </div>
                 <div class="section-header">
-                    <h2>Categories</h2>
+                    <h2>Categories - select</h2>
                     <p>No sports data available</p>
                 </div>
                 <div class="sports-grid">
@@ -935,15 +935,16 @@ class MatchScheduler {
         const today = new Date().toISOString().split('T')[0];
         const isToday = this.currentDate === today;
         
+        // FIXED LIVE FILTER: Properly count live matches
+        const liveMatches = matches.filter(match => match.isLive === true);
+        const hasLiveMatches = liveMatches.length > 0;
+        
         // Auto-default to LIVE if there are live matches (SMART FEATURE)
-        const hasLiveMatches = matches.some(match => match.isLive);
         if (hasLiveMatches && !this.showLiveOnly) {
             this.showLiveOnly = true;
         }
         
-        const filteredMatches = this.showLiveOnly ? 
-            matches.filter(match => match.isLive === true) : 
-            matches;
+        const filteredMatches = this.showLiveOnly ? liveMatches : matches;
         
         // Smart header based on content
         let scheduleHeader = 'Schedule';
@@ -1235,7 +1236,7 @@ class MatchScheduler {
                 <div class="menu-grid">
                     <div class="menu-button sports-button" data-action="sports">
                         <div class="button-title">LIVE SPORTS</div>
-                        <div class="button-subtitle">${this.isDataLoaded ? this.verifiedMatches.length + ' matches' : 'Games & schedules'}</div>
+                        <div class="button-subtitle">Games & schedules</div>
                     </div>
                     <div class="menu-button tv-button" data-action="tv">
                         <div class="button-title">TV CHANNELS</div>
@@ -1321,7 +1322,8 @@ class MatchScheduler {
         if (!match.unix_timestamp) return false;
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unix_timestamp;
-        return now >= matchTime && now <= (matchTime + 7200);
+        // FIXED: Proper live detection - matches are live for 3 hours (10800 seconds)
+        return now >= matchTime && now <= (matchTime + 10800);
     }
 
     formatTeamNames(teamString) {
