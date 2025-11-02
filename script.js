@@ -1170,9 +1170,22 @@ if (dateButton) {
         this.showMatchDetails(matchId);
     }
     
-    toggleDropdown(matchId) {
+   toggleDropdown(matchId) {
+    try {
+        console.log('🔧 toggleDropdown called for:', matchId);
         const dropdown = document.getElementById(`dropdown-${matchId}`);
-        const button = document.querySelector(`#dropdown-${matchId}`).previousElementSibling;
+        
+        if (!dropdown) {
+            console.error('❌ Dropdown not found for:', matchId);
+            return;
+        }
+        
+        const button = dropdown.previousElementSibling;
+        
+        if (!button) {
+            console.error('❌ Button not found for dropdown:', matchId);
+            return;
+        }
         
         if (dropdown.classList.contains('show')) {
             dropdown.classList.remove('show');
@@ -1180,13 +1193,18 @@ if (dateButton) {
         } else {
             document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
                 dd.classList.remove('show');
-                dd.previousElementSibling.classList.remove('open');
+                if (dd.previousElementSibling) {
+                    dd.previousElementSibling.classList.remove('open');
+                }
             });
             
             dropdown.classList.add('show');
             button.classList.add('open');
         }
+    } catch (error) {
+        console.error('❌ toggleDropdown crashed:', error);
     }
+}
 
     refreshCurrentStream(matchId) {
         const match = this.verifiedMatches.find(m => m.id === matchId);
