@@ -418,7 +418,9 @@ if (dateButton) {
         }
     }
 
-   handleBackButton() {
+  handleBackButton() {
+    console.log('🔍 Back button - Current view:', this.currentView);
+    
     switch(this.currentView) {
         case 'sports':
         case 'tv-countries':
@@ -437,8 +439,8 @@ if (dateButton) {
             this.showCountryChannels(this.currentCountry);
             break;
         case 'match-details':
-            // 🎯 SIMPLE FIX: Always go back to matches view
-            // The currentDate and currentSport are already set from where we came
+            console.log('🎯 FORCE: Going to matches view');
+            // Force the correct page
             this.showMatchesView();
             break;
         default:
