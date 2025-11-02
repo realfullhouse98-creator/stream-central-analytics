@@ -136,14 +136,29 @@ body {
 }
 
 .menu-button {
-    background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08));
-    border: 1px solid var(--border-light);
-    border-radius: 16px;
-    padding: 30px 25px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(20px);
+    background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08)) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 16px !important;
+    padding: 30px 25px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(20px) !important;
+    min-height: 120px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.menu-button.sports-button {
+    background: linear-gradient(145deg, rgba(255, 107, 107, 0.3), rgba(255, 217, 61, 0.2)) !important;
+    border: 1px solid rgba(255, 107, 107, 0.4) !important;
+}
+
+.menu-button.community {
+    background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08)) !important;
+    border: 1px solid var(--border-light) !important;
 }
 
 .menu-button:hover {
@@ -163,12 +178,24 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
-.menu-button.community {
-    background: linear-gradient(145deg, rgba(155, 89, 182, 0.2), rgba(155, 89, 182, 0.1));
-    border: 1px solid rgba(155, 89, 182, 0.3);
+/* ==================== TV CHANNELS STYLES ==================== */
+.tv-section .dashboard-header,
+.tv-section .analytics-overview {
+    display: none !important;
 }
 
-/* ==================== TV CHANNELS STYLES ==================== */
+/* FIXED: TV Navigation now uses same styling as main header */
+.tv-navigation {
+    background: var(--header-bg) !important;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+}
+
 .countries-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -244,20 +271,6 @@ body {
     align-items: center;
     gap: 15px;
     margin-bottom: 15px;
-}
-
-.channel-logo {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #ff6b6b, #ffd93d);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 1.3em;
-    color: black;
-    flex-shrink: 0;
 }
 
 .channel-info {
@@ -356,25 +369,28 @@ body {
     flex-shrink: 0;
 }
 
+/* CONSISTENT BUTTON STYLES FOR ALL PAGES */
 .home-button, .top-back-button {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-light);
-    color: var(--text-primary);
-    padding: 12px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 1.3em;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid var(--border-light) !important;
+    color: var(--text-primary) !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    font-size: 1.8em !important;
+    width: 50px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(15px) !important;
 }
 
 .home-button:hover, .top-back-button:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-1px) !important;
 }
 
 .section-header {
@@ -386,9 +402,9 @@ body {
 
 .section-header h2 {
     margin: 0 0 10px 0;
-    font-size: 2.2em;
+    font-size: 2.8em;
     color: var(--accent-gold);
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .section-header p {
@@ -435,12 +451,10 @@ body {
     margin-bottom: 6px;
 }
 
-/* ONLY REMOVE from Sports selection page */
 .sports-grid .sport-button .match-count {
     display: none;
 }
 
-/* KEEP Football Dates page with match counts */
 .date-button .match-count {
     font-size: 0.8em;
     color: rgba(255, 255, 255, 0.6);
@@ -449,45 +463,54 @@ body {
     border-radius: 8px;
 }
 
-/* ==================== SCHEDULE TABLE WITH WORKING FILTER ==================== */
-.matches-table-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0 20px;
+.today-badge {
+    color: #FF8C00 !important;
+    font-weight: 700;
+    font-size: 1.1em;
 }
 
-.table-filter {
+/* ==================== PROFESSIONAL FILTER BUTTONS ==================== */
+.professional-filter {
     display: flex;
+    gap: 12px;
     justify-content: flex-end;
-    margin-bottom: 15px;
-    margin-right: 55px;
+    margin-bottom: 20px;
+    margin-right: 10%;
 }
 
-.filter-toggle {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-light);
-    color: var(--text-primary);
-    padding: 8px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    min-width: 80px;
-    text-align: center;
-}
-
-.filter-toggle:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
-}
-
-.filter-toggle.active {
-    background: var(--accent-red);
+.filter-btn {
+    background: #0a1f3a;
     color: white;
-    border-color: var(--accent-red);
-    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+    border: none;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(10, 31, 58, 0.4);
+    min-width: 120px;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 52, 96, 0.4);
+}
+
+.filter-btn.active {
+    background: #0a1f3a !important;
+    box-shadow: 0 0 20px 8px rgba(255, 0, 0, 0.6);
+    border: 2px solid #ff0000;
+}
+
+.filter-btn.active:hover {
+    box-shadow: 0 6px 16px rgba(255, 0, 0, 0.4);
+}
+
+.today-badge {
+    color: #FF8C00 !important;
+    font-weight: 700;
+    font-size: 1.4em !important;
 }
 
 .matches-table {
@@ -496,6 +519,7 @@ body {
     border: 1px solid var(--border-light);
     overflow: hidden;
     flex-shrink: 0;
+    margin: 0 10%;
 }
 
 .table-header {
@@ -579,7 +603,6 @@ body {
     justify-content: flex-end;
 }
 
-/* Control buttons on right */
 .control-buttons-right {
     display: flex;
     gap: 15px;
@@ -768,7 +791,6 @@ body {
     flex-shrink: 0;
 }
 
-/* YouTube-style Video Player with Side Margins */
 .video-player-wrapper {
     max-width: 1200px;
     margin: 0 auto;
@@ -1029,6 +1051,10 @@ body {
     }
     
     /* TV Channels Mobile */
+    .tv-navigation {
+        padding: 12px 15px;
+    }
+    
     .countries-grid {
         grid-template-columns: 1fr;
         gap: 15px;
@@ -1056,12 +1082,6 @@ body {
     
     .channel-card {
         padding: 20px;
-    }
-    
-    .channel-logo {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2em;
     }
     
     .channel-name {
@@ -1121,7 +1141,12 @@ body {
     
     /* Mobile SCHEDULE TABLE WITH FILTER */
     .matches-table-container {
-        padding: 0 15px;
+        margin: 0 5%;
+        padding: 0;
+    }
+    
+    .matches-table {
+        margin: 0 5%;
     }
     
     .table-filter {
@@ -1231,6 +1256,21 @@ body {
     /* Mobile loading states */
     .loading-message, .error-message {
         padding: 40px 15px;
+    }
+    
+    .professional-filter {
+        margin-right: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-btn {
+        padding: 12px 16px;
+        font-size: 1em;
+        min-width: 110px;
+    }
+    
+    .section-header h2 {
+        font-size: 2.2em !important;
     }
 }
 
