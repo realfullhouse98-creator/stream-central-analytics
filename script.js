@@ -1028,6 +1028,8 @@ if (dateButton) {
 
     // ==================== FIXED MATCH DETAILS (MULTI-SOURCE PRESERVED) ====================
     async showMatchDetails(matchId) {
+        console.log('🎯 showMatchDetails called - setting currentView to match-details');
+    this.currentView = 'match-details'; // Force the correct view state
         await this.ensureDataLoaded();
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
