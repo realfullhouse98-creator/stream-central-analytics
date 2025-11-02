@@ -388,30 +388,29 @@ if (dateButton) {
     return;
 }
 
-        const watchButton = e.target.closest('.watch-btn');
-        if (watchButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const matchRow = watchButton.closest('.match-row');
-            if (matchRow) {
-                        // 🎯 SCROLL MEMORY: Save position before leaving
+      const watchButton = e.target.closest('.watch-btn');
+if (watchButton) {
+    e.preventDefault();
+    e.stopPropagation();
+    const matchRow = watchButton.closest('.match-row');
+    if (matchRow) {
+        // 🎯 SCROLL MEMORY: Save position before leaving
         const rowIndex = Array.from(matchRow.parentNode.children).indexOf(matchRow) - 1; // -1 for header
         localStorage.setItem('lastScrollPosition', rowIndex);
         console.log('📜 Saving scroll position:', rowIndex);
-    }
 
-                const teamNames = matchRow.querySelector('.team-names')?.textContent;
-                if (teamNames) {
-                    const match = this.verifiedMatches.find(m => 
-                        this.formatTeamNames(m.teams) === teamNames
-                    );
-                    if (match) {
-                        this.showMatchDetails(match.id);
-                    }
-                }
+        const teamNames = matchRow.querySelector('.team-names')?.textContent;
+        if (teamNames) {
+            const match = this.verifiedMatches.find(m => 
+                this.formatTeamNames(m.teams) === teamNames
+            );
+            if (match) {
+                this.showMatchDetails(match.id);
             }
-            return;
         }
+    }
+    return;
+}
 
         // BULLETPROOF FILTER BUTTONS
         const filterButton = e.target.closest('.filter-btn');
