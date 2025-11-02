@@ -135,13 +135,27 @@ body {
     width: 100%;
 }
 
-/* MAKE LIVE SPORTS STAND OUT */
+.menu-button {
+    background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08)) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 16px !important;
+    padding: 30px 25px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(20px) !important;
+    min-height: 120px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
 .menu-button.sports-button {
     background: linear-gradient(145deg, rgba(255, 107, 107, 0.3), rgba(255, 217, 61, 0.2)) !important;
     border: 1px solid rgba(255, 107, 107, 0.4) !important;
 }
 
-/* MAKE COMMUNITY REGULAR (if it has special styling) */
 .menu-button.community {
     background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08)) !important;
     border: 1px solid var(--border-light) !important;
@@ -164,11 +178,6 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
-.menu-button.community {
-    background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08));
-    border: 1px solid var(--border-light);
-}
-
 /* ==================== TV CHANNELS STYLES ==================== */
 .tv-section .dashboard-header,
 .tv-section .analytics-overview {
@@ -184,12 +193,6 @@ body {
     gap: 15px;
     backdrop-filter: blur(20px);
     flex-shrink: 0;
-}
-.tv-navigation .home-button,
-.tv-navigation .top-back-button {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid var(--border-light) !important;
-    backdrop-filter: blur(15px) !important;
 }
 
 .countries-grid {
@@ -365,6 +368,7 @@ body {
     flex-shrink: 0;
 }
 
+/* CONSISTENT BUTTON STYLES FOR ALL PAGES */
 .home-button, .top-back-button {
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid var(--border-light) !important;
@@ -379,10 +383,13 @@ body {
     align-items: center !important;
     justify-content: center !important;
     transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(15px) !important;
+}
 
 .home-button:hover, .top-back-button:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-1px) !important;
 }
 
 .section-header {
@@ -443,12 +450,10 @@ body {
     margin-bottom: 6px;
 }
 
-/* ONLY REMOVE from Sports selection page */
 .sports-grid .sport-button .match-count {
     display: none;
 }
 
-/* KEEP Football Dates page with match counts */
 .date-button .match-count {
     font-size: 0.8em;
     color: rgba(255, 255, 255, 0.6);
@@ -456,7 +461,7 @@ body {
     padding: 3px 10px;
     border-radius: 8px;
 }
-/* ADD THIS NEW CODE RIGHT AFTER IT */
+
 .today-badge {
     color: #FF8C00 !important;
     font-weight: 700;
@@ -473,7 +478,7 @@ body {
 }
 
 .filter-btn {
-    background: #0a1f3a; /* ← DARKER BLUE */
+    background: #0a1f3a;
     color: white;
     border: none;
     padding: 14px 20px;
@@ -482,7 +487,7 @@ body {
     font-size: 1.1em;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(10, 31, 58, 0.4); /* ← DARKER SHADOW TOO */
+    box-shadow: 0 4px 12px rgba(10, 31, 58, 0.4);
     min-width: 120px;
 }
 
@@ -492,39 +497,19 @@ body {
 }
 
 .filter-btn.active {
-    background: #0a1f3a !important;  /* Keep blue for everyone */
-    box-shadow: 0 0 20px 8px rgba(255, 0, 0, 0.6); /* Glow for everyone */
-    border: 2px solid #ff0000; /* Border for everyone */
+    background: #0a1f3a !important;
+    box-shadow: 0 0 20px 8px rgba(255, 0, 0, 0.6);
+    border: 2px solid #ff0000;
 }
 
 .filter-btn.active:hover {
     box-shadow: 0 6px 16px rgba(255, 0, 0, 0.4);
 }
 
-/* ==================== TODAY BADGE - DARK ORANGE ==================== */
 .today-badge {
     color: #FF8C00 !important;
     font-weight: 700;
-    font-size: 1.4em !important;   /* ← BIGGER */
-}
-
-/* Mobile responsive */
-@media (max-width: 768px) {
-    .professional-filter {
-        margin-right: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .filter-btn {
-        padding: 12px 16px;
-        font-size: 1em;
-        min-width: 110px;
-        
-    }
-      /* ADD THIS FOR BIGGER HEADERS ON MOBILE */
-    .section-header h2 {
-        font-size: 2.2em !important;
-    }
+    font-size: 1.4em !important;
 }
 
 .matches-table {
@@ -617,7 +602,6 @@ body {
     justify-content: flex-end;
 }
 
-/* Control buttons on right */
 .control-buttons-right {
     display: flex;
     gap: 15px;
@@ -806,7 +790,6 @@ body {
     flex-shrink: 0;
 }
 
-/* YouTube-style Video Player with Side Margins */
 .video-player-wrapper {
     max-width: 1200px;
     margin: 0 auto;
@@ -1273,6 +1256,21 @@ body {
     .loading-message, .error-message {
         padding: 40px 15px;
     }
+    
+    .professional-filter {
+        margin-right: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-btn {
+        padding: 12px 16px;
+        font-size: 1em;
+        min-width: 110px;
+    }
+    
+    .section-header h2 {
+        font-size: 2.2em !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1330,88 +1328,4 @@ body {
 body {
     background: var(--primary-bg) !important;
     background-attachment: fixed !important;
-}
-/* FIX BUTTON SHAPES */
-.menu-button {
-    background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.08)) !important;
-    border: 1px solid var(--border-light) !important;
-    border-radius: 16px !important;
-    padding: 30px 25px !important;
-    text-align: center !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    backdrop-filter: blur(20px) !important;
-    min-height: 120px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-}
-
-.menu-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-    max-width: 450px !important;
-    margin: 0 auto !important;
-    width: 100% !important;
-}
-/* FIX HOME+BACK BUTTONS */
-.home-button, .top-back-button {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid var(--border-light) !important;
-    color: var(--text-primary) !important;
-    padding: 12px !important;
-    border-radius: 12px !important;
-    cursor: pointer !important;
-    font-size: 1.8em !important;
-    width: 50px !important;
-    height: 50px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.3s ease !important;
-}
-/* NUCLEAR OVERRIDE - FORCE HOME/BACK BUTTONS */
-.home-button, .top-back-button {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid var(--border-light) !important;
-    color: var(--text-primary) !important;
-    padding: 12px !important;
-    border-radius: 12px !important;
-    cursor: pointer !important;
-    font-size: 1.8em !important;
-    width: 50px !important;
-    height: 50px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* OVERRIDE ANY TV CHANNELS SPECIFIC STYLING */
-.tv-navigation .home-button,
-.tv-navigation .top-back-button {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid var(--border-light) !important;
-}
-/* TV CHANNELS BUTTONS - REAL STYLES */
-.tv-navigation .home-button,
-.tv-navigation .top-back-button {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid var(--border-light) !important;
-    color: var(--text-primary) !important;
-    padding: 12px !important;
-    border-radius: 12px !important;
-    cursor: pointer !important;
-    font-size: 1.8em !important;
-    width: 50px !important;
-    height: 50px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-    backdrop-filter: blur(15px) !important;
 }
