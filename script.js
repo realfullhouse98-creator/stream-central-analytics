@@ -34,7 +34,61 @@ class MatchScheduler {
         
         console.log('🚀 MatchScheduler initialized with Bulletproof Features!');
     }
-    
+        // ==================== STREAMED API METHODS ====================
+    async fetchFromStreamed(endpoint = 'all') {
+        try {
+            let url;
+            if (endpoint === 'live') {
+                url = 'https://streamed.pk/api/matches/live';
+            } else if (endpoint === 'today') {
+                url = 'https://streamed.pk/api/matches/all-today';
+            } else {
+                url = 'https://streamed.pk/api/matches/all';
+            }
+            
+            console.log('🔄 Fetching from Streamed:', url);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('HTTP error');
+            
+            const data = await response.json();
+            console.log('✅ Streamed data received:', data.length, 'matches');
+            return this.normalizeStreamedData(data);
+            
+        } catch (error) {
+            console.warn('❌ Streamed failed:', error);
+            throw error;
+        }
+    }
+
+    normalizeStreamedData(streamedData) {
+        const events = {};
+        
+        streamedData.forEach(match => {
+            const date = new Date(match.date).toISOString().split('T')[0];
+            
+            if (!events[date]) events[date] = [];
+            
+            let teamNames = match.title;
+            if (match.teams && match.teams.home && match.teams.away) {
+                teamNames = match.teams.home.name + ' - ' + match.teams.away.name;
+            }
+            
+            const channels = match.sources.map(source => 
+                'https://streamed.pk/api/stream/' + source.source + '/' + source.id
+            );
+            
+            events[date].push({
+                match: teamNames,
+                tournament: match.category,
+                sport: this.classifySport({ sport: match.category }),
+                unix_timestamp: Math.floor(match.date / 1000),
+                channels: channels,
+                streamedMatch: match
+            });
+        });
+        
+        return { events };
+    }
     async init() {
         await this.waitForDOMReady();
         this.setupGlobalErrorHandling();
