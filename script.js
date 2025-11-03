@@ -1,6 +1,7 @@
 // 9kilo Stream - COMPLETE WORKING VERSION WITH API FUSION
 // ADD AT THE VERY TOP
 import { SportsClassifier } from './modules/sports-classifier.js';
+import { DataFusion } from './modules/data-fusion.js';  // ← ADD THIS LINE
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -14,6 +15,7 @@ class MatchScheduler {
 
         // ADD THIS LINE - Sports Classifier Module
         this.sportsClassifier = new SportsClassifier();
+        this.dataFusion = new DataFusion();  // ← ADD THIS LINE
         
         // TV Channels State
         this.currentCountry = '';
@@ -1148,7 +1150,10 @@ class MatchScheduler {
             this.showSportsDataUI();
         }
     }
-
+      // ==================== DELEGATED DATA LOADING ====================
+async loadMatches() {
+    return this.dataFusion.loadMatches();
+}
     // ==================== SIMPLIFIED MATCH NAVIGATION ====================
     async showDatesView() {
         await this.ensureDataLoaded();
