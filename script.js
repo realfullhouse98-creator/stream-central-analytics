@@ -915,17 +915,7 @@ class MatchScheduler {
         return fusedData;
     }
         
-        // If TopEmbed fails, try Streamed as fallback
-        console.log('🔄 TopEmbed failed, trying Streamed...');
-        try {
-            const streamedData = await this.fetchFromStreamed('all');
-            console.log('✅ Using Streamed fallback data');
-            return streamedData;
-        } catch (error) {
-            console.error('💥 All sources failed');
-            throw new Error('All sources failed');
-        }
-    }
+     
 
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
