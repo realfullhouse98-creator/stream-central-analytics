@@ -686,6 +686,8 @@ if (watchButton) {
     }
 
     showSportsDataUI() {
+        console.log('🔍 ALL VERIFIED MATCHES:', this.verifiedMatches);
+    console.log('🔍 UNIQUE SPORTS FOUND:', [...new Set(this.verifiedMatches.map(m => m.sport))]);
         if (!this.verifiedMatches || this.verifiedMatches.length === 0) {
             this.showSportsEmptyState();
             return;
