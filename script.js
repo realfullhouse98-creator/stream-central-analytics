@@ -1128,8 +1128,46 @@ class MatchScheduler {
         }
     }
       // ==================== DELEGATED DATA LOADING ====================
+// ==================== DELEGATED DATA LOADING ====================
 async loadMatches() {
-    return this.dataFusion.loadMatches();
+    console.log('🔄 loadMatches called - delegating to DataFusion...');
+    
+    try {
+        const apiData = await this.dataFusion.loadMatches();
+        this.organizeMatches(apiData);
+        return apiData;
+    } catch (error) {
+        console.warn('Data loading failed:', error);
+        // Use fallback data directly
+        const fallbackData = this.dataFusion.useFallbackData();
+        this.organizeMatches(fallbackData);
+        return fallbackData;
+    }
+}
+    // ==================== DELEGATED CACHE METHODS ====================
+getCachedData() {
+    return this.dataFusion.getCachedData();
+}
+
+cacheData(data) {
+    return this.dataFusion.cacheData(data);
+}
+
+// ==================== DELEGATED TV CHANNELS ====================
+async loadTVChannelsData() {
+    return this.dataFusion.loadTVChannelsData();
+}
+
+getTVChannelsData() {
+    return this.dataFusion.getTVChannelsData();
+}
+
+backgroundPreload() {
+    return this.dataFusion.backgroundPreload();
+}
+
+async preloadSportsData() {
+    return this.dataFusion.preloadSportsData();
 }
     // ==================== SIMPLIFIED MATCH NAVIGATION ====================
     async showDatesView() {
@@ -1140,6 +1178,9 @@ async loadMatches() {
         const matches = this.getMatchesBySport(this.currentSport);
         const dates = [...new Set(matches.map(match => match.date))].sort();
         const sportName = this.currentSport;
+
+
+        
         const today = new Date().toISOString().split('T')[0];
         
         container.innerHTML = `
