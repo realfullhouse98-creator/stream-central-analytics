@@ -1652,3 +1652,10 @@ document.addEventListener('click', (e) => {
         });
     }
 });
+
+// QUICK PERSONALITY TEST
+console.log('🔧 Checking personality methods exist...');
+if (window.matchScheduler) {
+    console.log('generatePersonalityLabel exists?', typeof window.matchScheduler.generatePersonalityLabel);
+    console.log('detectSourceType exists?', typeof window.matchScheduler.detectSourceType);
+}
