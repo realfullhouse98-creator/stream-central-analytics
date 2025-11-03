@@ -755,6 +755,17 @@ if (watchButton) {
 
     async ensureDataLoaded() {
         if (this.isDataLoaded) return true;
+         // TEMPORARY: Skip cache and use Streamed immediately
+    console.log('🚀 FORCING STREAMED DATA (bypassing cache)');
+    try {
+        const streamedData = await this.fetchFromStreamed('all');
+        this.organizeMatches(streamedData);
+        this.isDataLoaded = true;
+        return true;
+    } catch (error) {
+        console.log('❌ Streamed failed, falling back to normal flow');
+        // Continue with normal flow
+    }
         
         if (this.isLoading) {
             return new Promise(resolve => {
