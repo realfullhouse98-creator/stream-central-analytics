@@ -794,14 +794,18 @@ class MatchScheduler {
         }
     }
 
-    async loadMatches() {
-        console.log('🔄 loadMatches called - checking cache or fetching fresh...');
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            console.log('📦 Using cached data');
-            this.organizeMatches(cachedData);
-            return;
-        }
+  async loadMatches() {
+    console.log('🔄 loadMatches called - FORCING FRESH FUSION...');
+    
+    // TEMPORARY: SKIP CACHE to force fusion
+    // const cachedData = this.getCachedData();
+    // if (cachedData) {
+    //     console.log('📦 Using cached data');
+    //     this.organizeMatches(cachedData);
+    //     return;
+    // }
+    
+    console.log('🔥 CACHE BYPASSED - running fresh fusion...');
         
         try {
             const apiData = await this.tryAllProxies();
