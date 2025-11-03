@@ -60,8 +60,6 @@ class MatchScheduler {
             }
         };
 
-         // ADD THIS LINE RIGHT HERE:
-    this.sportsClassifier = new SportsClassifier();
     
         
         console.log('🚀 MatchScheduler initialized with Streamed API!');
@@ -758,28 +756,7 @@ class MatchScheduler {
         }
     }
 
-    async loadMatches() {
-        console.log('🔄 loadMatches called - checking cache...');
-        
-        // RE-ENABLE CACHE but with fusion
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            console.log('📦 Using cached FUSED data');
-            this.organizeMatches(cachedData);
-            return;
-        }
-        
-        console.log('🔥 No cache - running fresh fusion...');
-        
-        try {
-            const apiData = await this.tryAllProxies();
-            this.organizeMatches(apiData);
-            this.cacheData(apiData);
-        } catch (error) {
-            console.warn('All API attempts failed:', error);
-            this.useFallbackData();
-        }
-    }
+    
 
     getCachedData() {
         try {
