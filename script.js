@@ -839,35 +839,81 @@ class MatchScheduler {
     }
 
     async tryAllProxies() {
-        // Try TopEmbed first
-        const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
-        const topEmbedProxies = [
-            'https://api.allorigins.win/raw?url=' + encodeURIComponent(topEmbedUrl),
-            'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl),
-            topEmbedUrl
-        ];
+        let topEmbedData = null;
+        let streamedData = null;
         
-        for (const proxyUrl of topEmbedProxies) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000);
+        // Try to get data from BOTH APIs
+        try {
+            const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
+            const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch(proxyUrl, {
+                signal: controller.signal,
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                topEmbedData = await response.json();
+                console.log('✅ Tom data loaded:', Object.keys(topEmbedData.events || {}).length, 'days');
+            }
+        } catch (error) {
+            console.log('❌ Tom failed, but continuing...');
+        }
+        
+        try {
+            streamedData = await this.fetchFromStreamed('all');
+            console.log('✅ Sarah data loaded:', Object.keys(streamedData.events || {}).length, 'days');
+        } catch (error) {
+            console.log('❌ Sarah failed, but continuing...');
+        }
+        
+        // FUSE THE DATA: Combine both sources
+        return this.fuseAPIData(topEmbedData, streamedData);
+    }
+
+    // NEW METHOD: Combine data from both APIs
+    fuseAPIData(tomData, sarahData) {
+        console.log('🔗 Fusing Tom & Sarah data...');
+        
+        const fusedData = { events: {} };
+        
+        // Add all Tom data
+        if (tomData && tomData.events) {
+            Object.entries(tomData.events).forEach(([date, matches]) => {
+                if (!fusedData.events[date]) fusedData.events[date] = [];
+                fusedData.events[date].push(...matches);
+                console.log(`📅 Tom added ${matches.length} matches for ${date}`);
+            });
+        }
+        
+        // Add all Sarah data (avoid duplicates)
+        if (sarahData && sarahData.events) {
+            Object.entries(sarahData.events).forEach(([date, matches]) => {
+                if (!fusedData.events[date]) fusedData.events[date] = [];
                 
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
+                // Simple duplicate detection - by match title
+                const existingTitles = new Set(fusedData.events[date].map(m => m.match));
+                
+                matches.forEach(match => {
+                    if (!existingTitles.has(match.match)) {
+                        fusedData.events[date].push(match);
+                    }
                 });
                 
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('✅ Using TopEmbed data');
-                    return data;
-                }
-            } catch (error) {
-                continue;
-            }
+                console.log(`📅 Sarah added ${matches.length} matches for ${date}`);
+            });
         }
+        
+        const totalMatches = Object.values(fusedData.events).flat().length;
+        console.log(`🎉 Fusion complete: ${totalMatches} total matches from both APIs`);
+        
+        return fusedData;
+    }
         
         // If TopEmbed fails, try Streamed as fallback
         console.log('🔄 TopEmbed failed, trying Streamed...');
