@@ -1,11 +1,19 @@
 const API_CONFIG = {
-    EMBEDSPORTS: {
+    STREAMED: {
         BASE_URL: 'https://streamed.pk/api',
         ENDPOINTS: {
-            MATCHES: '/matches/{sport}',
-            STREAMS: '/stream/{source}/{id}'
+            // Matches endpoints
+            ALL_MATCHES: '/matches/all',
+            LIVE_MATCHES: '/matches/live',
+            TODAY_MATCHES: '/matches/all-today',
+            SPORT_MATCHES: '/matches/{sport}',
+            // Streams endpoints
+            STREAMS: '/stream/{source}/{id}',
+            // Sports endpoint
+            SPORTS: '/sports'
         }
     },
+    
     TOPEMBED: {
         BASE_URL: 'https://topembed.pw',
         ENDPOINTS: {
@@ -13,4 +21,5 @@ const API_CONFIG = {
         }
     }
 };
+
 window.API_CONFIG = API_CONFIG;
