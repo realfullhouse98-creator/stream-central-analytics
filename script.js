@@ -795,6 +795,7 @@ class MatchScheduler {
     }
 
     async loadMatches() {
+        console.log('🔄 loadMatches called - checking cache or fetching fresh...');
         const cachedData = this.getCachedData();
         if (cachedData) {
             console.log('📦 Using cached data');
