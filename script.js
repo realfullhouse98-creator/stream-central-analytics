@@ -1,4 +1,4 @@
-// 9kilo Stream - FINAL BULLETPROOF VERSION WITH STREAMED API INTEGRATION
+// 9kilo Stream - COMPLETE WORKING VERSION WITH API FUSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -794,18 +794,18 @@ class MatchScheduler {
         }
     }
 
-  async loadMatches() {
-    console.log('🔄 loadMatches called - FORCING FRESH FUSION...');
-    
-    // TEMPORARY: SKIP CACHE to force fusion
-    // const cachedData = this.getCachedData();
-    // if (cachedData) {
-    //     console.log('📦 Using cached data');
-    //     this.organizeMatches(cachedData);
-    //     return;
-    // }
-    
-    console.log('🔥 CACHE BYPASSED - running fresh fusion...');
+    async loadMatches() {
+        console.log('🔄 loadMatches called - FORCING FRESH FUSION...');
+        
+        // TEMPORARY: SKIP CACHE to force fusion
+        // const cachedData = this.getCachedData();
+        // if (cachedData) {
+        //     console.log('📦 Using cached data');
+        //     this.organizeMatches(cachedData);
+        //     return;
+        // }
+        
+        console.log('🔥 CACHE BYPASSED - running fresh fusion...');
         
         try {
             const apiData = await this.tryAllProxies();
@@ -844,7 +844,7 @@ class MatchScheduler {
     }
 
     async tryAllProxies() {
-        console.log('🔄 loadMatches CALLED - checking for fresh data...');
+        console.log('🎯 tryAllProxies CALLED - starting API fusion...');
         let topEmbedData = null;
         let streamedData = null;
         
@@ -920,8 +920,6 @@ class MatchScheduler {
         
         return fusedData;
     }
-        
-     
 
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
