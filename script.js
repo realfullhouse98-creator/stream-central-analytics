@@ -1235,30 +1235,31 @@ if (watchButton) {
     }
 
     generateChannelSelector(channels, matchId) {
-        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const hasMultipleChannels = channels.length > 1;
-        
-        if (!hasMultipleChannels || channels.length === 0) {
-            return '';
-        }
-        
-      if (channels.length <= 4) {
-    return `
-        <div class="channel-buttons-inline">
-           ${channels.map((channel, index) => {
-    const sourceType = this.detectSourceType(channel);
-    const personalityLabel = this.generatePersonalityLabel(sourceType, index);
-    return `
-        <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
-             onclick="matchScheduler.switchChannel('${matchId}', ${index})"
-             style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
-            ${personalityLabel}
-        </div>
-    `;
-}).join('')}
-        </div>
-    `;
-}
+    const currentChannelIndex = this.currentStreams.get(matchId) || 0;
+    const hasMultipleChannels = channels.length > 1;
+    
+    if (channels.length === 0) {
+        return '';  // Only return empty if NO streams
+    }
+    
+    // Show selector even for single stream
+    if (channels.length <= 4) {
+        return `
+            <div class="channel-buttons-inline">
+                ${channels.map((channel, index) => {
+                    const sourceType = this.detectSourceType(channel);
+                    const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+                    return `
+                        <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+                            ${personalityLabel}
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
         
         return `
             <div class="channel-dropdown-inline">
