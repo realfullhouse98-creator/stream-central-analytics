@@ -31,6 +31,27 @@ class MatchScheduler {
         
         // DOM ready state
         this.isDOMReady = false;
+            // ==================== STREAM PERSONALITIES ====================
+    this.streamPersonalities = {
+        'topembed': { 
+            name: 'Tom', 
+            color: '#3498db', 
+            emoji: '🔵',
+            fullName: 'TopEmbed'
+        },
+        'streamed': { 
+            name: 'Sarah', 
+            color: '#e74c3c', 
+            emoji: '🔴',
+            fullName: 'Streamed' 
+        },
+        'unknown': {
+            name: 'Mystery',
+            color: '#9b59b6',
+            emoji: '🟣', 
+            fullName: 'Unknown Source'
+        }
+    };
         
         console.log('🚀 MatchScheduler initialized with Bulletproof Features!');
     }
@@ -89,6 +110,23 @@ class MatchScheduler {
         
         return { events };
     }
+    // ==================== PERSONALITY METHODS ====================
+detectSourceType(streamUrl) {
+    if (!streamUrl) return 'unknown';
+    if (streamUrl.includes('topembed')) return 'topembed';
+    if (streamUrl.includes('streamed.pk')) return 'streamed';
+    return 'unknown';
+}
+
+generatePersonalityLabel(sourceType, index) {
+    const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
+    return `${personality.emoji} ${personality.name} ${index + 1}`;
+}
+
+getSourceColor(sourceType) {
+    const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
+    return personality.color;
+}
     async init() {
         await this.waitForDOMReady();
         this.setupGlobalErrorHandling();
@@ -1204,18 +1242,23 @@ if (watchButton) {
             return '';
         }
         
-        if (channels.length <= 2) {
-            return `
-                <div class="channel-buttons-inline">
-                    ${channels.map((channel, index) => `
-                        <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
-                                onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                            Source ${index + 1}
-                        </button>
-                    `).join('')}
-                </div>
-            `;
-        }
+      if (channels.length <= 4) {
+    return `
+        <div class="channel-buttons-inline">
+           ${channels.map((channel, index) => {
+    const sourceType = this.detectSourceType(channel);
+    const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+    return `
+        <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
+             onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+             style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+            ${personalityLabel}
+        </div>
+    `;
+}).join('')}
+        </div>
+    `;
+}
         
         return `
             <div class="channel-dropdown-inline">
@@ -1591,6 +1634,15 @@ fetch('https://streamed.pk/api/matches/all')
     .catch(error => {
         console.log('❌ Streamed API failed:', error);
     });
+// TEST PERSONALITY SYSTEM
+setTimeout(() => {
+    console.log('🎭 Testing personality system...');
+    if (window.matchScheduler) {
+        console.log('Tom:', window.matchScheduler.generatePersonalityLabel('topembed', 0));
+        console.log('Sarah:', window.matchScheduler.generatePersonalityLabel('streamed', 0));
+        console.log('Mystery:', window.matchScheduler.generatePersonalityLabel('unknown', 0));
+    }
+}, 6000);
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.channel-dropdown-inline')) {
