@@ -1,5 +1,5 @@
-
-async tryAllProxies() {
+// modules/data-fusion.js
+export class DataFusion {async tryAllProxies() {
         console.log('🎯 tryAllProxies CALLED - starting API fusion...');
         let topEmbedData = null;
         let streamedData = null;
@@ -37,3 +37,4 @@ async tryAllProxies() {
         // FUSE THE DATA: Combine both sources
         return this.fuseAPIData(topEmbedData, streamedData);
     }
+                        }
