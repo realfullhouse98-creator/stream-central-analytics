@@ -1578,6 +1578,19 @@ setTimeout(() => {
             .catch(err => console.log('💥 Streamed test failed:', err));
     }
 }, 5000);
+// SIMPLE TEST - ADD THIS
+console.log('🔧 Testing if Streamed API is reachable...');
+fetch('https://streamed.pk/api/matches/all')
+    .then(response => {
+        console.log('📡 Streamed API response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('✅ Streamed API works! Matches found:', data.length);
+    })
+    .catch(error => {
+        console.log('❌ Streamed API failed:', error);
+    });
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.channel-dropdown-inline')) {
