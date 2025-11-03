@@ -81,7 +81,23 @@ class MatchScheduler {
         }
     }
 
-    normalizeStreamedData(streamedData) {
+        normalizeStreamedData(streamedData) {
+    // DEBUG: Find Rugby category
+    const allCategories = [...new Set(streamedData.map(m => m.category))];
+    console.log('🔍 ALL STREAMED RAW CATEGORIES:', allCategories.sort());
+    
+    // Look for rugby-related terms
+    const rugbyMatches = streamedData.filter(m => 
+        m.category.toLowerCase().includes('rugby') ||
+        m.title.toLowerCase().includes('rugby') ||
+        (m.teams && (
+            m.teams.home?.name.toLowerCase().includes('rugby') ||
+            m.teams.away?.name.toLowerCase().includes('rugby')
+        ))
+    );
+    console.log('🔍 POTENTIAL RUGBY MATCHES:', rugbyMatches);
+    
+    // ... rest of method
         const events = {};
         
         streamedData.forEach(match => {
