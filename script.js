@@ -1569,7 +1569,15 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Critical initialization error:', error);
     }
 });
-
+// TEST STREAMED API - REMOVE LATER
+setTimeout(() => {
+    console.log('🧪 Testing Streamed API...');
+    if (window.matchScheduler) {
+        window.matchScheduler.fetchFromStreamed('all')
+            .then(data => console.log('🎉 Streamed test successful!'))
+            .catch(err => console.log('💥 Streamed test failed:', err));
+    }
+}, 5000);
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.channel-dropdown-inline')) {
