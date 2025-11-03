@@ -126,38 +126,54 @@ class MatchScheduler {
         });
     }
 
-    setupEventListeners() {
-        if (!this.isDOMReady) {
-            setTimeout(() => this.setupEventListeners(), 100);
-            return;
-        }
+ setupEventListeners() {
+    if (!this.isDOMReady) {
+        setTimeout(() => this.setupEventListeners(), 100);
+        return;
+    }
 
-        console.log('🎯 Setting up event listeners...');
-        
-        // Mouseover for sports preloading
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest('.sports-button')) {
-                this.preloadSportsData();
-            }
-        });
+    console.log('🎯 Setting up ENHANCED event listeners...');
+    
+    // Remove any existing listeners first
+    document.removeEventListener('click', this.boundHandleGlobalClick);
+    document.removeEventListener('mouseover', this.boundHandleMouseover);
+    document.removeEventListener('click', this.boundHandleDropdownClose);
 
-        // Global click handler
-        document.addEventListener('click', (e) => {
-            this.handleGlobalClick(e);
-        });
+    // Bind methods to maintain 'this' context
+    this.boundHandleGlobalClick = this.handleGlobalClick.bind(this);
+    this.boundHandleMouseover = this.handleMouseover.bind(this);
+    this.boundHandleDropdownClose = this.handleDropdownClose.bind(this);
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.channel-dropdown-inline')) {
-                document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dropdown => {
-                    dropdown.classList.remove('show');
-                    if (dropdown.previousElementSibling) {
-                        dropdown.previousElementSibling.classList.remove('open');
-                    }
-                });
+    // Mouseover for sports preloading
+    document.addEventListener('mouseover', this.boundHandleMouseover);
+
+    // Global click handler - use capture phase to catch dynamic elements
+    document.addEventListener('click', this.boundHandleGlobalClick, true);
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', this.boundHandleDropdownClose);
+
+    console.log('✅ Enhanced event listeners setup complete');
+}
+
+// ADD THESE NEW METHODS RIGHT AFTER setupEventListeners:
+
+handleMouseover(e) {
+    if (e.target.closest('.sports-button')) {
+        this.preloadSportsData();
+    }
+}
+
+handleDropdownClose(e) {
+    if (!e.target.closest('.channel-dropdown-inline')) {
+        document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dropdown => {
+            dropdown.classList.remove('show');
+            if (dropdown.previousElementSibling) {
+                dropdown.previousElementSibling.classList.remove('open');
             }
         });
     }
+}
 
     handleGlobalClick(e) {
         // Menu buttons
