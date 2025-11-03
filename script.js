@@ -1179,8 +1179,14 @@ if (watchButton) {
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const channels = match.channels || [];
-        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const currentStreamUrl = channels[currentChannelIndex] || null;
+const currentChannelIndex = this.currentStreams.get(matchId) || 0;
+let currentStreamUrl = channels[currentChannelIndex] || null;
+
+// If this is a Streamed API URL, get the actual stream URL
+if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
+    console.log('🔄 Detected Streamed API URL, fetching actual stream...');
+    currentStreamUrl = await this.getStreamUrlFromStreamed(currentStreamUrl);
+}
         
         const channelSelectorHTML = this.generateChannelSelector(channels, matchId);
         
