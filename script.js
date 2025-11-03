@@ -1,5 +1,4 @@
-// 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
-// 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
+// 9kilo Stream - FINAL BULLETPROOF VERSION WITH STREAMED API INTEGRATION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -26,36 +25,56 @@ class MatchScheduler {
         this.preloadedSports = null;
         this.lastDataUpdate = null;
         
-        // Filter state - SIMPLE BOOLEAN ONLY
-        this.showLiveOnly = false; // false = All Matches, true = Live Only
+        // Filter state
+        this.showLiveOnly = false;
         
         // DOM ready state
         this.isDOMReady = false;
-            // ==================== STREAM PERSONALITIES ====================
-    this.streamPersonalities = {
-        'topembed': { 
-            name: 'Tom', 
-            color: '#3498db', 
-            emoji: '🔵',
-            fullName: 'TopEmbed'
-        },
-        'streamed': { 
-            name: 'Sarah', 
-            color: '#e74c3c', 
-            emoji: '🔴',
-            fullName: 'Streamed' 
-        },
-        'unknown': {
-            name: 'Mystery',
-            color: '#9b59b6',
-            emoji: '🟣', 
-            fullName: 'Unknown Source'
-        }
-    };
         
-        console.log('🚀 MatchScheduler initialized with Bulletproof Features!');
+        // ==================== STREAM PERSONALITIES ====================
+        this.streamPersonalities = {
+            'topembed': { 
+                name: 'Tom', 
+                color: '#3498db', 
+                emoji: '🔵',
+                fullName: 'TopEmbed'
+            },
+            'streamed': { 
+                name: 'Sarah', 
+                color: '#e74c3c', 
+                emoji: '🔴',
+                fullName: 'Streamed' 
+            },
+            'unknown': {
+                name: 'Mystery',
+                color: '#9b59b6',
+                emoji: '🟣', 
+                fullName: 'Unknown Source'
+            }
+        };
+        
+        console.log('🚀 MatchScheduler initialized with Streamed API!');
     }
-        // ==================== STREAMED API METHODS ====================
+    
+    // ==================== PERSONALITY METHODS ====================
+    detectSourceType(streamUrl) {
+        if (!streamUrl) return 'unknown';
+        if (streamUrl.includes('topembed')) return 'topembed';
+        if (streamUrl.includes('streamed.pk')) return 'streamed';
+        return 'unknown';
+    }
+
+    generatePersonalityLabel(sourceType, index) {
+        const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
+        return `${personality.emoji} ${personality.name} ${index + 1}`;
+    }
+
+    getSourceColor(sourceType) {
+        const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
+        return personality.color;
+    }
+
+    // ==================== STREAMED API METHODS ====================
     async fetchFromStreamed(endpoint = 'all') {
         try {
             let url;
@@ -81,23 +100,7 @@ class MatchScheduler {
         }
     }
 
-        normalizeStreamedData(streamedData) {
-    // DEBUG: Find Rugby category
-    const allCategories = [...new Set(streamedData.map(m => m.category))];
-    console.log('🔍 ALL STREAMED RAW CATEGORIES:', allCategories.sort());
-    
-    // Look for rugby-related terms
-    const rugbyMatches = streamedData.filter(m => 
-        m.category.toLowerCase().includes('rugby') ||
-        m.title.toLowerCase().includes('rugby') ||
-        (m.teams && (
-            m.teams.home?.name.toLowerCase().includes('rugby') ||
-            m.teams.away?.name.toLowerCase().includes('rugby')
-        ))
-    );
-    console.log('🔍 POTENTIAL RUGBY MATCHES:', rugbyMatches);
-    
-    // ... rest of method
+    normalizeStreamedData(streamedData) {
         const events = {};
         
         streamedData.forEach(match => {
@@ -126,26 +129,25 @@ class MatchScheduler {
         
         return { events };
     }
-    // ==================== PERSONALITY METHODS ====================
-detectSourceType(streamUrl) {
-    if (!streamUrl) return 'unknown';
-    if (streamUrl.includes('topembed')) return 'topembed';
-    if (streamUrl.includes('streamed.pk')) return 'streamed';
-    return 'unknown';
-}
 
-generatePersonalityLabel(sourceType, index) {
-    const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
-    return `${personality.emoji} ${personality.name} ${index + 1}`;
-}
+    async getStreamUrlFromStreamed(streamApiUrl) {
+        try {
+            console.log('🔄 Getting actual stream URL from:', streamApiUrl);
+            const response = await fetch(streamApiUrl);
+            const streamData = await response.json();
+            console.log('📦 Stream data received:', streamData);
+            
+            if (streamData && streamData.length > 0 && streamData[0].embedUrl) {
+                console.log('✅ Found embed URL:', streamData[0].embedUrl);
+                return streamData[0].embedUrl;
+            }
+            return null;
+        } catch (error) {
+            console.warn('❌ Failed to get stream from Streamed:', error);
+            return null;
+        }
+    }
 
-getSourceColor(sourceType) {
-    const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
-    return personality.color;
-}
-    // ADD THIS METHOD to handle Streamed stream data
-async getStreamUrlFromStreamed(streamApiUrl) {
-    // ... the method code
     async init() {
         await this.waitForDOMReady();
         this.setupGlobalErrorHandling();
@@ -168,7 +170,6 @@ async getStreamUrlFromStreamed(streamApiUrl) {
             console.log('✅ TV Channels data loaded:', Object.keys(this.tvChannelsData).length, 'countries');
         } catch (error) {
             console.error('❌ Failed to load TV channels data:', error);
-            // Fallback to minimal data
             this.tvChannelsData = {
                 "South Africa": [
                     {
@@ -478,52 +479,50 @@ async getStreamUrlFromStreamed(streamApiUrl) {
             return;
         }
 
-      const dateButton = e.target.closest('.date-button');
-if (dateButton) {
-    e.preventDefault();
-    e.stopPropagation();
-    const dateElement = dateButton.querySelector('.date-name');
-    if (dateElement) {
-        const dateText = dateElement.textContent;
-        const matches = this.verifiedMatches;
-        // ✅ FIXED: Proper date comparison
-        const match = matches.find(m => {
-            const displayDate = this.formatDisplayDate(m.date);
-            return displayDate === dateText || 
-                   (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
-        });
-        if (match) {
-            this.selectDate(match.date);
-        }
-    }
-    return;
-}
-
-      const watchButton = e.target.closest('.watch-btn');
-if (watchButton) {
-    e.preventDefault();
-    e.stopPropagation();
-    const matchRow = watchButton.closest('.match-row');
-    if (matchRow) {
-        // 🎯 SCROLL MEMORY: Save position before leaving
-        const rowIndex = Array.from(matchRow.parentNode.children).indexOf(matchRow) - 1; // -1 for header
-        localStorage.setItem('lastScrollPosition', rowIndex);
-        console.log('📜 Saving scroll position:', rowIndex);
-
-        const teamNames = matchRow.querySelector('.team-names')?.textContent;
-        if (teamNames) {
-            const match = this.verifiedMatches.find(m => 
-                this.formatTeamNames(m.teams) === teamNames
-            );
-            if (match) {
-                this.showMatchDetails(match.id);
+        const dateButton = e.target.closest('.date-button');
+        if (dateButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dateElement = dateButton.querySelector('.date-name');
+            if (dateElement) {
+                const dateText = dateElement.textContent;
+                const matches = this.verifiedMatches;
+                const match = matches.find(m => {
+                    const displayDate = this.formatDisplayDate(m.date);
+                    return displayDate === dateText || 
+                           (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
+                });
+                if (match) {
+                    this.selectDate(match.date);
+                }
             }
+            return;
         }
-    }
-    return;
-}
 
-        // BULLETPROOF FILTER BUTTONS
+        const watchButton = e.target.closest('.watch-btn');
+        if (watchButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            const matchRow = watchButton.closest('.match-row');
+            if (matchRow) {
+                const rowIndex = Array.from(matchRow.parentNode.children).indexOf(matchRow) - 1;
+                localStorage.setItem('lastScrollPosition', rowIndex);
+                console.log('📜 Saving scroll position:', rowIndex);
+
+                const teamNames = matchRow.querySelector('.team-names')?.textContent;
+                if (teamNames) {
+                    const match = this.verifiedMatches.find(m => 
+                        this.formatTeamNames(m.teams) === teamNames
+                    );
+                    if (match) {
+                        this.showMatchDetails(match.id);
+                    }
+                }
+            }
+            return;
+        }
+
+        // Filter buttons
         const filterButton = e.target.closest('.filter-btn');
         if (filterButton) {
             e.preventDefault();
@@ -534,24 +533,24 @@ if (watchButton) {
         }
     }
 
-  handleBackButton() {
-    switch(this.currentView) {
-        case 'sports':
-            this.showMainMenu();
-            break;
-        case 'dates':
-            this.showSportsView();
-            break;
-        case 'matches':
-            this.showDatesView();
-            break;
-        case 'match-details':
-            this.showMatchesView();
-            break;
-        default:
-            this.showMainMenu();
+    handleBackButton() {
+        switch(this.currentView) {
+            case 'sports':
+                this.showMainMenu();
+                break;
+            case 'dates':
+                this.showSportsView();
+                break;
+            case 'matches':
+                this.showDatesView();
+                break;
+            case 'match-details':
+                this.showMatchesView();
+                break;
+            default:
+                this.showMainMenu();
+        }
     }
-}
 
     setupGlobalErrorHandling() {
         window.addEventListener('error', (e) => {
@@ -577,12 +576,11 @@ if (watchButton) {
     // ==================== BULLETPROOF FILTER SYSTEM ====================
     setFilter(type) {
         try {
-            // 🛡️ SIMPLE BOOLEAN LOGIC - IMPOSSIBLE TO BREAK
             this.showLiveOnly = (type === 'live');
             this.showMatchesView();
         } catch (error) {
             console.log('🛡️ Filter error - resetting to safe state');
-            this.showLiveOnly = false; // Reset to All Matches
+            this.showLiveOnly = false;
             this.showMatchesView();
         }
     }
@@ -656,16 +654,13 @@ if (watchButton) {
     async showSportsView() {
         console.log('🎯 Sports button clicked - Simplified version');
         
-        // 1. IMMEDIATE UI Response
         this.showSportsLoadingUI();
         
-        // 2. Safety timeout
         const safetyTimeout = setTimeout(() => {
             console.log('⚡ Safety timeout: Showing available data');
             this.showSportsDataUI();
         }, 3000);
         
-        // 3. Try to load fresh data
         try {
             const success = await this.ensureDataLoaded();
             clearTimeout(safetyTimeout);
@@ -706,7 +701,8 @@ if (watchButton) {
 
     showSportsDataUI() {
         console.log('🔍 ALL VERIFIED MATCHES:', this.verifiedMatches);
-    console.log('🔍 UNIQUE SPORTS FOUND:', [...new Set(this.verifiedMatches.map(m => m.sport))].sort());
+        console.log('🔍 UNIQUE SPORTS FOUND:', [...new Set(this.verifiedMatches.map(m => m.sport))].sort());
+        
         if (!this.verifiedMatches || this.verifiedMatches.length === 0) {
             this.showSportsEmptyState();
             return;
@@ -715,7 +711,6 @@ if (watchButton) {
         const container = document.getElementById('dynamic-content');
         const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
         
-        // SIMPLIFIED: No counts, just sports
         const sports = uniqueSports.map(sportId => {
             return {
                 id: sportId,
@@ -766,7 +761,7 @@ if (watchButton) {
         `;
     }
 
-    // ==================== DATA LOADING (CACHE SYSTEM PRESERVED) ====================
+    // ==================== DATA LOADING ====================
     retryLoadMatches() {
         this.isDataLoaded = false;
         this.showSportsView();
@@ -774,17 +769,6 @@ if (watchButton) {
 
     async ensureDataLoaded() {
         if (this.isDataLoaded) return true;
-         // TEMPORARY: Skip cache and use Streamed immediately
-    console.log('🚀 FORCING STREAMED DATA (bypassing cache)');
-    try {
-        const streamedData = await this.fetchFromStreamed('all');
-        this.organizeMatches(streamedData);
-        this.isDataLoaded = true;
-        return true;
-    } catch (error) {
-        console.log('❌ Streamed failed, falling back to normal flow');
-        // Continue with normal flow
-    }
         
         if (this.isLoading) {
             return new Promise(resolve => {
@@ -854,48 +838,48 @@ if (watchButton) {
         }
     }
 
-   async tryAllProxies() {
-    // Try TopEmbed first
-    const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
-    const topEmbedProxies = [
-        'https://api.allorigins.win/raw?url=' + encodeURIComponent(topEmbedUrl),
-        'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl),
-        topEmbedUrl
-    ];
-    
-    for (const proxyUrl of topEmbedProxies) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000);
-            
-            const response = await fetch(proxyUrl, {
-                signal: controller.signal,
-                headers: { 'Accept': 'application/json' }
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (response.ok) {
-                const data = await response.json();
-                console.log('✅ Using TopEmbed data');
-                return data;
+    async tryAllProxies() {
+        // Try TopEmbed first
+        const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
+        const topEmbedProxies = [
+            'https://api.allorigins.win/raw?url=' + encodeURIComponent(topEmbedUrl),
+            'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl),
+            topEmbedUrl
+        ];
+        
+        for (const proxyUrl of topEmbedProxies) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
+                
+                const response = await fetch(proxyUrl, {
+                    signal: controller.signal,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Using TopEmbed data');
+                    return data;
+                }
+            } catch (error) {
+                continue;
             }
+        }
+        
+        // If TopEmbed fails, try Streamed as fallback
+        console.log('🔄 TopEmbed failed, trying Streamed...');
+        try {
+            const streamedData = await this.fetchFromStreamed('all');
+            console.log('✅ Using Streamed fallback data');
+            return streamedData;
         } catch (error) {
-            continue;
+            console.error('💥 All sources failed');
+            throw new Error('All sources failed');
         }
     }
-    
-    // If TopEmbed fails, try Streamed as fallback
-    console.log('🔄 TopEmbed failed, trying Streamed...');
-    try {
-        const streamedData = await this.fetchFromStreamed('all');
-        console.log('✅ Using Streamed fallback data');
-        return streamedData;
-    } catch (error) {
-        console.error('💥 All sources failed');
-        throw new Error('All sources failed');
-    }
-}
 
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
@@ -1047,10 +1031,11 @@ if (watchButton) {
 
     async showMatchesView() {
         console.log('🔍 showMatchesView called with:', {
-        sport: this.currentSport,
-        date: this.currentDate,
-        showLiveOnly: this.showLiveOnly
-    });
+            sport: this.currentSport,
+            date: this.currentDate,
+            showLiveOnly: this.showLiveOnly
+        });
+        
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
         if (!container) return;
@@ -1059,24 +1044,13 @@ if (watchButton) {
         const sportName = this.currentSport;
         const today = new Date().toISOString().split('T')[0];
         const isToday = this.currentDate === today;
-
-            // ✅ ADD DEBUG HERE:
-    console.log('🔍 Date check:', {
-        currentDate: this.currentDate,
-        today: today,
-        isToday: isToday,
-        sportName: sportName
-    });
         
-        // 🛡️ BULLETPROOF FILTER LOGIC
         const allMatches = matches;
         const liveMatches = allMatches.filter(match => match.isLive === true);
         
-        // Always use fresh data - no caching of filtered results
         const displayMatches = this.showLiveOnly ? liveMatches : allMatches;
         
-        // SIMPLIFIED HEADER
-        const scheduleHeader = `Today's ${sportName}`; // Force the correct title
+        const scheduleHeader = `Today's ${sportName}`;
         
         container.innerHTML = `
             <div class="content-section">
@@ -1090,7 +1064,6 @@ if (watchButton) {
                 </div>
                 
                 <div class="matches-table-container">
-                    <!-- 🎯 PROFESSIONAL FILTER BUTTONS - TOP RIGHT CORNER -->
                     <div class="professional-filter">
                         <button class="filter-btn ${this.showLiveOnly ? '' : 'active'}" 
                                 data-filter="all" onclick="matchScheduler.setFilter('all')">
@@ -1165,10 +1138,11 @@ if (watchButton) {
         }
     }
 
-    // ==================== FIXED MATCH DETAILS (MULTI-SOURCE PRESERVED) ====================
+    // ==================== FIXED MATCH DETAILS WITH STREAMED SUPPORT ====================
     async showMatchDetails(matchId) {
-        console.log('🎯 showMatchDetails called - setting currentView to match-details');
-    this.currentView = 'match-details'; // Force the correct view state
+        console.log('🎯 showMatchDetails called');
+        this.currentView = 'match-details';
+        
         await this.ensureDataLoaded();
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
@@ -1179,14 +1153,14 @@ if (watchButton) {
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const channels = match.channels || [];
-const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-let currentStreamUrl = channels[currentChannelIndex] || null;
+        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
+        let currentStreamUrl = channels[currentChannelIndex] || null;
 
-// If this is a Streamed API URL, get the actual stream URL
-if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
-    console.log('🔄 Detected Streamed API URL, fetching actual stream...');
-    currentStreamUrl = await this.getStreamUrlFromStreamed(currentStreamUrl);
-}
+        // If this is a Streamed API URL, get the actual stream URL
+        if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
+            console.log('🔄 Detected Streamed API URL, fetching actual stream...');
+            currentStreamUrl = await this.getStreamUrlFromStreamed(currentStreamUrl);
+        }
         
         const channelSelectorHTML = this.generateChannelSelector(channels, matchId);
         
@@ -1251,7 +1225,6 @@ if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
                         </div>
                     </div>
                     
-                    <!-- ✅ CRITICAL FIX: ADDED BACK THE MISSING FOOTER -->
                     <footer class="dashboard-footer">
                         <div class="footer-legal">
                             <p class="copyright">© 2025 9KILOS. All rights reserved.</p>
@@ -1273,31 +1246,29 @@ if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
     }
 
     generateChannelSelector(channels, matchId) {
-    const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-    const hasMultipleChannels = channels.length > 1;
-    
-    if (channels.length === 0) {
-        return '';  // Only return empty if NO streams
-    }
-    
-    // Show selector even for single stream
-    if (channels.length <= 4) {
-        return `
-            <div class="channel-buttons-inline">
-                ${channels.map((channel, index) => {
-                    const sourceType = this.detectSourceType(channel);
-                    const personalityLabel = this.generatePersonalityLabel(sourceType, index);
-                    return `
-                        <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
-                                onclick="matchScheduler.switchChannel('${matchId}', ${index})"
-                                style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
-                            ${personalityLabel}
-                        </button>
-                    `;
-                }).join('')}
-            </div>
-        `;
-    }
+        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
+        
+        if (channels.length === 0) {
+            return '';
+        }
+        
+        if (channels.length <= 4) {
+            return `
+                <div class="channel-buttons-inline">
+                    ${channels.map((channel, index) => {
+                        const sourceType = this.detectSourceType(channel);
+                        const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+                        return `
+                            <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                    onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                    style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+                                ${personalityLabel}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
         
         return `
             <div class="channel-dropdown-inline">
@@ -1305,12 +1276,17 @@ if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
                     Source ${currentChannelIndex + 1} of ${channels.length}
                 </button>
                 <div class="channel-dropdown-content-inline" id="dropdown-${matchId}">
-                    ${channels.map((channel, index) => `
-                        <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
-                             onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                            Source ${index + 1}
-                        </div>
-                    `).join('')}
+                    ${channels.map((channel, index) => {
+                        const sourceType = this.detectSourceType(channel);
+                        const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+                        return `
+                            <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                 onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                 style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+                                ${personalityLabel}
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;
@@ -1321,41 +1297,41 @@ if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
         this.showMatchDetails(matchId);
     }
     
-   toggleDropdown(matchId) {
-    try {
-        console.log('🔧 toggleDropdown called for:', matchId);
-        const dropdown = document.getElementById(`dropdown-${matchId}`);
-        
-        if (!dropdown) {
-            console.error('❌ Dropdown not found for:', matchId);
-            return;
-        }
-        
-        const button = dropdown.previousElementSibling;
-        
-        if (!button) {
-            console.error('❌ Button not found for dropdown:', matchId);
-            return;
-        }
-        
-        if (dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show');
-            button.classList.remove('open');
-        } else {
-            document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
-                dd.classList.remove('show');
-                if (dd.previousElementSibling) {
-                    dd.previousElementSibling.classList.remove('open');
-                }
-            });
+    toggleDropdown(matchId) {
+        try {
+            console.log('🔧 toggleDropdown called for:', matchId);
+            const dropdown = document.getElementById(`dropdown-${matchId}`);
             
-            dropdown.classList.add('show');
-            button.classList.add('open');
+            if (!dropdown) {
+                console.error('❌ Dropdown not found for:', matchId);
+                return;
+            }
+            
+            const button = dropdown.previousElementSibling;
+            
+            if (!button) {
+                console.error('❌ Button not found for dropdown:', matchId);
+                return;
+            }
+            
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                button.classList.remove('open');
+            } else {
+                document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
+                    dd.classList.remove('show');
+                    if (dd.previousElementSibling) {
+                        dd.previousElementSibling.classList.remove('open');
+                    }
+                });
+                
+                dropdown.classList.add('show');
+                button.classList.add('open');
+            }
+        } catch (error) {
+            console.error('❌ toggleDropdown crashed:', error);
         }
-    } catch (error) {
-        console.error('❌ toggleDropdown crashed:', error);
     }
-}
 
     refreshCurrentStream(matchId) {
         const match = this.verifiedMatches.find(m => m.id === matchId);
@@ -1469,7 +1445,7 @@ if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
         if (!match.unix_timestamp) return false;
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unix_timestamp;
-        return now >= matchTime && now <= (matchTime + 10800); // 3-hour live window
+        return now >= matchTime && now <= (matchTime + 10800);
     }
 
     formatTeamNames(teamString) {
@@ -1639,11 +1615,11 @@ if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM fully loaded, initializing Bulletproof MatchScheduler...');
+    console.log('🎯 DOM fully loaded, initializing MatchScheduler with Streamed API...');
     try {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
-            console.log('✅ 9kilos Bulletproof Version fully initialized!');
+            console.log('✅ 9kilos with Streamed API fully initialized!');
         }).catch(error => {
             console.error('❌ Initialization failed:', error);
         });
@@ -1651,7 +1627,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Critical initialization error:', error);
     }
 });
-// TEST STREAMED API - REMOVE LATER
+
+// TEST STREAMED API
 setTimeout(() => {
     console.log('🧪 Testing Streamed API...');
     if (window.matchScheduler) {
@@ -1660,19 +1637,7 @@ setTimeout(() => {
             .catch(err => console.log('💥 Streamed test failed:', err));
     }
 }, 5000);
-// SIMPLE TEST - ADD THIS
-console.log('🔧 Testing if Streamed API is reachable...');
-fetch('https://streamed.pk/api/matches/all')
-    .then(response => {
-        console.log('📡 Streamed API response status:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('✅ Streamed API works! Matches found:', data.length);
-    })
-    .catch(error => {
-        console.log('❌ Streamed API failed:', error);
-    });
+
 // TEST PERSONALITY SYSTEM
 setTimeout(() => {
     console.log('🎭 Testing personality system...');
@@ -1682,6 +1647,7 @@ setTimeout(() => {
         console.log('Mystery:', window.matchScheduler.generatePersonalityLabel('unknown', 0));
     }
 }, 6000);
+
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.channel-dropdown-inline')) {
@@ -1691,10 +1657,3 @@ document.addEventListener('click', (e) => {
         });
     }
 });
-
-// QUICK PERSONALITY TEST
-console.log('🔧 Checking personality methods exist...');
-if (window.matchScheduler) {
-    console.log('generatePersonalityLabel exists?', typeof window.matchScheduler.generatePersonalityLabel);
-    console.log('detectSourceType exists?', typeof window.matchScheduler.detectSourceType);
-}
