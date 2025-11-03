@@ -840,6 +840,7 @@ class MatchScheduler {
     }
 
     async tryAllProxies() {
+        console.log('🔄 loadMatches CALLED - checking for fresh data...');
         let topEmbedData = null;
         let streamedData = null;
         
