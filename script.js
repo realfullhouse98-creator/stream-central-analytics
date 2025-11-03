@@ -784,38 +784,48 @@ if (watchButton) {
         }
     }
 
-    async tryAllProxies() {
-        const targetUrl = 'https://topembed.pw/api.php?format=json';
-        
-        const proxyOptions = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            targetUrl
-        ];
-        
-        for (const proxyUrl of proxyOptions) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000);
-                
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    return await response.json();
-                }
-            } catch (error) {
-                console.warn(`Proxy failed: ${proxyUrl}`, error);
-                continue;
+   async tryAllProxies() {
+    // Try TopEmbed first
+    const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
+    const topEmbedProxies = [
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(topEmbedUrl),
+        'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl),
+        topEmbedUrl
+    ];
+    
+    for (const proxyUrl of topEmbedProxies) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
+            
+            const response = await fetch(proxyUrl, {
+                signal: controller.signal,
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Using TopEmbed data');
+                return data;
             }
+        } catch (error) {
+            continue;
         }
-        
-        throw new Error('All proxy attempts failed');
     }
+    
+    // If TopEmbed fails, try Streamed as fallback
+    console.log('🔄 TopEmbed failed, trying Streamed...');
+    try {
+        const streamedData = await this.fetchFromStreamed('all');
+        console.log('✅ Using Streamed fallback data');
+        return streamedData;
+    } catch (error) {
+        console.error('💥 All sources failed');
+        throw new Error('All sources failed');
+    }
+}
 
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
