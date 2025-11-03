@@ -143,6 +143,9 @@ getSourceColor(sourceType) {
     const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
     return personality.color;
 }
+    // ADD THIS METHOD to handle Streamed stream data
+async getStreamUrlFromStreamed(streamApiUrl) {
+    // ... the method code
     async init() {
         await this.waitForDOMReady();
         this.setupGlobalErrorHandling();
