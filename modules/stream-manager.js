@@ -1,9 +1,6 @@
-// modules/stream-manager.js - COMPLETE VERSION
-export class StreamManager {
+// Stream Manager Module - Handles stream personalities and channel management
+class StreamManager {
     constructor() {
-        this.currentStreams = new Map();
-        this.matchStats = new Map();
-        
         this.streamPersonalities = {
             'topembed': { 
                 name: 'Tom', 
@@ -25,7 +22,7 @@ export class StreamManager {
             }
         };
         
-        console.log('🎭 Stream Manager initialized!');
+        this.currentStreams = new Map();
     }
 
     detectSourceType(streamUrl) {
@@ -63,23 +60,62 @@ export class StreamManager {
         }
     }
 
+    generateChannelSelector(channels, matchId, currentChannelIndex) {
+        if (channels.length === 0) {
+            return '';
+        }
+        
+        if (channels.length <= 4) {
+            return `
+                <div class="channel-buttons-inline">
+                    ${channels.map((channel, index) => {
+                        const sourceType = this.detectSourceType(channel);
+                        const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+                        return `
+                            <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                    onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                    style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+                                ${personalityLabel}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+        
+        return `
+            <div class="channel-dropdown-inline">
+                <button class="channel-dropdown-btn-inline" onclick="matchScheduler.toggleDropdown('${matchId}')">
+                    Source ${currentChannelIndex + 1} of ${channels.length}
+                </button>
+                <div class="channel-dropdown-content-inline" id="dropdown-${matchId}">
+                    ${channels.map((channel, index) => {
+                        const sourceType = this.detectSourceType(channel);
+                        const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+                        return `
+                            <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                 onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                 style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+                                ${personalityLabel}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
     switchChannel(matchId, channelIndex) {
         this.currentStreams.set(matchId, channelIndex);
+        return channelIndex;
     }
 
     getCurrentChannelIndex(matchId) {
         return this.currentStreams.get(matchId) || 0;
     }
 
-    refreshCurrentStream(matchId) {
-        // This would refresh the stream - implementation depends on iframe
-        console.log('🔄 Refreshing stream for match:', matchId);
-        return true;
-    }
-
     toggleDropdown(matchId) {
         try {
-            console.log('🔧 toggleDropdown called for:', matchId);
             const dropdown = document.getElementById(`dropdown-${matchId}`);
             
             if (!dropdown) {
@@ -98,7 +134,6 @@ export class StreamManager {
                 dropdown.classList.remove('show');
                 button.classList.remove('open');
             } else {
-                // Close all other dropdowns first
                 document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
                     dd.classList.remove('show');
                     if (dd.previousElementSibling) {
@@ -114,72 +149,28 @@ export class StreamManager {
         }
     }
 
-    // Stats management
-    getMatchStats(matchId) {
-        if (!this.matchStats.has(matchId)) {
-            this.matchStats.set(matchId, {
-                views: Math.floor(Math.random() * 10000) + 500,
-                likes: Math.floor(Math.random() * 500) + 50,
-                dislikes: Math.floor(Math.random() * 100) + 10
-            });
-        }
-        return this.matchStats.get(matchId);
-    }
-
-    incrementViews(matchId) {
-        const stats = this.getMatchStats(matchId);
-        stats.views++;
-        this.matchStats.set(matchId, stats);
-    }
-
-    handleLike(matchId) {
-        const stats = this.getMatchStats(matchId);
-        stats.likes++;
-        this.matchStats.set(matchId, stats);
-    }
-
-    handleDislike(matchId) {
-        const stats = this.getMatchStats(matchId);
-        stats.dislikes++;
-        this.matchStats.set(matchId, stats);
-    }
-
-    handleShare(matchId) {
-        // Simple share implementation
-        const matchStats = this.getMatchStats(matchId);
-        const shareText = `Check out this match! ${matchStats.views} views, ${matchStats.likes} likes`;
-        alert(`Share feature: ${shareText}\n\n(Coming soon with actual sharing!)`);
-    }
-
-    // Stream quality management
-    getAvailableQualities() {
-        return ['auto', '720p', '480p', '360p'];
-    }
-
-    setStreamQuality(quality) {
-        console.log(`🎯 Setting stream quality to: ${quality}`);
-        // Implementation would depend on the streaming service
-    }
-
-    // Stream health monitoring
-    checkStreamHealth(streamUrl) {
-        // Simple stream health check
-        return new Promise((resolve) => {
+    refreshCurrentStream(matchId) {
+        const iframe = document.getElementById(`stream-iframe-${matchId}`);
+        if (iframe) {
+            const currentSrc = iframe.src;
+            iframe.src = '';
             setTimeout(() => {
-                // Simulate stream health check
-                const isHealthy = Math.random() > 0.2; // 80% chance stream is healthy
-                console.log(`🔍 Stream health check: ${isHealthy ? 'HEALTHY' : 'ISSUES'} for ${streamUrl}`);
-                resolve(isHealthy);
-            }, 1000);
-        });
+                iframe.src = currentSrc;
+                
+                const refreshBtn = document.querySelector('.player-control-btn.refresh');
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = 'Refreshing...';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                }, 1000);
+            }, 500);
+        }
     }
+}
 
-    // Backup stream management
-    getBackupStreams(primaryStream) {
-        const backups = [
-            primaryStream.replace('topembed.pw', 'topembed.pw'),
-            primaryStream.replace('streamed.pk', 'streamed.pk')
-        ];
-        return backups.filter(stream => stream !== primaryStream);
-    }
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = StreamManager;
+} else {
+    window.StreamManager = StreamManager;
 }
