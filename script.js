@@ -354,7 +354,7 @@ class MatchScheduler {
                             streamUrl: channels[0] || null,
                             channels: channels,
                             isLive: Utils.checkIfLive(match),
-                            sport: this.sportsClassifier.classifySport(match),
+                            sport: match.sport, // Already classified in data fusion
                             unixTimestamp: match.unix_timestamp
                         };
                         
@@ -372,6 +372,10 @@ class MatchScheduler {
         
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
         this.updateAnalytics();
+        
+        // Log unique sports for debugging
+        const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
+        console.log('🔍 Final unique sports:', uniqueSports.sort());
         
         if (this.currentView !== 'main') {
             this.refreshCurrentView();
