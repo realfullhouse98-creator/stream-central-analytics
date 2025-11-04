@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Research Dashboard - 9kilos</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .research-dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--primary-bg);
+            min-height: 100vh;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--header-bg);
+            border-radius: 12px;
+        }
+        
+        .supplier-comparison {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .comparison-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            font-weight: bold;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .metric-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .metric-section h3 {
+            margin: 0 0 20px 0;
+            color: var(--accent-gold);
+            font-size: 1.3em;
+        }
+        
+        .metric-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+            align-items: center;
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .metric-value {
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .topembed { 
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+        
+        .streamed { 
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+        
+        .metric-difference {
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .positive {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            border: 1px solid rgba(39, 174, 96, 0.3);
+        }
+        
+        .negative {
+            background: rgba(192, 57, 43, 0.1);
+            color: #c0392b;
+            border: 1px solid rgba(192, 57, 43, 0.3);
+        }
+        
+        .neutral {
+            background: rgba(149, 165, 166, 0.1);
+            color: #95a5a6;
+            border: 1px solid rgba(149, 165, 166, 0.3);
+        }
+        
+        .supplier-name.topembed { color: #3498db; }
+        .supplier-name.streamed { color: #e74c3c; }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .refresh-btn {
+            background: var(--accent-gold);
+            color: black;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        
+        .export-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="research-dashboard">
+        <div class="dashboard-header">
+            <h1>🔬 Supplier Research Dashboard</h1>
+            <p>Real-time analytics comparing TopEmbed.pw vs Streamed.pk</p>
+        </div>
+        
+        <div class="controls">
+            <button class="refresh-btn" onclick="researchDashboard.refreshData()">🔄 Refresh Data</button>
+            <button class="export-btn" onclick="researchDashboard.exportData()">💾 Export Research Data</button>
+        </div>
+
+        <div class="supplier-comparison">
+            
+            <!-- HEADER ROW -->
+            <div class="comparison-header">
+                <div class="supplier-name">METRIC</div>
+                <div class="supplier-name topembed">TOPEMBED.PW</div>
+                <div class="supplier-name streamed">STREAMED.PK</div>
+                <div class="supplier-name">DIFFERENCE</div>
+            </div>
+
+            <!-- CONTENT VOLUME SECTION -->
+            <div class="metric-section">
+                <h3>📊 Content Volume</h3>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Total Matches</div>
+                    <div class="metric-value topembed" id="topembed-total-matches">0</div>
+                    <div class="metric-value streamed" id="streamed-total-matches">0</div>
+                    <div class="metric-difference neutral" id="diff-total-matches">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Live Matches</div>
+                    <div class="metric-value topembed" id="topembed-live-matches">0</div>
+                    <div class="metric-value streamed" id="streamed-live-matches">0</div>
+                    <div class="metric-difference neutral" id="diff-live-matches">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Upcoming Matches</div>
+                    <div class="metric-value topembed" id="topembed-upcoming-matches">0</div>
+                    <div class="metric-value streamed" id="streamed-upcoming-matches">0</div>
+                    <div class="metric-difference neutral" id="diff-upcoming-matches">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Working Streams</div>
+                    <div class="metric-value topembed" id="topembed-working-streams">0</div>
+                    <div class="metric-value streamed" id="streamed-working-streams">0</div>
+                    <div class="metric-difference neutral" id="diff-working-streams">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Dead Streams</div>
+                    <div class="metric-value topembed" id="topembed-dead-streams">0</div>
+                    <div class="metric-value streamed" id="streamed-dead-streams">0</div>
+                    <div class="metric-difference neutral" id="diff-dead-streams">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Multi-Stream Matches</div>
+                    <div class="metric-value topembed" id="topembed-multi-stream">0</div>
+                    <div class="metric-value streamed" id="streamed-multi-stream">0</div>
+                    <div class="metric-difference neutral" id="diff-multi-stream">0</div>
+                </div>
+            </div>
+
+            <!-- CONTENT COVERAGE SECTION -->
+            <div class="metric-section">
+                <h3>🎯 Content Coverage</h3>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Sports Categories</div>
+                    <div class="metric-value topembed" id="topembed-sports-count">0</div>
+                    <div class="metric-value streamed" id="streamed-sports-count">0</div>
+                    <div class="metric-difference neutral" id="diff-sports-count">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Different Leagues</div>
+                    <div class="metric-value topembed" id="topembed-leagues-count">0</div>
+                    <div class="metric-value streamed" id="streamed-leagues-count">0</div>
+                    <div class="metric-difference neutral" id="diff-leagues-count">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Countries Covered</div>
+                    <div class="metric-value topembed" id="topembed-countries-count">0</div>
+                    <div class="metric-value streamed" id="streamed-countries-count">0</div>
+                    <div class="metric-difference neutral" id="diff-countries-count">0</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">New Matches Today</div>
+                    <div class="metric-value topembed" id="topembed-new-today">0</div>
+                    <div class="metric-value streamed" id="streamed-new-today">0</div>
+                    <div class="metric-difference neutral" id="diff-new-today">0</div>
+                </div>
+            </div>
+
+            <!-- PERFORMANCE SECTION -->
+            <div class="metric-section">
+                <h3>⚡ Performance & Reliability</h3>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Stream Success Rate</div>
+                    <div class="metric-value topembed" id="topembed-success-rate">0%</div>
+                    <div class="metric-value streamed" id="streamed-success-rate">0%</div>
+                    <div class="metric-difference neutral" id="diff-success-rate">0%</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Average Load Time</div>
+                    <div class="metric-value topembed" id="topembed-load-time">0s</div>
+                    <div class="metric-value streamed" id="streamed-load-time">0s</div>
+                    <div class="metric-difference neutral" id="diff-load-time">0s</div>
+                </div>
+                
+                <div class="metric-row">
+                    <div class="metric-label">Last Data Update</div>
+                    <div class="metric-value topembed" id="topembed-last-update">Never</div>
+                    <div class="metric-value streamed" id="streamed-last-update">Never</div>
+                    <div class="metric-difference neutral">-</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="last-updated">
+            Last refreshed: <span id="last-refreshed">Never</span>
+        </div>
+    </div>
+
+    <script src="modules/research-tracker.js"></script>
+    <script src="research-dashboard.js"></script>
+</body>
+</html>
