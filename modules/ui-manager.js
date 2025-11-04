@@ -90,6 +90,8 @@ class UIManager {
             name: sportId
         })).filter(sport => sport.name).sort((a, b) => a.name.localeCompare(b.name));
 
+        console.log('🔍 Displaying sports categories:', sports.map(s => s.name));
+
         container.innerHTML = `
             <div class="content-section">
                 <div class="navigation-buttons">
