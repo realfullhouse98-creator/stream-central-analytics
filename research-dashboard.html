@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Research Dashboard - 9kilos</title>
     <style>
+        /* [KEEP ALL THE EXISTING CSS STYLES - THEY ARE THE SAME] */
         :root {
             --primary-bg: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%);
             --header-bg: rgba(15, 52, 96, 0.95);
@@ -187,6 +188,13 @@
             opacity: 0.7;
             pointer-events: none;
         }
+        
+        .data-source {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -194,6 +202,7 @@
         <div class="dashboard-header">
             <h1>🔬 Supplier Research Dashboard</h1>
             <p>Real-time analytics comparing TopEmbed.pw vs Streamed.pk</p>
+            <div class="data-source" id="data-source-info">Loading data from both APIs...</div>
         </div>
         
         <div class="controls">
@@ -335,6 +344,10 @@
                 this.testHistory = [];
                 this.dailySnapshots = {};
                 this.startTime = Date.now();
+                this.dataSources = {
+                    topembed: { success: false, matches: 0 },
+                    streamed: { success: false, matches: 0 }
+                };
             }
 
             createSupplierMetrics() {
@@ -357,29 +370,146 @@
                 };
             }
 
-            analyzeSuppliers(matches) {
-                console.log('Analyzing', matches.length, 'matches');
+            async analyzeSuppliers() {
+                console.log('🔄 Fetching data from both suppliers...');
                 this.resetCurrentMetrics();
                 
-                if (!matches || matches.length === 0) {
-                    console.warn('No matches available');
+                // Get data from BOTH suppliers
+                const [tomData, sarahData] = await Promise.all([
+                    this.fetchTopEmbedData(),
+                    this.fetchStreamedData()
+                ]);
+                
+                console.log('📊 Data received:', {
+                    tom: tomData ? '✅' : '❌',
+                    sarah: sarahData ? '✅' : '❌'
+                });
+                
+                // Convert and merge data from both sources
+                const allMatches = this.mergeSupplierData(tomData, sarahData);
+                
+                if (allMatches.length === 0) {
+                    console.warn('No matches available from either supplier');
                     return this.metrics;
                 }
 
-                this.analyzeSupplier(matches, 'topembed');
-                this.analyzeSupplier(matches, 'streamed');
+                // Analyze each supplier separately
+                this.analyzeSupplier(allMatches, 'topembed');
+                this.analyzeSupplier(allMatches, 'streamed');
                 
                 const now = new Date();
                 this.metrics.topembed.lastUpdateTime = now;
                 this.metrics.streamed.lastUpdateTime = now;
                 
+                // Update data source info
+                this.updateDataSourceInfo();
+                
                 return this.metrics;
+            }
+
+            async fetchTopEmbedData() {
+                try {
+                    console.log('🔵 Fetching TopEmbed data...');
+                    const response = await fetch('https://corsproxy.io/?https://topembed.pw/api.php?format=json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.dataSources.topembed.success = true;
+                        this.dataSources.topembed.matches = this.countMatches(data);
+                        console.log('✅ TopEmbed:', this.dataSources.topembed.matches, 'matches');
+                        return data;
+                    }
+                } catch (error) {
+                    console.log('❌ TopEmbed failed:', error.message);
+                }
+                return null;
+            }
+
+            async fetchStreamedData() {
+                try {
+                    console.log('🔴 Fetching Streamed data...');
+                    const response = await fetch('https://streamed.pk/api/matches/all');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.dataSources.streamed.success = true;
+                        this.dataSources.streamed.matches = data.length || 0;
+                        console.log('✅ Streamed:', this.dataSources.streamed.matches, 'matches');
+                        return data;
+                    }
+                } catch (error) {
+                    console.log('❌ Streamed failed:', error.message);
+                }
+                return null;
+            }
+
+            countMatches(apiData) {
+                if (!apiData?.events) return 0;
+                return Object.values(apiData.events).reduce((total, matches) => total + matches.length, 0);
+            }
+
+            mergeSupplierData(tomData, sarahData) {
+                const allMatches = [];
+                
+                // Add TopEmbed matches
+                if (tomData?.events) {
+                    Object.entries(tomData.events).forEach(([date, events]) => {
+                        events.forEach(event => {
+                            allMatches.push({
+                                id: 'tom-' + event.match + '-' + event.unix_timestamp,
+                                date: date,
+                                time: new Date(event.unix_timestamp * 1000).toLocaleTimeString('en-US', { 
+                                    hour: '2-digit', minute: '2-digit', hour12: false 
+                                }),
+                                teams: event.match,
+                                league: event.tournament,
+                                sport: event.sport,
+                                isLive: Math.floor(Date.now() / 1000) >= event.unix_timestamp,
+                                channels: event.channels || ['https://topembed.pw/embed/' + event.sport?.toLowerCase()],
+                                unixTimestamp: event.unix_timestamp,
+                                source: 'topembed'
+                            });
+                        });
+                    });
+                }
+                
+                // Add Streamed matches
+                if (sarahData && Array.isArray(sarahData)) {
+                    sarahData.forEach(match => {
+                        const date = new Date(match.date).toISOString().split('T')[0];
+                        const teamNames = match.teams ? 
+                            `${match.teams.home?.name || 'Team A'} - ${match.teams.away?.name || 'Team B'}` : 
+                            match.title;
+                        
+                        const channels = match.sources ? 
+                            match.sources.map(source => `https://streamed.pk/api/stream/${source.source}/${source.id}`) : 
+                            ['https://streamed.pk/api/stream/default/123'];
+                        
+                        allMatches.push({
+                            id: 'sarah-' + match.id,
+                            date: date,
+                            time: new Date(match.date).toLocaleTimeString('en-US', { 
+                                hour: '2-digit', minute: '2-digit', hour12: false 
+                            }),
+                            teams: teamNames,
+                            league: match.category,
+                            sport: match.category,
+                            isLive: Date.now() >= new Date(match.date).getTime(),
+                            channels: channels,
+                            unixTimestamp: Math.floor(new Date(match.date).getTime() / 1000),
+                            source: 'streamed'
+                        });
+                    });
+                }
+                
+                console.log('🔗 Merged data:', allMatches.length, 'total matches');
+                return allMatches;
             }
 
             analyzeSupplier(matches, supplier) {
                 const supplierMatches = matches.filter(match => 
                     match.channels && match.channels.some(channel => this.identifySupplier(channel) === supplier)
                 );
+
+                console.log(`📈 ${supplier}:`, supplierMatches.length, 'matches');
 
                 this.metrics[supplier].totalMatches = supplierMatches.length;
                 this.metrics[supplier].liveMatches = supplierMatches.filter(m => m.isLive).length;
@@ -414,13 +544,17 @@
                 let successfulTests = 0;
                 let totalTests = 0;
 
-                for (const match of matches.slice(0, 10)) {
+                // Test up to 15 matches to get good sample
+                const testMatches = matches.slice(0, 15);
+                
+                for (const match of testMatches) {
                     const supplierStreams = match.channels.filter(channel => 
                         this.identifySupplier(channel) === supplier
                     );
 
                     if (supplierStreams.length > 1) multiStreamMatches++;
 
+                    // Test up to 2 streams per match
                     for (const streamUrl of supplierStreams.slice(0, 2)) {
                         totalTests++;
                         const testResult = await this.testStreamHealth(streamUrl, supplier);
@@ -432,7 +566,7 @@
                         } else {
                             deadStreams++;
                         }
-                        await this.delay(300);
+                        await this.delay(200); // Shorter delay for faster testing
                     }
                 }
 
@@ -449,7 +583,12 @@
                 const startTime = Date.now();
                 
                 try {
-                    await fetch(streamUrl, { method: 'HEAD', mode: 'no-cors' });
+                    // Use no-cors to avoid CORS issues
+                    await fetch(streamUrl, { 
+                        method: 'HEAD', 
+                        mode: 'no-cors',
+                        cache: 'no-cache'
+                    });
                     const loadTime = Date.now() - startTime;
                     
                     this.recordTest({
@@ -485,13 +624,26 @@
                 const countryPatterns = {
                     'England': 'UK', 'English': 'UK', 'Premier League': 'UK',
                     'Spain': 'Spain', 'La Liga': 'Spain', 'Italy': 'Italy',
-                    'Germany': 'Germany', 'France': 'France', 'USA': 'USA'
+                    'Germany': 'Germany', 'France': 'France', 'USA': 'USA',
+                    'NBA': 'USA', 'NFL': 'USA', 'MLB': 'USA'
                 };
                 
                 for (const [pattern, country] of Object.entries(countryPatterns)) {
                     if (leagueName.includes(pattern)) return country;
                 }
                 return null;
+            }
+
+            updateDataSourceInfo() {
+                const infoElement = document.getElementById('data-source-info');
+                if (infoElement) {
+                    const tomStatus = this.dataSources.topembed.success ? 
+                        `TopEmbed: ${this.dataSources.topembed.matches} matches` : 'TopEmbed: Failed';
+                    const sarahStatus = this.dataSources.streamed.success ? 
+                        `Streamed: ${this.dataSources.streamed.matches} matches` : 'Streamed: Failed';
+                    
+                    infoElement.textContent = `Data sources: ${tomStatus} | ${sarahStatus}`;
+                }
             }
 
             recordTest(testData) {
@@ -520,14 +672,36 @@
                     metadata: {
                         exportTime: new Date().toISOString(),
                         totalTests: this.testHistory.length,
-                        dataSource: '9kilos Research Dashboard'
+                        dataSources: this.dataSources,
+                        studyDuration: Date.now() - this.startTime
                     },
                     supplierComparison: {
                         topembed: this.metrics.topembed,
                         streamed: this.metrics.streamed
                     },
+                    performanceAnalysis: {
+                        topembed: {
+                            reliabilityScore: this.calculateReliabilityScore('topembed'),
+                            coverageScore: this.calculateCoverageScore('topembed')
+                        },
+                        streamed: {
+                            reliabilityScore: this.calculateReliabilityScore('streamed'),
+                            coverageScore: this.calculateCoverageScore('streamed')
+                        }
+                    },
                     sampleTestData: this.testHistory.slice(-50)
                 };
+            }
+
+            calculateReliabilityScore(supplier) {
+                const metrics = this.metrics[supplier];
+                if (metrics.totalTests === 0) return 0;
+                return (metrics.successRate * 0.7 + (100 - (metrics.averageLoadTime / 100)) * 0.3);
+            }
+
+            calculateCoverageScore(supplier) {
+                const metrics = this.metrics[supplier];
+                return (metrics.sportsCount * 4 + metrics.leaguesCount * 2 + metrics.countriesCount) * 10;
             }
 
             getMetrics() {
@@ -554,8 +728,7 @@
                 this.updateLoadingState(true);
                 
                 try {
-                    const matches = await this.getMatchData();
-                    const metrics = this.tracker.analyzeSuppliers(matches);
+                    const metrics = await this.tracker.analyzeSuppliers();
                     this.updateDashboard(metrics);
                     this.updateLastRefreshed();
                 } catch (error) {
@@ -564,73 +737,6 @@
                     this.isLoading = false;
                     this.updateLoadingState(false);
                 }
-            }
-
-            async getMatchData() {
-                // Try to fetch from TopEmbed API directly
-                try {
-                    const response = await fetch('https://corsproxy.io/?https://topembed.pw/api.php?format=json');
-                    if (response.ok) {
-                        const data = await response.json();
-                        return this.convertAPIData(data);
-                    }
-                } catch (error) {
-                    console.log('API failed, using sample data');
-                }
-                
-                // Fallback to sample data
-                return this.getSampleData();
-            }
-
-            convertAPIData(apiData) {
-                if (!apiData.events) return [];
-                const matches = [];
-                
-                Object.entries(apiData.events).forEach(([date, events]) => {
-                    events.forEach(event => {
-                        matches.push({
-                            id: event.match + '-' + event.unix_timestamp,
-                            date: date,
-                            time: new Date(event.unix_timestamp * 1000).toLocaleTimeString('en-US', { 
-                                hour: '2-digit', minute: '2-digit', hour12: false 
-                            }),
-                            teams: event.match,
-                            league: event.tournament,
-                            sport: event.sport,
-                            isLive: Math.floor(Date.now() / 1000) >= event.unix_timestamp,
-                            channels: event.channels || [],
-                            unixTimestamp: event.unix_timestamp
-                        });
-                    });
-                });
-                
-                return matches;
-            }
-
-            getSampleData() {
-                // Sample data for testing
-                return [
-                    {
-                        id: 'sample-1',
-                        date: new Date().toISOString().split('T')[0],
-                        time: '19:45',
-                        teams: 'Sample Team A - Sample Team B',
-                        league: 'Premier League',
-                        sport: 'Football',
-                        isLive: true,
-                        channels: ['https://topembed.pw/embed/football']
-                    },
-                    {
-                        id: 'sample-2',
-                        date: new Date().toISOString().split('T')[0],
-                        time: '21:00',
-                        teams: 'Sample Team C - Sample Team D',
-                        league: 'NBA',
-                        sport: 'Basketball',
-                        isLive: false,
-                        channels: ['https://streamed.pk/api/stream/source/123']
-                    }
-                ];
             }
 
             updateDashboard(metrics) {
@@ -712,7 +818,7 @@
             }
 
             startAutoRefresh() {
-                setInterval(() => this.refreshData(), 2 * 60 * 1000);
+                setInterval(() => this.refreshData(), 3 * 60 * 1000); // 3 minutes
             }
 
             exportData() {
