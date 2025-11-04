@@ -4,22 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Research Dashboard - 9kilos</title>
-    <link rel="stylesheet" href="style.css">
     <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%);
+            --header-bg: rgba(15, 52, 96, 0.95);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --accent-gold: #ffd93d;
+            --accent-blue: #3498db;
+            --text-primary: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --border-light: rgba(255, 255, 255, 0.1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
         .research-dashboard {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            background: var(--primary-bg);
-            min-height: 100vh;
         }
         
         .dashboard-header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
+            padding: 30px;
             background: var(--header-bg);
-            border-radius: 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dashboard-header p {
+            color: var(--text-muted);
+            font-size: 1.1em;
         }
         
         .supplier-comparison {
@@ -32,10 +65,11 @@
             grid-template-columns: 2fr 1fr 1fr 1fr;
             gap: 15px;
             font-weight: bold;
-            padding: 15px;
+            padding: 20px;
             background: var(--card-bg);
-            border-radius: 8px;
+            border-radius: 12px;
             border: 1px solid var(--border-light);
+            font-size: 1.1em;
         }
         
         .metric-section {
@@ -72,7 +106,7 @@
         .metric-value {
             text-align: center;
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
         }
         
@@ -91,7 +125,7 @@
         .metric-difference {
             text-align: center;
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
         }
         
@@ -121,7 +155,7 @@
             margin: 30px 0;
         }
         
-        .refresh-btn {
+        .refresh-btn, .export-btn {
             background: var(--accent-gold);
             color: black;
             border: none;
@@ -130,17 +164,16 @@
             font-weight: bold;
             cursor: pointer;
             margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover, .export-btn:hover {
+            transform: translateY(-2px);
         }
         
         .export-btn {
             background: var(--accent-blue);
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 0 10px;
         }
         
         .last-updated {
@@ -148,6 +181,11 @@
             color: var(--text-muted);
             margin-top: 20px;
             font-size: 0.9em;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -286,7 +324,417 @@
         </div>
     </div>
 
-    <script src="modules/research-tracker.js"></script>
-    <script src="research-dashboard.js"></script>
+    <script>
+        // Research Tracker - Data Analysis
+        class ResearchTracker {
+            constructor() {
+                this.metrics = {
+                    topembed: this.createSupplierMetrics(),
+                    streamed: this.createSupplierMetrics()
+                };
+                this.testHistory = [];
+                this.dailySnapshots = {};
+                this.startTime = Date.now();
+            }
+
+            createSupplierMetrics() {
+                return {
+                    totalMatches: 0,
+                    liveMatches: 0,
+                    upcomingMatches: 0,
+                    deadStreams: 0,
+                    workingStreams: 0,
+                    multiStreamMatches: 0,
+                    sportsCount: 0,
+                    leaguesCount: 0,
+                    countriesCount: 0,
+                    newMatchesToday: 0,
+                    successRate: 0,
+                    averageLoadTime: 0,
+                    totalTests: 0,
+                    successfulTests: 0,
+                    lastUpdateTime: null
+                };
+            }
+
+            analyzeSuppliers(matches) {
+                console.log('Analyzing', matches.length, 'matches');
+                this.resetCurrentMetrics();
+                
+                if (!matches || matches.length === 0) {
+                    console.warn('No matches available');
+                    return this.metrics;
+                }
+
+                this.analyzeSupplier(matches, 'topembed');
+                this.analyzeSupplier(matches, 'streamed');
+                
+                const now = new Date();
+                this.metrics.topembed.lastUpdateTime = now;
+                this.metrics.streamed.lastUpdateTime = now;
+                
+                return this.metrics;
+            }
+
+            analyzeSupplier(matches, supplier) {
+                const supplierMatches = matches.filter(match => 
+                    match.channels && match.channels.some(channel => this.identifySupplier(channel) === supplier)
+                );
+
+                this.metrics[supplier].totalMatches = supplierMatches.length;
+                this.metrics[supplier].liveMatches = supplierMatches.filter(m => m.isLive).length;
+                this.metrics[supplier].upcomingMatches = supplierMatches.filter(m => !m.isLive).length;
+                
+                this.analyzeContentCoverage(supplierMatches, supplier);
+                this.analyzeStreamQuality(supplierMatches, supplier);
+            }
+
+            analyzeContentCoverage(matches, supplier) {
+                const sports = new Set();
+                const leagues = new Set();
+                const countries = new Set();
+
+                matches.forEach(match => {
+                    sports.add(match.sport);
+                    leagues.add(match.league);
+                    const country = this.extractCountryFromLeague(match.league);
+                    if (country) countries.add(country);
+                });
+
+                this.metrics[supplier].sportsCount = sports.size;
+                this.metrics[supplier].leaguesCount = leagues.size;
+                this.metrics[supplier].countriesCount = countries.size;
+            }
+
+            async analyzeStreamQuality(matches, supplier) {
+                let deadStreams = 0;
+                let workingStreams = 0;
+                let multiStreamMatches = 0;
+                let totalLoadTime = 0;
+                let successfulTests = 0;
+                let totalTests = 0;
+
+                for (const match of matches.slice(0, 10)) {
+                    const supplierStreams = match.channels.filter(channel => 
+                        this.identifySupplier(channel) === supplier
+                    );
+
+                    if (supplierStreams.length > 1) multiStreamMatches++;
+
+                    for (const streamUrl of supplierStreams.slice(0, 2)) {
+                        totalTests++;
+                        const testResult = await this.testStreamHealth(streamUrl, supplier);
+                        
+                        if (testResult.healthy) {
+                            workingStreams++;
+                            successfulTests++;
+                            totalLoadTime += testResult.loadTime;
+                        } else {
+                            deadStreams++;
+                        }
+                        await this.delay(300);
+                    }
+                }
+
+                this.metrics[supplier].deadStreams = deadStreams;
+                this.metrics[supplier].workingStreams = workingStreams;
+                this.metrics[supplier].multiStreamMatches = multiStreamMatches;
+                this.metrics[supplier].successRate = totalTests > 0 ? (successfulTests / totalTests) * 100 : 0;
+                this.metrics[supplier].averageLoadTime = successfulTests > 0 ? totalLoadTime / successfulTests : 0;
+                this.metrics[supplier].totalTests = totalTests;
+                this.metrics[supplier].successfulTests = successfulTests;
+            }
+
+            async testStreamHealth(streamUrl, supplier) {
+                const startTime = Date.now();
+                
+                try {
+                    await fetch(streamUrl, { method: 'HEAD', mode: 'no-cors' });
+                    const loadTime = Date.now() - startTime;
+                    
+                    this.recordTest({
+                        supplier,
+                        streamUrl,
+                        healthy: true,
+                        loadTime,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    return { healthy: true, loadTime };
+                    
+                } catch (error) {
+                    this.recordTest({
+                        supplier,
+                        streamUrl, 
+                        healthy: false,
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    return { healthy: false, loadTime: 0 };
+                }
+            }
+
+            identifySupplier(streamUrl) {
+                if (streamUrl.includes('topembed')) return 'topembed';
+                if (streamUrl.includes('streamed.pk')) return 'streamed';
+                return 'unknown';
+            }
+
+            extractCountryFromLeague(leagueName) {
+                const countryPatterns = {
+                    'England': 'UK', 'English': 'UK', 'Premier League': 'UK',
+                    'Spain': 'Spain', 'La Liga': 'Spain', 'Italy': 'Italy',
+                    'Germany': 'Germany', 'France': 'France', 'USA': 'USA'
+                };
+                
+                for (const [pattern, country] of Object.entries(countryPatterns)) {
+                    if (leagueName.includes(pattern)) return country;
+                }
+                return null;
+            }
+
+            recordTest(testData) {
+                this.testHistory.push(testData);
+                if (this.testHistory.length > 500) {
+                    this.testHistory = this.testHistory.slice(-250);
+                }
+            }
+
+            resetCurrentMetrics() {
+                ['topembed', 'streamed'].forEach(supplier => {
+                    Object.keys(this.metrics[supplier]).forEach(key => {
+                        if (typeof this.metrics[supplier][key] === 'number') {
+                            this.metrics[supplier][key] = 0;
+                        }
+                    });
+                });
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            exportResearchData() {
+                return {
+                    metadata: {
+                        exportTime: new Date().toISOString(),
+                        totalTests: this.testHistory.length,
+                        dataSource: '9kilos Research Dashboard'
+                    },
+                    supplierComparison: {
+                        topembed: this.metrics.topembed,
+                        streamed: this.metrics.streamed
+                    },
+                    sampleTestData: this.testHistory.slice(-50)
+                };
+            }
+
+            getMetrics() {
+                return this.metrics;
+            }
+        }
+
+        // Research Dashboard - UI Controller
+        class ResearchDashboard {
+            constructor() {
+                this.tracker = new ResearchTracker();
+                this.isLoading = false;
+                this.init();
+            }
+
+            async init() {
+                this.startAutoRefresh();
+                await this.refreshData();
+            }
+
+            async refreshData() {
+                if (this.isLoading) return;
+                this.isLoading = true;
+                this.updateLoadingState(true);
+                
+                try {
+                    const matches = await this.getMatchData();
+                    const metrics = this.tracker.analyzeSuppliers(matches);
+                    this.updateDashboard(metrics);
+                    this.updateLastRefreshed();
+                } catch (error) {
+                    console.error('Refresh error:', error);
+                } finally {
+                    this.isLoading = false;
+                    this.updateLoadingState(false);
+                }
+            }
+
+            async getMatchData() {
+                // Try to fetch from TopEmbed API directly
+                try {
+                    const response = await fetch('https://corsproxy.io/?https://topembed.pw/api.php?format=json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        return this.convertAPIData(data);
+                    }
+                } catch (error) {
+                    console.log('API failed, using sample data');
+                }
+                
+                // Fallback to sample data
+                return this.getSampleData();
+            }
+
+            convertAPIData(apiData) {
+                if (!apiData.events) return [];
+                const matches = [];
+                
+                Object.entries(apiData.events).forEach(([date, events]) => {
+                    events.forEach(event => {
+                        matches.push({
+                            id: event.match + '-' + event.unix_timestamp,
+                            date: date,
+                            time: new Date(event.unix_timestamp * 1000).toLocaleTimeString('en-US', { 
+                                hour: '2-digit', minute: '2-digit', hour12: false 
+                            }),
+                            teams: event.match,
+                            league: event.tournament,
+                            sport: event.sport,
+                            isLive: Math.floor(Date.now() / 1000) >= event.unix_timestamp,
+                            channels: event.channels || [],
+                            unixTimestamp: event.unix_timestamp
+                        });
+                    });
+                });
+                
+                return matches;
+            }
+
+            getSampleData() {
+                // Sample data for testing
+                return [
+                    {
+                        id: 'sample-1',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '19:45',
+                        teams: 'Sample Team A - Sample Team B',
+                        league: 'Premier League',
+                        sport: 'Football',
+                        isLive: true,
+                        channels: ['https://topembed.pw/embed/football']
+                    },
+                    {
+                        id: 'sample-2',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '21:00',
+                        teams: 'Sample Team C - Sample Team D',
+                        league: 'NBA',
+                        sport: 'Basketball',
+                        isLive: false,
+                        channels: ['https://streamed.pk/api/stream/source/123']
+                    }
+                ];
+            }
+
+            updateDashboard(metrics) {
+                if (!metrics) return;
+                this.updateSupplierMetrics('topembed', metrics.topembed);
+                this.updateSupplierMetrics('streamed', metrics.streamed);
+                this.updateDifferenceColumns();
+            }
+
+            updateSupplierMetrics(supplier, data) {
+                const elements = {
+                    'total-matches': data.totalMatches,
+                    'live-matches': data.liveMatches,
+                    'upcoming-matches': data.upcomingMatches,
+                    'working-streams': data.workingStreams,
+                    'dead-streams': data.deadStreams,
+                    'multi-stream': data.multiStreamMatches,
+                    'sports-count': data.sportsCount,
+                    'leagues-count': data.leaguesCount,
+                    'countries-count': data.countriesCount,
+                    'new-today': data.newMatchesToday,
+                    'success-rate': data.successRate.toFixed(1) + '%',
+                    'load-time': (data.averageLoadTime / 1000).toFixed(1) + 's',
+                    'last-update': data.lastUpdateTime ? data.lastUpdateTime.toLocaleTimeString() : 'Never'
+                };
+
+                for (const [metric, value] of Object.entries(elements)) {
+                    const element = document.getElementById(`${supplier}-${metric}`);
+                    if (element) element.textContent = value;
+                }
+            }
+
+            updateDifferenceColumns() {
+                const metrics = [
+                    'total-matches', 'live-matches', 'upcoming-matches', 
+                    'working-streams', 'dead-streams', 'multi-stream',
+                    'sports-count', 'leagues-count', 'countries-count', 'new-today'
+                ];
+
+                metrics.forEach(metric => {
+                    const topembedValue = this.extractNumber(document.getElementById(`topembed-${metric}`).textContent);
+                    const streamedValue = this.extractNumber(document.getElementById(`streamed-${metric}`).textContent);
+                    const difference = topembedValue - streamedValue;
+                    this.updateDifferenceElement(document.getElementById(`diff-${metric}`), difference);
+                });
+
+                // Handle special metrics
+                const topembedSuccess = this.extractNumber(document.getElementById('topembed-success-rate').textContent);
+                const streamedSuccess = this.extractNumber(document.getElementById('streamed-success-rate').textContent);
+                this.updateDifferenceElement(document.getElementById('diff-success-rate'), topembedSuccess - streamedSuccess, '%');
+
+                const topembedLoad = this.extractNumber(document.getElementById('topembed-load-time').textContent);
+                const streamedLoad = this.extractNumber(document.getElementById('streamed-load-time').textContent);
+                this.updateDifferenceElement(document.getElementById('diff-load-time'), -(topembedLoad - streamedLoad), 's');
+            }
+
+            updateDifferenceElement(element, difference, suffix = '') {
+                let displayValue = difference >= 0 ? `+${difference}${suffix}` : `${difference}${suffix}`;
+                element.textContent = displayValue;
+                element.className = `metric-difference ${difference > 0 ? 'positive' : difference < 0 ? 'negative' : 'neutral'}`;
+            }
+
+            extractNumber(text) {
+                const match = text.match(/-?\d+(\.\d+)?/);
+                return match ? parseFloat(match[0]) : 0;
+            }
+
+            updateLoadingState(loading) {
+                const buttons = document.querySelectorAll('.refresh-btn, .export-btn');
+                buttons.forEach(btn => {
+                    btn.disabled = loading;
+                    btn.classList.toggle('loading', loading);
+                });
+                document.querySelector('.refresh-btn').textContent = loading ? '🔄 Testing...' : '🔄 Refresh Data';
+            }
+
+            updateLastRefreshed() {
+                document.getElementById('last-refreshed').textContent = new Date().toLocaleTimeString();
+            }
+
+            startAutoRefresh() {
+                setInterval(() => this.refreshData(), 2 * 60 * 1000);
+            }
+
+            exportData() {
+                try {
+                    const researchData = this.tracker.exportResearchData();
+                    const dataStr = JSON.stringify(researchData, null, 2);
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(dataBlob);
+                    link.download = `supplier-research-${Date.now()}.json`;
+                    link.click();
+                } catch (error) {
+                    console.error('Export failed:', error);
+                }
+            }
+        }
+
+        // Initialize dashboard
+        let researchDashboard;
+        document.addEventListener('DOMContentLoaded', () => {
+            researchDashboard = new ResearchDashboard();
+        });
+    </script>
 </body>
 </html>
