@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Research Dashboard - 9kilos</title>
     <style>
-        /* [KEEP ALL THE EXISTING CSS STYLES - THEY ARE THE SAME] */
         :root {
             --primary-bg: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%);
             --header-bg: rgba(15, 52, 96, 0.95);
@@ -195,14 +194,31 @@
             font-size: 0.8em;
             margin-bottom: 10px;
         }
+        
+        .update-schedule {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.7em;
+            margin-top: 5px;
+        }
+        
+        .trend-indicator {
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        
+        .trend-up { color: #27ae60; }
+        .trend-down { color: #e74c3c; }
+        .trend-neutral { color: #95a5a6; }
     </style>
 </head>
 <body>
     <div class="research-dashboard">
         <div class="dashboard-header">
             <h1>🔬 Supplier Research Dashboard</h1>
-            <p>Real-time analytics comparing TopEmbed.pw vs Streamed.pk</p>
+            <p>Smart analytics comparing TopEmbed.pw vs Streamed.pk</p>
             <div class="data-source" id="data-source-info">Loading data from both APIs...</div>
+            <div class="update-schedule" id="update-schedule">Streams update: 1hr live • Daily content • Weekly archives</div>
         </div>
         
         <div class="controls">
@@ -326,15 +342,22 @@
                 </div>
             </div>
 
+            <!-- TRENDS SECTION (Only shows after 2+ days) -->
+            <div class="metric-section" id="trends-section" style="display: none;">
+                <h3>📈 Weekly Trends</h3>
+                <div id="trends-content"></div>
+            </div>
+
         </div>
 
         <div class="last-updated">
             Last refreshed: <span id="last-refreshed">Never</span>
+            • Next recommended refresh: <span id="next-refresh">1 hour</span>
         </div>
     </div>
 
     <script>
-        // Research Tracker - Data Analysis
+        // Research Tracker - Smart Data Analysis with Update Scheduling
         class ResearchTracker {
             constructor() {
                 this.metrics = {
@@ -348,6 +371,12 @@
                     topembed: { success: false, matches: 0 },
                     streamed: { success: false, matches: 0 }
                 };
+                this.lastAPICallTime = 0;
+                this.lastStreamTestTime = 0;
+                
+                // Load historical data
+                this.loadHistoricalData();
+                console.log('🔬 Research Tracker initialized with smart scheduling');
             }
 
             createSupplierMetrics() {
@@ -371,21 +400,41 @@
             }
 
             async analyzeSuppliers() {
-                console.log('🔄 Fetching data from both suppliers...');
+                console.log('🔄 Smart data collection started...');
                 this.resetCurrentMetrics();
                 
-                // Get data from BOTH suppliers
-                const [tomData, sarahData] = await Promise.all([
-                    this.fetchTopEmbedData(),
-                    this.fetchStreamedData()
-                ]);
+                // SMART SCHEDULING: Only call APIs if needed
+                const shouldCallAPIs = this.shouldCallAPIs();
+                const shouldTestStreams = this.shouldTestStreams();
                 
-                console.log('📊 Data received:', {
+                let tomData = null;
+                let sarahData = null;
+                
+                if (shouldCallAPIs) {
+                    console.log('📡 Calling APIs (scheduled refresh)');
+                    [tomData, sarahData] = await Promise.all([
+                        this.fetchTopEmbedData(),
+                        this.fetchStreamedData()
+                    ]);
+                    this.lastAPICallTime = Date.now();
+                } else {
+                    console.log('⏸️  Using cached API data (recently updated)');
+                    // Use data from last snapshot
+                    const lastSnapshot = this.getLastSnapshot();
+                    if (lastSnapshot) {
+                        tomData = lastSnapshot.tomData;
+                        sarahData = lastSnapshot.sarahData;
+                    }
+                }
+                
+                console.log('📊 Data availability:', {
                     tom: tomData ? '✅' : '❌',
-                    sarah: sarahData ? '✅' : '❌'
+                    sarah: sarahData ? '✅' : '❌',
+                    apiCalls: shouldCallAPIs ? '✅' : '⏸️',
+                    streamTests: shouldTestStreams ? '✅' : '⏸️'
                 });
                 
-                // Convert and merge data from both sources
+                // Convert and merge data
                 const allMatches = this.mergeSupplierData(tomData, sarahData);
                 
                 if (allMatches.length === 0) {
@@ -393,18 +442,86 @@
                     return this.metrics;
                 }
 
-                // Analyze each supplier separately
+                // Analyze content (always do this)
                 this.analyzeSupplier(allMatches, 'topembed');
                 this.analyzeSupplier(allMatches, 'streamed');
+                
+                // SMART STREAM TESTING: Only test if scheduled
+                if (shouldTestStreams) {
+                    console.log('🔍 Testing streams (scheduled test)');
+                    await this.analyzeStreamQuality(allMatches, 'topembed');
+                    await this.analyzeStreamQuality(allMatches, 'streamed');
+                    this.lastStreamTestTime = Date.now();
+                } else {
+                    console.log('⏸️  Using cached stream test results');
+                    // Use stream metrics from last analysis
+                    this.useCachedStreamMetrics();
+                }
                 
                 const now = new Date();
                 this.metrics.topembed.lastUpdateTime = now;
                 this.metrics.streamed.lastUpdateTime = now;
                 
-                // Update data source info
                 this.updateDataSourceInfo();
                 
+                // Save snapshot with scheduling info
+                this.saveDailySnapshot(tomData, sarahData);
+                
                 return this.metrics;
+            }
+
+            // SMART SCHEDULING RULES
+            shouldCallAPIs() {
+                const now = Date.now();
+                const timeSinceLastCall = now - this.lastAPICallTime;
+                
+                // Call APIs if:
+                // - Never called before
+                // - Last call was more than 1 hour ago (respects stream update schedule)
+                // - No cached data available
+                if (this.lastAPICallTime === 0) return true;
+                if (timeSinceLastCall > (60 * 60 * 1000)) return true; // 1 hour
+                if (Object.keys(this.dailySnapshots).length === 0) return true;
+                
+                return false;
+            }
+
+            shouldTestStreams() {
+                const now = Date.now();
+                const timeSinceLastTest = now - this.lastStreamTestTime;
+                
+                // Test streams if:
+                // - Never tested before
+                // - Last test was more than 2 hours ago
+                // - It's a new day and we want fresh reliability data
+                if (this.lastStreamTestTime === 0) return true;
+                if (timeSinceLastTest > (2 * 60 * 60 * 1000)) return true; // 2 hours
+                
+                const lastTestDate = new Date(this.lastStreamTestTime).toDateString();
+                const today = new Date().toDateString();
+                if (lastTestDate !== today) return true; // New day
+                
+                return false;
+            }
+
+            getLastSnapshot() {
+                const today = new Date().toDateString();
+                return this.dailySnapshots[today] || Object.values(this.dailySnapshots).pop();
+            }
+
+            useCachedStreamMetrics() {
+                const lastSnapshot = this.getLastSnapshot();
+                if (lastSnapshot) {
+                    ['topembed', 'streamed'].forEach(supplier => {
+                        const cached = lastSnapshot.metrics[supplier];
+                        this.metrics[supplier].workingStreams = cached.workingStreams;
+                        this.metrics[supplier].deadStreams = cached.deadStreams;
+                        this.metrics[supplier].successRate = cached.successRate;
+                        this.metrics[supplier].averageLoadTime = cached.averageLoadTime;
+                        this.metrics[supplier].totalTests = cached.totalTests;
+                        this.metrics[supplier].successfulTests = cached.successfulTests;
+                    });
+                }
             }
 
             async fetchTopEmbedData() {
@@ -463,7 +580,7 @@
                                 league: event.tournament,
                                 sport: event.sport,
                                 isLive: Math.floor(Date.now() / 1000) >= event.unix_timestamp,
-                                channels: event.channels || ['https://topembed.pw/embed/' + event.sport?.toLowerCase()],
+                                channels: event.channels || ['https://topembed.pw/embed/' + (event.sport?.toLowerCase() || 'football')],
                                 unixTimestamp: event.unix_timestamp,
                                 source: 'topembed'
                             });
@@ -484,7 +601,7 @@
                             ['https://streamed.pk/api/stream/default/123'];
                         
                         allMatches.push({
-                            id: 'sarah-' + match.id,
+                            id: 'sarah-' + (match.id || Date.now()),
                             date: date,
                             time: new Date(match.date).toLocaleTimeString('en-US', { 
                                 hour: '2-digit', minute: '2-digit', hour12: false 
@@ -516,7 +633,6 @@
                 this.metrics[supplier].upcomingMatches = supplierMatches.filter(m => !m.isLive).length;
                 
                 this.analyzeContentCoverage(supplierMatches, supplier);
-                this.analyzeStreamQuality(supplierMatches, supplier);
             }
 
             analyzeContentCoverage(matches, supplier) {
@@ -534,6 +650,19 @@
                 this.metrics[supplier].sportsCount = sports.size;
                 this.metrics[supplier].leaguesCount = leagues.size;
                 this.metrics[supplier].countriesCount = countries.size;
+                
+                // Calculate new matches today
+                this.calculateNewMatchesToday(supplier, matches);
+            }
+
+            calculateNewMatchesToday(supplier, matches) {
+                const today = new Date().toDateString();
+                const todayMatches = matches.filter(match => {
+                    const matchDate = new Date(match.date).toDateString();
+                    return matchDate === today;
+                });
+                
+                this.metrics[supplier].newMatchesToday = todayMatches.length;
             }
 
             async analyzeStreamQuality(matches, supplier) {
@@ -544,29 +673,35 @@
                 let successfulTests = 0;
                 let totalTests = 0;
 
-                // Test up to 15 matches to get good sample
-                const testMatches = matches.slice(0, 15);
+                // SMART TESTING: Only test 3 matches to respect server limits
+                const testMatches = matches.slice(0, 3);
+                
+                console.log(`🔍 Testing ${testMatches.length} ${supplier} streams...`);
                 
                 for (const match of testMatches) {
                     const supplierStreams = match.channels.filter(channel => 
                         this.identifySupplier(channel) === supplier
                     );
 
-                    if (supplierStreams.length > 1) multiStreamMatches++;
+                    if (supplierStreams.length > 1) {
+                        this.metrics[supplier].multiStreamMatches++;
+                    }
 
-                    // Test up to 2 streams per match
-                    for (const streamUrl of supplierStreams.slice(0, 2)) {
+                    // Test only 1 stream per match to be respectful
+                    for (const streamUrl of supplierStreams.slice(0, 1)) {
                         totalTests++;
-                        const testResult = await this.testStreamHealth(streamUrl, supplier);
+                        const testResult = await this.smartStreamTest(streamUrl, supplier);
                         
                         if (testResult.healthy) {
                             workingStreams++;
                             successfulTests++;
                             totalLoadTime += testResult.loadTime;
+                            console.log(`✅ ${supplier} stream worked:`, Math.round(testResult.loadTime) + 'ms');
                         } else {
                             deadStreams++;
+                            console.log(`❌ ${supplier} stream failed`);
                         }
-                        await this.delay(200); // Shorter delay for faster testing
+                        await this.delay(1000); // Respectful delay between tests
                     }
                 }
 
@@ -579,39 +714,35 @@
                 this.metrics[supplier].successfulTests = successfulTests;
             }
 
-            async testStreamHealth(streamUrl, supplier) {
+            async smartStreamTest(streamUrl, supplier) {
                 const startTime = Date.now();
                 
-                try {
-                    // Use no-cors to avoid CORS issues
-                    await fetch(streamUrl, { 
-                        method: 'HEAD', 
-                        mode: 'no-cors',
-                        cache: 'no-cache'
-                    });
-                    const loadTime = Date.now() - startTime;
+                return new Promise((resolve) => {
+                    // Use iframe method which is more reliable for stream testing
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = streamUrl;
                     
-                    this.recordTest({
-                        supplier,
-                        streamUrl,
-                        healthy: true,
-                        loadTime,
-                        timestamp: new Date().toISOString()
-                    });
+                    const timeout = setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        resolve({ healthy: false, loadTime: 0 });
+                    }, 8000); // 8 second timeout
                     
-                    return { healthy: true, loadTime };
+                    iframe.onload = () => {
+                        clearTimeout(timeout);
+                        document.body.removeChild(iframe);
+                        const loadTime = Date.now() - startTime;
+                        resolve({ healthy: true, loadTime });
+                    };
                     
-                } catch (error) {
-                    this.recordTest({
-                        supplier,
-                        streamUrl, 
-                        healthy: false,
-                        error: error.message,
-                        timestamp: new Date().toISOString()
-                    });
+                    iframe.onerror = () => {
+                        clearTimeout(timeout);
+                        document.body.removeChild(iframe);
+                        resolve({ healthy: false, loadTime: 0 });
+                    };
                     
-                    return { healthy: false, loadTime: 0 };
-                }
+                    document.body.appendChild(iframe);
+                });
             }
 
             identifySupplier(streamUrl) {
@@ -642,7 +773,80 @@
                     const sarahStatus = this.dataSources.streamed.success ? 
                         `Streamed: ${this.dataSources.streamed.matches} matches` : 'Streamed: Failed';
                     
-                    infoElement.textContent = `Data sources: ${tomStatus} | ${sarahStatus}`;
+                    const apiStatus = this.lastAPICallTime > 0 ? '✅' : '⏸️';
+                    const testStatus = this.lastStreamTestTime > 0 ? '✅' : '⏸️';
+                    
+                    infoElement.textContent = `${apiStatus} APIs | ${testStatus} Stream Tests | ${tomStatus} | ${sarahStatus}`;
+                }
+            }
+
+            // DATA PERSISTENCE METHODS
+            saveDailySnapshot(tomData, sarahData) {
+                const today = new Date().toDateString();
+                const snapshot = {
+                    date: today,
+                    timestamp: Date.now(),
+                    metrics: JSON.parse(JSON.stringify(this.metrics)),
+                    dataSources: JSON.parse(JSON.stringify(this.dataSources)),
+                    tomData: tomData, // Store raw data for caching
+                    sarahData: sarahData,
+                    lastAPICallTime: this.lastAPICallTime,
+                    lastStreamTestTime: this.lastStreamTestTime
+                };
+                
+                this.dailySnapshots[today] = snapshot;
+                
+                // Save to localStorage
+                this.saveToStorage('researchSnapshots', this.dailySnapshots);
+                this.saveToStorage('researchTestHistory', this.testHistory);
+                this.saveToStorage('researchSettings', {
+                    lastAPICallTime: this.lastAPICallTime,
+                    lastStreamTestTime: this.lastStreamTestTime,
+                    startTime: this.startTime
+                });
+                
+                console.log('💾 Saved daily snapshot for', today);
+            }
+
+            loadHistoricalData() {
+                // Load from localStorage
+                const savedSnapshots = this.loadFromStorage('researchSnapshots');
+                const savedHistory = this.loadFromStorage('researchTestHistory');
+                const savedSettings = this.loadFromStorage('researchSettings');
+                
+                if (savedSnapshots) {
+                    this.dailySnapshots = savedSnapshots;
+                    console.log('📊 Loaded', Object.keys(savedSnapshots).length, 'historical snapshots');
+                }
+                
+                if (savedHistory) {
+                    this.testHistory = savedHistory.slice(-1000);
+                    console.log('📈 Loaded', savedHistory.length, 'historical tests');
+                }
+                
+                if (savedSettings) {
+                    this.lastAPICallTime = savedSettings.lastAPICallTime || 0;
+                    this.lastStreamTestTime = savedSettings.lastStreamTestTime || 0;
+                    this.startTime = savedSettings.startTime || this.startTime;
+                    console.log('⚙️  Loaded research settings');
+                }
+            }
+
+            saveToStorage(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                } catch (error) {
+                    console.warn('Storage save failed:', error);
+                }
+            }
+
+            loadFromStorage(key) {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.warn('Storage load failed:', error);
+                    return null;
                 }
             }
 
@@ -667,30 +871,139 @@
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
 
+            // WEEKLY TRENDS AND ANALYSIS
+            getWeeklyTrends() {
+                const last7Days = this.getLastNDays(7);
+                if (last7Days.length < 2) return null;
+                
+                const trends = {
+                    topembed: this.calculateSupplierTrends('topembed', last7Days),
+                    streamed: this.calculateSupplierTrends('streamed', last7Days),
+                    hasData: true
+                };
+                
+                return trends;
+            }
+
+            getLastNDays(n) {
+                const days = [];
+                for (let i = 0; i < n; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateKey = date.toDateString();
+                    if (this.dailySnapshots[dateKey]) {
+                        days.push(this.dailySnapshots[dateKey]);
+                    }
+                }
+                return days;
+            }
+
+            calculateSupplierTrends(supplier, dailySnapshots) {
+                if (dailySnapshots.length < 2) return { available: false };
+                
+                const firstDay = dailySnapshots[dailySnapshots.length - 1];
+                const lastDay = dailySnapshots[0];
+                
+                return {
+                    available: true,
+                    totalMatches: this.calculateChange(firstDay.metrics[supplier].totalMatches, lastDay.metrics[supplier].totalMatches),
+                    successRate: this.calculateChange(firstDay.metrics[supplier].successRate, lastDay.metrics[supplier].successRate),
+                    sportsCount: this.calculateChange(firstDay.metrics[supplier].sportsCount, lastDay.metrics[supplier].sportsCount),
+                    daysAnalyzed: dailySnapshots.length
+                };
+            }
+
+            calculateChange(oldValue, newValue) {
+                if (oldValue === 0) return { change: 0, percent: 0, trend: 'neutral' };
+                const change = newValue - oldValue;
+                const percent = (change / oldValue) * 100;
+                const trend = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+                return { change, percent: Math.round(percent), trend };
+            }
+
+            getNextRecommendedRefresh() {
+                const now = Date.now();
+                const timeSinceLastCall = now - this.lastAPICallTime;
+                const timeSinceLastTest = now - this.lastStreamTestTime;
+                
+                // Recommend refresh based on what's needed
+                if (timeSinceLastCall > (55 * 60 * 1000)) { // 55 minutes
+                    return '1 hour (API refresh)';
+                } else if (timeSinceLastTest > (115 * 60 * 1000)) { // 115 minutes
+                    return '2 hours (stream test)';
+                } else {
+                    const nextAPIRefresh = Math.ceil((60 - (timeSinceLastCall / (60 * 1000))) / 5) * 5;
+                    return `${nextAPIRefresh} minutes`;
+                }
+            }
+
+            // ENHANCED EXPORT WITH SMART SCHEDULING INFO
             exportResearchData() {
+                const weeklyTrends = this.getWeeklyTrends();
+                const performanceHistory = this.getPerformanceHistory(7);
+                
                 return {
                     metadata: {
                         exportTime: new Date().toISOString(),
+                        studyDuration: Date.now() - this.startTime,
+                        totalSnapshots: Object.keys(this.dailySnapshots).length,
                         totalTests: this.testHistory.length,
                         dataSources: this.dataSources,
-                        studyDuration: Date.now() - this.startTime
+                        scheduling: {
+                            lastAPICall: new Date(this.lastAPICallTime).toISOString(),
+                            lastStreamTest: new Date(this.lastStreamTestTime).toISOString(),
+                            nextRecommendedRefresh: this.getNextRecommendedRefresh()
+                        }
                     },
-                    supplierComparison: {
+                    
+                    currentComparison: {
                         topembed: this.metrics.topembed,
                         streamed: this.metrics.streamed
                     },
-                    performanceAnalysis: {
+                    
+                    weeklyTrends: weeklyTrends,
+                    
+                    historicalData: {
+                        dailySnapshots: this.dailySnapshots,
+                        performanceHistory: performanceHistory
+                    },
+                    
+                    analysis: {
                         topembed: {
                             reliabilityScore: this.calculateReliabilityScore('topembed'),
-                            coverageScore: this.calculateCoverageScore('topembed')
+                            coverageScore: this.calculateCoverageScore('topembed'),
+                            weeklyTrend: weeklyTrends?.topembed || 'Insufficient data'
                         },
                         streamed: {
                             reliabilityScore: this.calculateReliabilityScore('streamed'),
-                            coverageScore: this.calculateCoverageScore('streamed')
+                            coverageScore: this.calculateCoverageScore('streamed'),
+                            weeklyTrend: weeklyTrends?.streamed || 'Insufficient data'
                         }
                     },
+                    
                     sampleTestData: this.testHistory.slice(-50)
                 };
+            }
+
+            getPerformanceHistory(days = 7) {
+                const history = [];
+                const lastNDays = this.getLastNDays(days);
+                
+                lastNDays.forEach(snapshot => {
+                    history.push({
+                        date: snapshot.date,
+                        topembed: {
+                            successRate: snapshot.metrics.topembed.successRate,
+                            totalMatches: snapshot.metrics.topembed.totalMatches
+                        },
+                        streamed: {
+                            successRate: snapshot.metrics.streamed.successRate,
+                            totalMatches: snapshot.metrics.streamed.totalMatches
+                        }
+                    });
+                });
+                
+                return history;
             }
 
             calculateReliabilityScore(supplier) {
@@ -718,7 +1031,7 @@
             }
 
             async init() {
-                this.startAutoRefresh();
+                this.startSmartRefresh();
                 await this.refreshData();
             }
 
@@ -731,6 +1044,8 @@
                     const metrics = await this.tracker.analyzeSuppliers();
                     this.updateDashboard(metrics);
                     this.updateLastRefreshed();
+                    this.updateTrendsSection();
+                    this.updateNextRefreshTime();
                 } catch (error) {
                     console.error('Refresh error:', error);
                 } finally {
@@ -799,6 +1114,52 @@
                 element.className = `metric-difference ${difference > 0 ? 'positive' : difference < 0 ? 'negative' : 'neutral'}`;
             }
 
+            updateTrendsSection() {
+                const trends = this.tracker.getWeeklyTrends();
+                const trendsSection = document.getElementById('trends-section');
+                const trendsContent = document.getElementById('trends-content');
+                
+                if (trends && trends.hasData) {
+                    trendsSection.style.display = 'block';
+                    trendsContent.innerHTML = this.generateTrendsHTML(trends);
+                } else {
+                    trendsSection.style.display = 'none';
+                }
+            }
+
+            generateTrendsHTML(trends) {
+                let html = '';
+                
+                ['topembed', 'streamed'].forEach(supplier => {
+                    const supplierTrends = trends[supplier];
+                    if (supplierTrends.available) {
+                        html += `<div class="metric-row">
+                            <div class="metric-label">${supplier.toUpperCase()} Weekly Trend</div>
+                            <div class="metric-value topembed">
+                                Matches: ${supplierTrends.totalMatches.change >= 0 ? '+' : ''}${supplierTrends.totalMatches.change}
+                                <span class="trend-indicator ${supplierTrends.totalMatches.trend}">${this.getTrendIcon(supplierTrends.totalMatches.trend)}</span>
+                            </div>
+                            <div class="metric-value streamed">
+                                Success: ${supplierTrends.successRate.change >= 0 ? '+' : ''}${supplierTrends.successRate.change}%
+                                <span class="trend-indicator ${supplierTrends.successRate.trend}">${this.getTrendIcon(supplierTrends.successRate.trend)}</span>
+                            </div>
+                            <div class="metric-difference neutral">${supplierTrends.daysAnalyzed} days</div>
+                        </div>`;
+                    }
+                });
+                
+                return html || '<div class="metric-row"><div class="metric-label">Collecting trend data...</div><div class="metric-value topembed">-</div><div class="metric-value streamed">-</div><div class="metric-difference neutral">-</div></div>';
+            }
+
+            getTrendIcon(trend) {
+                return trend === 'up' ? '↗️' : trend === 'down' ? '↘️' : '➡️';
+            }
+
+            updateNextRefreshTime() {
+                const nextRefresh = this.tracker.getNextRecommendedRefresh();
+                document.getElementById('next-refresh').textContent = nextRefresh;
+            }
+
             extractNumber(text) {
                 const match = text.match(/-?\d+(\.\d+)?/);
                 return match ? parseFloat(match[0]) : 0;
@@ -810,15 +1171,18 @@
                     btn.disabled = loading;
                     btn.classList.toggle('loading', loading);
                 });
-                document.querySelector('.refresh-btn').textContent = loading ? '🔄 Testing...' : '🔄 Refresh Data';
+                document.querySelector('.refresh-btn').textContent = loading ? '🔄 Smart Refresh...' : '🔄 Refresh Data';
             }
 
             updateLastRefreshed() {
                 document.getElementById('last-refreshed').textContent = new Date().toLocaleTimeString();
             }
 
-            startAutoRefresh() {
-                setInterval(() => this.refreshData(), 3 * 60 * 1000); // 3 minutes
+            startSmartRefresh() {
+                // Smart refresh every 5 minutes to check if updates are needed
+                setInterval(() => {
+                    this.updateNextRefreshTime();
+                }, 5 * 60 * 1000); // 5 minutes
             }
 
             exportData() {
