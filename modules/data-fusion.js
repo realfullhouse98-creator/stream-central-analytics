@@ -4,6 +4,7 @@ class DataFusion {
         this.cacheKey = '9kilos-matches-cache';
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         this.isLoading = false;
+        this.sportsClassifier = new SportsClassifier(); // Add classifier instance
     }
 
     async loadMatches() {
@@ -62,7 +63,7 @@ class DataFusion {
             console.log('❌ Sarah failed, but continuing...');
         }
         
-        // Fuse the data
+        // Fuse the data with sports classification
         return this.fuseAPIData(topEmbedData, streamedData);
     }
 
@@ -111,7 +112,7 @@ class DataFusion {
             events[date].push({
                 match: teamNames,
                 tournament: match.category,
-                sport: match.category, // Will be classified later
+                sport: match.category, // Will be classified during fusion
                 unix_timestamp: Math.floor(match.date / 1000),
                 channels: channels,
                 streamedMatch: match
@@ -122,20 +123,27 @@ class DataFusion {
     }
 
     fuseAPIData(tomData, sarahData) {
-        console.log('🔗 Fusing Tom & Sarah data...');
+        console.log('🔗 Fusing Tom & Sarah data with sports classification...');
         
         const fusedData = { events: {} };
         
-        // Add all Tom data
+        // Add all Tom data with sports classification
         if (tomData && tomData.events) {
             Object.entries(tomData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
-                fusedData.events[date].push(...matches);
-                console.log(`📅 Tom added ${matches.length} matches for ${date}`);
+                
+                // CLASSIFY SPORTS FOR TOM DATA
+                const classifiedMatches = matches.map(match => ({
+                    ...match,
+                    sport: this.sportsClassifier.classifySport(match) // Fix: Classify during fusion
+                }));
+                
+                fusedData.events[date].push(...classifiedMatches);
+                console.log(`📅 Tom added ${classifiedMatches.length} matches for ${date}`);
             });
         }
         
-        // Add all Sarah data (avoid duplicates)
+        // Add all Sarah data with sports classification (avoid duplicates)
         if (sarahData && sarahData.events) {
             Object.entries(sarahData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
@@ -144,7 +152,12 @@ class DataFusion {
                 
                 matches.forEach(match => {
                     if (!existingTitles.has(match.match)) {
-                        fusedData.events[date].push(match);
+                        // CLASSIFY SPORTS FOR SARAH DATA TOO
+                        const classifiedMatch = {
+                            ...match,
+                            sport: this.sportsClassifier.classifySport(match) // Fix: Classify during fusion
+                        };
+                        fusedData.events[date].push(classifiedMatch);
                     }
                 });
                 
@@ -154,6 +167,13 @@ class DataFusion {
         
         const totalMatches = Object.values(fusedData.events).flat().length;
         console.log(`🎉 Fusion complete: ${totalMatches} total matches from both APIs`);
+        
+        // Log unique sports for debugging
+        const allSports = new Set();
+        Object.values(fusedData.events).forEach(matches => {
+            matches.forEach(match => allSports.add(match.sport));
+        });
+        console.log('🔍 Unique sports after fusion:', Array.from(allSports).sort());
         
         return fusedData;
     }
@@ -244,6 +264,38 @@ class DataFusion {
                 }
             ]
         };
+    }
+
+    async tryFastProxies() {
+        const targetUrl = 'https://topembed.pw/api.php?format=json';
+        
+        const fastProxies = [
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            targetUrl
+        ];
+        
+        for (const proxyUrl of fastProxies) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+                
+                const response = await fetch(proxyUrl, {
+                    signal: controller.signal,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('🚀 Fast data loaded from:', proxyUrl);
+                    return data;
+                }
+            } catch (error) {
+                continue;
+            }
+        }
+        return null;
     }
 }
 
