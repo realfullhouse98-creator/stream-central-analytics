@@ -60,7 +60,7 @@ class DataFusion {
             console.log('❌ Tom failed, but continuing...');
         }
         
-        // Try Streamed API
+        // Try Streamed API - USE WORKING VERSION
         try {
             streamedData = await this.fetchFromStreamed('all');
             console.log('✅ Sarah data loaded:', Object.keys(streamedData.events || {}).length, 'days');
@@ -71,7 +71,9 @@ class DataFusion {
         // Try Emily API
         try {
             emilyData = await this.fetchFromEmily();
-            console.log('✅ Emily data loaded:', Object.keys(emilyData.events || {}).length, 'days');
+            if (emilyData) {
+                console.log('✅ Emily data loaded:', Object.keys(emilyData.events || {}).length, 'days');
+            }
         } catch (error) {
             console.log('❌ Emily failed, but continuing...');
         }
@@ -80,7 +82,33 @@ class DataFusion {
         return this.fuseAPIData(topEmbedData, streamedData, emilyData);
     }
 
-    // ADD EMILY API METHOD
+    // STREAMED API - RESTORE WORKING VERSION
+    async fetchFromStreamed(endpoint = 'all') {
+        try {
+            let url;
+            if (endpoint === 'live') {
+                url = 'https://streamed.pk/api/matches/live';
+            } else if (endpoint === 'today') {
+                url = 'https://streamed.pk/api/matches/all-today';
+            } else {
+                url = 'https://streamed.pk/api/matches/all';
+            }
+            
+            console.log('🔄 Fetching from Streamed:', url);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('HTTP error');
+            
+            const data = await response.json();
+            console.log('✅ Streamed data received:', data.length, 'matches');
+            return this.normalizeStreamedData(data);
+            
+        } catch (error) {
+            console.warn('❌ Streamed failed:', error);
+            throw error;
+        }
+    }
+
+    // EMILY API - ADD PROPERLY
     async fetchFromEmily() {
         try {
             // Check cache first
@@ -94,11 +122,10 @@ class DataFusion {
             console.log('🔄 Fetching from Emily:', url);
             
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) return null;
             
             const data = await response.json();
-            
-            if (!data.success) throw new Error('API returned success: false');
+            if (!data.success) return null;
             
             console.log('✅ Emily raw data:', data.streams.length, 'categories');
             
@@ -109,11 +136,43 @@ class DataFusion {
             
         } catch (error) {
             console.warn('❌ Emily API failed:', error.message);
-            throw error;
+            return null;
         }
     }
 
-    // ADD EMILY DATA NORMALIZATION
+    // STREAMED DATA NORMALIZATION - RESTORE WORKING VERSION
+    normalizeStreamedData(streamedData) {
+        const events = {};
+        
+        streamedData.forEach(match => {
+            const date = new Date(match.date).toISOString().split('T')[0];
+            
+            if (!events[date]) events[date] = [];
+            
+            let teamNames = match.title;
+            if (match.teams && match.teams.home && match.teams.away) {
+                teamNames = match.teams.home.name + ' - ' + match.teams.away.name;
+            }
+            
+            const channels = match.sources.map(source => 
+                'https://streamed.pk/api/stream/' + source.source + '/' + source.id
+            );
+            
+            events[date].push({
+                match: teamNames,
+                tournament: match.category,
+                sport: match.category, // Will be classified during fusion
+                unix_timestamp: Math.floor(match.date / 1000),
+                channels: channels,
+                streamedMatch: match,
+                source: 'streamed' // Add source tracking
+            });
+        });
+        
+        return { events };
+    }
+
+    // EMILY DATA NORMALIZATION - ADD NEW
     normalizeEmilyData(emilyData) {
         const events = {};
         
@@ -134,9 +193,7 @@ class DataFusion {
                     isLive: stream.always_live === 1 || this.isEmilyStreamLive(stream),
                     source: 'emily',
                     streamId: stream.id,
-                    poster: stream.poster,
-                    uri_name: stream.uri_name,
-                    allowPastStreams: stream.allowpaststreams === 1
+                    poster: stream.poster
                 };
                 
                 events[date].push(matchData);
@@ -147,7 +204,7 @@ class DataFusion {
         return { events };
     }
 
-    // ADD EMILY SPORT CLASSIFICATION
+    // EMILY SPORT CLASSIFICATION
     classifyEmilySport(category) {
         const sportMap = {
             'Basketball': 'basketball',
@@ -174,7 +231,7 @@ class DataFusion {
         return stream.starts_at <= now && stream.ends_at >= now;
     }
 
-    // ADD EMILY CACHE METHODS
+    // EMILY CACHE METHODS
     getEmilyCachedData() {
         try {
             const cached = localStorage.getItem(this.emilyCacheKey);
@@ -201,7 +258,7 @@ class DataFusion {
         }
     }
 
-    // UPDATE FUSION METHOD TO INCLUDE EMILY
+    // FUSION METHOD - UPDATE TO INCLUDE EMILY
     fuseAPIData(tomData, sarahData, emilyData) {
         console.log('🔗 Fusing Tom, Sarah & Emily data with sports classification...');
         
@@ -214,7 +271,8 @@ class DataFusion {
                 
                 const classifiedMatches = matches.map(match => ({
                     ...match,
-                    sport: this.sportsClassifier.classifySport(match)
+                    sport: this.sportsClassifier.classifySport(match),
+                    source: match.source || 'topembed'
                 }));
                 
                 fusedData.events[date].push(...classifiedMatches);
@@ -233,7 +291,8 @@ class DataFusion {
                     if (!existingTitles.has(match.match)) {
                         const classifiedMatch = {
                             ...match,
-                            sport: this.sportsClassifier.classifySport(match)
+                            sport: this.sportsClassifier.classifySport(match),
+                            source: 'streamed'
                         };
                         fusedData.events[date].push(classifiedMatch);
                     }
@@ -267,7 +326,7 @@ class DataFusion {
         const sources = {};
         Object.values(fusedData.events).forEach(matches => {
             matches.forEach(match => {
-                const source = match.source || 'tom';
+                const source = match.source || 'topembed';
                 sources[source] = (sources[source] || 0) + 1;
             });
         });
@@ -276,29 +335,125 @@ class DataFusion {
         return fusedData;
     }
 
-    // KEEP EXISTING METHODS BELOW (unchanged)
-    async fetchFromStreamed(endpoint = 'all') {
-    try {
-        let url;
-        if (endpoint === 'live') {
-            url = 'https://streamed.pk/api/matches/live';
-        } else if (endpoint === 'today') {
-            url = 'https://streamed.pk/api/matches/all-today';
-        } else {
-            url = 'https://streamed.pk/api/matches/all';
+    useFallbackData() {
+        const now = Math.floor(Date.now() / 1000);
+        return {
+            events: {
+                '2024-12-20': [
+                    {
+                        match: 'Research Team A - Research Team B',
+                        tournament: '9kilos Demo League',
+                        sport: 'Football',
+                        unix_timestamp: now + 3600,
+                        channels: ['https://example.com/stream1', 'https://example.com/stream2'],
+                        source: 'fallback'
+                    }
+                ]
+            }
+        };
+    }
+
+    getCachedData() {
+        try {
+            const cached = localStorage.getItem(this.cacheKey);
+            if (!cached) return null;
+            
+            const { data, timestamp } = JSON.parse(cached);
+            const isExpired = Date.now() - timestamp > this.cacheTimeout;
+            
+            return isExpired ? null : data;
+        } catch (error) {
+            return null;
         }
+    }
+
+    cacheData(data) {
+        try {
+            const cacheItem = {
+                data: data,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(this.cacheKey, JSON.stringify(cacheItem));
+        } catch (error) {
+            console.warn('Caching failed:', error);
+        }
+    }
+
+    async loadTVChannelsData() {
+        try {
+            const response = await fetch('tv-channels.json');
+            return await response.json();
+        } catch (error) {
+            console.error('❌ Failed to load TV channels data:', error);
+            return this.getDefaultTVChannels();
+        }
+    }
+
+    getDefaultTVChannels() {
+        return {
+            "South Africa": [
+                {
+                    name: "SuperSportRugby",
+                    displayName: "SuperSport Rugby",
+                    country: "South Africa",
+                    streamUrl: "https://topembed.pw/channel/SuperSportRugby%5BSouthAfrica%5D",
+                    category: "Rugby",
+                    description: "Live rugby matches, highlights, and analysis"
+                }
+            ],
+            "USA": [
+                {
+                    name: "ESPN",
+                    displayName: "ESPN",
+                    country: "USA",
+                    streamUrl: "https://topembed.pw/channel/ESPN%5BUSA%5D", 
+                    category: "Multi-sport",
+                    description: "Worldwide sports leader"
+                }
+            ],
+            "UK": [
+                {
+                    name: "SkySportsMain",
+                    displayName: "Sky Sports Main Event",
+                    country: "UK",
+                    streamUrl: "https://topembed.pw/channel/SkySportsMain%5BUK%5D",
+                    category: "Multi-sport",
+                    description: "Premier sports coverage"
+                }
+            ]
+        };
+    }
+
+    async tryFastProxies() {
+        const targetUrl = 'https://topembed.pw/api.php?format=json';
         
-        console.log('🔄 Fetching from Streamed:', url);
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('HTTP error');
+        const fastProxies = [
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            targetUrl
+        ];
         
-        const data = await response.json();
-        console.log('✅ Streamed data received:', data.length, 'matches');
-        return this.normalizeStreamedData(data);
-        
-    } catch (error) {
-        console.warn('❌ Streamed failed:', error);
-        throw error;
+        for (const proxyUrl of fastProxies) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+                
+                const response = await fetch(proxyUrl, {
+                    signal: controller.signal,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('🚀 Fast data loaded from:', proxyUrl);
+                    return data;
+                }
+            } catch (error) {
+                continue;
+            }
+        }
+        return null;
     }
 }
 
