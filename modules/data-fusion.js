@@ -4,11 +4,7 @@ class DataFusion {
         this.cacheKey = '9kilos-matches-cache';
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         this.isLoading = false;
-        this.sportsClassifier = new SportsClassifier(); // Add classifier instance
-        
-        // Emily API specific cache
-        this.emilyCacheKey = '9kilos-emily-cache';
-        this.emilyCacheTimeout = 60 * 1000; // 1 minute (respect their polling advice)
+        this.sportsClassifier = new SportsClassifier();
     }
 
     async loadMatches() {
@@ -37,7 +33,7 @@ class DataFusion {
         let streamedData = null;
         let emilyData = null;
         
-        // Try TopEmbed API
+        // Try TopEmbed API - ORIGINAL WORKING CODE
         try {
             const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
             const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl);
@@ -60,7 +56,7 @@ class DataFusion {
             console.log('❌ Tom failed, but continuing...');
         }
         
-        // Try Streamed API - USE WORKING VERSION
+        // Try Streamed API - ORIGINAL WORKING CODE
         try {
             streamedData = await this.fetchFromStreamed('all');
             console.log('✅ Sarah data loaded:', Object.keys(streamedData.events || {}).length, 'days');
@@ -68,21 +64,25 @@ class DataFusion {
             console.log('❌ Sarah failed, but continuing...');
         }
         
-        // Try Emily API
+        // Try Emily API - NEW BUT SAFE
         try {
             emilyData = await this.fetchFromEmily();
-            if (emilyData) {
-                console.log('✅ Emily data loaded:', Object.keys(emilyData.events || {}).length, 'days');
+            if (emilyData && emilyData.events && Object.keys(emilyData.events).length > 0) {
+                console.log('✅ Emily data loaded:', Object.keys(emilyData.events).length, 'days');
+            } else {
+                console.log('❌ Emily no data');
+                emilyData = null;
             }
         } catch (error) {
             console.log('❌ Emily failed, but continuing...');
+            emilyData = null;
         }
         
-        // Fuse the data with sports classification
+        // Fuse the data - ORIGINAL WORKING CODE + Emily
         return this.fuseAPIData(topEmbedData, streamedData, emilyData);
     }
 
-    // STREAMED API - RESTORE WORKING VERSION
+    // STREAMED API - ORIGINAL WORKING CODE
     async fetchFromStreamed(endpoint = 'all') {
         try {
             let url;
@@ -108,39 +108,27 @@ class DataFusion {
         }
     }
 
-    // EMILY API - ADD PROPERLY
+    // EMILY API - NEW BUT SIMPLE
     async fetchFromEmily() {
         try {
-            // Check cache first
-            const cachedEmilyData = this.getEmilyCachedData();
-            if (cachedEmilyData) {
-                console.log('📦 Using cached Emily data');
-                return cachedEmilyData;
-            }
+            console.log('🔄 Fetching from Emily...');
+            const response = await fetch('https://embednow.top/api/streams');
             
-            const url = 'https://embednow.top/api/streams';
-            console.log('🔄 Fetching from Emily:', url);
-            
-            const response = await fetch(url);
             if (!response.ok) return null;
             
             const data = await response.json();
             if (!data.success) return null;
             
             console.log('✅ Emily raw data:', data.streams.length, 'categories');
-            
-            const normalizedData = this.normalizeEmilyData(data);
-            this.cacheEmilyData(normalizedData);
-            
-            return normalizedData;
+            return this.normalizeEmilyData(data);
             
         } catch (error) {
-            console.warn('❌ Emily API failed:', error.message);
+            console.log('❌ Emily failed');
             return null;
         }
     }
 
-    // STREAMED DATA NORMALIZATION - RESTORE WORKING VERSION
+    // STREAMED NORMALIZATION - ORIGINAL WORKING CODE
     normalizeStreamedData(streamedData) {
         const events = {};
         
@@ -161,50 +149,43 @@ class DataFusion {
             events[date].push({
                 match: teamNames,
                 tournament: match.category,
-                sport: match.category, // Will be classified during fusion
+                sport: match.category,
                 unix_timestamp: Math.floor(match.date / 1000),
                 channels: channels,
                 streamedMatch: match,
-                source: 'streamed' // Add source tracking
+                source: 'streamed'
             });
         });
         
         return { events };
     }
 
-    // EMILY DATA NORMALIZATION - ADD NEW
+    // EMILY NORMALIZATION - NEW BUT SIMPLE
     normalizeEmilyData(emilyData) {
         const events = {};
         
         emilyData.streams.forEach(category => {
             category.streams.forEach(stream => {
-                // Only include streams with iframe embeds
                 if (!stream.iframe) return;
                 
                 const date = new Date(stream.starts_at * 1000).toISOString().split('T')[0];
                 if (!events[date]) events[date] = [];
                 
-                const matchData = {
+                events[date].push({
                     match: stream.name,
                     tournament: `${category.category} - ${stream.tag}`,
                     sport: this.classifyEmilySport(category.category),
                     unix_timestamp: stream.starts_at,
                     channels: [stream.iframe],
                     isLive: stream.always_live === 1 || this.isEmilyStreamLive(stream),
-                    source: 'emily',
-                    streamId: stream.id,
-                    poster: stream.poster
-                };
-                
-                events[date].push(matchData);
+                    source: 'emily'
+                });
             });
         });
         
-        console.log('✅ Emily normalized:', Object.keys(events).length, 'days with streams');
         return { events };
     }
 
-    // EMILY SPORT CLASSIFICATION
     classifyEmilySport(category) {
         const sportMap = {
             'Basketball': 'basketball',
@@ -212,16 +193,7 @@ class DataFusion {
             'Combat Sports': 'mma',
             'Baseball': 'baseball', 
             'Hockey': 'hockey',
-            'Tennis': 'tennis',
-            'Rugby': 'rugby',
-            'Cricket': 'cricket',
-            'Motorsports': 'motorsports',
-            'Soccer': 'football',
-            'American Football': 'american-football',
-            'Boxing': 'boxing',
-            'MMA': 'mma',
-            'UFC': 'mma',
-            'Golf': 'golf'
+            'Tennis': 'tennis'
         };
         return sportMap[category] || 'other';
     }
@@ -231,40 +203,13 @@ class DataFusion {
         return stream.starts_at <= now && stream.ends_at >= now;
     }
 
-    // EMILY CACHE METHODS
-    getEmilyCachedData() {
-        try {
-            const cached = localStorage.getItem(this.emilyCacheKey);
-            if (!cached) return null;
-            
-            const { data, timestamp } = JSON.parse(cached);
-            const isExpired = Date.now() - timestamp > this.emilyCacheTimeout;
-            
-            return isExpired ? null : data;
-        } catch (error) {
-            return null;
-        }
-    }
-
-    cacheEmilyData(data) {
-        try {
-            const cacheItem = {
-                data: data,
-                timestamp: Date.now()
-            };
-            localStorage.setItem(this.emilyCacheKey, JSON.stringify(cacheItem));
-        } catch (error) {
-            console.warn('Emily caching failed:', error);
-        }
-    }
-
-    // FUSION METHOD - UPDATE TO INCLUDE EMILY
+    // FUSION - ORIGINAL WORKING CODE + Emily
     fuseAPIData(tomData, sarahData, emilyData) {
-        console.log('🔗 Fusing Tom, Sarah & Emily data with sports classification...');
+        console.log('🔗 Fusing data from available APIs...');
         
         const fusedData = { events: {} };
         
-        // Add all Tom data with sports classification
+        // Tom data - ORIGINAL
         if (tomData && tomData.events) {
             Object.entries(tomData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
@@ -272,15 +217,14 @@ class DataFusion {
                 const classifiedMatches = matches.map(match => ({
                     ...match,
                     sport: this.sportsClassifier.classifySport(match),
-                    source: match.source || 'topembed'
+                    source: 'topembed'
                 }));
                 
                 fusedData.events[date].push(...classifiedMatches);
-                console.log(`📅 Tom added ${classifiedMatches.length} matches for ${date}`);
             });
         }
         
-        // Add all Sarah data with sports classification (avoid duplicates)
+        // Sarah data - ORIGINAL  
         if (sarahData && sarahData.events) {
             Object.entries(sarahData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
@@ -297,12 +241,10 @@ class DataFusion {
                         fusedData.events[date].push(classifiedMatch);
                     }
                 });
-                
-                console.log(`📅 Sarah added ${matches.length} matches for ${date}`);
             });
         }
         
-        // ADD EMILY DATA FUSION (avoid duplicates)
+        // Emily data - NEW
         if (emilyData && emilyData.events) {
             Object.entries(emilyData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
@@ -314,23 +256,11 @@ class DataFusion {
                         fusedData.events[date].push(match);
                     }
                 });
-                
-                console.log(`📅 Emily added ${matches.length} matches for ${date}`);
             });
         }
         
         const totalMatches = Object.values(fusedData.events).flat().length;
-        console.log(`🎉 Fusion complete: ${totalMatches} total matches from 3 APIs`);
-        
-        // Log source breakdown
-        const sources = {};
-        Object.values(fusedData.events).forEach(matches => {
-            matches.forEach(match => {
-                const source = match.source || 'topembed';
-                sources[source] = (sources[source] || 0) + 1;
-            });
-        });
-        console.log('📊 Source breakdown:', sources);
+        console.log(`🎉 Fusion complete: ${totalMatches} total matches`);
         
         return fusedData;
     }
@@ -345,8 +275,7 @@ class DataFusion {
                         tournament: '9kilos Demo League',
                         sport: 'Football',
                         unix_timestamp: now + 3600,
-                        channels: ['https://example.com/stream1', 'https://example.com/stream2'],
-                        source: 'fallback'
+                        channels: ['https://example.com/stream1', 'https://example.com/stream2']
                     }
                 ]
             }
