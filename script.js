@@ -57,22 +57,7 @@ class MatchScheduler {
     }
 
     // ADD API HEALTH MONITORING
-    // ✅ NEW - PASTE THIS:
-startHealthMonitoring() {
-    // Check API health every 2 minutes (less aggressive)
-    setInterval(() => {
-        this.checkAPIHealth();
-    }, 120000);
-    
-    // Initial check after 5 seconds
-    setTimeout(() => {
-        this.checkAPIHealth();
-    }, 5000);
-}
-        
-        // Initial check
-        this.checkAPIHealth();
-    }
+
 
    // ✅ NEW FIXED CODE - PASTE THIS:
 async checkAPIHealth() {
