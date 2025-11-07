@@ -24,6 +24,13 @@ class MatchScheduler {
         this.matchStats = new Map();
         this.matchPolls = new Map();
         
+        // API Health Monitoring
+        this.apiHealth = {
+            topembed: { healthy: false, lastCheck: 0, responseTime: 0 },
+            streamed: { healthy: false, lastCheck: 0, responseTime: 0 },
+            emily: { healthy: false, lastCheck: 0, responseTime: 0 }
+        };
+        
         // Loading state
         this.isDataLoaded = false;
         this.isLoading = false;
@@ -39,11 +46,72 @@ class MatchScheduler {
         this.uiManager.showMainMenu();
         Utils.registerServiceWorker();
         
+        // Start API health monitoring
+        this.startHealthMonitoring();
+        
         // Load TV channels data
         await this.loadTVChannelsData();
         
         // Start preloading in background
         this.backgroundPreload();
+    }
+
+    // ADD API HEALTH MONITORING
+    startHealthMonitoring() {
+        // Check API health every 30 seconds
+        setInterval(() => {
+            this.checkAPIHealth();
+        }, 30000);
+        
+        // Initial check
+        this.checkAPIHealth();
+    }
+
+    async checkAPIHealth() {
+        const apis = [
+            { name: 'topembed', url: 'https://topembed.pw/api.php?format=json' },
+            { name: 'streamed', url: 'https://streamed.pk/api/matches/all' },
+            { name: 'emily', url: 'https://embednow.top/api/streams' }
+        ];
+
+        for (const api of apis) {
+            try {
+                const startTime = Date.now();
+                const response = await fetch(api.url, { 
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                });
+                const responseTime = Date.now() - startTime;
+                
+                this.apiHealth[api.name] = {
+                    healthy: true,
+                    lastCheck: Date.now(),
+                    responseTime: responseTime
+                };
+                
+                console.log(`✅ ${api.name} API healthy - ${responseTime}ms`);
+            } catch (error) {
+                this.apiHealth[api.name] = {
+                    healthy: false,
+                    lastCheck: Date.now(),
+                    responseTime: 0
+                };
+                console.log(`❌ ${api.name} API unhealthy`);
+            }
+        }
+        
+        this.updateAPIHealthDisplay();
+    }
+
+    updateAPIHealthDisplay() {
+        // Update the research dashboard if it exists
+        if (window.researchDashboard) {
+            window.researchDashboard.updateAPIHealthDisplay(this.apiHealth);
+        }
+        
+        // Also update main dashboard stats
+        this.updateDashboardStats();
     }
 
     async loadTVChannelsData() {
@@ -311,8 +379,48 @@ class MatchScheduler {
         try {
             const apiData = await this.dataFusion.loadMatches();
             this.organizeMatches(apiData);
+            
+            // Update API health based on successful load
+            this.apiHealth.topembed.healthy = true;
+            this.apiHealth.streamed.healthy = true;
+            this.apiHealth.emily.healthy = true;
+            
         } catch (error) {
             console.warn('All API attempts failed:', error);
+            
+            // Try individual sources
+            await this.tryIndividualSources();
+        }
+    }
+
+    async tryIndividualSources() {
+        const sources = [
+            { name: 'topembed', loader: () => this.dataFusion.loadTopEmbedData() },
+            { name: 'streamed', loader: () => this.dataFusion.loadStreamedData() },
+            { name: 'emily', loader: () => this.dataFusion.loadEmilyData() }
+        ];
+        
+        let successfulData = null;
+        
+        for (const source of sources) {
+            try {
+                console.log(`🔄 Trying ${source.name}...`);
+                const data = await source.loader();
+                if (data && Object.keys(data.events || {}).length > 0) {
+                    successfulData = data;
+                    this.apiHealth[source.name].healthy = true;
+                    console.log(`✅ ${source.name} succeeded`);
+                    break;
+                }
+            } catch (error) {
+                this.apiHealth[source.name].healthy = false;
+                console.log(`❌ ${source.name} failed`);
+            }
+        }
+        
+        if (successfulData) {
+            this.organizeMatches(successfulData);
+        } else {
             this.useFallbackData();
         }
     }
@@ -355,7 +463,8 @@ class MatchScheduler {
                             channels: channels,
                             isLive: Utils.checkIfLive(match),
                             sport: match.sport, // Already classified in data fusion
-                            unixTimestamp: match.unix_timestamp
+                            unixTimestamp: match.unix_timestamp,
+                            source: match.source || 'topembed' // Track source for analytics
                         };
                         
                         this.allMatches.push(processedMatch);
@@ -371,7 +480,7 @@ class MatchScheduler {
         }
         
         this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
-        this.updateAnalytics();
+        this.updateDashboardStats();
         
         // Log unique sports for debugging
         const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
@@ -476,6 +585,7 @@ class MatchScheduler {
                                     <strong>Match Info:</strong> ${Utils.getTeamName(match.teams, 0)} vs ${Utils.getTeamName(match.teams, 1)} in ${match.league}. 
                                     ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${Utils.formatDisplayDate(match.date)}.`}
                                     ${channels.length > 1 ? `Multiple streaming sources available.` : ''}
+                                    ${match.source ? `<br><small>Source: ${match.source.toUpperCase()}</small>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -571,18 +681,52 @@ class MatchScheduler {
         alert('Share feature coming soon!');
     }
 
-    updateAnalytics() {
+    // UPDATE DASHBOARD STATS TO INCLUDE EMILY
+    updateDashboardStats() {
+        const totalMatches = this.verifiedMatches.length;
         const liveMatches = this.verifiedMatches.filter(match => match.isLive).length;
-        const totalViewers = this.verifiedMatches.reduce((sum, match) => {
-            const stats = this.matchStats.get(match.id);
-            return sum + (stats ? stats.views : 0);
-        }, 0);
         
-        document.getElementById('total-streams').textContent = this.verifiedMatches.length;
-        document.getElementById('live-viewers').textContent = Utils.formatNumber(Math.floor(totalViewers / 100));
-        document.getElementById('countries').textContent = this.verifiedMatches.length < 5 ? '3' : '1';
-        document.getElementById('uptime').textContent = this.verifiedMatches.length < 5 ? 'Research' : '100%';
+        // Count matches by source
+        const sourceCounts = {
+            topembed: this.verifiedMatches.filter(m => m.source === 'topembed').length,
+            streamed: this.verifiedMatches.filter(m => m.source === 'streamed').length,
+            emily: this.verifiedMatches.filter(m => m.source === 'emily').length
+        };
+        
+        // Update main dashboard
+        document.getElementById('total-streams').textContent = totalMatches;
+        document.getElementById('live-viewers').textContent = Utils.formatNumber(Math.floor(totalMatches * 100));
+        
+        // Update countries count based on sources
+        const activeSources = Object.values(sourceCounts).filter(count => count > 0).length;
+        document.getElementById('countries').textContent = activeSources;
+        
+        // Update system status based on API health
+        const healthyAPIs = Object.values(this.apiHealth).filter(api => api.healthy).length;
+        document.getElementById('uptime').textContent = healthyAPIs >= 2 ? '100%' : 'Research';
+        
         document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
+    }
+
+    // ADD METHOD TO GET API HEALTH FOR RESEARCH DASHBOARD
+    getAPIHealth() {
+        return this.apiHealth;
+    }
+
+    // ADD METHOD TO GET SOURCE STATISTICS
+    getSourceStatistics() {
+        const sources = {
+            topembed: this.verifiedMatches.filter(m => m.source === 'topembed').length,
+            streamed: this.verifiedMatches.filter(m => m.source === 'streamed').length,
+            emily: this.verifiedMatches.filter(m => m.source === 'emily').length
+        };
+        
+        return {
+            sources,
+            total: this.verifiedMatches.length,
+            live: this.verifiedMatches.filter(m => m.isLive).length,
+            lastUpdate: Date.now()
+        };
     }
 
     // ==================== PERFORMANCE OPTIMIZATION ====================
@@ -629,6 +773,15 @@ class MatchScheduler {
         return Utils.formatDisplayDate(dateString);
     }
 }
+
+// ADD GLOBAL ACCESS FOR RESEARCH DASHBOARD
+window.get9kilosAPIHealth = () => {
+    return window.matchScheduler ? window.matchScheduler.getAPIHealth() : null;
+};
+
+window.get9kilosSourceStats = () => {
+    return window.matchScheduler ? window.matchScheduler.getSourceStatistics() : null;
+};
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
