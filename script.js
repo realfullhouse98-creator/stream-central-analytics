@@ -6,6 +6,7 @@ class MatchScheduler {
         this.dataFusion = new DataFusion();
         this.uiManager = new UIManager(this);
         this.streamManager = new StreamManager();
+        this.communityManager = new CommunityManager(this);
         
         // Core state
         this.allMatches = [];
@@ -233,9 +234,9 @@ class MatchScheduler {
                 case 'tv':
                     this.showTVChannels();
                     break;
-                case 'community':
-                    this.uiManager.showCommunity();
-                    break;
+                            case 'community':
+                this.communityManager.showMainMenu();
+                break;
             }
             return;
         }
