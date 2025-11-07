@@ -57,31 +57,97 @@ class MatchScheduler {
     }
 
     // ADD API HEALTH MONITORING
-    startHealthMonitoring() {
-        // Check API health every 30 seconds
-        setInterval(() => {
-            this.checkAPIHealth();
-        }, 30000);
+    // ✅ NEW - PASTE THIS:
+startHealthMonitoring() {
+    // Check API health every 2 minutes (less aggressive)
+    setInterval(() => {
+        this.checkAPIHealth();
+    }, 120000);
+    
+    // Initial check after 5 seconds
+    setTimeout(() => {
+        this.checkAPIHealth();
+    }, 5000);
+}
         
         // Initial check
         this.checkAPIHealth();
     }
 
-    async checkAPIHealth() {
-        const apis = [
-            { name: 'topembed', url: 'https://topembed.pw/api.php?format=json' },
-            { name: 'streamed', url: 'https://streamed.pk/api/matches/all' },
-            { name: 'emily', url: 'https://embednow.top/api/streams' }
-        ];
+   // ✅ NEW FIXED CODE - PASTE THIS:
+async checkAPIHealth() {
+    const apis = [
+        { 
+            name: 'topembed', 
+            url: 'https://corsproxy.io/?https://topembed.pw/api.php?format=json',
+            check: async (url) => {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(url);
+                    const responseTime = Date.now() - startTime;
+                    return { healthy: response.ok, responseTime };
+                } catch (error) {
+                    return { healthy: false, responseTime: 0 };
+                }
+            }
+        },
+        { 
+            name: 'streamed', 
+            url: 'https://streamed.pk/api/matches/all',
+            check: async (url) => {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(url);
+                    const responseTime = Date.now() - startTime;
+                    return { healthy: response.ok, responseTime };
+                } catch (error) {
+                    return { healthy: false, responseTime: 0 };
+                }
+            }
+        },
+        { 
+            name: 'emily', 
+            url: 'https://embednow.top/api/streams',
+            check: async (url) => {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(url);
+                    if (!response.ok) return { healthy: false, responseTime: 0 };
+                    
+                    const data = await response.json();
+                    const responseTime = Date.now() - startTime;
+                    return { healthy: data.success === true, responseTime };
+                } catch (error) {
+                    return { healthy: false, responseTime: 0 };
+                }
+            }
+        }
+    ];
 
-        for (const api of apis) {
-            try {
-                const startTime = Date.now();
-                const response = await fetch(api.url, { 
-                    method: 'HEAD',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
+    for (const api of apis) {
+        try {
+            console.log(`🔍 Checking ${api.name} API health...`);
+            const result = await api.check(api.url);
+            
+            this.apiHealth[api.name] = {
+                healthy: result.healthy,
+                lastCheck: Date.now(),
+                responseTime: result.responseTime
+            };
+            
+            console.log(`✅ ${api.name} API: ${result.healthy ? 'HEALTHY' : 'UNHEALTHY'} - ${result.responseTime}ms`);
+        } catch (error) {
+            this.apiHealth[api.name] = {
+                healthy: false,
+                lastCheck: Date.now(),
+                responseTime: 0
+            };
+            console.log(`❌ ${api.name} API check failed`);
+        }
+    }
+    
+    this.updateAPIHealthDisplay();
+}
                 const responseTime = Date.now() - startTime;
                 
                 this.apiHealth[api.name] = {
