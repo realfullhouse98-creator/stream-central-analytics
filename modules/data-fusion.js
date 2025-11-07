@@ -278,35 +278,27 @@ class DataFusion {
 
     // KEEP EXISTING METHODS BELOW (unchanged)
     async fetchFromStreamed(endpoint = 'all') {
-        // ... existing streamed code remains the same ...
-    }
-
-    normalizeStreamedData(streamedData) {
-        // ... existing streamed normalization remains the same ...
-    }
-
-    useFallbackData() {
-        // ... existing fallback code remains the same ...
-    }
-
-    getCachedData() {
-        // ... existing cache code remains the same ...
-    }
-
-    cacheData(data) {
-        // ... existing cache code remains the same ...
-    }
-
-    async loadTVChannelsData() {
-        // ... existing TV channels code remains the same ...
-    }
-
-    getDefaultTVChannels() {
-        // ... existing default TV channels code remains the same ...
-    }
-
-    async tryFastProxies() {
-        // ... existing fast proxies code remains the same ...
+    try {
+        let url;
+        if (endpoint === 'live') {
+            url = 'https://streamed.pk/api/matches/live';
+        } else if (endpoint === 'today') {
+            url = 'https://streamed.pk/api/matches/all-today';
+        } else {
+            url = 'https://streamed.pk/api/matches/all';
+        }
+        
+        console.log('🔄 Fetching from Streamed:', url);
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('HTTP error');
+        
+        const data = await response.json();
+        console.log('✅ Streamed data received:', data.length, 'matches');
+        return this.normalizeStreamedData(data);
+        
+    } catch (error) {
+        console.warn('❌ Streamed failed:', error);
+        throw error;
     }
 }
 
