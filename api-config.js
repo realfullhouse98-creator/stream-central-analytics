@@ -19,6 +19,18 @@ const API_CONFIG = {
         ENDPOINTS: {
             ALL_MATCHES: '/api.php?format=json'
         }
+    },
+
+    EMILY: {
+        BASE_URL: 'https://embednow.top',
+        ENDPOINTS: {
+            STREAMS: '/api/streams'
+        },
+        CONFIG: {
+            cacheTime: 60000, // Respect their 1min polling advice
+            requiresTransform: true, // Needs special data transformation
+            enabled: true
+        }
     }
 };
 
