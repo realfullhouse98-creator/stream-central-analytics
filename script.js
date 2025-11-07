@@ -120,19 +120,6 @@ async checkAPIHealth() {
                 responseTime: result.responseTime
             };
             
-            console.log(`✅ ${api.name} API: ${result.healthy ? 'HEALTHY' : 'UNHEALTHY'} - ${result.responseTime}ms`);
-        } catch (error) {
-            this.apiHealth[api.name] = {
-                healthy: false,
-                lastCheck: Date.now(),
-                responseTime: 0
-            };
-            console.log(`❌ ${api.name} API check failed`);
-        }
-    }
-    
-    this.updateAPIHealthDisplay();
-}
                 
                 
                 console.log(`✅ ${api.name} API healthy - ${responseTime}ms`);
