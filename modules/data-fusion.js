@@ -4,7 +4,7 @@ class DataFusion {
         this.cacheKey = '9kilos-matches-cache';
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         this.isLoading = false;
-        this.sportsClassifier = new SportsClassifier();
+        this.sportsClassifier = new SportsClassifier(); // Add classifier instance
     }
 
     async loadMatches() {
@@ -31,9 +31,8 @@ class DataFusion {
         console.log('🎯 DataFusion: Starting API fusion...');
         let topEmbedData = null;
         let streamedData = null;
-        let emilyData = null;
         
-        // Try TopEmbed API - ORIGINAL WORKING CODE
+        // Try TopEmbed API
         try {
             const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
             const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl);
@@ -56,7 +55,7 @@ class DataFusion {
             console.log('❌ Tom failed, but continuing...');
         }
         
-        // Try Streamed API - ORIGINAL WORKING CODE
+        // Try Streamed API
         try {
             streamedData = await this.fetchFromStreamed('all');
             console.log('✅ Sarah data loaded:', Object.keys(streamedData.events || {}).length, 'days');
@@ -64,25 +63,10 @@ class DataFusion {
             console.log('❌ Sarah failed, but continuing...');
         }
         
-        // Try Emily API - NEW BUT SAFE
-        try {
-            emilyData = await this.fetchFromEmily();
-            if (emilyData && emilyData.events && Object.keys(emilyData.events).length > 0) {
-                console.log('✅ Emily data loaded:', Object.keys(emilyData.events).length, 'days');
-            } else {
-                console.log('❌ Emily no data');
-                emilyData = null;
-            }
-        } catch (error) {
-            console.log('❌ Emily failed, but continuing...');
-            emilyData = null;
-        }
-        
-        // Fuse the data - ORIGINAL WORKING CODE + Emily
-        return this.fuseAPIData(topEmbedData, streamedData, emilyData);
+        // Fuse the data with sports classification
+        return this.fuseAPIData(topEmbedData, streamedData);
     }
 
-    // STREAMED API - ORIGINAL WORKING CODE
     async fetchFromStreamed(endpoint = 'all') {
         try {
             let url;
@@ -108,27 +92,6 @@ class DataFusion {
         }
     }
 
-    // EMILY API - NEW BUT SIMPLE
-    async fetchFromEmily() {
-        try {
-            console.log('🔄 Fetching from Emily...');
-            const response = await fetch('https://embednow.top/api/streams');
-            
-            if (!response.ok) return null;
-            
-            const data = await response.json();
-            if (!data.success) return null;
-            
-            console.log('✅ Emily raw data:', data.streams.length, 'categories');
-            return this.normalizeEmilyData(data);
-            
-        } catch (error) {
-            console.log('❌ Emily failed');
-            return null;
-        }
-    }
-
-    // STREAMED NORMALIZATION - ORIGINAL WORKING CODE
     normalizeStreamedData(streamedData) {
         const events = {};
         
@@ -149,82 +112,38 @@ class DataFusion {
             events[date].push({
                 match: teamNames,
                 tournament: match.category,
-                sport: match.category,
+                sport: match.category, // Will be classified during fusion
                 unix_timestamp: Math.floor(match.date / 1000),
                 channels: channels,
-                streamedMatch: match,
-                source: 'streamed'
+                streamedMatch: match
             });
         });
         
         return { events };
     }
 
-    // EMILY NORMALIZATION - NEW BUT SIMPLE
-    normalizeEmilyData(emilyData) {
-        const events = {};
-        
-        emilyData.streams.forEach(category => {
-            category.streams.forEach(stream => {
-                if (!stream.iframe) return;
-                
-                const date = new Date(stream.starts_at * 1000).toISOString().split('T')[0];
-                if (!events[date]) events[date] = [];
-                
-                events[date].push({
-                    match: stream.name,
-                    tournament: `${category.category} - ${stream.tag}`,
-                    sport: this.classifyEmilySport(category.category),
-                    unix_timestamp: stream.starts_at,
-                    channels: [stream.iframe],
-                    isLive: stream.always_live === 1 || this.isEmilyStreamLive(stream),
-                    source: 'emily'
-                });
-            });
-        });
-        
-        return { events };
-    }
-
-    classifyEmilySport(category) {
-        const sportMap = {
-            'Basketball': 'basketball',
-            'Football': 'football',
-            'Combat Sports': 'mma',
-            'Baseball': 'baseball', 
-            'Hockey': 'hockey',
-            'Tennis': 'tennis'
-        };
-        return sportMap[category] || 'other';
-    }
-
-    isEmilyStreamLive(stream) {
-        const now = Math.floor(Date.now() / 1000);
-        return stream.starts_at <= now && stream.ends_at >= now;
-    }
-
-    // FUSION - ORIGINAL WORKING CODE + Emily
-    fuseAPIData(tomData, sarahData, emilyData) {
-        console.log('🔗 Fusing data from available APIs...');
+    fuseAPIData(tomData, sarahData) {
+        console.log('🔗 Fusing Tom & Sarah data with sports classification...');
         
         const fusedData = { events: {} };
         
-        // Tom data - ORIGINAL
+        // Add all Tom data with sports classification
         if (tomData && tomData.events) {
             Object.entries(tomData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
                 
+                // CLASSIFY SPORTS FOR TOM DATA
                 const classifiedMatches = matches.map(match => ({
                     ...match,
-                    sport: this.sportsClassifier.classifySport(match),
-                    source: 'topembed'
+                    sport: this.sportsClassifier.classifySport(match) // Fix: Classify during fusion
                 }));
                 
                 fusedData.events[date].push(...classifiedMatches);
+                console.log(`📅 Tom added ${classifiedMatches.length} matches for ${date}`);
             });
         }
         
-        // Sarah data - ORIGINAL  
+        // Add all Sarah data with sports classification (avoid duplicates)
         if (sarahData && sarahData.events) {
             Object.entries(sarahData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
@@ -233,34 +152,28 @@ class DataFusion {
                 
                 matches.forEach(match => {
                     if (!existingTitles.has(match.match)) {
+                        // CLASSIFY SPORTS FOR SARAH DATA TOO
                         const classifiedMatch = {
                             ...match,
-                            sport: this.sportsClassifier.classifySport(match),
-                            source: 'streamed'
+                            sport: this.sportsClassifier.classifySport(match) // Fix: Classify during fusion
                         };
                         fusedData.events[date].push(classifiedMatch);
                     }
                 });
-            });
-        }
-        
-        // Emily data - NEW
-        if (emilyData && emilyData.events) {
-            Object.entries(emilyData.events).forEach(([date, matches]) => {
-                if (!fusedData.events[date]) fusedData.events[date] = [];
                 
-                const existingTitles = new Set(fusedData.events[date].map(m => m.match));
-                
-                matches.forEach(match => {
-                    if (!existingTitles.has(match.match)) {
-                        fusedData.events[date].push(match);
-                    }
-                });
+                console.log(`📅 Sarah added ${matches.length} matches for ${date}`);
             });
         }
         
         const totalMatches = Object.values(fusedData.events).flat().length;
-        console.log(`🎉 Fusion complete: ${totalMatches} total matches`);
+        console.log(`🎉 Fusion complete: ${totalMatches} total matches from both APIs`);
+        
+        // Log unique sports for debugging
+        const allSports = new Set();
+        Object.values(fusedData.events).forEach(matches => {
+            matches.forEach(match => allSports.add(match.sport));
+        });
+        console.log('🔍 Unique sports after fusion:', Array.from(allSports).sort());
         
         return fusedData;
     }
