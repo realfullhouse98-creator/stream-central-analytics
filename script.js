@@ -133,13 +133,7 @@ async checkAPIHealth() {
     
     this.updateAPIHealthDisplay();
 }
-                const responseTime = Date.now() - startTime;
                 
-                this.apiHealth[api.name] = {
-                    healthy: true,
-                    lastCheck: Date.now(),
-                    responseTime: responseTime
-                };
                 
                 console.log(`✅ ${api.name} API healthy - ${responseTime}ms`);
             } catch (error) {
