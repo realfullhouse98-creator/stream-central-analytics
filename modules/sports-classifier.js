@@ -1,13 +1,10 @@
-// Complete Sports Classification Module - Scalable Pattern-Based
+// ==================== CLEAN SPORTS CLASSIFICATION ====================
 class SportsClassifier {
     constructor() {
+        // Simple sport mapping
         this.sportMap = {
             'football': 'Football',
             'soccer': 'Football',
-            'american football': 'American Football', 
-            'nfl': 'American Football',
-            'college football': 'College Football',
-            'ncaa football': 'College Football',
             'basketball': 'Basketball',
             'baseball': 'Baseball',
             'hockey': 'Ice Hockey',
@@ -16,180 +13,70 @@ class SportsClassifier {
             'rugby': 'Rugby',
             'golf': 'Golf',
             'boxing': 'Boxing',
-            'mma': 'MMA'
-        };
-
-        // Soccer patterns (known leagues and teams)
-        this.soccerPatterns = {
-            leagues: [
-                'premier league', 'champions league', 'europa league', 'la liga',
-                'serie a', 'bundesliga', 'ligue 1', 'fa cup', 'copa del rey',
-                'eredivisie', 'primeira liga', 'mls', 'world cup'
-            ],
-            teams: [
-                'manchester', 'liverpool', 'chelsea', 'arsenal', 'tottenham',
-                'real madrid', 'barcelona', 'atletico', 'sevilla', 'valencia',
-                'bayern', 'dortmund', 'schalke', 'leverkusen', 'juventus',
-                'milan', 'inter', 'roma', 'napoli', 'psg', 'lyon', 'marseille'
-            ],
-            terms: ['fc', 'cf', 'united', 'city', 'cf']
-        };
-
-        // College Football patterns
-        this.collegePatterns = {
-            conferences: [
-                'big ten', 'sec', 'acc', 'pac-12', 'big 12', 'aac',
-                'mountain west', 'mac', 'conference usa', 'sun belt'
-            ],
-            bowls: [
-                'rose bowl', 'orange bowl', 'sugar bowl', 'cotton bowl',
-                'peach bowl', 'fiesta bowl', 'bowl game', 'college bowl'
-            ],
-            terms: [
-                'college football', 'ncaa football', 'fbs', 'fcs', 'cfp',
-                'heisman', 'ap poll', 'coaches poll'
-            ]
-        };
-
-        // NFL patterns
-        this.nflPatterns = {
-            teams: [
-                'chiefs', 'eagles', 'patriots', 'packers', 'cowboys', 'steelers',
-                '49ers', 'ravens', 'bills', 'dolphins', 'jets', 'bengals',
-                'browns', 'texans', 'colts', 'jaguars', 'titans', 'broncos',
-                'raiders', 'chargers', 'rams', 'seahawks', 'cardinals',
-                'falcons', 'panthers', 'saints', 'buccaneers', 'vikings',
-                'bears', 'lions', 'giants', 'commanders'
-            ],
-            terms: ['nfl', 'super bowl', 'pro bowl']
+            'mma': 'MMA',
+            'formula 1': 'Racing',
+            'nascar': 'Racing',
+            'volleyball': 'Volleyball',
+            'badminton': 'Badminton',
+            'handball': 'Handball',
+            'table tennis': 'Table Tennis'
         };
     }
 
     classifySport(match) {
-        if (!match || typeof match !== 'object') return 'Other';
+        if (!match) return 'Other';
         
-        const searchText = this.getSearchText(match);
-        
-        // STEP 1: Detect specific sports by patterns
-        const detectedSport = this.detectSportByPatterns(searchText, match.match);
-        if (detectedSport) return detectedSport;
-        
-        // STEP 2: Use API sport value as fallback
-        const apiSport = match.sport || match.league || match.tournament || '';
-        return this.normalizeSportName(apiSport);
-    }
-
-    getSearchText(match) {
-        return [
-            match.match || '',
-            match.tournament || '',
-            match.league || '',
-            match.sport || '',
-            match.competition || ''
-        ].join(' ').toLowerCase();
-    }
-
-    detectSportByPatterns(searchText, matchName = '') {
-        // 1. Check for SOCCER first (most specific patterns)
-        if (this.isSoccer(searchText)) {
-            return 'Football';
+        // STEP 1: Check for College Football FIRST
+        if (this.isCollegeFootball(match)) {
+            return 'College Football'; // SEPARATE category
         }
         
-        // 2. Check for NFL (specific teams and terms)
-        if (this.isNFL(searchText)) {
-            return 'American Football';
+        // STEP 2: Check for NFL/American Football
+        if (this.isAmericanFootball(match)) {
+            return 'American Football'; // SEPARATE category  
         }
         
-        // 3. Check for COLLEGE FOOTBALL (conferences, bowls, terms)
-        if (this.isCollegeFootball(searchText)) {
-            return 'College Football';
-        }
-        
-        // 4. Generic "vs" pattern for American sports
-        if (this.isGenericAmericanSport(matchName, searchText)) {
-            return 'College Football'; // Default American sport with "vs"
-        }
-        
-        return null;
+        // STEP 3: Use API sport value
+        const sportFromApi = match.sport || 'Other';
+        return this.normalizeSportName(sportFromApi);
     }
 
-    isSoccer(searchText) {
-        // Check for known soccer leagues
-        const hasSoccerLeague = this.soccerPatterns.leagues.some(league => 
-            searchText.includes(league)
-        );
-        if (hasSoccerLeague) return true;
+    isCollegeFootball(match) {
+        if (!match?.match) return false;
         
-        // Check for known soccer teams
-        const hasSoccerTeam = this.soccerPatterns.teams.some(team => 
-            searchText.includes(team)
-        );
-        if (hasSoccerTeam) return true;
+        const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
         
-        // Check for soccer terms
-        const hasSoccerTerm = this.soccerPatterns.terms.some(term => 
-            searchText.includes(term)
-        );
+        // College Football indicators
+        const collegeIndicators = [
+            'college football', 'ncaa football', 'fbs', 'fcs',
+            'rose bowl', 'orange bowl', 'sugar bowl', 'cotton bowl',
+            'peach bowl', 'fiesta bowl', 'bowl game',
+            'big ten', 'sec', 'acc', 'pac-12', 'big 12'
+        ];
         
-        return hasSoccerTerm;
+        return collegeIndicators.some(indicator => 
+            searchString.includes(indicator)
+        );
     }
 
-    isNFL(searchText) {
-        // Check for NFL terms
-        const hasNFLTerm = this.nflPatterns.terms.some(term => 
-            searchText.includes(term)
+    isAmericanFootball(match) {
+        if (!match?.match) return false;
+        
+        const searchString = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+        
+        // NFL/American Football indicators
+        const nflIndicators = [
+            'nfl', 'super bowl', 'pro bowl',
+            'chiefs', 'eagles', 'patriots', 'packers', 'cowboys'
+        ];
+        
+        return nflIndicators.some(indicator => 
+            searchString.includes(indicator)
         );
-        if (hasNFLTerm) return true;
-        
-        // Check for NFL teams
-        const hasNFLTeam = this.nflPatterns.teams.some(team => 
-            searchText.includes(team)
-        );
-        
-        return hasNFLTeam;
-    }
-
-    isCollegeFootball(searchText) {
-        // Check for college conferences
-        const hasConference = this.collegePatterns.conferences.some(conf => 
-            searchText.includes(conf)
-        );
-        if (hasConference) return true;
-        
-        // Check for bowl games
-        const hasBowl = this.collegePatterns.bowls.some(bowl => 
-            searchText.includes(bowl)
-        );
-        if (hasBowl) return true;
-        
-        // Check for college terms
-        const hasCollegeTerm = this.collegePatterns.terms.some(term => 
-            searchText.includes(term)
-        );
-        
-        return hasCollegeTerm;
-    }
-
-    isGenericAmericanSport(matchName, searchText) {
-        if (!matchName) return false;
-        
-        // Look for "Team A vs Team B" pattern
-        const hasVsPattern = /.+\s+vs\s+.+/i.test(matchName);
-        if (!hasVsPattern) return false;
-        
-        // EXCLUDE if it has soccer indicators
-        const hasSoccerIndicator = this.soccerPatterns.leagues.some(league => 
-            searchText.includes(league)
-        ) || this.soccerPatterns.teams.some(team => 
-            searchText.includes(team)
-        );
-        
-        // If it has "vs" and NO soccer indicators, it's likely American sport
-        return !hasSoccerIndicator;
     }
 
     normalizeSportName(sport) {
-        if (!sport || typeof sport !== 'string') return 'Other';
+        if (!sport) return 'Other';
         
         const sportLower = sport.toLowerCase().trim();
         return this.sportMap[sportLower] || 'Other';
@@ -198,175 +85,113 @@ class SportsClassifier {
     getSportIcon(sport) {
         const icons = {
             'Football': '⚽',
-            'American Football': '🏈', 
+            'American Football': '🏈',
             'College Football': '🏈',
             'Basketball': '🏀',
             'Baseball': '⚾',
             'Ice Hockey': '🏒',
-            'Tennis': '🎾',
-            'Cricket': '🏏',
-            'Rugby': '🏉',
-            'Golf': '⛳',
-            'Boxing': '🥊',
-            'MMA': '🥋'
+            'Tennis': '🎾'
         };
         return icons[sport] || '🏆';
     }
 
     extractSportsFromData(apiData) {
-        if (!apiData?.events) return ['Other'];
+        if (!apiData?.events) return [];
         
         const sports = new Set();
-        
-        try {
-            Object.values(apiData.events).forEach(matches => {
-                if (Array.isArray(matches)) {
-                    matches.forEach(match => {
-                        const sport = this.classifySport(match);
-                        sports.add(sport);
-                    });
-                }
+        Object.values(apiData.events).forEach(matches => {
+            matches.forEach(match => {
+                const sport = this.classifySport(match);
+                sports.add(sport);
             });
-        } catch (error) {
-            console.error('Error extracting sports:', error);
-            return ['Other'];
-        }
+        });
         
         return Array.from(sports).sort();
     }
+}
 
-    // Process and categorize all matches
-    processMatches(matches) {
-        if (!Array.isArray(matches)) return [];
-        
-        return matches.map(match => {
-            const sport = this.classifySport(match);
-            const icon = this.getSportIcon(sport);
-            
-            return {
-                ...match,
-                classifiedSport: sport,
-                sportIcon: icon,
-                displaySport: sport
-            };
-        });
+// ==================== BULLETPROOF FILTER SYSTEM ====================
+class MatchFilter {
+    constructor() {
+        this.showLiveOnly = false;
+        this.currentSport = 'all';
     }
 
-    // Get matches by sport category
-    getMatchesBySport(matches, sport) {
-        const processed = this.processMatches(matches);
-        return processed.filter(match => match.classifiedSport === sport);
+    setFilter(type) {
+        try {
+            this.showLiveOnly = (type === 'live');
+            this.renderMatches();
+        } catch (error) {
+            console.log('Filter error - resetting');
+            this.showLiveOnly = false;
+            this.renderMatches();
+        }
+    }
+
+    setSportFilter(sport) {
+        this.currentSport = sport;
+        this.renderMatches();
+    }
+
+    filterMatches(matches) {
+        let filtered = matches;
+        
+        // Filter by sport
+        if (this.currentSport !== 'all') {
+            filtered = filtered.filter(match => {
+                const sport = this.classifySport(match);
+                return sport === this.currentSport;
+            });
+        }
+        
+        // Filter by live status
+        if (this.showLiveOnly) {
+            filtered = filtered.filter(match => match.status === 'live');
+        }
+        
+        return filtered;
+    }
+
+    renderMatches() {
+        // Your existing match rendering logic here
+        const filteredMatches = this.filterMatches(this.allMatches);
+        this.displayMatches(filteredMatches);
     }
 }
 
-// Match Processor - Use this in your main application
-class MatchProcessor {
-    constructor() {
-        this.classifier = new SportsClassifier();
-    }
-    
-    processApiData(apiData) {
-        if (!apiData?.events) return { sports: [], matches: [] };
-        
-        const allMatches = [];
-        const sports = new Set();
-        
-        // Flatten all matches from events
-        Object.values(apiData.events).forEach(matchGroup => {
-            if (Array.isArray(matchGroup)) {
-                matchGroup.forEach(match => {
-                    if (match && typeof match === 'object') {
-                        const processedMatch = this.classifier.classifySport(match);
-                        allMatches.push({
-                            original: match,
-                            classifiedSport: processedMatch,
-                            sportIcon: this.classifier.getSportIcon(processedMatch)
-                        });
-                        sports.add(processedMatch);
-                    }
-                });
-            }
-        });
+// ==================== USAGE EXAMPLE ====================
+// Initialize
+const sportsClassifier = new SportsClassifier();
+const matchFilter = new MatchFilter();
+
+// Process your matches
+function processMatches(matches) {
+    return matches.map(match => {
+        const sport = sportsClassifier.classifySport(match);
+        const icon = sportsClassifier.getSportIcon(sport);
         
         return {
-            sports: Array.from(sports).sort(),
-            matches: allMatches
+            ...match,
+            displaySport: sport,
+            sportIcon: icon
         };
-    }
-    
-    // Group matches by sport for display
-    groupMatchesBySport(matches) {
-        const grouped = {};
-        
-        matches.forEach(match => {
-            const sport = match.classifiedSport;
-            if (!grouped[sport]) {
-                grouped[sport] = [];
-            }
-            grouped[sport].push(match);
-        });
-        
-        return grouped;
-    }
-}
-
-// TEST FUNCTION - Verify it works with your matches
-function testClassifier() {
-    console.log('🧪 TESTING SPORTS CLASSIFIER');
-    console.log('============================');
-    
-    const classifier = new SportsClassifier();
-    
-    const testCases = [
-        // College Football cases
-        { match: "Arkansas State vs Southern Mississippi", sport: "football" },
-        { match: "Alabama vs Clemson", sport: "football" },
-        { match: "Rose Bowl: USC vs Penn State", sport: "football" },
-        { match: "SEC Championship", sport: "football" },
-        
-        // NFL cases
-        { match: "Kansas City Chiefs vs Philadelphia Eagles", sport: "american football" },
-        { match: "Super Bowl LVIII", sport: "american football" },
-        
-        // Soccer cases
-        { match: "Manchester United vs Liverpool", sport: "football", tournament: "Premier League" },
-        { match: "Real Madrid vs Barcelona", sport: "football" },
-        
-        // Unknown "vs" matches (should default to College Football)
-        { match: "Unknown Team A vs Unknown Team B", sport: "football" },
-        { match: "State University vs College Tigers", sport: "football" }
-    ];
-    
-    let results = {
-        'College Football': 0,
-        'American Football': 0,
-        'Football': 0,
-        'Other': 0
-    };
-    
-    testCases.forEach((test, index) => {
-        const result = classifier.classifySport(test);
-        results[result] = (results[result] || 0) + 1;
-        
-        console.log(`${index + 1}. "${test.match}"`);
-        console.log(`   API: "${test.sport}" → Classified: ${result} ${classifier.getSportIcon(result)}`);
     });
-    
-    console.log('============================');
-    console.log('📊 RESULTS:', results);
-    console.log('✅ Arkansas State vs Southern Mississippi should be College Football!');
 }
 
-// Export for different environments
+// Get available sports for filter buttons
+function getAvailableSports(apiData) {
+    return sportsClassifier.extractSportsFromData(apiData);
+}
+
+// Example usage:
+// const matches = processMatches(rawMatches);
+// const sports = getAvailableSports(apiData);
+// matchFilter.allMatches = matches;
+
+// Export for use
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SportsClassifier, MatchProcessor, testClassifier };
+    module.exports = { SportsClassifier, MatchFilter };
 } else {
     window.SportsClassifier = SportsClassifier;
-    window.MatchProcessor = MatchProcessor;
-    window.testClassifier = testClassifier;
-}
-
-// Auto-test in browser
-if (typeof window !== 'undefined') {
-    setTimeout(testClassifier, 500);
+    window.MatchFilter = MatchFilter;
 }
