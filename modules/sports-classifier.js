@@ -25,7 +25,7 @@ class SportsClassifier {
             'badminton': 'Badminton',
             'american football': 'American Football',
             'college football': 'American Football',
-            'College football': 'American Football',
+            'College Football': 'American Football',
             'ncaa football': 'American Football',
             'nfl': 'American Football',
             'handball': 'Handball',
@@ -36,7 +36,7 @@ class SportsClassifier {
         this.collegeFootballIndicators = [
             'middle tennessee', 'jacksonville state', 'college football', 
             'ncaa football', 'fbs', 'fcs', 'bowl game', 'cotton bowl',
-            'rose bowl', 'orange bowl','West Virginia','Colorado', 'sugar bowl'
+            'rose bowl', 'orange bowl','West Virginia','Colorado','Arkansas State', 'Southern Mississippi ', 'sugar bowl'
               
         ];
     }
