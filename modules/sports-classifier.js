@@ -25,6 +25,7 @@ class SportsClassifier {
             'badminton': 'Badminton',
             'american football': 'American Football',
             'college football': 'American Football',
+            'College football': 'American Football',
             'ncaa football': 'American Football',
             'nfl': 'American Football',
             'handball': 'Handball',
