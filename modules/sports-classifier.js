@@ -35,7 +35,8 @@ class SportsClassifier {
         this.collegeFootballIndicators = [
             'middle tennessee', 'jacksonville state', 'college football', 
             'ncaa football', 'fbs', 'fcs', 'bowl game', 'cotton bowl',
-            'rose bowl', 'orange bowl', 'sugar bowl'
+            'rose bowl', 'orange bowl','West Virginia','Colorado', 'sugar bowl'
+              
         ];
     }
 
