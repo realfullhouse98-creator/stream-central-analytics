@@ -467,13 +467,14 @@ class MatchScheduler {
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const channels = match.channels || [];
         const currentChannelIndex = this.streamManager.getCurrentChannelIndex(matchId);
-        let currentStreamUrl = channels[currentChannelIndex] || null;
+       let currentStreamUrl = channels[currentChannelIndex] || null;
 
-        // If this is a Streamed API URL, get the actual stream URL
-        if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
-            console.log('🔄 Detected Streamed API URL, fetching actual stream...');
-            currentStreamUrl = await this.streamManager.getStreamUrlFromStreamed(currentStreamUrl);
-        }
+// TRANSFORM ALL STREAM URLs to actual playable URLs
+if (currentStreamUrl) {
+    console.log('🔄 Transforming stream URL:', currentStreamUrl);
+    currentStreamUrl = await this.streamManager.getActualStreamUrl(currentStreamUrl);
+    console.log('✅ Transformed to:', currentStreamUrl);
+}
         
         const sourceDropdownHTML = this.streamManager.generateSourceDropdown(channels, matchId, currentChannelIndex);
         
