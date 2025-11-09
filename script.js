@@ -1,5 +1,4 @@
-// 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
-// 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
+// 9kilo Stream - COMPLETE WORKING VERSION WITH API FUSION
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -26,15 +25,129 @@ class MatchScheduler {
         this.preloadedSports = null;
         this.lastDataUpdate = null;
         
-        // Filter state - SIMPLE BOOLEAN ONLY
-        this.showLiveOnly = false; // false = All Matches, true = Live Only
+        // Filter state
+        this.showLiveOnly = false;
         
         // DOM ready state
         this.isDOMReady = false;
         
-        console.log('🚀 MatchScheduler initialized with Bulletproof Features!');
+        // ==================== STREAM PERSONALITIES ====================
+        this.streamPersonalities = {
+            'topembed': { 
+                name: 'Tom', 
+                color: '#3498db', 
+                emoji: '🔵',
+                fullName: 'TopEmbed'
+            },
+            'streamed': { 
+                name: 'Sarah', 
+                color: '#e74c3c', 
+                emoji: '🔴',
+                fullName: 'Streamed' 
+            },
+            'unknown': {
+                name: 'Mystery',
+                color: '#9b59b6',
+                emoji: '🟣', 
+                fullName: 'Unknown Source'
+            }
+        };
+        
+        console.log('🚀 MatchScheduler initialized with Streamed API!');
     }
     
+    // ==================== PERSONALITY METHODS ====================
+    detectSourceType(streamUrl) {
+        if (!streamUrl) return 'unknown';
+        if (streamUrl.includes('topembed')) return 'topembed';
+        if (streamUrl.includes('streamed.pk')) return 'streamed';
+        return 'unknown';
+    }
+
+    generatePersonalityLabel(sourceType, index) {
+        const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
+        return `${personality.emoji} ${personality.name} ${index + 1}`;
+    }
+
+    getSourceColor(sourceType) {
+        const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
+        return personality.color;
+    }
+
+    // ==================== STREAMED API METHODS ====================
+    async fetchFromStreamed(endpoint = 'all') {
+        try {
+            let url;
+            if (endpoint === 'live') {
+                url = 'https://streamed.pk/api/matches/live';
+            } else if (endpoint === 'today') {
+                url = 'https://streamed.pk/api/matches/all-today';
+            } else {
+                url = 'https://streamed.pk/api/matches/all';
+            }
+            
+            console.log('🔄 Fetching from Streamed:', url);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('HTTP error');
+            
+            const data = await response.json();
+            console.log('✅ Streamed data received:', data.length, 'matches');
+            return this.normalizeStreamedData(data);
+            
+        } catch (error) {
+            console.warn('❌ Streamed failed:', error);
+            throw error;
+        }
+    }
+
+    normalizeStreamedData(streamedData) {
+        const events = {};
+        
+        streamedData.forEach(match => {
+            const date = new Date(match.date).toISOString().split('T')[0];
+            
+            if (!events[date]) events[date] = [];
+            
+            let teamNames = match.title;
+            if (match.teams && match.teams.home && match.teams.away) {
+                teamNames = match.teams.home.name + ' - ' + match.teams.away.name;
+            }
+            
+            const channels = match.sources.map(source => 
+                'https://streamed.pk/api/stream/' + source.source + '/' + source.id
+            );
+            
+            events[date].push({
+                match: teamNames,
+                tournament: match.category,
+                sport: this.classifySport({ sport: match.category }),
+                unix_timestamp: Math.floor(match.date / 1000),
+                channels: channels,
+                streamedMatch: match
+            });
+        });
+        
+        return { events };
+    }
+
+    async getStreamUrlFromStreamed(streamApiUrl) {
+        try {
+            console.log('🔄 Getting actual stream URL from:', streamApiUrl);
+            const response = await fetch(streamApiUrl);
+            const streamData = await response.json();
+            console.log('📦 Stream data received:', streamData);
+            
+            if (streamData && streamData.length > 0 && streamData[0].embedUrl) {
+                console.log('✅ Found embed URL:', streamData[0].embedUrl);
+                return streamData[0].embedUrl;
+            }
+            return null;
+        } catch (error) {
+            console.warn('❌ Failed to get stream from Streamed:', error);
+            return null;
+        }
+    }
+
     async init() {
         await this.waitForDOMReady();
         this.setupGlobalErrorHandling();
@@ -57,7 +170,6 @@ class MatchScheduler {
             console.log('✅ TV Channels data loaded:', Object.keys(this.tvChannelsData).length, 'countries');
         } catch (error) {
             console.error('❌ Failed to load TV channels data:', error);
-            // Fallback to minimal data
             this.tvChannelsData = {
                 "South Africa": [
                     {
@@ -367,26 +479,25 @@ class MatchScheduler {
             return;
         }
 
-      const dateButton = e.target.closest('.date-button');
-if (dateButton) {
-    e.preventDefault();
-    e.stopPropagation();
-    const dateElement = dateButton.querySelector('.date-name');
-    if (dateElement) {
-        const dateText = dateElement.textContent;
-        const matches = this.verifiedMatches;
-        // ✅ FIXED: Proper date comparison
-        const match = matches.find(m => {
-            const displayDate = this.formatDisplayDate(m.date);
-            return displayDate === dateText || 
-                   (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
-        });
-        if (match) {
-            this.selectDate(match.date);
+        const dateButton = e.target.closest('.date-button');
+        if (dateButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dateElement = dateButton.querySelector('.date-name');
+            if (dateElement) {
+                const dateText = dateElement.textContent;
+                const matches = this.verifiedMatches;
+                const match = matches.find(m => {
+                    const displayDate = this.formatDisplayDate(m.date);
+                    return displayDate === dateText || 
+                           (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
+                });
+                if (match) {
+                    this.selectDate(match.date);
+                }
+            }
+            return;
         }
-    }
-    return;
-}
 
         const watchButton = e.target.closest('.watch-btn');
         if (watchButton) {
@@ -394,6 +505,10 @@ if (dateButton) {
             e.stopPropagation();
             const matchRow = watchButton.closest('.match-row');
             if (matchRow) {
+                const rowIndex = Array.from(matchRow.parentNode.children).indexOf(matchRow) - 1;
+                localStorage.setItem('lastScrollPosition', rowIndex);
+                console.log('📜 Saving scroll position:', rowIndex);
+
                 const teamNames = matchRow.querySelector('.team-names')?.textContent;
                 if (teamNames) {
                     const match = this.verifiedMatches.find(m => 
@@ -407,7 +522,7 @@ if (dateButton) {
             return;
         }
 
-        // BULLETPROOF FILTER BUTTONS
+        // Filter buttons
         const filterButton = e.target.closest('.filter-btn');
         if (filterButton) {
             e.preventDefault();
@@ -418,24 +533,24 @@ if (dateButton) {
         }
     }
 
-  handleBackButton() {
-    switch(this.currentView) {
-        case 'sports':
-            this.showMainMenu();
-            break;
-        case 'dates':
-            this.showSportsView();
-            break;
-        case 'matches':
-            this.showDatesView();
-            break;
-        case 'match-details':
-            this.showMatchesView();
-            break;
-        default:
-            this.showMainMenu();
+    handleBackButton() {
+        switch(this.currentView) {
+            case 'sports':
+                this.showMainMenu();
+                break;
+            case 'dates':
+                this.showSportsView();
+                break;
+            case 'matches':
+                this.showDatesView();
+                break;
+            case 'match-details':
+                this.showMatchesView();
+                break;
+            default:
+                this.showMainMenu();
+        }
     }
-}
 
     setupGlobalErrorHandling() {
         window.addEventListener('error', (e) => {
@@ -461,12 +576,11 @@ if (dateButton) {
     // ==================== BULLETPROOF FILTER SYSTEM ====================
     setFilter(type) {
         try {
-            // 🛡️ SIMPLE BOOLEAN LOGIC - IMPOSSIBLE TO BREAK
             this.showLiveOnly = (type === 'live');
             this.showMatchesView();
         } catch (error) {
             console.log('🛡️ Filter error - resetting to safe state');
-            this.showLiveOnly = false; // Reset to All Matches
+            this.showLiveOnly = false;
             this.showMatchesView();
         }
     }
@@ -540,16 +654,13 @@ if (dateButton) {
     async showSportsView() {
         console.log('🎯 Sports button clicked - Simplified version');
         
-        // 1. IMMEDIATE UI Response
         this.showSportsLoadingUI();
         
-        // 2. Safety timeout
         const safetyTimeout = setTimeout(() => {
             console.log('⚡ Safety timeout: Showing available data');
             this.showSportsDataUI();
         }, 3000);
         
-        // 3. Try to load fresh data
         try {
             const success = await this.ensureDataLoaded();
             clearTimeout(safetyTimeout);
@@ -589,6 +700,9 @@ if (dateButton) {
     }
 
     showSportsDataUI() {
+        console.log('🔍 ALL VERIFIED MATCHES:', this.verifiedMatches);
+        console.log('🔍 UNIQUE SPORTS FOUND:', [...new Set(this.verifiedMatches.map(m => m.sport))].sort());
+        
         if (!this.verifiedMatches || this.verifiedMatches.length === 0) {
             this.showSportsEmptyState();
             return;
@@ -597,7 +711,6 @@ if (dateButton) {
         const container = document.getElementById('dynamic-content');
         const uniqueSports = [...new Set(this.verifiedMatches.map(match => match.sport))];
         
-        // SIMPLIFIED: No counts, just sports
         const sports = uniqueSports.map(sportId => {
             return {
                 id: sportId,
@@ -648,7 +761,7 @@ if (dateButton) {
         `;
     }
 
-    // ==================== DATA LOADING (CACHE SYSTEM PRESERVED) ====================
+    // ==================== DATA LOADING ====================
     retryLoadMatches() {
         this.isDataLoaded = false;
         this.showSportsView();
@@ -682,12 +795,17 @@ if (dateButton) {
     }
 
     async loadMatches() {
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            console.log('📦 Using cached data');
-            this.organizeMatches(cachedData);
-            return;
-        }
+        console.log('🔄 loadMatches called - FORCING FRESH FUSION...');
+        
+        // TEMPORARY: SKIP CACHE to force fusion
+        // const cachedData = this.getCachedData();
+        // if (cachedData) {
+        //     console.log('📦 Using cached data');
+        //     this.organizeMatches(cachedData);
+        //     return;
+        // }
+        
+        console.log('🔥 CACHE BYPASSED - running fresh fusion...');
         
         try {
             const apiData = await this.tryAllProxies();
@@ -726,36 +844,81 @@ if (dateButton) {
     }
 
     async tryAllProxies() {
-        const targetUrl = 'https://topembed.pw/api.php?format=json';
+        console.log('🎯 tryAllProxies CALLED - starting API fusion...');
+        let topEmbedData = null;
+        let streamedData = null;
         
-        const proxyOptions = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            targetUrl
-        ];
-        
-        for (const proxyUrl of proxyOptions) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000);
-                
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    return await response.json();
-                }
-            } catch (error) {
-                console.warn(`Proxy failed: ${proxyUrl}`, error);
-                continue;
+        // Try to get data from BOTH APIs
+        try {
+            const topEmbedUrl = 'https://topembed.pw/api.php?format=json';
+            const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(topEmbedUrl);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch(proxyUrl, {
+                signal: controller.signal,
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                topEmbedData = await response.json();
+                console.log('✅ Tom data loaded:', Object.keys(topEmbedData.events || {}).length, 'days');
             }
+        } catch (error) {
+            console.log('❌ Tom failed, but continuing...');
         }
         
-        throw new Error('All proxy attempts failed');
+        try {
+            streamedData = await this.fetchFromStreamed('all');
+            console.log('✅ Sarah data loaded:', Object.keys(streamedData.events || {}).length, 'days');
+        } catch (error) {
+            console.log('❌ Sarah failed, but continuing...');
+        }
+        
+        // FUSE THE DATA: Combine both sources
+        return this.fuseAPIData(topEmbedData, streamedData);
+    }
+
+    // NEW METHOD: Combine data from both APIs
+    fuseAPIData(tomData, sarahData) {
+        console.log('🔗 Fusing Tom & Sarah data...');
+        
+        const fusedData = { events: {} };
+        
+        // Add all Tom data
+        if (tomData && tomData.events) {
+            Object.entries(tomData.events).forEach(([date, matches]) => {
+                if (!fusedData.events[date]) fusedData.events[date] = [];
+                fusedData.events[date].push(...matches);
+                console.log(`📅 Tom added ${matches.length} matches for ${date}`);
+            });
+        }
+        
+        // Add all Sarah data (avoid duplicates)
+        if (sarahData && sarahData.events) {
+            Object.entries(sarahData.events).forEach(([date, matches]) => {
+                if (!fusedData.events[date]) fusedData.events[date] = [];
+                
+                // Simple duplicate detection - by match title
+                const existingTitles = new Set(fusedData.events[date].map(m => m.match));
+                
+                matches.forEach(match => {
+                    if (!existingTitles.has(match.match)) {
+                        fusedData.events[date].push(match);
+                    }
+                });
+                
+                console.log(`📅 Sarah added ${matches.length} matches for ${date}`);
+            });
+        }
+        
+        const totalMatches = Object.values(fusedData.events).flat().length;
+        console.log(`🎉 Fusion complete: ${totalMatches} total matches from both APIs`);
+        
+        return fusedData;
     }
 
     useFallbackData() {
@@ -908,10 +1071,11 @@ if (dateButton) {
 
     async showMatchesView() {
         console.log('🔍 showMatchesView called with:', {
-        sport: this.currentSport,
-        date: this.currentDate,
-        showLiveOnly: this.showLiveOnly
-    });
+            sport: this.currentSport,
+            date: this.currentDate,
+            showLiveOnly: this.showLiveOnly
+        });
+        
         await this.ensureDataLoaded();
         const container = document.getElementById('dynamic-content');
         if (!container) return;
@@ -920,24 +1084,13 @@ if (dateButton) {
         const sportName = this.currentSport;
         const today = new Date().toISOString().split('T')[0];
         const isToday = this.currentDate === today;
-
-            // ✅ ADD DEBUG HERE:
-    console.log('🔍 Date check:', {
-        currentDate: this.currentDate,
-        today: today,
-        isToday: isToday,
-        sportName: sportName
-    });
         
-        // 🛡️ BULLETPROOF FILTER LOGIC
         const allMatches = matches;
         const liveMatches = allMatches.filter(match => match.isLive === true);
         
-        // Always use fresh data - no caching of filtered results
         const displayMatches = this.showLiveOnly ? liveMatches : allMatches;
         
-        // SIMPLIFIED HEADER
-        const scheduleHeader = `Today's ${sportName}`; // Force the correct title
+        const scheduleHeader = `Today's ${sportName}`;
         
         container.innerHTML = `
             <div class="content-section">
@@ -951,7 +1104,6 @@ if (dateButton) {
                 </div>
                 
                 <div class="matches-table-container">
-                    <!-- 🎯 PROFESSIONAL FILTER BUTTONS - TOP RIGHT CORNER -->
                     <div class="professional-filter">
                         <button class="filter-btn ${this.showLiveOnly ? '' : 'active'}" 
                                 data-filter="all" onclick="matchScheduler.setFilter('all')">
@@ -977,7 +1129,7 @@ if (dateButton) {
                 </div>
             </div>
         `;
-        
+
         this.hideStats();
         this.currentView = 'matches';
     }
@@ -1026,10 +1178,11 @@ if (dateButton) {
         }
     }
 
-    // ==================== FIXED MATCH DETAILS (MULTI-SOURCE PRESERVED) ====================
+    // ==================== FIXED MATCH DETAILS WITH STREAMED SUPPORT ====================
     async showMatchDetails(matchId) {
-        console.log('🎯 showMatchDetails called - setting currentView to match-details');
-    this.currentView = 'match-details'; // Force the correct view state
+        console.log('🎯 showMatchDetails called');
+        this.currentView = 'match-details';
+        
         await this.ensureDataLoaded();
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
@@ -1041,7 +1194,13 @@ if (dateButton) {
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const channels = match.channels || [];
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const currentStreamUrl = channels[currentChannelIndex] || null;
+        let currentStreamUrl = channels[currentChannelIndex] || null;
+
+        // If this is a Streamed API URL, get the actual stream URL
+        if (currentStreamUrl && currentStreamUrl.includes('streamed.pk/api/stream')) {
+            console.log('🔄 Detected Streamed API URL, fetching actual stream...');
+            currentStreamUrl = await this.getStreamUrlFromStreamed(currentStreamUrl);
+        }
         
         const channelSelectorHTML = this.generateChannelSelector(channels, matchId);
         
@@ -1106,7 +1265,6 @@ if (dateButton) {
                         </div>
                     </div>
                     
-                    <!-- ✅ CRITICAL FIX: ADDED BACK THE MISSING FOOTER -->
                     <footer class="dashboard-footer">
                         <div class="footer-legal">
                             <p class="copyright">© 2025 9KILOS. All rights reserved.</p>
@@ -1129,21 +1287,25 @@ if (dateButton) {
 
     generateChannelSelector(channels, matchId) {
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const hasMultipleChannels = channels.length > 1;
         
-        if (!hasMultipleChannels || channels.length === 0) {
+        if (channels.length === 0) {
             return '';
         }
         
-        if (channels.length <= 2) {
+        if (channels.length <= 4) {
             return `
                 <div class="channel-buttons-inline">
-                    ${channels.map((channel, index) => `
-                        <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
-                                onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                            Source ${index + 1}
-                        </button>
-                    `).join('')}
+                    ${channels.map((channel, index) => {
+                        const sourceType = this.detectSourceType(channel);
+                        const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+                        return `
+                            <button class="channel-btn-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                    onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                    style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+                                ${personalityLabel}
+                            </button>
+                        `;
+                    }).join('')}
                 </div>
             `;
         }
@@ -1154,12 +1316,17 @@ if (dateButton) {
                     Source ${currentChannelIndex + 1} of ${channels.length}
                 </button>
                 <div class="channel-dropdown-content-inline" id="dropdown-${matchId}">
-                    ${channels.map((channel, index) => `
-                        <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
-                             onclick="matchScheduler.switchChannel('${matchId}', ${index})">
-                            Source ${index + 1}
-                        </div>
-                    `).join('')}
+                    ${channels.map((channel, index) => {
+                        const sourceType = this.detectSourceType(channel);
+                        const personalityLabel = this.generatePersonalityLabel(sourceType, index);
+                        return `
+                            <div class="channel-dropdown-item-inline ${index === currentChannelIndex ? 'active' : ''}" 
+                                 onclick="matchScheduler.switchChannel('${matchId}', ${index})"
+                                 style="border-left: 3px solid ${this.getSourceColor(sourceType)}">
+                                ${personalityLabel}
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;
@@ -1170,41 +1337,41 @@ if (dateButton) {
         this.showMatchDetails(matchId);
     }
     
-   toggleDropdown(matchId) {
-    try {
-        console.log('🔧 toggleDropdown called for:', matchId);
-        const dropdown = document.getElementById(`dropdown-${matchId}`);
-        
-        if (!dropdown) {
-            console.error('❌ Dropdown not found for:', matchId);
-            return;
-        }
-        
-        const button = dropdown.previousElementSibling;
-        
-        if (!button) {
-            console.error('❌ Button not found for dropdown:', matchId);
-            return;
-        }
-        
-        if (dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show');
-            button.classList.remove('open');
-        } else {
-            document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
-                dd.classList.remove('show');
-                if (dd.previousElementSibling) {
-                    dd.previousElementSibling.classList.remove('open');
-                }
-            });
+    toggleDropdown(matchId) {
+        try {
+            console.log('🔧 toggleDropdown called for:', matchId);
+            const dropdown = document.getElementById(`dropdown-${matchId}`);
             
-            dropdown.classList.add('show');
-            button.classList.add('open');
+            if (!dropdown) {
+                console.error('❌ Dropdown not found for:', matchId);
+                return;
+            }
+            
+            const button = dropdown.previousElementSibling;
+            
+            if (!button) {
+                console.error('❌ Button not found for dropdown:', matchId);
+                return;
+            }
+            
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                button.classList.remove('open');
+            } else {
+                document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dd => {
+                    dd.classList.remove('show');
+                    if (dd.previousElementSibling) {
+                        dd.previousElementSibling.classList.remove('open');
+                    }
+                });
+                
+                dropdown.classList.add('show');
+                button.classList.add('open');
+            }
+        } catch (error) {
+            console.error('❌ toggleDropdown crashed:', error);
         }
-    } catch (error) {
-        console.error('❌ toggleDropdown crashed:', error);
     }
-}
 
     refreshCurrentStream(matchId) {
         const match = this.verifiedMatches.find(m => m.id === matchId);
@@ -1318,7 +1485,7 @@ if (dateButton) {
         if (!match.unix_timestamp) return false;
         const now = Math.floor(Date.now() / 1000);
         const matchTime = match.unix_timestamp;
-        return now >= matchTime && now <= (matchTime + 10800); // 3-hour live window
+        return now >= matchTime && now <= (matchTime + 10800);
     }
 
     formatTeamNames(teamString) {
@@ -1488,11 +1655,11 @@ if (dateButton) {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM fully loaded, initializing Bulletproof MatchScheduler...');
+    console.log('🎯 DOM fully loaded, initializing MatchScheduler with Streamed API...');
     try {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
-            console.log('✅ 9kilos Bulletproof Version fully initialized!');
+            console.log('✅ 9kilos with Streamed API fully initialized!');
         }).catch(error => {
             console.error('❌ Initialization failed:', error);
         });
@@ -1500,6 +1667,26 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Critical initialization error:', error);
     }
 });
+
+// TEST STREAMED API
+setTimeout(() => {
+    console.log('🧪 Testing Streamed API...');
+    if (window.matchScheduler) {
+        window.matchScheduler.fetchFromStreamed('all')
+            .then(data => console.log('🎉 Streamed test successful!'))
+            .catch(err => console.log('💥 Streamed test failed:', err));
+    }
+}, 5000);
+
+// TEST PERSONALITY SYSTEM
+setTimeout(() => {
+    console.log('🎭 Testing personality system...');
+    if (window.matchScheduler) {
+        console.log('Tom:', window.matchScheduler.generatePersonalityLabel('topembed', 0));
+        console.log('Sarah:', window.matchScheduler.generatePersonalityLabel('streamed', 0));
+        console.log('Mystery:', window.matchScheduler.generatePersonalityLabel('unknown', 0));
+    }
+}, 6000);
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
