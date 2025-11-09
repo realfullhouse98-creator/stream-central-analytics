@@ -113,6 +113,10 @@ class Utils {
                 });
         }
     }
+
+    static validateSport(sport) {
+        return sport && sport !== 'Other' && sport !== '' && sport !== 'null' && sport !== 'undefined';
+    }
 }
 
 // Export for use in other modules
