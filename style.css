@@ -1326,32 +1326,45 @@ body {
 }
 /* ==================== SOURCE DROPDOWN STYLES ==================== */
 .source-dropdown {
-    background: rgba(255, 255, 255, 0.1);
+    background: white;
     border: 1px solid var(--border-light);
-    color: var(--text-primary);
-    padding: 8px 12px;
-    border-radius: 8px;
+    color: black;
+    padding: 6px 10px;
+    border-radius: 6px;
     font-size: 0.9em;
     cursor: pointer;
-    min-width: 150px;
-    backdrop-filter: blur(15px);
+    min-width: 140px;
+    margin-left: 8px;
 }
 
 .source-dropdown option {
-    background: var(--modal-bg);
-    color: var(--text-primary);
+    background: white;
+    color: black;
+    padding: 8px;
+}
+
+.source-dropdown option:checked {
+    background: #9b59b6 !important;
+    color: #ff0000 !important;
 }
 
 .source-dropdown:hover {
     border-color: var(--accent-gold);
 }
 
+/* Dynamic match info box */
+.match-description {
+    width: fit-content !important;
+    max-width: 100% !important;
+}
+
 /* Mobile optimizations for source dropdown */
 @media (max-width: 768px) {
     .source-dropdown {
-        padding: 6px 10px;
+        padding: 4px 8px;
         font-size: 0.8em;
-        min-width: 130px;
+        min-width: 120px;
+        margin-left: 6px;
     }
 }
 /* Ensure background consistency across all devices */
