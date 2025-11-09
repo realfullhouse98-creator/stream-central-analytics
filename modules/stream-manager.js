@@ -31,6 +31,7 @@ class StreamManager {
         if (streamUrl.includes('streamed.pk') || streamUrl.includes('embedsports.top')) return 'streamed';
         return 'unknown';
     }
+    console.log('🔍 DETECTING SOURCE TYPE:', streamUrl, '->', result);
 
     getPersonality(sourceType, index) {
         const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
@@ -69,8 +70,15 @@ async getStreamUrlFromStreamed(streamApiUrl) {
 
     generateSourceDropdown(channels, matchId, currentChannelIndex) {
         if (channels.length === 0) {
-            return '';
+    return '';
         }
+        
+        console.log('🔍 GENERATING DROPDOWN OPTIONS:');
+        channels.forEach((channel, index) => {
+            const sourceType = this.detectSourceType(channel);
+            const personality = this.getPersonality(sourceType, index);
+            console.log(`   ${index}: ${channel} -> ${personality.label}`);
+        });
         
         return `
             <div class="source-selector">
