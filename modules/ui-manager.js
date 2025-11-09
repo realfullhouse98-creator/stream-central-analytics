@@ -33,33 +33,31 @@ class UIManager {
         this.scheduler.currentView = 'main';
     }
 
-  showSportsView() {
-    console.log('🎯 Sports button clicked');
-    
-    // CHECK IF WE ALREADY HAVE DATA - SHOW IT IMMEDIATELY!
-    if (this.scheduler.verifiedMatches.length > 0) {
-        console.log('🚀 Already have data, showing immediately!');
-        this.showSportsDataUI();
-        return; // STOP HERE - don't show loading screen!
+    showSportsView() {
+        console.log('🎯 Sports button clicked');
+        
+        // CHECK IF WE ALREADY HAVE DATA - SHOW IT IMMEDIATELY!
+        if (this.scheduler.verifiedMatches.length > 0) {
+            console.log('🚀 Already have data, showing immediately!');
+            this.showSportsDataUI();
+            return;
+        }
+        
+        this.showSportsLoadingUI();
+        
+        const safetyTimeout = setTimeout(() => {
+            console.log('⚡ Safety timeout: Showing available data');
+            this.showSportsDataUI();
+        }, 2000);
+        
+        this.scheduler.ensureDataLoaded().then(success => {
+            clearTimeout(safetyTimeout);
+            this.showSportsDataUI();
+        }).catch(error => {
+            clearTimeout(safetyTimeout);
+            this.showSportsDataUI();
+        });
     }
-    
-    // Only show loading if we have NO data
-    this.showSportsLoadingUI();
-    
-    // Wait max 2 seconds, then show whatever we have
-    const safetyTimeout = setTimeout(() => {
-        console.log('⚡ Safety timeout: Showing available data');
-        this.showSportsDataUI();
-    }, 2000);
-    
-    this.scheduler.ensureDataLoaded().then(success => {
-        clearTimeout(safetyTimeout);
-        this.showSportsDataUI();
-    }).catch(error => {
-        clearTimeout(safetyTimeout);
-        this.showSportsDataUI();
-    });
-}
 
     showSportsLoadingUI() {
         const container = document.getElementById('dynamic-content');
@@ -97,16 +95,10 @@ class UIManager {
         }
         
         const uniqueSports = [...new Set(matches.map(match => match.sport))];
-       const sports = uniqueSports.map(sportId => ({
-    id: sportId,
-    name: sportId
-})).filter(sport => sport.name && sport.name !== 'Other' && sport.name !== 'Sports').sort((a, b) => a.name.localeCompare(b.name));
-
-// IF NO SPORTS FOUND, SHOW FALLBACK
-if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
-    // Show "Sports" as fallback category
-    sports.push({ id: 'Sports', name: 'Sports' });
-}
+        const sports = uniqueSports.map(sportId => ({
+            id: sportId,
+            name: sportId
+        })).filter(sport => sport.name && sport.name !== 'Other').sort((a, b) => a.name.localeCompare(b.name));
 
         if (sports.length === 0) {
             this.showSportsEmptyState();
@@ -126,7 +118,7 @@ if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
-                        <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id.replace(/'/g, "\\'")}')">
+                        <div class="sport-button" onclick="window.matchScheduler.selectSport('${sport.id.replace(/'/g, "\\'")}')">
                             <div class="sport-name">${sport.name}</div>
                         </div>
                     `).join('')}
@@ -150,7 +142,7 @@ if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
                     <p>select</p>
                 </div>
                 <div class="sports-grid">
-                    <div class="sport-button" onclick="matchScheduler.retryLoadMatches()" style="cursor: pointer;">
+                    <div class="sport-button" onclick="window.matchScheduler.retryLoadMatches()" style="cursor: pointer;">
                         <div class="sport-name">Retry Loading</div>
                     </div>
                 </div>
@@ -181,7 +173,7 @@ if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
                     ${dates.map(date => {
                         const isToday = date === today;
                         return `
-                            <div class="date-button" onclick="matchScheduler.selectDate('${date}')">
+                            <div class="date-button" onclick="window.matchScheduler.selectDate('${date}')">
                                 <div class="date-name">
                                     ${isToday ? '<span class="today-badge">Today</span>' : this.scheduler.formatDisplayDate(date)}
                                 </div>
@@ -227,11 +219,11 @@ if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
                 <div class="matches-table-container">
                     <div class="professional-filter">
                         <button class="filter-btn ${this.scheduler.showLiveOnly ? '' : 'active'}" 
-                                data-filter="all" onclick="matchScheduler.setFilter('all')">
+                                data-filter="all" onclick="window.matchScheduler.setFilter('all')">
                             All Matches
                         </button>
                         <button class="filter-btn ${this.scheduler.showLiveOnly ? 'active' : ''}" 
-                                data-filter="live" onclick="matchScheduler.setFilter('live')">
+                                data-filter="live" onclick="window.matchScheduler.setFilter('live')">
                             Live Only
                         </button>
                     </div>
@@ -268,7 +260,7 @@ if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
                 </div>
                 <div class="watch-action">
                     ${match.channels && match.channels.length > 0 ? 
-                        `<button class="watch-btn ${isLive ? 'live' : ''}" onclick="matchScheduler.showMatchDetails('${match.id}')">
+                        `<button class="watch-btn ${isLive ? 'live' : ''}" onclick="window.matchScheduler.showMatchDetails('${match.id}')">
                             ${isLive ? 'LIVE' : 'WATCH'}
                         </button>` :
                         '<span style="color: var(--text-muted); font-size: 0.8em;">OFFLINE</span>'
@@ -284,7 +276,7 @@ if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
                 <div class="no-matches">
                     <h3>No Live Matches Right Now</h3>
                     <p>Check back later for live games</p>
-                    <button class="retry-btn" onclick="matchScheduler.setFilter('all')">
+                    <button class="retry-btn" onclick="window.matchScheduler.setFilter('all')">
                         View All Matches
                     </button>
                 </div>
