@@ -871,29 +871,29 @@ class MatchScheduler {
         }
     }
 
-    showSportsView() {
-        console.log('🎯 Sports button clicked - Multi-source version');
-        this.showSportsLoadingUI();
+  async showSportsView() {
+    console.log('🎯 Sports button clicked - Multi-source version');
+    this.showSportsLoadingUI();
+    
+    const safetyTimeout = setTimeout(() => {
+        console.log('⚡ Safety timeout: Showing available data');
+        this.showSportsDataUI();
+    }, 3000);
+    
+    try {
+        const success = await this.ensureDataLoaded();
+        clearTimeout(safetyTimeout);
         
-        const safetyTimeout = setTimeout(() => {
-            console.log('⚡ Safety timeout: Showing available data');
+        if (success) {
             this.showSportsDataUI();
-        }, 3000);
-        
-        try {
-            const success = await this.ensureDataLoaded();
-            clearTimeout(safetyTimeout);
-            
-            if (success) {
-                this.showSportsDataUI();
-            } else {
-                this.showSportsDataUI();
-            }
-        } catch (error) {
-            clearTimeout(safetyTimeout);
+        } else {
             this.showSportsDataUI();
         }
+    } catch (error) {
+        clearTimeout(safetyTimeout);
+        this.showSportsDataUI();
     }
+}
 
     showSportsLoadingUI() {
         const container = document.getElementById('dynamic-content');
