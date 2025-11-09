@@ -1,16 +1,14 @@
-// Data Fusion Module - Combines data from multiple APIs
+// Data Fusion Module - FIXED CLASSIFICATION FLOW
 class DataFusion {
     constructor() {
         this.cacheKey = '9kilos-matches-cache';
-        this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+        this.cacheTimeout = 5 * 60 * 1000;
         this.isLoading = false;
-        this.sportsClassifier = new SportsClassifier(); // Add classifier instance
     }
 
     async loadMatches() {
         console.log('🔄 DataFusion: Loading matches...');
         
-        // Try cache first
         const cachedData = this.getCachedData();
         if (cachedData) {
             console.log('📦 Using cached data');
@@ -63,7 +61,7 @@ class DataFusion {
             console.log('❌ Sarah failed, but continuing...');
         }
         
-        // Fuse the data with sports classification
+        // Fuse the data
         return this.fuseAPIData(topEmbedData, streamedData);
     }
 
@@ -123,27 +121,20 @@ class DataFusion {
     }
 
     fuseAPIData(tomData, sarahData) {
-        console.log('🔗 Fusing Tom & Sarah data with sports classification...');
+        console.log('🔗 Fusing Tom & Sarah data...');
         
         const fusedData = { events: {} };
         
-        // Add all Tom data with sports classification
+        // Add all Tom data
         if (tomData && tomData.events) {
             Object.entries(tomData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
-                
-                // CLASSIFY SPORTS FOR TOM DATA
-                const classifiedMatches = matches.map(match => ({
-                    ...match,
-                    sport: this.sportsClassifier.classifySport(match) // Fix: Classify during fusion
-                }));
-                
-                fusedData.events[date].push(...classifiedMatches);
-                console.log(`📅 Tom added ${classifiedMatches.length} matches for ${date}`);
+                fusedData.events[date].push(...matches);
+                console.log(`📅 Tom added ${matches.length} matches for ${date}`);
             });
         }
         
-        // Add all Sarah data with sports classification (avoid duplicates)
+        // Add all Sarah data (avoid duplicates)
         if (sarahData && sarahData.events) {
             Object.entries(sarahData.events).forEach(([date, matches]) => {
                 if (!fusedData.events[date]) fusedData.events[date] = [];
@@ -152,12 +143,7 @@ class DataFusion {
                 
                 matches.forEach(match => {
                     if (!existingTitles.has(match.match)) {
-                        // CLASSIFY SPORTS FOR SARAH DATA TOO
-                        const classifiedMatch = {
-                            ...match,
-                            sport: this.sportsClassifier.classifySport(match) // Fix: Classify during fusion
-                        };
-                        fusedData.events[date].push(classifiedMatch);
+                        fusedData.events[date].push(match);
                     }
                 });
                 
@@ -167,13 +153,6 @@ class DataFusion {
         
         const totalMatches = Object.values(fusedData.events).flat().length;
         console.log(`🎉 Fusion complete: ${totalMatches} total matches from both APIs`);
-        
-        // Log unique sports for debugging
-        const allSports = new Set();
-        Object.values(fusedData.events).forEach(matches => {
-            matches.forEach(match => allSports.add(match.sport));
-        });
-        console.log('🔍 Unique sports after fusion:', Array.from(allSports).sort());
         
         return fusedData;
     }
