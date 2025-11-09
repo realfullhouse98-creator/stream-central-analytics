@@ -33,23 +33,33 @@ class UIManager {
         this.scheduler.currentView = 'main';
     }
 
-    showSportsView() {
-        console.log('🎯 Sports button clicked');
-        
-        this.showSportsLoadingUI();
-        
-        const safetyTimeout = setTimeout(() => {
-            this.showSportsDataUI();
-        }, 3000);
-        
-        this.scheduler.ensureDataLoaded().then(success => {
-            clearTimeout(safetyTimeout);
-            this.showSportsDataUI();
-        }).catch(error => {
-            clearTimeout(safetyTimeout);
-            this.showSportsDataUI();
-        });
+  showSportsView() {
+    console.log('🎯 Sports button clicked');
+    
+    // CHECK IF WE ALREADY HAVE DATA - SHOW IT IMMEDIATELY!
+    if (this.scheduler.verifiedMatches.length > 0) {
+        console.log('🚀 Already have data, showing immediately!');
+        this.showSportsDataUI();
+        return; // STOP HERE - don't show loading screen!
     }
+    
+    // Only show loading if we have NO data
+    this.showSportsLoadingUI();
+    
+    // Wait max 2 seconds, then show whatever we have
+    const safetyTimeout = setTimeout(() => {
+        console.log('⚡ Safety timeout: Showing available data');
+        this.showSportsDataUI();
+    }, 2000);
+    
+    this.scheduler.ensureDataLoaded().then(success => {
+        clearTimeout(safetyTimeout);
+        this.showSportsDataUI();
+    }).catch(error => {
+        clearTimeout(safetyTimeout);
+        this.showSportsDataUI();
+    });
+}
 
     showSportsLoadingUI() {
         const container = document.getElementById('dynamic-content');
