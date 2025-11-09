@@ -40,23 +40,32 @@ class StreamManager {
         };
     }
 
-    async getStreamUrlFromStreamed(streamApiUrl) {
-        try {
-            console.log('🔄 Getting actual stream URL from:', streamApiUrl);
-            const response = await fetch(streamApiUrl);
-            const streamData = await response.json();
-            console.log('📦 Stream data received:', streamData);
-            
-            if (streamData && streamData.length > 0 && streamData[0].embedUrl) {
-                console.log('✅ Found embed URL:', streamData[0].embedUrl);
-                return streamData[0].embedUrl;
-            }
-            return null;
-        } catch (error) {
-            console.warn('❌ Failed to get stream from Streamed:', error);
-            return null;
-        }
+  async getActualStreamUrl(streamUrl) {
+    // If it's a Streamed API URL, transform it to real stream
+    if (streamUrl.includes('streamed.pk/api/stream')) {
+        return await this.getStreamUrlFromStreamed(streamUrl);
     }
+    // If it's already a direct URL, use it as is
+    return streamUrl;
+}
+
+async getStreamUrlFromStreamed(streamApiUrl) {
+    try {
+        console.log('🔄 Getting actual stream URL from:', streamApiUrl);
+        const response = await fetch(streamApiUrl);
+        const streamData = await response.json();
+        console.log('📦 Stream data received:', streamData);
+        
+        if (streamData && streamData.length > 0 && streamData[0].embedUrl) {
+            console.log('✅ Found embed URL:', streamData[0].embedUrl);
+            return streamData[0].embedUrl;
+        }
+        return null;
+    } catch (error) {
+        console.warn('❌ Failed to get stream from Streamed:', error);
+        return null;
+    }
+}
 
     generateSourceDropdown(channels, matchId, currentChannelIndex) {
         if (channels.length === 0) {
