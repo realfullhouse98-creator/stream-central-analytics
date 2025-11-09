@@ -1324,47 +1324,34 @@ body {
         font-size: 0.65em;
     }
 }
-/* ==================== MULTI-SOURCE STYLES ==================== */
-.source-indicator {
-    color: #9b59b6;
-    font-weight: 600;
-    font-size: 0.8em;
-    margin-left: 8px;
-}
-
+/* ==================== SOURCE DROPDOWN STYLES ==================== */
 .source-dropdown {
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 0.8em;
-    margin-left: 10px;
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
     cursor: pointer;
-    min-width: 140px;
+    min-width: 150px;
+    backdrop-filter: blur(15px);
 }
 
 .source-dropdown option {
-    background: #0f172a;
-    color: white;
+    background: var(--modal-bg);
+    color: var(--text-primary);
 }
 
 .source-dropdown:hover {
-    border-color: #9b59b6;
+    border-color: var(--accent-gold);
 }
 
-/* Mobile optimizations for source indicators */
+/* Mobile optimizations for source dropdown */
 @media (max-width: 768px) {
-    .source-indicator {
-        font-size: 0.7em;
-        margin-left: 6px;
-    }
-    
     .source-dropdown {
-        padding: 4px 8px;
-        font-size: 0.7em;
-        min-width: 120px;
-        margin-left: 8px;
+        padding: 6px 10px;
+        font-size: 0.8em;
+        min-width: 130px;
     }
 }
 /* Ensure background consistency across all devices */
