@@ -104,8 +104,8 @@ class MatchScheduler {
         const tvData = this.getTVChannelsData();
         const channels = tvData[country] || [];
 
-        console.log('🔍 ALL CHANNELS FOR THIS MATCH:', channels);
-console.log('🔍 SARAH CHANNELS:', channels.filter(url => url.includes('streamed.pk') || url.includes('embedsports.top')));
+        
+
         
         container.innerHTML = `
             <div class="content-section">
@@ -470,6 +470,9 @@ console.log('🔍 SARAH CHANNELS:', channels.filter(url => url.includes('streame
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const channels = match.channels || [];
         const currentChannelIndex = this.streamManager.getCurrentChannelIndex(matchId);
+        // ✅ ADD DEBUG CODE HERE:
+console.log('🔍 ALL CHANNELS FOR THIS MATCH:', channels);
+console.log('🔍 SARAH CHANNELS:', channels.filter(url => url.includes('streamed.pk') || url.includes('embedsports.top')));
        let currentStreamUrl = channels[currentChannelIndex] || null;
 
 // TRANSFORM ALL STREAM URLs to actual playable URLs
