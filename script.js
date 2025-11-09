@@ -17,7 +17,7 @@ class MatchScheduler {
         this.tvChannelsData = null;
         
         // Source selection state
-        this.selectedSource = localStorage.getItem('9kilos-selected-source') || 'tom';
+        this.selectedSource = localStorage.getItem('9kilos-selected-source') || 'tom-0';
         
         // Optimization Flags
         this.isDataLoaded = false;
@@ -703,7 +703,7 @@ if (dateButton) {
     }
 
     async tryAllProxies() {
-        const targetUrl = this.selectedSource === 'tom' 
+        const targetUrl = this.selectedSource.includes('tom') 
             ? 'https://topembed.pw/api.php?format=json'
             : 'https://streamed.pk/api.php?format=json';
         
@@ -747,14 +747,14 @@ if (dateButton) {
                         tournament: '9kilos Demo League',
                         sport: 'Football',
                         unix_timestamp: now + 3600,
-                        channels: ['https://example.com/stream1', 'https://example.com/stream2']
+                        channels: ['https://example.com/tom1', 'https://example.com/tom2', 'https://example.com/tom3']
                     },
                     {
                         match: 'Demo United - Test City FC',
                         tournament: 'Research Championship',
                         sport: 'Football', 
                         unix_timestamp: now - 1800,
-                        channels: ['https://example.com/stream1']
+                        channels: ['https://example.com/tom1']
                     }
                 ]
             }
@@ -1022,8 +1022,10 @@ if (dateButton) {
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
         const currentStreamUrl = channels[currentChannelIndex] || null;
         
-        // Generate source options
-        const sourceOptions = this.generateSourceOptions(match);
+        // Generate ALL sources for this match
+        const allSources = this.getAllSourcesForMatch(match);
+        const totalSources = allSources.length;
+        const sourceText = totalSources === 1 ? 'source' : 'sources';
         
         container.innerHTML = `
             <div class="match-details-overlay">
@@ -1052,9 +1054,13 @@ if (dateButton) {
                                 ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span> • ' : ''}
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                 <span style="color: var(--text-muted);"> • ${match.league}</span>
-                                <span style="color: var(--accent-gold);"> • sources</span>
-                                <select class="source-dropdown" onchange="matchScheduler.switchSource(this.value)">
-                                    ${sourceOptions}
+                                <span style="color: var(--accent-gold); font-weight: 600;"> • ${totalSources} ${sourceText}</span>
+                                <select class="source-dropdown" onchange="matchScheduler.switchSource('${matchId}', this.value)">
+                                    ${allSources.map((source, index) => `
+                                        <option value="${source.value}" ${source.value === this.selectedSource ? 'selected' : ''}>
+                                            ${source.label}
+                                        </option>
+                                    `).join('')}
                                 </select>
                             </div>
                             
@@ -1100,37 +1106,51 @@ if (dateButton) {
         this.incrementViews(matchId);
     }
 
-    generateSourceOptions(match) {
-        const tomOptions = match.channels && match.channels.length > 0 
-            ? match.channels.map((channel, index) => 
-                `<option value="tom-${index}" ${this.selectedSource === 'tom' && index === 0 ? 'selected' : ''}>
-                    <span style="color: #3498db;">•</span> tom ${index + 1}
-                </option>`
-            ).join('')
-            : `<option value="tom-0"><span style="color: #3498db;">•</span> tom 1</option>`;
+    getAllSourcesForMatch(match) {
+        const sources = [];
         
-        // For Sarah, we'll create some placeholder options since we don't have her actual streams yet
-        const sarahOptions = Array.from({length: 5}, (_, index) => 
-            `<option value="sarah-${index}" ${this.selectedSource === 'sarah' && index === 0 ? 'selected' : ''}>
-                <span style="color: #ff8c00;">•</span> sarah ${index + 1}
-            </option>`
-        ).join('');
+        // Add Tom's streams
+        if (match.channels && match.channels.length > 0) {
+            match.channels.forEach((channel, index) => {
+                sources.push({
+                    value: `tom-${index}`,
+                    label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
+                    url: channel
+                });
+            });
+        }
         
-        return tomOptions + sarahOptions;
+        // Add Sarah's streams (placeholder - in real implementation, these would come from her API)
+        // For now, let's add some sample Sarah streams
+        const sarahStreams = 2; // Example: 2 Sarah streams available
+        for (let i = 0; i < sarahStreams; i++) {
+            sources.push({
+                value: `sarah-${i}`,
+                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${i + 1}</span>`,
+                url: `https://streamed.pk/channel${i + 1}`
+            });
+        }
+        
+        return sources;
     }
 
-    switchSource(source) {
-        this.selectedSource = source.split('-')[0]; // Get 'tom' or 'sarah' from 'tom-1'
-        localStorage.setItem('9kilos-selected-source', this.selectedSource);
+    switchSource(matchId, sourceValue) {
+        this.selectedSource = sourceValue;
+        localStorage.setItem('9kilos-selected-source', sourceValue);
         
-        // Reload matches from the selected source
-        this.isDataLoaded = false;
-        this.loadMatches().then(() => {
-            // Refresh current view if we're in sports navigation
-            if (this.currentView === 'sports' || this.currentView === 'dates' || this.currentView === 'matches') {
-                this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (!match) return;
+        
+        const allSources = this.getAllSourcesForMatch(match);
+        const selectedSource = allSources.find(s => s.value === sourceValue);
+        
+        if (selectedSource && selectedSource.url) {
+            // Update the iframe source
+            const iframe = document.getElementById(`stream-iframe-${matchId}`);
+            if (iframe) {
+                iframe.src = selectedSource.url;
             }
-        });
+        }
     }
 
     refreshCurrentStream(matchId) {
@@ -1143,13 +1163,6 @@ if (dateButton) {
             iframe.src = '';
             setTimeout(() => {
                 iframe.src = currentSrc;
-                
-                const refreshBtn = document.querySelector('.player-control-btn.refresh');
-                const originalText = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = 'Refreshing...';
-                setTimeout(() => {
-                    refreshBtn.innerHTML = originalText;
-                }, 1000);
             }, 500);
         }
     }
@@ -1353,7 +1366,7 @@ if (dateButton) {
     }
 
     async tryFastProxies() {
-        const targetUrl = this.selectedSource === 'tom' 
+        const targetUrl = this.selectedSource.includes('tom') 
             ? 'https://topembed.pw/api.php?format=json'
             : 'https://streamed.pk/api.php?format=json';
         
