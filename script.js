@@ -103,6 +103,9 @@ class MatchScheduler {
         this.currentCountry = country;
         const tvData = this.getTVChannelsData();
         const channels = tvData[country] || [];
+
+        console.log('🔍 ALL CHANNELS FOR THIS MATCH:', channels);
+console.log('🔍 SARAH CHANNELS:', channels.filter(url => url.includes('streamed.pk') || url.includes('embedsports.top')));
         
         container.innerHTML = `
             <div class="content-section">
