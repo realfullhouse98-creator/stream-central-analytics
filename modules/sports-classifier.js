@@ -1,4 +1,4 @@
-// Sports Classification Module
+// Sports Classification Module - ENHANCED FOR SARAH'S DATA
 class SportsClassifier {
     constructor() {
         this.sportMap = {
@@ -19,6 +19,9 @@ class SportsClassifier {
             'f1': 'Racing',
             'nascar': 'Racing',
             'motogp': 'Racing',
+            'motorsport': 'Motorsport',
+            'moto-sports': 'Motorsport',
+            'moto sports': 'Motorsport',
             'volleyball': 'Volleyball',
             'australian football': 'Australian Football',
             'afl': 'Australian Football',
@@ -40,12 +43,28 @@ class SportsClassifier {
     }
 
     classifySport(match) {
+        // Handle Sarah's data specifically
+        if (this.isSarahData(match)) {
+            return this.normalizeSarahSport(match);
+        }
+        
         if (this.isCollegeFootball(match)) {
             return 'American Football';
         }
         
         const sportFromApi = match.sport || 'Other';
         return this.normalizeSportName(sportFromApi);
+    }
+
+    isSarahData(match) {
+        return match.streamedMatch || 
+               (match.channels && match.channels.some(ch => ch.includes('streamed.pk') || ch.includes('embedsports.top')));
+    }
+
+    normalizeSarahSport(match) {
+        // Handle Sarah's specific inconsistencies
+        const rawSport = match.sport || match.tournament || match.category || 'Other';
+        return this.normalizeSportName(rawSport);
     }
 
     isCollegeFootball(match) {
@@ -56,10 +75,14 @@ class SportsClassifier {
     }
 
     normalizeSportName(sport) {
-        if (!sport) return 'Other';
+        if (!sport || sport === 'Other') return 'Other';
         
         const sportLower = sport.toLowerCase().trim();
         return this.sportMap[sportLower] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+    }
+
+    isMalformedSport(sport) {
+        return !sport || sport === '' || sport === 'null' || sport === 'undefined' || sport === 'Other';
     }
 
     extractSportsFromData(apiData) {
@@ -68,10 +91,8 @@ class SportsClassifier {
         const sports = new Set();
         Object.values(apiData.events).forEach(matches => {
             matches.forEach(match => {
-                if (match?.sport) {
-                    const sport = this.classifySport(match);
-                    sports.add(sport);
-                }
+                const sport = this.classifySport(match);
+                sports.add(sport);
             });
         });
         
