@@ -52,6 +52,67 @@ class MatchScheduler {
         this.backgroundPreload();
     }
 
+    // ==================== STREAMED.PK API METHODS ====================
+    async fetchStreamedPkMatches(sport = 'all') {
+        try {
+            const endpoint = sport === 'all' ? 
+                API_CONFIG.STREAMED.ENDPOINTS.ALL_MATCHES :
+                API_CONFIG.STREAMED.ENDPOINTS.SPORT_MATCHES.replace('{sport}', sport);
+            
+            const response = await fetch(API_CONFIG.STREAMED.BASE_URL + endpoint);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.warn('Streamed.pk matches API unavailable:', error);
+            return [];
+        }
+    }
+
+    async fetchStreamedPkStreams(source, sourceId) {
+        try {
+            const endpoint = API_CONFIG.STREAMED.ENDPOINTS.STREAMS
+                .replace('{source}', source)
+                .replace('{id}', sourceId);
+            
+            const response = await fetch(API_CONFIG.STREAMED.BASE_URL + endpoint);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            
+            // Return array of stream URLs - adjust based on actual API response structure
+            return data.streams || data.urls || [data.url].filter(Boolean);
+        } catch (error) {
+            console.warn('Streamed.pk streams API unavailable:', error);
+            return [];
+        }
+    }
+
+    findMatchingStreamedPkMatch(ourMatch, streamedMatches) {
+        if (!streamedMatches || !Array.isArray(streamedMatches)) return null;
+        
+        const ourTeams = ourMatch.teams.toLowerCase();
+        
+        return streamedMatches.find(streamedMatch => {
+            if (!streamedMatch) return false;
+            
+            const streamedTitle = streamedMatch.title ? streamedMatch.title.toLowerCase() : '';
+            const homeTeam = streamedMatch.teams?.home?.name ? streamedMatch.teams.home.name.toLowerCase() : '';
+            const awayTeam = streamedMatch.teams?.away?.name ? streamedMatch.teams.away.name.toLowerCase() : '';
+            
+            return ourTeams.includes(homeTeam) ||
+                   ourTeams.includes(awayTeam) ||
+                   this.teamNamesMatch(ourMatch.teams, streamedMatch.title);
+        });
+    }
+
+    teamNamesMatch(ourTeams, theirTitle) {
+        if (!ourTeams || !theirTitle) return false;
+        
+        const ourTeamNames = ourTeams.split(' vs ').map(name => name.toLowerCase().trim());
+        const theirTitleLower = theirTitle.toLowerCase();
+        
+        return ourTeamNames.some(team => theirTitleLower.includes(team));
+    }
+
     // ==================== TV CHANNELS DATA ====================
     async loadTVChannelsData() {
         try {
@@ -370,26 +431,26 @@ class MatchScheduler {
             return;
         }
 
-      const dateButton = e.target.closest('.date-button');
-if (dateButton) {
-    e.preventDefault();
-    e.stopPropagation();
-    const dateElement = dateButton.querySelector('.date-name');
-    if (dateElement) {
-        const dateText = dateElement.textContent;
-        const matches = this.verifiedMatches;
-        // ✅ FIXED: Proper date comparison
-        const match = matches.find(m => {
-            const displayDate = this.formatDisplayDate(m.date);
-            return displayDate === dateText || 
-                   (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
-        });
-        if (match) {
-            this.selectDate(match.date);
+        const dateButton = e.target.closest('.date-button');
+        if (dateButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dateElement = dateButton.querySelector('.date-name');
+            if (dateElement) {
+                const dateText = dateElement.textContent;
+                const matches = this.verifiedMatches;
+                // ✅ FIXED: Proper date comparison
+                const match = matches.find(m => {
+                    const displayDate = this.formatDisplayDate(m.date);
+                    return displayDate === dateText || 
+                           (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
+                });
+                if (match) {
+                    this.selectDate(match.date);
+                }
+            }
+            return;
         }
-    }
-    return;
-}
 
         const watchButton = e.target.closest('.watch-btn');
         if (watchButton) {
@@ -421,24 +482,24 @@ if (dateButton) {
         }
     }
 
-  handleBackButton() {
-    switch(this.currentView) {
-        case 'sports':
-            this.showMainMenu();
-            break;
-        case 'dates':
-            this.showSportsView();
-            break;
-        case 'matches':
-            this.showDatesView();
-            break;
-        case 'match-details':
-            this.showMatchesView();
-            break;
-        default:
-            this.showMainMenu();
+    handleBackButton() {
+        switch(this.currentView) {
+            case 'sports':
+                this.showMainMenu();
+                break;
+            case 'dates':
+                this.showSportsView();
+                break;
+            case 'matches':
+                this.showDatesView();
+                break;
+            case 'match-details':
+                this.showMatchesView();
+                break;
+            default:
+                this.showMainMenu();
+        }
     }
-}
 
     setupGlobalErrorHandling() {
         window.addEventListener('error', (e) => {
@@ -1005,10 +1066,68 @@ if (dateButton) {
         }
     }
 
-    // ==================== FIXED MATCH DETAILS WITH SIMPLE DROPDOWN ====================
-    showMatchDetails(matchId) {
+    // ==================== FIXED MATCH DETAILS WITH REAL STREAMED.PK INTEGRATION ====================
+    async getAllSourcesForMatch(match) {
+        const sources = [];
+        
+        // 1. Tom's streams (from Topembed.pw - existing working code)
+        if (match.channels && match.channels.length > 0) {
+            match.channels.forEach((channel, index) => {
+                sources.push({
+                    value: `tom-${index}`,
+                    label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
+                    url: channel
+                });
+            });
+        }
+        
+        // 2. Sarah's streams (from Streamed.pk API - NEW REAL IMPLEMENTATION)
+        try {
+            const streamedMatches = await this.fetchStreamedPkMatches(match.sport?.toLowerCase());
+            const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
+            
+            if (matchingMatch && matchingMatch.sources) {
+                let sarahStreamCount = 0;
+                
+                // Get streams for each source in the matching match
+                for (const source of matchingMatch.sources) {
+                    try {
+                        const streamUrls = await this.fetchStreamedPkStreams(source.source, source.id);
+                        
+                        if (streamUrls && streamUrls.length > 0) {
+                            streamUrls.forEach((streamUrl, index) => {
+                                if (streamUrl && typeof streamUrl === 'string') {
+                                    sources.push({
+                                        value: `sarah-${sarahStreamCount}`,
+                                        label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamCount + 1}</span>`,
+                                        url: streamUrl
+                                    });
+                                    sarahStreamCount++;
+                                }
+                            });
+                        }
+                    } catch (streamError) {
+                        console.log(`Stream source ${source.source} failed:`, streamError);
+                        // Continue with other sources
+                        continue;
+                    }
+                }
+                
+                if (sarahStreamCount > 0) {
+                    console.log(`✅ Found ${sarahStreamCount} real Sarah streams for ${match.teams}`);
+                }
+            }
+        } catch (error) {
+            console.log('Sarah streams unavailable, using Tom streams only:', error);
+            // Don't throw error - gracefully fallback to Tom streams only
+        }
+        
+        return sources;
+    }
+
+    async showMatchDetails(matchId) {
         console.log('🎯 showMatchDetails called - setting currentView to match-details');
-    this.currentView = 'match-details'; // Force the correct view state
+        this.currentView = 'match-details'; // Force the correct view state
         this.ensureDataLoaded();
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
@@ -1018,12 +1137,9 @@ if (dateButton) {
         
         const formattedTeams = this.formatTeamNames(match.teams);
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
-        const channels = match.channels || [];
-        const currentChannelIndex = this.currentStreams.get(matchId) || 0;
-        const currentStreamUrl = channels[currentChannelIndex] || null;
-        
-        // Generate ALL sources for this match
-        const allSources = this.getAllSourcesForMatch(match);
+        const allSources = await this.getAllSourcesForMatch(match);
+        const currentSource = allSources.find(s => s.value === this.selectedSource) || allSources[0];
+        const currentStreamUrl = currentSource ? currentSource.url : null;
         const totalSources = allSources.length;
         const sourceText = totalSources === 1 ? 'source' : 'sources';
         
@@ -1106,34 +1222,6 @@ if (dateButton) {
         this.incrementViews(matchId);
     }
 
-    getAllSourcesForMatch(match) {
-        const sources = [];
-        
-        // Add Tom's streams
-        if (match.channels && match.channels.length > 0) {
-            match.channels.forEach((channel, index) => {
-                sources.push({
-                    value: `tom-${index}`,
-                    label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
-                    url: channel
-                });
-            });
-        }
-        
-        // Add Sarah's streams (placeholder - in real implementation, these would come from her API)
-        // For now, let's add some sample Sarah streams
-        const sarahStreams = 2; // Example: 2 Sarah streams available
-        for (let i = 0; i < sarahStreams; i++) {
-            sources.push({
-                value: `sarah-${i}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${i + 1}</span>`,
-                url: `https://streamed.pk/channel${i + 1}`
-            });
-        }
-        
-        return sources;
-    }
-
     switchSource(matchId, sourceValue) {
         this.selectedSource = sourceValue;
         localStorage.setItem('9kilos-selected-source', sourceValue);
@@ -1141,16 +1229,8 @@ if (dateButton) {
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
         
-        const allSources = this.getAllSourcesForMatch(match);
-        const selectedSource = allSources.find(s => s.value === sourceValue);
-        
-        if (selectedSource && selectedSource.url) {
-            // Update the iframe source
-            const iframe = document.getElementById(`stream-iframe-${matchId}`);
-            if (iframe) {
-                iframe.src = selectedSource.url;
-            }
-        }
+        // Refresh the match details to update the stream
+        this.showMatchDetails(matchId);
     }
 
     refreshCurrentStream(matchId) {
