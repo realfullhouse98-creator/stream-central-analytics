@@ -110,7 +110,7 @@ class DataFusion {
             events[date].push({
                 match: teamNames,
                 tournament: match.category,
-                sport: match.category, // Will be classified during fusion
+                sport: match.category,
                 unix_timestamp: Math.floor(match.date / 1000),
                 channels: channels,
                 streamedMatch: match
@@ -256,31 +256,4 @@ class DataFusion {
         for (const proxyUrl of fastProxies) {
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2000);
-                
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('🚀 Fast data loaded from:', proxyUrl);
-                    return data;
-                }
-            } catch (error) {
-                continue;
-            }
-        }
-        return null;
-    }
-}
-
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = DataFusion;
-} else {
-    window.DataFusion = DataFusion;
-}
+                const timeoutId = setTimeout(() => controller.ab
