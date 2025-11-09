@@ -1,8 +1,7 @@
-// UI Manager Module - Handles all screen displays and navigation
+// UI Manager Module - FIXED NAVIGATION STATE
 class UIManager {
     constructor(matchScheduler) {
         this.scheduler = matchScheduler;
-        this.currentView = 'main';
     }
 
     showMainMenu() {
@@ -31,7 +30,7 @@ class UIManager {
         `;
         
         this.showStats();
-        this.currentView = 'main';
+        this.scheduler.currentView = 'main';
     }
 
     showSportsView() {
@@ -72,12 +71,15 @@ class UIManager {
         `;
         
         this.hideStats();
-        this.currentView = 'sports';
+        this.scheduler.currentView = 'sports';
     }
 
     showSportsDataUI() {
         const container = document.getElementById('dynamic-content');
         const matches = this.scheduler.verifiedMatches;
+        
+        console.log('🔍 Sports data UI - Total matches:', matches?.length);
+        console.log('🔍 Unique sports:', [...new Set(matches?.map(m => m.sport) || [])]);
         
         if (!matches || matches.length === 0) {
             this.showSportsEmptyState();
@@ -88,7 +90,12 @@ class UIManager {
         const sports = uniqueSports.map(sportId => ({
             id: sportId,
             name: sportId
-        })).filter(sport => sport.name).sort((a, b) => a.name.localeCompare(b.name));
+        })).filter(sport => sport.name && sport.name !== 'Other').sort((a, b) => a.name.localeCompare(b.name));
+
+        if (sports.length === 0) {
+            this.showSportsEmptyState();
+            return;
+        }
 
         console.log('🔍 Displaying sports categories:', sports.map(s => s.name));
 
@@ -103,7 +110,7 @@ class UIManager {
                 </div>
                 <div class="sports-grid">
                     ${sports.map(sport => `
-                        <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id}')">
+                        <div class="sport-button" onclick="matchScheduler.selectSport('${sport.id.replace(/'/g, "\\'")}')">
                             <div class="sport-name">${sport.name}</div>
                         </div>
                     `).join('')}
@@ -112,7 +119,7 @@ class UIManager {
         `;
         
         this.hideStats();
-        this.currentView = 'sports';
+        this.scheduler.currentView = 'sports';
     }
 
     showSportsEmptyState() {
@@ -170,7 +177,7 @@ class UIManager {
         `;
         
         this.hideStats();
-        this.currentView = 'dates';
+        this.scheduler.currentView = 'dates';
     }
 
     showMatchesView() {
@@ -229,7 +236,7 @@ class UIManager {
         `;
 
         this.hideStats();
-        this.currentView = 'matches';
+        this.scheduler.currentView = 'matches';
     }
 
     renderMatchRow(match) {
@@ -315,7 +322,7 @@ class UIManager {
     }
 
     handleBackButton() {
-        switch(this.currentView) {
+        switch(this.scheduler.currentView) {
             case 'sports':
                 this.showMainMenu();
                 break;
@@ -327,6 +334,11 @@ class UIManager {
                 break;
             case 'match-details':
                 this.showMatchesView();
+                break;
+            case 'tv-countries':
+            case 'tv-channels':
+            case 'tv-player':
+                this.scheduler.showTVChannels();
                 break;
             default:
                 this.showMainMenu();
