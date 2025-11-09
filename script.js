@@ -1,5 +1,5 @@
-// 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
-// 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
+// 9kilo Stream - BULLETPROOF VERSION WITH GUARANTEED MENU FUNCTIONALITY
+// 🚨 IMPORTANT: DO NOT MODIFY - Optimized for maximum reliability
 
 // ==================== API CONFIG ====================
 const API_CONFIG = {
@@ -73,6 +73,203 @@ class MatchScheduler {
         
         // Start preloading in background
         this.backgroundPreload();
+    }
+
+    // ==================== BULLETPROOF EVENT LISTENERS ====================
+    waitForDOMReady() {
+        return new Promise((resolve) => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.isDOMReady = true;
+                    console.log('✅ DOM fully loaded and parsed');
+                    resolve();
+                });
+            } else {
+                this.isDOMReady = true;
+                console.log('✅ DOM already ready');
+                resolve();
+            }
+        });
+    }
+
+    setupEventListeners() {
+        if (!this.isDOMReady) {
+            setTimeout(() => this.setupEventListeners(), 100);
+            return;
+        }
+
+        console.log('🎯 Setting up BULLETPROOF event listeners...');
+        
+        // 🛡️ BULLETPROOF MENU CLICK HANDLER - GUARANTEED TO WORK
+        document.addEventListener('click', (e) => {
+            // Handle menu buttons - SIMPLE & RELIABLE
+            if (e.target.closest('.sports-button')) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🎯 Sports menu clicked - BULLETPROOF');
+                this.showSportsView();
+                return;
+            }
+            
+            if (e.target.closest('.tv-button')) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🎯 TV menu clicked - BULLETPROOF');
+                this.showTVChannels();
+                return;
+            }
+            
+            if (e.target.closest('.community')) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🎯 Community menu clicked - BULLETPROOF');
+                this.showCommunity();
+                return;
+            }
+        }, true); // Use capture phase for maximum reliability
+
+        // Mouseover for sports preloading
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('.sports-button')) {
+                this.preloadSportsData();
+            }
+        });
+
+        // Global click handler for navigation
+        document.addEventListener('click', (e) => {
+            this.handleGlobalClick(e);
+        });
+
+        console.log('✅ BULLETPROOF event listeners setup complete');
+    }
+
+    handleGlobalClick(e) {
+        // Navigation buttons
+        const homeButton = e.target.closest('.home-button');
+        if (homeButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.showMainMenu();
+            return;
+        }
+
+        const backButton = e.target.closest('.top-back-button');
+        if (backButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleBackButton();
+            return;
+        }
+
+        // Match details back button
+        const matchBackBtn = e.target.closest('.back-btn');
+        if (matchBackBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleBackButton();
+            return;
+        }
+
+        // Sports navigation
+        const sportButton = e.target.closest('.sport-button');
+        if (sportButton && !sportButton.hasAttribute('data-action')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const sportName = sportButton.querySelector('.sport-name')?.textContent;
+            if (sportName) {
+                this.selectSport(sportName);
+            }
+            return;
+        }
+
+        const dateButton = e.target.closest('.date-button');
+        if (dateButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dateElement = dateButton.querySelector('.date-name');
+            if (dateElement) {
+                const dateText = dateElement.textContent;
+                const matches = this.verifiedMatches;
+                const match = matches.find(m => {
+                    const displayDate = this.formatDisplayDate(m.date);
+                    return displayDate === dateText || 
+                           (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
+                });
+                if (match) {
+                    this.selectDate(match.date);
+                }
+            }
+            return;
+        }
+
+        const watchButton = e.target.closest('.watch-btn');
+        if (watchButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            const matchRow = watchButton.closest('.match-row');
+            if (matchRow) {
+                const teamNames = matchRow.querySelector('.team-names')?.textContent;
+                if (teamNames) {
+                    const match = this.verifiedMatches.find(m => 
+                        this.formatTeamNames(m.teams) === teamNames
+                    );
+                    if (match) {
+                        this.showMatchDetails(match.id);
+                    }
+                }
+            }
+            return;
+        }
+
+        // BULLETPROOF FILTER BUTTONS
+        const filterButton = e.target.closest('.filter-btn');
+        if (filterButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            const filterType = filterButton.getAttribute('data-filter');
+            this.setFilter(filterType);
+            return;
+        }
+    }
+
+    handleBackButton() {
+        switch(this.currentView) {
+            case 'sports':
+                this.showMainMenu();
+                break;
+            case 'dates':
+                this.showSportsView();
+                break;
+            case 'matches':
+                this.showDatesView();
+                break;
+            case 'match-details':
+                this.showMatchesView();
+                break;
+            default:
+                this.showMainMenu();
+        }
+    }
+
+    setupGlobalErrorHandling() {
+        window.addEventListener('error', (e) => {
+            console.error('Global error caught:', e);
+            this.showErrorUI('Something went wrong. Please refresh the page.');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('Unhandled promise rejection:', e);
+            this.showErrorUI('Application error occurred.');
+        });
+    }
+
+    showErrorUI(message) {
+        const errorBoundary = document.getElementById('error-boundary');
+        const errorMessage = document.getElementById('error-message');
+        if (errorBoundary && errorMessage) {
+            errorMessage.textContent = message;
+            errorBoundary.style.display = 'block';
+        }
     }
 
     // ==================== STREAMED.PK API METHODS ====================
@@ -261,7 +458,7 @@ class MatchScheduler {
 
     // ==================== TV CHANNELS NAVIGATION ====================
     showTVChannels() {
-        console.log('🎯 TV Channels button clicked');
+        console.log('🎯 TV Channels button clicked - BULLETPROOF');
         const container = document.getElementById('dynamic-content');
         if (!container) return;
         
@@ -425,199 +622,6 @@ class MatchScheduler {
             'Spain': '🇪🇸'
         };
         return flags[country] || '🌍';
-    }
-
-    // ==================== ENHANCED EVENT LISTENERS ====================
-    waitForDOMReady() {
-        return new Promise((resolve) => {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => {
-                    this.isDOMReady = true;
-                    console.log('✅ DOM fully loaded and parsed');
-                    resolve();
-                });
-            } else {
-                this.isDOMReady = true;
-                console.log('✅ DOM already ready');
-                resolve();
-            }
-        });
-    }
-
-    setupEventListeners() {
-        if (!this.isDOMReady) {
-            setTimeout(() => this.setupEventListeners(), 100);
-            return;
-        }
-
-        console.log('🎯 Setting up enhanced event listeners...');
-        
-        // Mouseover for sports preloading
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest('.sports-button')) {
-                this.preloadSportsData();
-            }
-        });
-
-        // Global click handler
-        document.addEventListener('click', (e) => {
-            this.handleGlobalClick(e);
-        });
-
-        console.log('✅ Enhanced event listeners setup complete');
-    }
-
-    handleGlobalClick(e) {
-        // Menu buttons
-        const menuButton = e.target.closest('.menu-button');
-        if (menuButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const action = menuButton.getAttribute('data-action');
-            console.log(`🎯 Menu button: ${action}`);
-            
-            switch(action) {
-                case 'sports':
-                    this.showSportsView();
-                    break;
-                case 'tv':
-                    this.showTVChannels();
-                    break;
-                case 'community':
-                    this.showCommunity();
-                    break;
-            }
-            return;
-        }
-
-        // Navigation buttons
-        const homeButton = e.target.closest('.home-button');
-        if (homeButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.showMainMenu();
-            return;
-        }
-
-        const backButton = e.target.closest('.top-back-button');
-        if (backButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.handleBackButton();
-            return;
-        }
-
-        // Match details back button
-        const matchBackBtn = e.target.closest('.back-btn');
-        if (matchBackBtn) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.handleBackButton();
-            return;
-        }
-
-        // Sports navigation
-        const sportButton = e.target.closest('.sport-button');
-        if (sportButton && !sportButton.hasAttribute('data-action')) {
-            e.preventDefault();
-            e.stopPropagation();
-            const sportName = sportButton.querySelector('.sport-name')?.textContent;
-            if (sportName) {
-                this.selectSport(sportName);
-            }
-            return;
-        }
-
-        const dateButton = e.target.closest('.date-button');
-        if (dateButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const dateElement = dateButton.querySelector('.date-name');
-            if (dateElement) {
-                const dateText = dateElement.textContent;
-                const matches = this.verifiedMatches;
-                // ✅ FIXED: Proper date comparison
-                const match = matches.find(m => {
-                    const displayDate = this.formatDisplayDate(m.date);
-                    return displayDate === dateText || 
-                           (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
-                });
-                if (match) {
-                    this.selectDate(match.date);
-                }
-            }
-            return;
-        }
-
-        const watchButton = e.target.closest('.watch-btn');
-        if (watchButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const matchRow = watchButton.closest('.match-row');
-            if (matchRow) {
-                const teamNames = matchRow.querySelector('.team-names')?.textContent;
-                if (teamNames) {
-                    const match = this.verifiedMatches.find(m => 
-                        this.formatTeamNames(m.teams) === teamNames
-                    );
-                    if (match) {
-                        this.showMatchDetails(match.id);
-                    }
-                }
-            }
-            return;
-        }
-
-        // BULLETPROOF FILTER BUTTONS
-        const filterButton = e.target.closest('.filter-btn');
-        if (filterButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const filterType = filterButton.getAttribute('data-filter');
-            this.setFilter(filterType);
-            return;
-        }
-    }
-
-    handleBackButton() {
-        switch(this.currentView) {
-            case 'sports':
-                this.showMainMenu();
-                break;
-            case 'dates':
-                this.showSportsView();
-                break;
-            case 'matches':
-                this.showDatesView();
-                break;
-            case 'match-details':
-                this.showMatchesView();
-                break;
-            default:
-                this.showMainMenu();
-        }
-    }
-
-    setupGlobalErrorHandling() {
-        window.addEventListener('error', (e) => {
-            console.error('Global error caught:', e);
-            this.showErrorUI('Something went wrong. Please refresh the page.');
-        });
-
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('Unhandled promise rejection:', e);
-            this.showErrorUI('Application error occurred.');
-        });
-    }
-
-    showErrorUI(message) {
-        const errorBoundary = document.getElementById('error-boundary');
-        const errorMessage = document.getElementById('error-message');
-        if (errorBoundary && errorMessage) {
-            errorMessage.textContent = message;
-            errorBoundary.style.display = 'block';
-        }
     }
 
     // ==================== BULLETPROOF FILTER SYSTEM ====================
@@ -1575,11 +1579,11 @@ class MatchScheduler {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM fully loaded, initializing Bulletproof MatchScheduler...');
+    console.log('🎯 DOM fully loaded, initializing BULLETPROOF MatchScheduler...');
     try {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
-            console.log('✅ 9kilos Bulletproof Version fully initialized!');
+            console.log('✅ 9kilos BULLETPROOF Version fully initialized!');
         }).catch(error => {
             console.error('❌ Initialization failed:', error);
         });
