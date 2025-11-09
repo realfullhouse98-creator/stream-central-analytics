@@ -16,6 +16,9 @@ class MatchScheduler {
         this.currentTVChannel = null;
         this.tvChannelsData = null;
         
+        // Source selection state
+        this.selectedSource = localStorage.getItem('9kilos-selected-source') || 'tom';
+        
         // Optimization Flags
         this.isDataLoaded = false;
         this.isLoading = false;
@@ -690,26 +693,20 @@ if (dateButton) {
         }
         
         try {
-            // Load from both sources
-            const [tomData, sarahData] = await Promise.allSettled([
-                this.tryAllProxies('https://topembed.pw/api.php?format=json'),
-                this.tryAllProxies('https://streamed.pk/api.php?format=json')
-            ]);
-            
-            const combinedData = this.combineSources(
-                tomData.status === 'fulfilled' ? tomData.value : null,
-                sarahData.status === 'fulfilled' ? sarahData.value : null
-            );
-            
-            this.organizeMatches(combinedData);
-            this.cacheData(combinedData);
+            const apiData = await this.tryAllProxies();
+            this.organizeMatches(apiData);
+            this.cacheData(apiData);
         } catch (error) {
             console.warn('All API attempts failed:', error);
             this.useFallbackData();
         }
     }
 
-    async tryAllProxies(targetUrl) {
+    async tryAllProxies() {
+        const targetUrl = this.selectedSource === 'tom' 
+            ? 'https://topembed.pw/api.php?format=json'
+            : 'https://streamed.pk/api.php?format=json';
+        
         const proxyOptions = [
             `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
             `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
@@ -740,43 +737,6 @@ if (dateButton) {
         throw new Error('All proxy attempts failed');
     }
 
-    combineSources(tomData, sarahData) {
-        const combined = { events: {} };
-        
-        // Add Tom's matches
-        if (tomData && tomData.events) {
-            Object.entries(tomData.events).forEach(([date, matches]) => {
-                if (!combined.events[date]) combined.events[date] = [];
-                matches.forEach(match => {
-                    if (match?.match) {
-                        combined.events[date].push({
-                            ...match,
-                            source: 'tom'
-                        });
-                    }
-                });
-            });
-        }
-        
-        // Add Sarah's matches
-        if (sarahData && sarahData.events) {
-            Object.entries(sarahData.events).forEach(([date, matches]) => {
-                if (!combined.events[date]) combined.events[date] = [];
-                matches.forEach(match => {
-                    if (match?.match) {
-                        combined.events[date].push({
-                            ...match,
-                            source: 'sarah'
-                        });
-                    }
-                });
-            });
-        }
-        
-        console.log(`✅ Combined sources: ${tomData ? 'Tom' : 'no Tom'} + ${sarahData ? 'Sarah' : 'no Sarah'}`);
-        return combined;
-    }
-
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
         const sampleMatches = {
@@ -787,16 +747,14 @@ if (dateButton) {
                         tournament: '9kilos Demo League',
                         sport: 'Football',
                         unix_timestamp: now + 3600,
-                        channels: ['https://example.com/stream1', 'https://example.com/stream2'],
-                        source: 'tom'
+                        channels: ['https://example.com/stream1', 'https://example.com/stream2']
                     },
                     {
                         match: 'Demo United - Test City FC',
                         tournament: 'Research Championship',
                         sport: 'Football', 
                         unix_timestamp: now - 1800,
-                        channels: ['https://example.com/stream1'],
-                        source: 'sarah'
+                        channels: ['https://example.com/stream1']
                     }
                 ]
             }
@@ -844,9 +802,7 @@ if (dateButton) {
                             channels: channels,
                             isLive: this.checkIfLive(match),
                             sport: this.classifySport(match),
-                            unixTimestamp: match.unix_timestamp,
-                            source: match.source || 'tom',
-                            allSources: this.getAllSourcesForMatch(match, apiData)
+                            unixTimestamp: match.unix_timestamp
                         };
                         
                         this.allMatches.push(processedMatch);
@@ -867,38 +823,6 @@ if (dateButton) {
         if (this.currentView !== 'main') {
             this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
         }
-    }
-
-    getAllSourcesForMatch(currentMatch, apiData) {
-        const sources = [];
-        const similarMatches = [];
-        
-        // Find similar matches from both sources
-        Object.values(apiData.events).forEach(matches => {
-            matches.forEach(match => {
-                if (this.isSimilarMatch(currentMatch, match)) {
-                    similarMatches.push(match);
-                }
-            });
-        });
-        
-        // Collect unique sources
-        similarMatches.forEach(match => {
-            if (match.source && !sources.includes(match.source)) {
-                sources.push(match.source);
-            }
-        });
-        
-        return sources.length > 0 ? sources : [currentMatch.source || 'tom'];
-    }
-
-    isSimilarMatch(match1, match2) {
-        // Simple similarity check based on team names and time
-        const teams1 = match1.match.toLowerCase();
-        const teams2 = match2.match.toLowerCase();
-        const timeDiff = Math.abs((match1.unix_timestamp || 0) - (match2.unix_timestamp || 0));
-        
-        return teams1 === teams2 && timeDiff < 3600; // Same teams within 1 hour
     }
 
     extractAndCacheSports(apiData) {
@@ -1040,14 +964,13 @@ if (dateButton) {
     renderMatchRow(match) {
         const isLive = match.isLive;
         const formattedTeams = this.formatTeamNames(match.teams);
-        const sourceIndicator = this.getSourceIndicator(match);
         
         return `
             <div class="match-row ${isLive ? 'live' : ''}">
                 <div class="match-time">${match.time}</div>
                 <div class="match-details">
                     <div class="team-names">${formattedTeams}</div>
-                    <div class="league-name">${match.league} ${sourceIndicator}</div>
+                    <div class="league-name">${match.league}</div>
                 </div>
                 <div class="watch-action">
                     ${match.channels && match.channels.length > 0 ? 
@@ -1059,17 +982,6 @@ if (dateButton) {
                 </div>
             </div>
         `;
-    }
-
-    getSourceIndicator(match) {
-        if (!match.allSources || match.allSources.length === 0) return '';
-        
-        const sources = match.allSources;
-        if (sources.length === 1) {
-            return `<span class="source-indicator">[${sources[0] === 'tom' ? 'T' : 'S'}]</span>`;
-        }
-        
-        return `<span class="source-indicator">[T+S]</span>`;
     }
 
     renderEmptyState(isLiveFilter) {
@@ -1110,8 +1022,6 @@ if (dateButton) {
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
         const currentStreamUrl = channels[currentChannelIndex] || null;
         
-        const sourceSelectorHTML = this.generateSourceSelector(match);
-        
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
@@ -1122,6 +1032,10 @@ if (dateButton) {
                     <div class="video-container">
                         <div class="video-player-controls">
                             <div class="control-buttons-right">
+                                <select class="source-dropdown" onchange="matchScheduler.switchSource(this.value)">
+                                    <option value="tom" ${this.selectedSource === 'tom' ? 'selected' : ''}>Tom's Stream</option>
+                                    <option value="sarah" ${this.selectedSource === 'sarah' ? 'selected' : ''}>Sarah's Stream</option>
+                                </select>
                                 <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
                                     Refresh
                                 </button>
@@ -1147,7 +1061,6 @@ if (dateButton) {
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                 ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
                                 <span style="color: var(--text-muted);">• ${match.league}</span>
-                                ${sourceSelectorHTML}
                             </div>
                             
                             <div class="video-actions">
@@ -1166,7 +1079,6 @@ if (dateButton) {
                                 <div class="description-text">
                                     <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
                                     ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
-                                    ${match.allSources && match.allSources.length > 1 ? `Available from multiple sources.` : ''}
                                 </div>
                             </div>
                         </div>
@@ -1193,27 +1105,18 @@ if (dateButton) {
         this.incrementViews(matchId);
     }
 
-    generateSourceSelector(match) {
-        if (!match.allSources || match.allSources.length <= 1) return '';
+    switchSource(source) {
+        this.selectedSource = source;
+        localStorage.setItem('9kilos-selected-source', source);
         
-        const sources = match.allSources;
-        const currentSource = match.source || 'tom';
-        
-        return `
-            <select class="source-dropdown" onchange="matchScheduler.switchSource('${match.id}', this.value)">
-                ${sources.map(source => `
-                    <option value="${source}" ${source === currentSource ? 'selected' : ''}>
-                        ${source === 'tom' ? "Tom's Stream" : "Sarah's Stream"}
-                    </option>
-                `).join('')}
-            </select>
-        `;
-    }
-
-    switchSource(matchId, source) {
-        // For now, just show a message since we're not doing complex deduplication
-        alert(`Switched to ${source === 'tom' ? "Tom's" : "Sarah's"} stream. This will load the available stream from the selected source.`);
-        // In a full implementation, you would fetch the stream URL for this specific source
+        // Reload matches from the selected source
+        this.isDataLoaded = false;
+        this.loadMatches().then(() => {
+            // Refresh current view if we're in sports navigation
+            if (this.currentView === 'sports' || this.currentView === 'dates' || this.currentView === 'matches') {
+                this[`show${this.currentView.charAt(0).toUpperCase() + this.currentView.slice(1)}View`]();
+            }
+        });
     }
 
     refreshCurrentStream(matchId) {
@@ -1436,12 +1339,13 @@ if (dateButton) {
     }
 
     async tryFastProxies() {
-        const tomUrl = 'https://topembed.pw/api.php?format=json';
-        const sarahUrl = 'https://streamed.pk/api.php?format=json';
+        const targetUrl = this.selectedSource === 'tom' 
+            ? 'https://topembed.pw/api.php?format=json'
+            : 'https://streamed.pk/api.php?format=json';
         
         const fastProxies = [
-            `https://corsproxy.io/?${encodeURIComponent(tomUrl)}`,
-            tomUrl
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            targetUrl
         ];
         
         for (const proxyUrl of fastProxies) {
@@ -1535,15 +1439,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } catch (error) {
         console.error('❌ Critical initialization error:', error);
-    }
-});
-
-// Close dropdowns when clicking outside
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.channel-dropdown-inline')) {
-        document.querySelectorAll('.channel-dropdown-content-inline.show').forEach(dropdown => {
-            dropdown.classList.remove('show');
-            dropdown.previousElementSibling.classList.remove('open');
-        });
     }
 });
