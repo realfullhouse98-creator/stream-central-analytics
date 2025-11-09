@@ -25,21 +25,15 @@ class StreamManager {
         this.currentStreams = new Map();
     }
 
-    detectSourceType(streamUrl) {
-        if (!streamUrl) return 'unknown';
-        if (streamUrl.includes('topembed')) return 'topembed';
-        if (streamUrl.includes('streamed.pk') || streamUrl.includes('embedsports.top')) return 'streamed';
-        return 'unknown';
-    }
-    console.log('🔍 DETECTING SOURCE TYPE:', streamUrl, '->', result);
-
-    getPersonality(sourceType, index) {
-        const personality = this.streamPersonalities[sourceType] || this.streamPersonalities['unknown'];
-        return {
-            ...personality,
-            label: `${personality.emoji} ${personality.name} ${index + 1}`
-        };
-    }
+   detectSourceType(streamUrl) {
+    if (!streamUrl) return 'unknown';
+    if (streamUrl.includes('topembed')) return 'topembed';
+    if (streamUrl.includes('streamed.pk') || streamUrl.includes('embedsports.top')) return 'streamed';
+    
+    const result = 'unknown'; // Add this line
+    console.log('🔍 DETECTING SOURCE TYPE:', streamUrl, '->', result); // ✅ INSIDE METHOD
+    return result;
+}
 
   async getActualStreamUrl(streamUrl) {
     // If it's a Streamed API URL, transform it to real stream
@@ -82,7 +76,7 @@ async getStreamUrlFromStreamed(streamApiUrl) {
         
         return `
             <div class="source-selector">
-                <select class="source-dropdown" onchange="matchScheduler.switchChannel('${matchId}', this.value)">
+               <select class="source-dropdown" onchange="window.matchScheduler.switchChannel('${matchId}', this.value)">
                     ${channels.map((channel, index) => {
                         const sourceType = this.detectSourceType(channel);
                         const personality = this.getPersonality(sourceType, index);
