@@ -73,61 +73,60 @@ class MatchScheduler {
         }
     }
 
-    // ==================== STREAMED.PK URL GENERATION ====================
-    async getAllSourcesForMatch(match) {
-        const sources = [];
+    
+   async getAllSourcesForMatch(match) {
+    console.log('🕵️‍♂️ SPY MODE: Looking for', match.teams);
+    
+    const sources = [];
+    
+    // Tom's streams (keep this part - it works)
+    if (match.channels && match.channels.length > 0) {
+        match.channels.forEach((channel, index) => {
+            sources.push({
+                value: `tom-${index}`,
+                label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
+                url: channel
+            });
+        });
+    }
+    
+    // Sarah's streams - SPY VERSION
+    try {
+        console.log('🔍 Step 1: Getting matches from Streamed.pk...');
+        const streamedMatches = await this.fetchStreamedPkMatches('football');
+        console.log('📋 Step 2: Found', streamedMatches.length, 'matches from Streamed.pk');
         
-        // 1. Tom's streams (from Topembed.pw - working)
-        if (match.channels && match.channels.length > 0) {
-            match.channels.forEach((channel, index) => {
+        // Show me ALL the match names from Streamed.pk
+        console.log('📝 Step 3: Here are all the matches from Streamed.pk:');
+        streamedMatches.forEach((m, i) => {
+            console.log('   ', i + 1 + '.', m.title);
+        });
+        
+        console.log('🎯 Step 4: Looking for our match:', match.teams);
+        const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
+        
+        if (matchingMatch) {
+            console.log('✅ SUCCESS! Found matching match:', matchingMatch.title);
+            matchingMatch.sources.forEach((source, index) => {
+                const streamUrl = `https://embedsports.top/embed/${source.source}/${source.id}/1`;
                 sources.push({
-                    value: `tom-${index}`,
-                    label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
-                    url: channel
+                    value: `sarah-${index}`,
+                    label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${index + 1} (${source.source})</span>`,
+                    url: streamUrl
                 });
             });
+        } else {
+            console.log('❌ FAILED! Could not find matching match for:', match.teams);
+            console.log('💡 TIP: Check if team names match exactly');
         }
-        
-        // 2. Sarah's streams - USING REAL STREAMED.PK MATCHES
-        try {
-            console.log('🔄 Fetching Streamed.pk matches for:', match.teams);
-            const streamedMatches = await this.fetchStreamedPkMatches('football');
-            console.log('📦 Streamed.pk matches found:', streamedMatches.length);
-            
-            const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
-            
-            if (matchingMatch) {
-                console.log('✅ Found matching Streamed.pk match:', matchingMatch.title);
-                console.log('🔧 Available sources:', matchingMatch.sources);
-                
-                matchingMatch.sources.forEach((source, index) => {
-                    // Use REAL source and id from API
-                    const streamUrl = `https://embedsports.top/embed/${source.source}/${source.id}/1`;
-                    console.log('🔧 Generated stream URL:', streamUrl);
-                    
-                    sources.push({
-                        value: `sarah-${index}`,
-                        label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${index + 1} (${source.source})</span>`,
-                        url: streamUrl
-                    });
-                });
-            } else {
-                console.log('❌ No matching Streamed.pk match found for:', match.teams);
-                // Log available matches for debugging
-                if (streamedMatches.length > 0) {
-                    console.log('Available Streamed.pk matches:');
-                    streamedMatches.slice(0, 5).forEach(m => {
-                        console.log(' -', m.title, m.teams ? `(${m.teams.home?.name} vs ${m.teams.away?.name})` : '');
-                    });
-                }
-            }
-        } catch (error) {
-            console.log('❌ Sarah streams unavailable:', error);
-        }
-        
-        console.log('🎯 Final sources:', sources.length);
-        return sources;
+    } catch (error) {
+        console.log('🚨 ERROR:', error);
     }
+    
+    console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
+                '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length);
+    return sources;
+}
 
     // IMPROVED matching function for Streamed.pk data
     findMatchingStreamedPkMatch(ourMatch, streamedMatches) {
