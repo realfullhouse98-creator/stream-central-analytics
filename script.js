@@ -82,7 +82,7 @@ class MatchScheduler {
                 
                 <div class="countries-grid">
                     ${Object.entries(tvData).map(([country, channels]) => `
-                        <div class="country-card" onclick="matchScheduler.showCountryChannels('${country}')">
+                        <div class="country-card" onclick="window.matchScheduler.showCountryChannels('${country}')">
                             <div class="country-flag">${Utils.getCountryFlag(country)}</div>
                             <div class="country-name">${country}</div>
                             <div class="channel-count">${channels.length} channels</div>
@@ -103,9 +103,6 @@ class MatchScheduler {
         this.currentCountry = country;
         const tvData = this.getTVChannelsData();
         const channels = tvData[country] || [];
-
-        
-
         
         container.innerHTML = `
             <div class="content-section">
@@ -128,7 +125,7 @@ class MatchScheduler {
                                 </div>
                             </div>
                             <div class="channel-description">${channel.description}</div>
-                            <button class="watch-button" onclick="matchScheduler.playTVChannel('${channel.name}')">
+                            <button class="watch-button" onclick="window.matchScheduler.playTVChannel('${channel.name}')">
                                 ▶ Watch Live
                             </button>
                         </div>
@@ -176,7 +173,7 @@ class MatchScheduler {
                             </div>
                             
                             <div class="video-actions">
-                                <button class="action-btn" onclick="matchScheduler.showCountryChannels('${country}')">
+                                <button class="action-btn" onclick="window.matchScheduler.showCountryChannels('${country}')">
                                     📺 More Channels
                                 </button>
                             </div>
@@ -202,13 +199,6 @@ class MatchScheduler {
         Utils.waitForDOMReady().then(() => {
             console.log('🎯 Setting up enhanced event listeners...');
             
-            // Mouseover for sports preloading
-            document.addEventListener('mouseover', (e) => {
-                if (e.target.closest('.sports-button')) {
-                    this.preloadSportsData();
-                }
-            });
-
             // Global click handler
             document.addEventListener('click', (e) => {
                 this.handleGlobalClick(e);
@@ -275,61 +265,6 @@ class MatchScheduler {
             e.stopPropagation();
             const filterType = filterButton.getAttribute('data-filter');
             this.setFilter(filterType);
-            return;
-        }
-
-        // Sports navigation
-        const sportButton = e.target.closest('.sport-button');
-        if (sportButton && !sportButton.hasAttribute('data-action')) {
-            e.preventDefault();
-            e.stopPropagation();
-            const sportName = sportButton.querySelector('.sport-name')?.textContent;
-            if (sportName) {
-                this.selectSport(sportName);
-            }
-            return;
-        }
-
-        const dateButton = e.target.closest('.date-button');
-        if (dateButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const dateElement = dateButton.querySelector('.date-name');
-            if (dateElement) {
-                const dateText = dateElement.textContent;
-                const matches = this.verifiedMatches;
-                const match = matches.find(m => {
-                    const displayDate = this.formatDisplayDate(m.date);
-                    return displayDate === dateText || 
-                           (dateText.includes('Today') && m.date === new Date().toISOString().split('T')[0]);
-                });
-                if (match) {
-                    this.selectDate(match.date);
-                }
-            }
-            return;
-        }
-
-        const watchButton = e.target.closest('.watch-btn');
-        if (watchButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            const matchRow = watchButton.closest('.match-row');
-            if (matchRow) {
-                const rowIndex = Array.from(matchRow.parentNode.children).indexOf(matchRow) - 1;
-                localStorage.setItem('lastScrollPosition', rowIndex);
-                console.log('📜 Saving scroll position:', rowIndex);
-
-                const teamNames = matchRow.querySelector('.team-names')?.textContent;
-                if (teamNames) {
-                    const match = this.verifiedMatches.find(m => 
-                        this.formatTeamNames(m.teams) === teamNames
-                    );
-                    if (match) {
-                        this.showMatchDetails(match.id);
-                    }
-                }
-            }
             return;
         }
     }
@@ -470,17 +405,15 @@ class MatchScheduler {
         const stats = this.matchStats.get(matchId) || { views: 0, likes: 0, dislikes: 0 };
         const channels = match.channels || [];
         const currentChannelIndex = this.streamManager.getCurrentChannelIndex(matchId);
-        // ✅ ADD DEBUG CODE HERE:
-console.log('🔍 ALL CHANNELS FOR THIS MATCH:', channels);
-console.log('🔍 SARAH CHANNELS:', channels.filter(url => url.includes('streamed.pk') || url.includes('embedsports.top')));
-       let currentStreamUrl = channels[currentChannelIndex] || null;
+        
+        // ✅ DEBUG CODE
+        console.log('🔍 ALL CHANNELS FOR THIS MATCH:', channels);
+        console.log('🔍 SARAH CHANNELS:', channels.filter(url => url.includes('streamed.pk') || url.includes('embedsports.top')));
+        
+        let currentStreamUrl = channels[currentChannelIndex] || null;
 
-// TRANSFORM ALL STREAM URLs to actual playable URLs
-if (currentStreamUrl) {
-    console.log('🔄 Transforming stream URL:', currentStreamUrl);
-    currentStreamUrl = await this.streamManager.getActualStreamUrl(currentStreamUrl);
-    console.log('✅ Transformed to:', currentStreamUrl);
-}
+        // 🚨 TEMPORARILY DISABLE URL TRANSFORMATION - IT'S BREAKING THE PLAYER
+        console.log('🎯 Using original stream URL:', currentStreamUrl);
         
         const sourceDropdownHTML = this.streamManager.generateSourceDropdown(channels, matchId, currentChannelIndex);
         
@@ -494,7 +427,7 @@ if (currentStreamUrl) {
                     <div class="video-container">
                         <div class="video-player-controls">
                             <div class="control-buttons-right">
-                                <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
+                                <button class="player-control-btn refresh" onclick="window.matchScheduler.refreshCurrentStream('${matchId}')">
                                     Refresh
                                 </button>
                             </div>
@@ -524,13 +457,13 @@ if (currentStreamUrl) {
                             </div>
                             
                             <div class="video-actions">
-                                <button class="action-btn like-btn" onclick="matchScheduler.handleLike('${matchId}')">
+                                <button class="action-btn like-btn" onclick="window.matchScheduler.handleLike('${matchId}')">
                                     👍 ${Utils.formatNumber(stats.likes)}
                                 </button>
-                                <button class="action-btn dislike-btn" onclick="matchScheduler.handleDislike('${matchId}')">
+                                <button class="action-btn dislike-btn" onclick="window.matchScheduler.handleDislike('${matchId}')">
                                     👎 ${Utils.formatNumber(stats.dislikes)}
                                 </button>
-                                <button class="action-btn" onclick="matchScheduler.handleShare('${matchId}')">
+                                <button class="action-btn" onclick="window.matchScheduler.handleShare('${matchId}')">
                                     Share
                                 </button>
                             </div>
@@ -569,10 +502,6 @@ if (currentStreamUrl) {
     switchChannel(matchId, channelIndex) {
         this.streamManager.switchChannel(matchId, channelIndex);
         this.showMatchDetails(matchId);
-    }
-
-    toggleDropdown(matchId) {
-        this.streamManager.toggleDropdown(matchId);
     }
 
     refreshCurrentStream(matchId) {
@@ -696,11 +625,11 @@ if (currentStreamUrl) {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM fully loaded, initializing MatchScheduler with FIXED modular architecture...');
+    console.log('🎯 DOM fully loaded, initializing MatchScheduler...');
     try {
         window.matchScheduler = new MatchScheduler();
         window.matchScheduler.init().then(() => {
-            console.log('✅ 9kilos with FIXED modular architecture fully initialized!');
+            console.log('✅ 9kilos fully initialized!');
         }).catch(error => {
             console.error('❌ Initialization failed:', error);
         });
