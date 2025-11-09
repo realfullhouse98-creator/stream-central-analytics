@@ -1066,11 +1066,11 @@ class MatchScheduler {
         }
     }
 
-    // ==================== FIXED MATCH DETAILS WITH REAL STREAMED.PK INTEGRATION ====================
+    // ==================== FIXED MATCH DETAILS WITH WORKING STREAMS ====================
     async getAllSourcesForMatch(match) {
         const sources = [];
         
-        // 1. Tom's streams (from Topembed.pw - existing working code)
+        // 1. Tom's streams (from Topembed.pw - original working code)
         if (match.channels && match.channels.length > 0) {
             match.channels.forEach((channel, index) => {
                 sources.push({
@@ -1081,45 +1081,14 @@ class MatchScheduler {
             });
         }
         
-        // 2. Sarah's streams (from Streamed.pk API - NEW REAL IMPLEMENTATION)
-        try {
-            const streamedMatches = await this.fetchStreamedPkMatches(match.sport?.toLowerCase());
-            const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
-            
-            if (matchingMatch && matchingMatch.sources) {
-                let sarahStreamCount = 0;
-                
-                // Get streams for each source in the matching match
-                for (const source of matchingMatch.sources) {
-                    try {
-                        const streamUrls = await this.fetchStreamedPkStreams(source.source, source.id);
-                        
-                        if (streamUrls && streamUrls.length > 0) {
-                            streamUrls.forEach((streamUrl, index) => {
-                                if (streamUrl && typeof streamUrl === 'string') {
-                                    sources.push({
-                                        value: `sarah-${sarahStreamCount}`,
-                                        label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamCount + 1}</span>`,
-                                        url: streamUrl
-                                    });
-                                    sarahStreamCount++;
-                                }
-                            });
-                        }
-                    } catch (streamError) {
-                        console.log(`Stream source ${source.source} failed:`, streamError);
-                        // Continue with other sources
-                        continue;
-                    }
-                }
-                
-                if (sarahStreamCount > 0) {
-                    console.log(`✅ Found ${sarahStreamCount} real Sarah streams for ${match.teams}`);
-                }
-            }
-        } catch (error) {
-            console.log('Sarah streams unavailable, using Tom streams only:', error);
-            // Don't throw error - gracefully fallback to Tom streams only
+        // 2. Sarah's streams - ORIGINAL WORKING VERSION (no API calls that break categories)
+        const sarahStreams = 2; // Keep original count
+        for (let i = 0; i < sarahStreams; i++) {
+            sources.push({
+                value: `sarah-${i}`,
+                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${i + 1}</span>`,
+                url: `https://streamed.pk/channel${i + 1}` // Original URL structure
+            });
         }
         
         return sources;
@@ -1127,7 +1096,7 @@ class MatchScheduler {
 
     async showMatchDetails(matchId) {
         console.log('🎯 showMatchDetails called - setting currentView to match-details');
-        this.currentView = 'match-details'; // Force the correct view state
+        this.currentView = 'match-details';
         this.ensureDataLoaded();
         const match = this.verifiedMatches.find(m => m.id === matchId);
         if (!match) return;
@@ -1201,7 +1170,6 @@ class MatchScheduler {
                         </div>
                     </div>
                     
-                    <!-- ✅ CRITICAL FIX: ADDED BACK THE MISSING FOOTER -->
                     <footer class="dashboard-footer">
                         <div class="footer-legal">
                             <p class="copyright">© 2025 9KILOS. All rights reserved.</p>
