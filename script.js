@@ -128,63 +128,52 @@ class MatchScheduler {
     return sources;
 }
 
-    // IMPROVED matching function for Streamed.pk data
     findMatchingStreamedPkMatch(ourMatch, streamedMatches) {
-        const ourTeams = ourMatch.teams.toLowerCase();
-        console.log('🔍 Looking for match:', ourTeams);
+    // Convert "Brentford - Newcastle United" to "Brentford vs Newcastle United"
+    const ourTeams = ourMatch.teams.toLowerCase().replace(/ - /g, ' vs ');
+    console.log('🔍 Looking for match:', ourTeams);
+    
+    const ourTeamNames = ourTeams.split(' vs ').map(team => 
+        team.trim().toLowerCase()
+    );
+    
+    return streamedMatches.find(streamedMatch => {
+        if (!streamedMatch.title) return false;
         
-        // Normalize our team names for matching
-        const ourTeamNames = ourTeams.split(' vs ').map(team => 
-            team.trim().replace(/\s+/g, ' ').toLowerCase()
+        const streamedTitle = streamedMatch.title.toLowerCase();
+        console.log('🔍 Checking:', streamedTitle);
+        
+        // Method 1: Exact match with converted team names
+        if (streamedTitle === ourTeams) {
+            console.log('✅ Exact title match!');
+            return true;
+        }
+        
+        // Method 2: Team name matching (more flexible)
+        const allTeamsMatch = ourTeamNames.every(ourTeam => 
+            streamedTitle.includes(ourTeam)
         );
         
-        return streamedMatches.find(streamedMatch => {
-            if (!streamedMatch.title) return false;
+        if (allTeamsMatch) {
+            console.log('✅ All teams match found!');
+            return true;
+        }
+        
+        // Method 3: Check if Streamed.pk has team data
+        if (streamedMatch.teams && streamedMatch.teams.home && streamedMatch.teams.away) {
+            const homeTeam = streamedMatch.teams.home.name.toLowerCase();
+            const awayTeam = streamedMatch.teams.away.name.toLowerCase();
+            const streamedTeamString = `${homeTeam} vs ${awayTeam}`;
             
-            const streamedTitle = streamedMatch.title.toLowerCase();
-            
-            // Method 1: Exact team matching if streamed match has team data
-            if (streamedMatch.teams && streamedMatch.teams.home && streamedMatch.teams.away) {
-                const homeTeam = streamedMatch.teams.home.name.toLowerCase().trim();
-                const awayTeam = streamedMatch.teams.away.name.toLowerCase().trim();
-                
-                const streamedTeamString = `${homeTeam} vs ${awayTeam}`;
-                
-                // Check if teams match (order doesn't matter)
-                const teamsMatch = ourTeamNames.every(ourTeam => 
-                    streamedTeamString.includes(ourTeam)
-                );
-                
-                if (teamsMatch) {
-                    console.log('✅ Exact team match found!');
-                    return true;
-                }
-            }
-            
-            // Method 2: Title contains our team names
-            const titleMatch = ourTeamNames.every(ourTeam => 
-                streamedTitle.includes(ourTeam)
-            );
-            
-            if (titleMatch) {
-                console.log('✅ Title match found!');
+            if (streamedTeamString === ourTeams) {
+                console.log('✅ Team data match!');
                 return true;
             }
-            
-            // Method 3: Partial matching (at least one team matches)
-            const partialMatch = ourTeamNames.some(ourTeam => 
-                streamedTitle.includes(ourTeam)
-            );
-            
-            if (partialMatch) {
-                console.log('✅ Partial team match found!');
-                return true;
-            }
-            
-            return false;
-        });
-    }
-
+        }
+        
+        return false;
+    });
+}
     // ==================== TV CHANNELS DATA ====================
     async loadTVChannelsData() {
         try {
