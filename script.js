@@ -74,22 +74,41 @@ class MatchScheduler {
     }
 
     
-   async getAllSourcesForMatch(match) {
-    console.log('🕵️‍♂️ SPY MODE: Looking for', match.teams);
+  if (matchingMatch) {
+    console.log('✅ FOUND MATCHING STREAMED.PK MATCH:', matchingMatch.title);
+    console.log('🔧 Sources available:', matchingMatch.sources);
     
-    const sources = [];
+    let sarahStreamNumber = 0;
     
-    // Tom's streams (keep this part - it works)
-    if (match.channels && match.channels.length > 0) {
-        match.channels.forEach((channel, index) => {
-            sources.push({
-                value: `tom-${index}`,
-                label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
-                url: channel
-            });
+    // Loop through each source and add multiple streams
+    matchingMatch.sources.forEach((source) => {
+        // Add stream 1 for this source
+        sources.push({
+            value: `sarah-${sarahStreamNumber}`,
+            label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
+            url: `https://embedsports.top/embed/${source.source}/${source.id}/1`
         });
-    }
+        sarahStreamNumber++;
+        
+        // Add stream 2 for this source
+        sources.push({
+            value: `sarah-${sarahStreamNumber}`,
+            label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
+            url: `https://embedsports.top/embed/${source.source}/${source.id}/2`
+        });
+        sarahStreamNumber++;
+        
+        // Add stream 3 for this source
+        sources.push({
+            value: `sarah-${sarahStreamNumber}`,
+            label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
+            url: `https://embedsports.top/embed/${source.source}/${source.id}/3`
+        });
+        sarahStreamNumber++;
+    });
     
+    console.log(`🔢 Created ${sarahStreamNumber} Sarah streams`);
+}
     // Sarah's streams - SPY VERSION
     try {
         console.log('🔍 Step 1: Getting matches from Streamed.pk...');
