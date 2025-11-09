@@ -97,10 +97,16 @@ class UIManager {
         }
         
         const uniqueSports = [...new Set(matches.map(match => match.sport))];
-        const sports = uniqueSports.map(sportId => ({
-            id: sportId,
-            name: sportId
-        })).filter(sport => sport.name && sport.name !== 'Other').sort((a, b) => a.name.localeCompare(b.name));
+       const sports = uniqueSports.map(sportId => ({
+    id: sportId,
+    name: sportId
+})).filter(sport => sport.name && sport.name !== 'Other' && sport.name !== 'Sports').sort((a, b) => a.name.localeCompare(b.name));
+
+// IF NO SPORTS FOUND, SHOW FALLBACK
+if (sports.length === 0 && this.scheduler.verifiedMatches.length > 0) {
+    // Show "Sports" as fallback category
+    sports.push({ id: 'Sports', name: 'Sports' });
+}
 
         if (sports.length === 0) {
             this.showSportsEmptyState();
