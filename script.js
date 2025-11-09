@@ -52,6 +52,27 @@ class MatchScheduler {
         this.backgroundPreload();
     }
 
+    // ==================== STREAMED.PK API METHODS ====================
+    async fetchStreamedPkMatches(sport = 'all') {
+        try {
+            const endpoint = sport === 'all' ? 
+                API_CONFIG.STREAMED.ENDPOINTS.ALL_MATCHES :
+                API_CONFIG.STREAMED.ENDPOINTS.SPORT_MATCHES.replace('{sport}', sport);
+            
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(API_CONFIG.STREAMED.BASE_URL + endpoint)}`;
+            
+            const response = await fetch(proxyUrl, {
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.warn('Streamed.pk matches API unavailable:', error);
+            return [];
+        }
+    }
+
     // ==================== STREAMED.PK URL GENERATION ====================
     async getAllSourcesForMatch(match) {
         const sources = [];
@@ -67,145 +88,102 @@ class MatchScheduler {
             });
         }
         
-        // 2. Sarah's streams - MULTI-PROVIDER APPROACH
-        const sportType = this.classifySport(match).toLowerCase();
-        const teamSlug = this.createTeamSlug(match.teams);
-        const eventSlug = this.createEventSlug(match);
-        const matchId = this.generateMatchIdForStreamed(match);
+        // 2. Sarah's streams - USING REAL STREAMED.PK MATCHES
+        try {
+            console.log('🔄 Fetching Streamed.pk matches for:', match.teams);
+            const streamedMatches = await this.fetchStreamedPkMatches('football');
+            console.log('📦 Streamed.pk matches found:', streamedMatches.length);
+            
+            const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
+            
+            if (matchingMatch) {
+                console.log('✅ Found matching Streamed.pk match:', matchingMatch.title);
+                console.log('🔧 Available sources:', matchingMatch.sources);
+                
+                matchingMatch.sources.forEach((source, index) => {
+                    // Use REAL source and id from API
+                    const streamUrl = `https://embedsports.top/embed/${source.source}/${source.id}/1`;
+                    console.log('🔧 Generated stream URL:', streamUrl);
+                    
+                    sources.push({
+                        value: `sarah-${index}`,
+                        label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${index + 1} (${source.source})</span>`,
+                        url: streamUrl
+                    });
+                });
+            } else {
+                console.log('❌ No matching Streamed.pk match found for:', match.teams);
+                // Log available matches for debugging
+                if (streamedMatches.length > 0) {
+                    console.log('Available Streamed.pk matches:');
+                    streamedMatches.slice(0, 5).forEach(m => {
+                        console.log(' -', m.title, m.teams ? `(${m.teams.home?.name} vs ${m.teams.away?.name})` : '');
+                    });
+                }
+            }
+        } catch (error) {
+            console.log('❌ Sarah streams unavailable:', error);
+        }
         
-        // Generate URLs for all provider patterns
-        const sarahStreams = this.generateStreamedPkUrls(sportType, teamSlug, eventSlug, matchId);
-        
-        sarahStreams.forEach(stream => {
-            sources.push(stream);
-        });
-        
-        console.log('🔧 Generated Sarah streams:', sarahStreams.length, 'for', match.teams);
-        
+        console.log('🎯 Final sources:', sources.length);
         return sources;
     }
 
-    // Generate URLs for all Streamed.pk provider patterns
-    generateStreamedPkUrls(sportType, teamSlug, eventSlug, matchId) {
-        const streams = [];
-        let streamCount = 0;
+    // IMPROVED matching function for Streamed.pk data
+    findMatchingStreamedPkMatch(ourMatch, streamedMatches) {
+        const ourTeams = ourMatch.teams.toLowerCase();
+        console.log('🔍 Looking for match:', ourTeams);
         
-        // PATTERN 1: /embed/admin/ppv-{team-slug}/ (Football, NFL)
-        if (sportType === 'football' || sportType === 'american football') {
-            streams.push({
-                value: `sarah-${streamCount++}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Admin)</span>`,
-                url: `https://embedsports.top/embed/admin/ppv-${teamSlug}/1`
-            });
-            streams.push({
-                value: `sarah-${streamCount++}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Admin)</span>`,
-                url: `https://embedsports.top/embed/admin/ppv-${teamSlug}/2`
-            });
-        }
+        // Normalize our team names for matching
+        const ourTeamNames = ourTeams.split(' vs ').map(team => 
+            team.trim().replace(/\s+/g, ' ').toLowerCase()
+        );
         
-        // PATTERN 2: /embed/delta/live_{sport}_{team-slug}-live-streaming-{id}/ (Football, NFL)
-        if (sportType === 'football' || sportType === 'american football') {
-            const sportCode = sportType === 'american football' ? 'nfl' : 'laliga';
-            streams.push({
-                value: `sarah-${streamCount++}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Delta)</span>`,
-                url: `https://embedsports.top/embed/delta/live_${sportCode}_${teamSlug}-live-streaming-${matchId}/1`
-            });
-            streams.push({
-                value: `sarah-${streamCount++}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Delta)</span>`,
-                url: `https://embedsports.top/embed/delta/live_${sportCode}_${teamSlug}-live-streaming-${matchId}/2`
-            });
-        }
-        
-        // PATTERN 3: /embed/echo/{event-slug}/ (MotoGP, Tennis, Racing)
-        if (sportType === 'motogp' || sportType.includes('tennis') || sportType.includes('racing')) {
-            streams.push({
-                value: `sarah-${streamCount++}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Echo)</span>`,
-                url: `https://embedsports.top/embed/echo/${eventSlug}/1`
-            });
-            streams.push({
-                value: `sarah-${streamCount++}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Echo)</span>`,
-                url: `https://embedsports.top/embed/echo/${eventSlug}/2`
-            });
-        }
-        
-        // PATTERN 4: /embed/charlie/{event-id}/ (All sports - numeric IDs)
-        streams.push({
-            value: `sarah-${streamCount++}`,
-            label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Charlie)</span>`,
-            url: `https://embedsports.top/embed/charlie/${matchId}/1`
+        return streamedMatches.find(streamedMatch => {
+            if (!streamedMatch.title) return false;
+            
+            const streamedTitle = streamedMatch.title.toLowerCase();
+            
+            // Method 1: Exact team matching if streamed match has team data
+            if (streamedMatch.teams && streamedMatch.teams.home && streamedMatch.teams.away) {
+                const homeTeam = streamedMatch.teams.home.name.toLowerCase().trim();
+                const awayTeam = streamedMatch.teams.away.name.toLowerCase().trim();
+                
+                const streamedTeamString = `${homeTeam} vs ${awayTeam}`;
+                
+                // Check if teams match (order doesn't matter)
+                const teamsMatch = ourTeamNames.every(ourTeam => 
+                    streamedTeamString.includes(ourTeam)
+                );
+                
+                if (teamsMatch) {
+                    console.log('✅ Exact team match found!');
+                    return true;
+                }
+            }
+            
+            // Method 2: Title contains our team names
+            const titleMatch = ourTeamNames.every(ourTeam => 
+                streamedTitle.includes(ourTeam)
+            );
+            
+            if (titleMatch) {
+                console.log('✅ Title match found!');
+                return true;
+            }
+            
+            // Method 3: Partial matching (at least one team matches)
+            const partialMatch = ourTeamNames.some(ourTeam => 
+                streamedTitle.includes(ourTeam)
+            );
+            
+            if (partialMatch) {
+                console.log('✅ Partial team match found!');
+                return true;
+            }
+            
+            return false;
         });
-        
-        // PATTERN 5: /embed/foxtrot/{hash-id}/ (NFL, backup)
-        if (sportType === 'american football') {
-            const hashId = this.generateHashId(teamSlug + matchId);
-            streams.push({
-                value: `sarah-${streamCount++}`,
-                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${streamCount} (Foxtrot)</span>`,
-                url: `https://embedsports.top/embed/foxtrot/${hashId}/1`
-            });
-        }
-        
-        return streams;
-    }
-
-    // Helper to create team slugs for URLs
-    createTeamSlug(teamString) {
-        return teamString
-            .toLowerCase()
-            .replace(/ - /g, '-')
-            .replace(/ vs /g, '-')
-            .replace(/athletic bilbao/g, 'athletic-club')
-            .replace(/real madrid/g, 'real-madrid')
-            .replace(/barcelona/g, 'barcelona')
-            .replace(/atlanta falcons/g, 'atlanta-falcons')
-            .replace(/indianapolis colts/g, 'indianapolis-colts')
-            .replace(/[^a-z0-9-]/g, '')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
-    }
-
-    // Helper to create event slugs for MotoGP, Tennis etc.
-    createEventSlug(match) {
-        const sport = this.classifySport(match).toLowerCase();
-        const league = match.league || '';
-        
-        if (sport === 'motogp') {
-            return `motogp-grand-prix-of-portugal-motogp-1`;
-        }
-        if (sport.includes('tennis')) {
-            return `nitto-atp-finals-1629469185`;
-        }
-        
-        // Fallback: use team slug for other sports
-        return this.createTeamSlug(match.teams);
-    }
-
-    // Generate consistent numeric IDs for matches
-    generateMatchIdForStreamed(match) {
-        const teamHash = this.hashCode(match.teams);
-        return Math.abs(teamHash).toString().substring(0, 9);
-    }
-
-    // Generate hash IDs for foxtrot provider
-    generateHashId(str) {
-        const hash = this.hashCode(str).toString(16);
-        return hash.substring(0, 24);
-    }
-
-    // Simple hash function
-    hashCode(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return hash;
     }
 
     // ==================== TV CHANNELS DATA ====================
