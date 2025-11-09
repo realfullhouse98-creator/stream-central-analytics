@@ -428,7 +428,7 @@ class MatchScheduler {
         return flags[country] || '🌍';
     }
 
-    // ==================== MAIN NAVIGATION UI (MISSING, NOW FIXED) ====================
+    // ==================== MAIN NAVIGATION UI (The main menu) ====================
     showMainMenu() {
         const container = document.getElementById('dynamic-content');
         if (!container) {
@@ -439,17 +439,17 @@ class MatchScheduler {
         // 🛡️ Ensure body class is clean
         document.body.classList.remove('tv-section');
         
-        // Inject the main menu HTML (The part that was missing)
+        // Inject the main menu HTML
         container.innerHTML = `
             <div class="main-menu-grid">
                 
-                <div class="menu-button sports-button" data-action="sports">
+                <div class="menu-button sports-button" data-action="sports" onclick="matchScheduler.showSportsView()">
                     <span class="button-icon">⚽</span>
                     <span class="button-text">Sports Schedule</span>
                     <span class="button-subtext">View all upcoming matches</span>
                 </div>
 
-                <div class="menu-button tv-button" data-action="tv">
+                <div class="menu-button tv-button" data-action="tv" onclick="matchScheduler.showTVChannels()">
                     <span class="button-icon">📺</span>
                     <span class="button-text">Live TV Channels</span>
                     <span class="button-subtext">24/7 Global Live Streams</span>
@@ -477,11 +477,7 @@ class MatchScheduler {
 
     // ⚠️ PLACEHOLDER FUNCTIONS - Define these if they aren't elsewhere
     showCommunity() {
-        // Since the community button is an <a> tag in showMainMenu(), 
-        // this JS function is technically not needed for the link, 
-        // but included for completeness if data-action="community" is hit elsewhere.
         console.log("Community link clicked (Telegram link is in the HTML)");
-        // If you need a full community page, implement the UI logic here.
     }
 
     showSettings() {
@@ -557,6 +553,7 @@ class MatchScheduler {
             const action = menuButton.getAttribute('data-action');
             console.log(`🎯 Menu button: ${action}`);
             
+            // Note: Actions are primarily handled by inline onclick, but this handles the data-action fallback
             switch(action) {
                 case 'sports':
                     this.showSportsView();
@@ -568,7 +565,6 @@ class MatchScheduler {
                     this.showCommunity();
                     break;
                 case 'settings':
-                    // Settings button has an inline onclick, but this handles the data-action fallback
                     this.showSettings();
                     break;
             }
@@ -848,25 +844,127 @@ class MatchScheduler {
             return;
         }
 
-        // --- Rest of showSportsDataUI implementation (omitted for brevity) ---
+        // --- NOTE: Full implementation requires more data loading and rendering logic ---
+        // Placeholder for successful loading:
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button">⌂</button>
+                </div>
+                <div class="section-header">
+                    <h2>Categories</h2>
+                    <p>Select a sport to view matches</p>
+                </div>
+                <div class="sports-grid">
+                    <div class="sport-button" onclick="matchScheduler.selectSport('Football')"><div class="sport-name">Football</div></div>
+                    <div class="sport-button" onclick="matchScheduler.selectSport('Basketball')"><div class="sport-name">Basketball</div></div>
+                    <div class="sport-button" onclick="matchScheduler.selectSport('Rugby')"><div class="sport-name">Rugby</div></div>
+                </div>
+            </div>
+        `;
+        
+        this.hideStats();
+        this.currentView = 'sports';
     }
     
     // Placeholder functions needed for the class to be complete
     preloadSportsData() { console.log("Preloading sports data..."); }
     ensureDataLoaded() { console.log("Ensuring data is loaded..."); return true; }
     registerServiceWorker() { console.log("Registering service worker..."); }
-    hideStats() { console.log("Hiding stats..."); }
-    showSportsEmptyState() { console.log("Showing empty state..."); }
-    selectSport(sportName) { console.log(`Selected sport: ${sportName}`); }
+    hideStats() { 
+        // Example implementation for hiding stats/footer if needed
+        const footer = document.querySelector('.app-footer');
+        if (footer) footer.style.display = (this.currentView === 'main' || this.currentView === 'sports') ? 'flex' : 'none';
+    }
+    showSportsEmptyState() { 
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button">⌂</button>
+                </div>
+                <div class="section-header">
+                    <h2>Categories</h2>
+                    <p>No matches loaded yet.</p>
+                </div>
+            </div>
+        `;
+    }
+    selectSport(sportName) { 
+        this.currentSport = sportName;
+        // In a full app, this would trigger loading dates/matches for that sport
+        console.log(`Selected sport: ${sportName}. Now showing dates view.`);
+        this.showDatesView(); 
+    }
     formatDisplayDate(date) { return date; }
-    selectDate(date) { console.log(`Selected date: ${date}`); }
+    selectDate(date) { 
+        this.currentDate = date;
+        console.log(`Selected date: ${date}. Now showing matches view.`);
+        this.showMatchesView();
+    }
     formatTeamNames(teams) { return teams; }
     showMatchDetails(id) { console.log(`Showing match details for ID: ${id}`); }
-    showDatesView() { console.log("Showing dates view..."); }
-    showMatchesView() { console.log("Showing matches view..."); }
+    showDatesView() { 
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button">⌂</button>
+                    <button class="top-back-button">←</button>
+                </div>
+                <div class="section-header">
+                    <h2>${this.currentSport || 'Sport'} Dates</h2>
+                    <p>Select a date</p>
+                </div>
+                <div class="dates-grid">
+                    <div class="date-button" onclick="matchScheduler.selectDate('2025-11-09')"><div class="date-name">Today</div></div>
+                    <div class="date-button" onclick="matchScheduler.selectDate('2025-11-10')"><div class="date-name">Tomorrow</div></div>
+                    <div class="date-button" onclick="matchScheduler.selectDate('2025-11-11')"><div class="date-name">Mon, Nov 11</div></div>
+                </div>
+            </div>
+        `;
+        this.currentView = 'dates';
+        this.hideStats();
+    }
+    showMatchesView() { 
+        const container = document.getElementById('dynamic-content');
+        container.innerHTML = `
+            <div class="content-section">
+                <div class="navigation-buttons">
+                    <button class="home-button">⌂</button>
+                    <button class="top-back-button">←</button>
+                </div>
+                <div class="section-header">
+                    <h2>${this.currentSport || 'Sport'} Matches</h2>
+                    <p>Matches for ${this.currentDate || 'selected date'}</p>
+                </div>
+                <div class="filter-bar">
+                    <button class="filter-btn active" data-filter="all" onclick="matchScheduler.setFilter('all')">All</button>
+                    <button class="filter-btn" data-filter="live" onclick="matchScheduler.setFilter('live')">Live Only</button>
+                </div>
+                <div class="matches-list">
+                    <div class="match-row">
+                        <div class="time">10:00</div>
+                        <div class="team-names">Team A - Team B</div>
+                        <div class="tournament">Premier League</div>
+                        <button class="watch-btn" onclick="matchScheduler.showMatchDetails(123)">Watch</button>
+                    </div>
+                    <div class="match-row live">
+                        <div class="time">LIVE</div>
+                        <div class="team-names">Team C - Team D</div>
+                        <div class="tournament">Champions League</div>
+                        <button class="watch-btn" onclick="matchScheduler.showMatchDetails(456)">Watch</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.currentView = 'matches';
+        this.hideStats();
+    }
 } // <--- END OF CLASS DEFINITION
 
-// ==================== APPLICATION INITIALIZATION (THE MISSING PIECE) ====================
+// ==================== APPLICATION INITIALIZATION (THE CRITICAL PART) ====================
 // 🛑 These two lines are absolutely critical. They create the object and call the startup function. 
 window.matchScheduler = new MatchScheduler();
 window.matchScheduler.init();
