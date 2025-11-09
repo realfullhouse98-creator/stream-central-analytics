@@ -224,7 +224,7 @@ class MatchScheduler {
                                 </button>
                             </div>
                             
-                            <div class="match-description">
+                            <div class="match-description" style="width: fit-content; max-width: 100%;">
                                 <div class="description-text">
                                     <strong>Channel Info:</strong> ${channel.displayName} from ${channel.country}. 
                                     ${channel.description} Live 24/7 broadcast.
@@ -1022,6 +1022,9 @@ if (dateButton) {
         const currentChannelIndex = this.currentStreams.get(matchId) || 0;
         const currentStreamUrl = channels[currentChannelIndex] || null;
         
+        // Generate source options
+        const sourceOptions = this.generateSourceOptions(match);
+        
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
@@ -1030,18 +1033,6 @@ if (dateButton) {
                     </div>
                     
                     <div class="video-container">
-                        <div class="video-player-controls">
-                            <div class="control-buttons-right">
-                                <select class="source-dropdown" onchange="matchScheduler.switchSource(this.value)">
-                                    <option value="tom" ${this.selectedSource === 'tom' ? 'selected' : ''}>Tom's Stream</option>
-                                    <option value="sarah" ${this.selectedSource === 'sarah' ? 'selected' : ''}>Sarah's Stream</option>
-                                </select>
-                                <button class="player-control-btn refresh" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
-                                    Refresh
-                                </button>
-                            </div>
-                        </div>
-                        
                         <div class="video-player-wrapper">
                             <div class="video-player" id="video-player-${matchId}">
                                 ${currentStreamUrl ? 
@@ -1058,9 +1049,13 @@ if (dateButton) {
                         <div class="video-controls">
                             <div class="video-title">${formattedTeams}</div>
                             <div class="video-stats">
+                                ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span> • ' : ''}
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
-                                ${match.isLive ? '<span class="live-badge-details">LIVE NOW</span>' : ''}
-                                <span style="color: var(--text-muted);">• ${match.league}</span>
+                                <span style="color: var(--text-muted);"> • ${match.league}</span>
+                                <span style="color: var(--accent-gold);"> • sources</span>
+                                <select class="source-dropdown" onchange="matchScheduler.switchSource(this.value)">
+                                    ${sourceOptions}
+                                </select>
                             </div>
                             
                             <div class="video-actions">
@@ -1075,7 +1070,7 @@ if (dateButton) {
                                 </button>
                             </div>
                             
-                            <div class="match-description">
+                            <div class="match-description" style="width: fit-content; max-width: 100%;">
                                 <div class="description-text">
                                     <strong>Match Info:</strong> ${this.getTeamName(match.teams, 0)} vs ${this.getTeamName(match.teams, 1)} in ${match.league}. 
                                     ${match.isLive ? 'Live now!' : `Scheduled for ${match.time} on ${this.formatDisplayDate(match.date)}.`}
@@ -1105,9 +1100,28 @@ if (dateButton) {
         this.incrementViews(matchId);
     }
 
+    generateSourceOptions(match) {
+        const tomOptions = match.channels && match.channels.length > 0 
+            ? match.channels.map((channel, index) => 
+                `<option value="tom-${index}" ${this.selectedSource === 'tom' && index === 0 ? 'selected' : ''}>
+                    <span style="color: #3498db;">•</span> tom ${index + 1}
+                </option>`
+            ).join('')
+            : `<option value="tom-0"><span style="color: #3498db;">•</span> tom 1</option>`;
+        
+        // For Sarah, we'll create some placeholder options since we don't have her actual streams yet
+        const sarahOptions = Array.from({length: 5}, (_, index) => 
+            `<option value="sarah-${index}" ${this.selectedSource === 'sarah' && index === 0 ? 'selected' : ''}>
+                <span style="color: #ff8c00;">•</span> sarah ${index + 1}
+            </option>`
+        ).join('');
+        
+        return tomOptions + sarahOptions;
+    }
+
     switchSource(source) {
-        this.selectedSource = source;
-        localStorage.setItem('9kilos-selected-source', source);
+        this.selectedSource = source.split('-')[0]; // Get 'tom' or 'sarah' from 'tom-1'
+        localStorage.setItem('9kilos-selected-source', this.selectedSource);
         
         // Reload matches from the selected source
         this.isDataLoaded = false;
