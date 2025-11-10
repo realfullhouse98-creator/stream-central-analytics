@@ -765,10 +765,14 @@ body {
     position: absolute;
     top: 20px;
     left: 20px;
+    right: 20px;  /* ← ADD this */
     z-index: 100;
     background: transparent;
     border: none;
     padding: 0;
+    display: flex;           /* ← ADD this */
+    justify-content: space-between;  /* ← ADD this */
+    align-items: center;     /* ← ADD this */
 }
 
 .back-btn {
@@ -1011,6 +1015,7 @@ body {
        .match-header {
         top: 15px;
         left: 15px;
+        right: 15px;  /* ← ADD this for mobile too */
     }
     
     .back-btn {
@@ -1018,6 +1023,13 @@ body {
         font-size: 0.9em;
         border-radius: 8px;
     }
+
+    /* ADD REFRESH BUTTON MOBILE FIX */
+    .refresh-btn {
+        padding: 6px 10px;
+        font-size: 0.75em;
+    }
+
  
     .stream-central-dashboard {
         background: inherit;
@@ -1413,10 +1425,7 @@ body {
     padding: 8px 12px;
     opacity: 0.7;
     transition: opacity 0.3s ease;
-    position: absolute;
-    top: 20px;              /* ← CHANGED to top */
-    right: 20px;            /* ← KEEP right */
-    z-index: 100;
+    /* REMOVE all positioning - it's in flexbox now */
 }
 
 .refresh-btn:hover {
