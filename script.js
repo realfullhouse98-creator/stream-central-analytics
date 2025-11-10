@@ -848,10 +848,11 @@ if (homeButton) {
             : 'https://streamed.pk/api.php?format=json';
         
         const proxyOptions = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            targetUrl
-        ];
+    `https://cors-anywhere.herokuapp.com/${targetUrl}`,
+    `https://api.codetabs.com/v1/proxy?quest=${targetUrl}`,
+    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+    targetUrl // direct call
+];
         
         for (const proxyUrl of proxyOptions) {
             try {
