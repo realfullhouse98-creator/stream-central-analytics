@@ -1287,34 +1287,34 @@ class MatchScheduler {
     }
 
     // ==================== UTILITY METHODS ====================
-    showMainMenu() {
-        const container = document.getElementById('dynamic-content');
-        if (!container) return;
-        
-        document.body.classList.remove('tv-section');
-        
-        container.innerHTML = `
-            <div class="main-menu">
-                <div class="menu-grid">
-                    <div class="menu-button sports-button" data-action="sports">
-                        <div class="button-title">LIVE SPORTS</div>
-                        <div class="button-subtitle">Games & schedules</div>
-                    </div>
-                    <div class="menu-button tv-button" data-action="tv">
-                        <div class="button-title">TV CHANNELS</div>
-                        <div class="button-subtitle">24/7 live streams</div>
-                    </div>
-                    <div class="menu-button community" data-action="community">
-                        <div class="button-title">COMMUNITY</div>
-                        <div class="button-subtitle">Fan discussions</div>
-                    </div>
+showMainMenu() {
+    const container = document.getElementById('dynamic-content');
+    if (!container) return;
+    
+    document.body.classList.remove('tv-section');
+    
+    container.innerHTML = `
+        <div class="main-menu">
+            <div class="menu-grid">
+                <div class="menu-button sports-button" data-action="sports">
+                    <div class="button-title">LIVE SPORTS</div>
+                    <div class="button-subtitle">Games & schedules</div>
+                </div>
+                <div class="menu-button tv-button" data-action="tv">
+                    <div class="button-title">TV CHANNELS</div>
+                    <div class="button-subtitle">24/7 live streams</div>
+                </div>
+                <div class="menu-button community" data-action="community">
+                    <div class="button-title">COMMUNITY</div>
+                    <div class="button-subtitle">Fan discussions</div>
                 </div>
             </div>
-        `;
-        
-        this.showStats();
-        this.currentView = 'main';
-    }
+        </div>
+    `;
+    
+    this.showStats();  // ✅ This should make stats visible again
+    this.currentView = 'main';
+}
 
     showCommunity() {
         const container = document.getElementById('dynamic-content');
