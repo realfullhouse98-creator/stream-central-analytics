@@ -1339,7 +1339,7 @@ async showSources(matchId, channelId) {
     
     // Continue with your existing code...
     const match = this.verifiedMatches.find(m => m.id === matchId);
-    const groups = this.getChannelGroups(match);
+    const groups = await this.getChannelGroups(match);
     const channel = groups[channelId];
     
     document.getElementById(`channels-view-${matchId}`).style.display = 'none';
