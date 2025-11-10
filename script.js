@@ -1289,7 +1289,7 @@ getChannelGroups(match) {
     }
     
     // Check Sarah - only add if she has streams  
-    const allSources = this.getAllSourcesForMatch(match);
+    const allSources = await this.getAllSourcesForMatch(match);
     const sarahSources = allSources.filter(source => source.value.startsWith('sarah-'));
     if (sarahSources.length > 0) {
         groups.sarah = {
@@ -1315,39 +1315,7 @@ getChannelGroups(match) {
     return groups;
 }
     
-    // Group sources by provider
-    match.channels.forEach((channel, index) => {
-        groups.tom.sources.push({
-            value: `tom-${index}`,
-            label: `Source ${index + 1}`,
-            url: channel
-        });
-    });
-    
-    // Add Sarah streams if available
-    if (match.sarahStreams) {
-        match.sarahStreams.forEach((stream, index) => {
-            groups.sarah.sources.push({
-                value: `sarah-${index}`,
-                label: `Source ${index + 1}`,
-                url: stream.url
-            });
-        });
-    }
-    
-    // Add Footy streams if available  
-    if (match.footyStreams) {
-        match.footyStreams.forEach((stream, index) => {
-            groups.footy.sources.push({
-                value: `footy-${index}`,
-                label: `Source ${index + 1}`,
-                url: stream.url
-            });
-        });
-    }
-    
-    return groups;
-}
+ 
 
 showChannels(matchId) {
     document.getElementById(`channels-view-${matchId}`).style.display = 'block';
