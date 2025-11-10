@@ -1273,7 +1273,7 @@ if (homeButton) {
         this.showMatchDetails(matchId);
     }
     // ==================== CHANNEL SYSTEM METHODS ====================
-getChannelGroups(match) {
+async getChannelGroups(match) {
     const groups = {};
     
     // Check Tom - only add if he has streams
@@ -1314,8 +1314,6 @@ getChannelGroups(match) {
     
     return groups;
 }
-    
- 
 
 showChannels(matchId) {
     document.getElementById(`channels-view-${matchId}`).style.display = 'block';
