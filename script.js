@@ -843,9 +843,8 @@ if (homeButton) {
     }
 
     async tryAllProxies() {
-        const targetUrl = this.selectedSource.includes('tom') 
-            ? 'https://topembed.pw/api.php?format=json'
-            : 'https://streamed.pk/api.php?format=json';
+        // 🚀 ALWAYS USE TOM'S API (it might work!)
+    const targetUrl = 'https://topembed.pw/api.php?format=json';
         
         const proxyOptions = [
     `https://cors-anywhere.herokuapp.com/${targetUrl}`,
