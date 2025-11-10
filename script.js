@@ -126,10 +126,7 @@ try {
     } else {
         console.log('❌ No Sarah streams for this match');
     }
-} catch (error) {
-    console.log('🚨 Sarah streams failed, but no problem - using Tom streams');
-    // Don't break if Sarah fails!
-}
+
             console.log('📦 Found', streamedMatches.length, 'matches from Streamed.pk');
             
             const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
@@ -175,10 +172,7 @@ try {
             console.log('🚨 Sarah streams error:', error);
         }
         
-        console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
-                    '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length);
-        return sources;
-    }
+      
 
     findMatchingStreamedPkMatch(ourMatch, streamedMatches) {
         // Convert "Brentford - Newcastle United" to "Brentford vs Newcastle United"
