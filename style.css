@@ -762,29 +762,31 @@ body {
 }
 
 .match-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.05);  /* ← Original transparent bar */
-    border-bottom: 1px solid var(--border-light);  /* ← Original border */
-    flex-shrink: 0;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    background: transparent;
+    border: none;
+    padding: 0;
 }
 
 .back-btn {
-    background: rgba(255, 255, 255, 0.1);  /* ← Original transparent */
-    border: 1px solid var(--border-light);  /* ← Original light border */
-    color: var(--text-primary);             /* ← Original white text */
-    padding: 8px 16px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.7); /* Keep dark background */
+    border: 2px solid var(--accent-gold); /* Keep gold border */
+    color: var(--accent-gold); /* Keep gold text */
+    padding: 10px 16px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 600;
+    font-size: 1em;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
 .back-btn:hover {
-    background: rgba(255, 255, 255, 0.15);  /* ← Original hover */
+    background: rgba(0, 0, 0, 0.9); /* Keep dark hover */
+    transform: translateX(-3px);
 }
 
 .back-btn:hover {
@@ -1005,6 +1007,16 @@ body {
     html, body {
         background: linear-gradient(135deg, #0a0a1a 0%, #0f3460 50%, #1a1a2e 100%) fixed !important;
         background-size: cover !important;
+    }
+       .match-header {
+        top: 15px;
+        left: 15px;
+    }
+    
+    .back-btn {
+        padding: 8px 14px;
+        font-size: 0.9em;
+        border-radius: 8px;
     }
  
     .stream-central-dashboard {
