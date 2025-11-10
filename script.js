@@ -493,12 +493,13 @@ class MatchScheduler {
 
         // Navigation buttons
         const homeButton = e.target.closest('.home-button');
-        if (homeButton) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.showMainMenu();
-            return;
-        }
+if (homeButton) {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🎯 HOME BUTTON CLICKED - Calling showMainMenu()'); // DEBUG
+    this.showMainMenu();
+    return;
+}
 
         const backButton = e.target.closest('.top-back-button');
         if (backButton) {
