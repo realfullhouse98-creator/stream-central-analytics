@@ -57,10 +57,10 @@ class MatchScheduler {
     async fetchStreamedPkMatches(sport = 'all') {
         try {
             const endpoint = sport === 'all' ? 
-                API_CONFIG.STREAMED.ENDPOINTS.ALL_MATCHES :
-                API_CONFIG.STREAMED.ENDPOINTS.SPORT_MATCHES.replace('{sport}', sport);
+                'api/matches' :
+                `api/matches/${sport}`;
             
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(API_CONFIG.STREAMED.BASE_URL + endpoint)}`;
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent('https://streamed.pk/' + endpoint)}`;
             
             const response = await fetch(proxyUrl, {
                 headers: { 'Accept': 'application/json' }
@@ -834,40 +834,6 @@ if (homeButton) {
         this.useFallbackData();
     }
 }
-    async tryAllProxies() {
-        // 🚀 ALWAYS USE TOM'S API (it might work!)
-    const targetUrl = 'https://topembed.pw/api.php?format=json';
-        
-        const proxyOptions = [
-    `https://cors-anywhere.herokuapp.com/${targetUrl}`,
-    `https://api.codetabs.com/v1/proxy?quest=${targetUrl}`,
-    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-    targetUrl // direct call
-];
-        
-        for (const proxyUrl of proxyOptions) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000);
-                
-                const response = await fetch(proxyUrl, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    return await response.json();
-                }
-            } catch (error) {
-                console.warn(`Proxy failed: ${proxyUrl}`, error);
-                continue;
-            }
-        }
-        
-        throw new Error('All proxy attempts failed');
-    }
 
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
@@ -1312,72 +1278,27 @@ async getChannelGroups(match) {
     return groups;
 }
 
-showChannels(matchId) {
-    document.getElementById(`channels-view-${matchId}`).style.display = 'block';
-    document.getElementById(`sources-view-${matchId}`).style.display = 'none';
-}
-
-async showSources(matchId, channelId) {
-    console.log('🔴 DEBUG: showSources called!', matchId, channelId);
-    
-    // TEMPORARY: Show immediate visual feedback
-    const channelsView = document.getElementById(`channels-view-${matchId}`);
-    const sourcesView = document.getElementById(`sources-view-${matchId}`);
-    
-    console.log('🟡 DEBUG: Elements found?', {
-        channelsView: !!channelsView,
-        sourcesView: !!sourcesView
-    });
-    
-    if (!channelsView || !sourcesView) {
-        console.error('❌ DEBUG: Missing HTML elements!');
-        return;
+    selectSource(matchId, sourceValue, sourceUrl) {
+        this.selectedSource = sourceValue;
+        localStorage.setItem('9kilos-selected-source', sourceValue);
+        localStorage.setItem(`9kilos-last-source-${matchId}`, sourceValue);
+        
+        // Refresh the stream
+        this.showMatchDetails(matchId);
     }
     
-    // Continue with your existing code...
-    const match = this.verifiedMatches.find(m => m.id === matchId);
-    const groups = await this.getChannelGroups(match);
-    const channel = groups[channelId];
-    
-    document.getElementById(`channels-view-${matchId}`).style.display = 'none';
-    document.getElementById(`sources-view-${matchId}`).style.display = 'block';
-    document.getElementById(`channel-title-${matchId}`).textContent = channel.name;
-    
-    const sourcesList = document.getElementById(`sources-list-${matchId}`);
-    sourcesList.innerHTML = channel.sources.map(source => `
-        <div class="source-item ${this.selectedSource === source.value ? 'selected' : ''}" 
-             onclick="matchScheduler.selectSource('${matchId}', '${source.value}', '${source.url}')">
-            <span class="source-name">${source.label}</span>
-        </div>
-    `).join('');
-    
-    // Store last channel
-    localStorage.setItem(`9kilos-last-channel-${matchId}`, channelId);
-}
-
-selectSource(matchId, sourceValue, sourceUrl) {
-    this.selectedSource = sourceValue;
-    localStorage.setItem('9kilos-selected-source', sourceValue);
-    localStorage.setItem(`9kilos-last-source-${matchId}`, sourceValue);
-    
-    // Refresh the stream
-    this.showMatchDetails(matchId);
-}
-toggleSupplier(matchId, channelId) {
-    const sourcesList = document.getElementById(`sources-${matchId}-${channelId}`);
-    const supplierArrow = document.querySelector(`#sources-${matchId}-${channelId}`).previousElementSibling.querySelector('.supplier-arrow');
-    
-    if (sourcesList.style.display === 'none') {
-        sourcesList.style.display = 'block';
-        supplierArrow.textContent = '▼';
-    } else {
-        sourcesList.style.display = 'none';
-        supplierArrow.textContent = '▶';
+    toggleSupplier(matchId, channelId) {
+        const sourcesList = document.getElementById(`sources-${matchId}-${channelId}`);
+        const supplierArrow = document.querySelector(`#sources-${matchId}-${channelId}`).previousElementSibling.querySelector('.supplier-arrow');
+        
+        if (sourcesList.style.display === 'none') {
+            sourcesList.style.display = 'block';
+            supplierArrow.textContent = '▼';
+        } else {
+            sourcesList.style.display = 'none';
+            supplierArrow.textContent = '▶';
+        }
     }
-}
-getLastChannel(matchId) {
-    return localStorage.getItem(`9kilos-last-channel-${matchId}`) || 'tom';
-}
 
     refreshCurrentStream(matchId) {
         const match = this.verifiedMatches.find(m => m.id === matchId);
@@ -1592,9 +1513,7 @@ showMainMenu() {
     }
 
     async tryFastProxies() {
-        const targetUrl = this.selectedSource.includes('tom') 
-            ? 'https://topembed.pw/api.php?format=json'
-            : 'https://streamed.pk/api.php?format=json';
+        const targetUrl = 'https://topembed.pw/api.php?format=json';
         
         const fastProxies = [
             `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
