@@ -1169,6 +1169,9 @@ if (homeButton) {
                 <div class="match-details-modal">
                                 <div class="match-header">
                 <button class="back-btn">← Back</button>
+                         <button class="refresh-btn" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
+                     Refresh
+                </button>
                
             </div>
                     
@@ -1183,9 +1186,7 @@ if (homeButton) {
                                         <p>No streams available for this match</p>
                                     </div>`
                                 }
-                                 <button class="refresh-btn" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
-                     Refresh
-                </button>
+                        
                             </div>
                         </div>
                         
