@@ -444,28 +444,28 @@ class MatchScheduler {
         });
     }
 
-    setupEventListeners() {
-        if (!this.isDOMReady) {
-            setTimeout(() => this.setupEventListeners(), 100);
-            return;
-        }
-
-        console.log('🎯 Setting up enhanced event listeners...');
-        
-        // Mouseover for sports preloading
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest('.sports-button')) {
-                this.preloadSportsData();
-            }
-        });
-
-        // Global click handler
-        document.addEventListener('click', (e) => {
-            this.handleGlobalClick(e);
-        });
-
-        console.log('✅ Enhanced event listeners setup complete');
+   setupEventListeners() {
+    if (!this.isDOMReady) {
+        setTimeout(() => this.setupEventListeners(), 100);
+        return;
     }
+
+    console.log('🎯 Setting up enhanced event listeners...');
+    
+    // Mouseover for sports preloading
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest('.sports-button')) {
+            this.preloadSportsData();
+        }
+    });
+
+    // ✅ ADD THIS BACK - MAKES BUTTONS CLICKABLE
+    document.addEventListener('click', (e) => {
+        this.handleGlobalClick(e);
+    });
+
+    console.log('✅ Enhanced event listeners setup complete');
+}
 
     handleGlobalClick(e) {
         // Menu buttons
