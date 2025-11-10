@@ -92,9 +92,44 @@ class MatchScheduler {
         }
         
         // 2. Sarah's streams - SIMPLE & SCALABLE VERSION
-        try {
-            console.log('🔄 Getting Streamed.pk matches for:', match.teams);
-            const streamedMatches = await this.fetchStreamedPkMatches('football');
+        // 2. Sarah's streams - BUT DON'T BREAK IF IT FAILS
+try {
+    console.log('🔄 Trying to get Sarah streams for:', match.teams);
+    const streamedMatches = await this.fetchStreamedPkMatches('football');
+    console.log('📦 Sarah found', streamedMatches.length, 'matches');
+    
+    const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
+    
+    if (matchingMatch && matchingMatch.sources) {
+        console.log('✅ FOUND Sarah match:', matchingMatch.title);
+        
+        let sarahStreamNumber = 0;
+        matchingMatch.sources.forEach((source) => {
+            // Add Sarah stream 1
+            sources.push({
+                value: `sarah-${sarahStreamNumber}`,
+                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
+                url: `https://embedsports.top/embed/${source.source}/${source.id}/1`
+            });
+            sarahStreamNumber++;
+            
+            // Add Sarah stream 2  
+            sources.push({
+                value: `sarah-${sarahStreamNumber}`,
+                label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
+                url: `https://embedsports.top/embed/${source.source}/${source.id}/2`
+            });
+            sarahStreamNumber++;
+        });
+        
+        console.log(`🔢 Created ${sarahStreamNumber} Sarah streams`);
+    } else {
+        console.log('❌ No Sarah streams for this match');
+    }
+} catch (error) {
+    console.log('🚨 Sarah streams failed, but no problem - using Tom streams');
+    // Don't break if Sarah fails!
+}
             console.log('📦 Found', streamedMatches.length, 'matches from Streamed.pk');
             
             const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
@@ -824,24 +859,28 @@ if (homeButton) {
         }
     }
 
-    async loadMatches() {
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            console.log('📦 Using cached data');
-            this.organizeMatches(cachedData);
-            return;
-        }
+  async loadMatches() {
+    console.log('🔄 Loading matches from Tom API...');
+    
+    // 🎯 ALWAYS USE TOM'S API (since it works!)
+    const targetUrl = 'https://topembed.pw/api.php?format=json';
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+    
+    try {
+        console.log('🔑 Calling Tom API...');
+        const response = await fetch(proxyUrl);
+        const tomData = await response.json();
+        console.log('✅ Tom API SUCCESS! Found matches:', Object.keys(tomData.events || {}).length);
         
-        try {
-            const apiData = await this.tryAllProxies();
-            this.organizeMatches(apiData);
-            this.cacheData(apiData);
-        } catch (error) {
-            console.warn('All API attempts failed:', error);
-            this.useFallbackData();
-        }
+        // Use Tom's data for everything
+        this.organizeMatches(tomData);
+        this.cacheData(tomData);
+        
+    } catch (error) {
+        console.log('❌ Tom API failed, using demo data');
+        this.useFallbackData();
     }
-
+}
     async tryAllProxies() {
         // 🚀 ALWAYS USE TOM'S API (it might work!)
     const targetUrl = 'https://topembed.pw/api.php?format=json';
