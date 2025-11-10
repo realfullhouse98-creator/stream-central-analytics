@@ -1201,7 +1201,7 @@ if (homeButton) {
     <div class="channels-view" id="channels-view-${matchId}">
         <div class="channel-header">⚡ CHANNELS</div>
         <div class="channel-list">
-            ${Object.entries(this.getChannelGroups(match)).map(([channelId, channel]) => `
+            ${Object.entries(await this.getChannelGroups(match)).map(([channelId, channel]) => `
                 <div class="channel-item ${this.getLastChannel(matchId) === channelId ? 'selected' : ''}" 
                      onclick="matchScheduler.showSources('${matchId}', '${channelId}')">
                     <span class="channel-name">${channel.name}</span>
