@@ -1274,11 +1274,46 @@ if (homeButton) {
     }
     // ==================== CHANNEL SYSTEM METHODS ====================
 getChannelGroups(match) {
-    const groups = {
-        'tom': { name: 'Tom', sources: [] },
-        'sarah': { name: 'Sarah', sources: [] },
-        'footy': { name: 'Footy', sources: [] }
-    };
+    const groups = {};
+    
+    // Check Tom - only add if he has streams
+    if (match.channels && match.channels.length > 0) {
+        groups.tom = { 
+            name: 'Tom', 
+            sources: match.channels.map((channel, index) => ({
+                value: `tom-${index}`,
+                label: `Source ${index + 1}`,
+                url: channel
+            }))
+        };
+    }
+    
+    // Check Sarah - only add if she has streams  
+    const allSources = this.getAllSourcesForMatch(match);
+    const sarahSources = allSources.filter(source => source.value.startsWith('sarah-'));
+    if (sarahSources.length > 0) {
+        groups.sarah = {
+            name: 'Sarah',
+            sources: sarahSources.map((source, index) => ({
+                value: source.value,
+                label: `Source ${index + 1}`,
+                url: source.url
+            }))
+        };
+    }
+    
+    // Check Footy - only add if he has streams
+    // We'll add Footy streams later - for now leave this empty
+    const footySources = [];
+    if (footySources.length > 0) {
+        groups.footy = {
+            name: 'Footy', 
+            sources: footySources
+        };
+    }
+    
+    return groups;
+}
     
     // Group sources by provider
     match.channels.forEach((channel, index) => {
