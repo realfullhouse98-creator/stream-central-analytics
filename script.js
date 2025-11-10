@@ -1197,13 +1197,28 @@ if (homeButton) {
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                 <span style="color: var(--text-muted);"> • ${match.league}</span>
                                 <span style="color: var(--accent-gold); font-weight: 600;"> • ${totalSources} ${sourceText}</span>
-                                <select class="source-dropdown" onchange="matchScheduler.switchSource('${matchId}', this.value)">
-                                    ${allSources.map((source, index) => `
-                                        <option value="${source.value}" ${source.value === this.selectedSource ? 'selected' : ''}>
-                                            ${source.label}
-                                        </option>
-                                    `).join('')}
-                                </select>
+                              <div class="channel-selector">
+    <div class="channels-view" id="channels-view-${matchId}">
+        <div class="channel-header">⚡ CHANNELS</div>
+        <div class="channel-list">
+            ${Object.entries(this.getChannelGroups(match)).map(([channelId, channel]) => `
+                <div class="channel-item ${this.getLastChannel(matchId) === channelId ? 'selected' : ''}" 
+                     onclick="matchScheduler.showSources('${matchId}', '${channelId}')">
+                    <span class="channel-name">${channel.name}</span>
+                    <span class="channel-count">(${channel.sources.length})</span>
+                </div>
+            `).join('')}
+        </div>
+    </div>
+    
+    <div class="sources-view" id="sources-view-${matchId}" style="display: none;">
+        <div class="sources-header">
+            <button class="back-button" onclick="matchScheduler.showChannels('${matchId}')">←</button>
+            <span class="channel-title" id="channel-title-${matchId}"></span>
+        </div>
+        <div class="sources-list" id="sources-list-${matchId}"></div>
+    </div>
+</div>
                             </div>
                             
                             <div class="video-actions">
@@ -1257,6 +1272,86 @@ if (homeButton) {
         // Refresh the match details to update the stream
         this.showMatchDetails(matchId);
     }
+    // ==================== CHANNEL SYSTEM METHODS ====================
+getChannelGroups(match) {
+    const groups = {
+        'tom': { name: 'Tom', sources: [] },
+        'sarah': { name: 'Sarah', sources: [] },
+        'footy': { name: 'Footy', sources: [] }
+    };
+    
+    // Group sources by provider
+    match.channels.forEach((channel, index) => {
+        groups.tom.sources.push({
+            value: `tom-${index}`,
+            label: `Source ${index + 1}`,
+            url: channel
+        });
+    });
+    
+    // Add Sarah streams if available
+    if (match.sarahStreams) {
+        match.sarahStreams.forEach((stream, index) => {
+            groups.sarah.sources.push({
+                value: `sarah-${index}`,
+                label: `Source ${index + 1}`,
+                url: stream.url
+            });
+        });
+    }
+    
+    // Add Footy streams if available  
+    if (match.footyStreams) {
+        match.footyStreams.forEach((stream, index) => {
+            groups.footy.sources.push({
+                value: `footy-${index}`,
+                label: `Source ${index + 1}`,
+                url: stream.url
+            });
+        });
+    }
+    
+    return groups;
+}
+
+showChannels(matchId) {
+    document.getElementById(`channels-view-${matchId}`).style.display = 'block';
+    document.getElementById(`sources-view-${matchId}`).style.display = 'none';
+}
+
+async showSources(matchId, channelId) {
+    const match = this.verifiedMatches.find(m => m.id === matchId);
+    const groups = this.getChannelGroups(match);
+    const channel = groups[channelId];
+    
+    document.getElementById(`channels-view-${matchId}`).style.display = 'none';
+    document.getElementById(`sources-view-${matchId}`).style.display = 'block';
+    document.getElementById(`channel-title-${matchId}`).textContent = channel.name;
+    
+    const sourcesList = document.getElementById(`sources-list-${matchId}`);
+    sourcesList.innerHTML = channel.sources.map(source => `
+        <div class="source-item ${this.selectedSource === source.value ? 'selected' : ''}" 
+             onclick="matchScheduler.selectSource('${matchId}', '${source.value}', '${source.url}')">
+            <span class="source-name">${source.label}</span>
+        </div>
+    `).join('');
+    
+    // Store last channel
+    localStorage.setItem(`9kilos-last-channel-${matchId}`, channelId);
+}
+
+selectSource(matchId, sourceValue, sourceUrl) {
+    this.selectedSource = sourceValue;
+    localStorage.setItem('9kilos-selected-source', sourceValue);
+    localStorage.setItem(`9kilos-last-source-${matchId}`, sourceValue);
+    
+    // Refresh the stream
+    this.showMatchDetails(matchId);
+}
+
+getLastChannel(matchId) {
+    return localStorage.getItem(`9kilos-last-channel-${matchId}`) || 'tom';
+}
 
     refreshCurrentStream(matchId) {
         const match = this.verifiedMatches.find(m => m.id === matchId);
