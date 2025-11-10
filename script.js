@@ -1321,6 +1321,23 @@ showChannels(matchId) {
 }
 
 async showSources(matchId, channelId) {
+    console.log('🔴 DEBUG: showSources called!', matchId, channelId);
+    
+    // TEMPORARY: Show immediate visual feedback
+    const channelsView = document.getElementById(`channels-view-${matchId}`);
+    const sourcesView = document.getElementById(`sources-view-${matchId}`);
+    
+    console.log('🟡 DEBUG: Elements found?', {
+        channelsView: !!channelsView,
+        sourcesView: !!sourcesView
+    });
+    
+    if (!channelsView || !sourcesView) {
+        console.error('❌ DEBUG: Missing HTML elements!');
+        return;
+    }
+    
+    // Continue with your existing code...
     const match = this.verifiedMatches.find(m => m.id === matchId);
     const groups = this.getChannelGroups(match);
     const channel = groups[channelId];
