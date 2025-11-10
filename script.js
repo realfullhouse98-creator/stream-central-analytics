@@ -1,7 +1,5 @@
- // 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
+// 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
 // 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
-
-
 
 class MatchScheduler {
     constructor() {
@@ -77,76 +75,34 @@ class MatchScheduler {
     }
 
     // ==================== STREAMED.PK URL GENERATION ====================
-   async getAllSourcesForMatch(match) {
-    const sources = [];
-    
-    // 1. Tom's streams (from Topembed.pw - working)
-    if (match.channels && match.channels.length > 0) {
-        match.channels.forEach((channel, index) => {
-            sources.push({
-                value: `tom-${index}`,
-                label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
-                url: channel
-            });
-        });
-    }
-    
-    // 2. Sarah's streams - BUT DON'T BREAK IF IT FAILS
-    try {
-        console.log('🔄 Trying to get Sarah streams for:', match.teams);
-        const streamedMatches = await this.fetchStreamedPkMatches('football');
-        console.log('📦 Sarah found', streamedMatches.length, 'matches');
+    async getAllSourcesForMatch(match) {
+        const sources = [];
         
-        const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
-        
-        if (matchingMatch && matchingMatch.sources) {
-            console.log('✅ FOUND Sarah match:', matchingMatch.title);
-            
-            let sarahStreamNumber = 0;
-            matchingMatch.sources.forEach((source) => {
-                // Add Sarah stream 1
+        // 1. Tom's streams (from Topembed.pw - working)
+        if (match.channels && match.channels.length > 0) {
+            match.channels.forEach((channel, index) => {
                 sources.push({
-                    value: `sarah-${sarahStreamNumber}`,
-                    label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
-                    url: `https://embedsports.top/embed/${source.source}/${source.id}/1`
+                    value: `tom-${index}`,
+                    label: `<span class="source-option"><span class="circle-icon tom-icon"></span> tom ${index + 1}</span>`,
+                    url: channel
                 });
-                sarahStreamNumber++;
-                
-                // Add Sarah stream 2  
-                sources.push({
-                    value: `sarah-${sarahStreamNumber}`,
-                    label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
-                    url: `https://embedsports.top/embed/${source.source}/${source.id}/2`
-                });
-                sarahStreamNumber++;
             });
-            
-            console.log(`🔢 Created ${sarahStreamNumber} Sarah streams`);
-        } else {
-            console.log('❌ No Sarah streams for this match');
         }
-    } catch (error) {
-        console.log('🚨 Sarah streams failed, but no problem - using Tom streams');
-        // Don't break if Sarah fails!
-    }
-    
-    console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
-                '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length);
-    return sources;
-}
-            console.log('📦 Found', streamedMatches.length, 'matches from Streamed.pk');
+        
+        // 2. Sarah's streams - BUT DON'T BREAK IF IT FAILS
+        try {
+            console.log('🔄 Trying to get Sarah streams for:', match.teams);
+            const streamedMatches = await this.fetchStreamedPkMatches('football');
+            console.log('📦 Sarah found', streamedMatches.length, 'matches');
             
             const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
             
-            if (matchingMatch) {
-                console.log('✅ FOUND MATCH:', matchingMatch.title);
-                console.log('🔧 Sources available:', matchingMatch.sources);
+            if (matchingMatch && matchingMatch.sources) {
+                console.log('✅ FOUND Sarah match:', matchingMatch.title);
                 
                 let sarahStreamNumber = 0;
-                
-                // Loop through each source and add multiple streams
                 matchingMatch.sources.forEach((source) => {
-                    // Add stream 1 for this source
+                    // Add Sarah stream 1
                     sources.push({
                         value: `sarah-${sarahStreamNumber}`,
                         label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
@@ -154,32 +110,28 @@ class MatchScheduler {
                     });
                     sarahStreamNumber++;
                     
-                    // Add stream 2 for this source
+                    // Add Sarah stream 2  
                     sources.push({
                         value: `sarah-${sarahStreamNumber}`,
                         label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
                         url: `https://embedsports.top/embed/${source.source}/${source.id}/2`
                     });
                     sarahStreamNumber++;
-                    
-                    // Add stream 3 for this source
-                    sources.push({
-                        value: `sarah-${sarahStreamNumber}`,
-                        label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
-                        url: `https://embedsports.top/embed/${source.source}/${source.id}/3`
-                    });
-                    sarahStreamNumber++;
                 });
                 
                 console.log(`🔢 Created ${sarahStreamNumber} Sarah streams`);
             } else {
-                console.log('❌ No matching Streamed.pk match found for:', match.teams);
+                console.log('❌ No Sarah streams for this match');
             }
         } catch (error) {
-            console.log('🚨 Sarah streams error:', error);
+            console.log('🚨 Sarah streams failed, but no problem - using Tom streams');
+            // Don't break if Sarah fails!
         }
         
-      
+        console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
+                    '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length);
+        return sources;
+    }
 
     findMatchingStreamedPkMatch(ourMatch, streamedMatches) {
         // Convert "Brentford - Newcastle United" to "Brentford vs Newcastle United"
