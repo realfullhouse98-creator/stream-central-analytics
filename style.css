@@ -1453,139 +1453,117 @@ body {
     background: var(--primary-bg) !important;
     background-attachment: fixed !important;
 }
-/* ==================== CHANNEL SELECTOR STYLES ==================== */
-.channel-selector {
+/* ==================== NESTED CHANNEL DROPDOWN STYLES ==================== */
+.channel-dropdown {
     background: #1a1a2e;
     border: 2px solid #3498db;
     border-radius: 10px;
-    padding: 10px;
     margin: 10px 0;
+    overflow: hidden;
 }
 
-.channel-header {
-    font-weight: bold;
-    color: #3498db;
-    margin-bottom: 10px;
-    text-align: center;
-    font-size: 1.1em;
-}
-
-.channel-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.channel-item {
+.dropdown-header {
+    padding: 12px 15px;
+    background: rgba(52, 152, 219, 0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex;
     justify-content: space-between;
-    padding: 12px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.channel-item:hover {
-    background: rgba(255,255,255,0.15);
-    transform: translateY(-1px);
-}
-
-.channel-item.selected {
-    background: rgba(52, 152, 219, 0.3);
-    border: 1px solid #3498db;
-}
-
-.channel-name {
-    color: white;
-    font-weight: 600;
-}
-
-.channel-count {
-    color: #3498db;
-    font-weight: 600;
-}
-
-.sources-view {
-    background: #1a1a2e;
-}
-
-.sources-header {
-    display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
 }
 
-.back-button {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
+.dropdown-title {
+    color: #3498db;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.dropdown-arrow {
+    color: #3498db;
     font-size: 0.9em;
 }
 
-.back-button:hover {
-    background: rgba(255,255,255,0.15);
+.dropdown-content {
+    padding: 10px;
 }
 
-.channel-title {
+.supplier-section {
+    margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.supplier-header {
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.supplier-header:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.supplier-name {
+    color: white;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.supplier-count {
     color: #3498db;
-    font-weight: bold;
-    font-size: 1.1em;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.supplier-arrow {
+    color: #3498db;
+    font-size: 0.8em;
 }
 
 .sources-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 300px;
-    overflow-y: auto;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .source-item {
-    padding: 12px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 8px;
+    padding: 10px 15px 10px 25px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.source-item:last-child {
+    border-bottom: none;
 }
 
 .source-item:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(52, 152, 219, 0.1);
 }
 
 .source-item.selected {
     background: rgba(52, 152, 219, 0.3);
-    border: 1px solid #3498db;
+    border-left: 3px solid #3498db;
 }
 
 .source-name {
-    color: white;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.85em;
     font-weight: 500;
 }
 
-/* Mobile responsive */
 @media (max-width: 768px) {
-    .channel-selector {
-        margin: 10px 5px;
-    }
-    
-    .channel-item, .source-item {
+    .dropdown-header {
         padding: 15px;
     }
-    
-    .sources-list {
-        max-height: 400px;
+    .supplier-header {
+        padding: 15px;
     }
-    
-    .channel-header {
-        font-size: 1.2em;
+    .source-item {
+        padding: 12px 15px 12px 30px;
     }
 }
