@@ -1,27 +1,7 @@
 // 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
 // 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
 
-// ==================== API CONFIG ====================
-const API_CONFIG = {
-    STREAMED: {
-        BASE_URL: 'https://streamed.pk/api',
-        ENDPOINTS: {
-            ALL_MATCHES: '/matches/all',
-            LIVE_MATCHES: '/matches/live',
-            TODAY_MATCHES: '/matches/all-today',
-            SPORT_MATCHES: '/matches/{sport}',
-            STREAMS: '/stream/{source}/{id}',
-            SPORTS: '/sports'
-        }
-    },
-    TOPEMBED: {
-        BASE_URL: 'https://topembed.pw',
-        ENDPOINTS: {
-            ALL_MATCHES: '/api.php?format=json'
-        }
-    }
-};
-window.API_CONFIG = API_CONFIG;
+
 
 class MatchScheduler {
     constructor() {
