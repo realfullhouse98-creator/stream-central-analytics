@@ -1167,9 +1167,12 @@ if (homeButton) {
         container.innerHTML = `
             <div class="match-details-overlay">
                 <div class="match-details-modal">
-                    <div class="match-header">
-                        <button class="back-btn">← Back</button>
-                    </div>
+                                <div class="match-header">
+                <button class="back-btn">← Back</button>
+                <button class="refresh-btn" onclick="matchScheduler.refreshCurrentStream('${matchId}')">
+                    ↻ Refresh
+                </button>
+            </div>
                     
                     <div class="video-container">
                         <div class="video-player-wrapper">
