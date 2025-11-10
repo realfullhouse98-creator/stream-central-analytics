@@ -1197,26 +1197,31 @@ if (homeButton) {
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                 <span style="color: var(--text-muted);"> • ${match.league}</span>
                                 <span style="color: var(--accent-gold); font-weight: 600;"> • ${totalSources} ${sourceText}</span>
-                              <div class="channel-selector">
-    <div class="channels-view" id="channels-view-${matchId}">
-        <div class="channel-header">⚡ CHANNELS</div>
-        <div class="channel-list">
-            ${Object.entries(await this.getChannelGroups(match)).map(([channelId, channel]) => `
-                <div class="channel-item ${this.getLastChannel(matchId) === channelId ? 'selected' : ''}" 
-                     onclick="matchScheduler.showSources('${matchId}', '${channelId}')">
-                    <span class="channel-name">${channel.name}</span>
-                    <span class="channel-count">(${channel.sources.length})</span>
-                </div>
-            `).join('')}
-        </div>
+                              <div class="channel-dropdown">
+    <div class="dropdown-header">
+        <span class="dropdown-title">CHANNELS</span>
+        <span class="dropdown-arrow">▼</span>
     </div>
     
-    <div class="sources-view" id="sources-view-${matchId}" style="display: none;">
-        <div class="sources-header">
-            <button class="back-button" onclick="matchScheduler.showChannels('${matchId}')">←</button>
-            <span class="channel-title" id="channel-title-${matchId}"></span>
-        </div>
-        <div class="sources-list" id="sources-list-${matchId}"></div>
+    <div class="dropdown-content">
+        ${Object.entries(await this.getChannelGroups(match)).map(([channelId, channel]) => `
+            <div class="supplier-section">
+                <div class="supplier-header" onclick="matchScheduler.toggleSupplier('${matchId}', '${channelId}')">
+                    <span class="supplier-name">${channel.name}</span>
+                    <span class="supplier-count">(${channel.sources.length})</span>
+                    <span class="supplier-arrow">▶</span>
+                </div>
+                
+                <div class="sources-list" id="sources-${matchId}-${channelId}" style="display: none;">
+                    ${channel.sources.map(source => `
+                        <div class="source-item ${this.selectedSource === source.value ? 'selected' : ''}" 
+                             onclick="matchScheduler.selectSource('${matchId}', '${source.value}', '${source.url}')">
+                            <span class="source-name">${source.label.replace(/<[^>]*>/g, '')}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('')}
     </div>
 </div>
                             </div>
@@ -1366,7 +1371,18 @@ selectSource(matchId, sourceValue, sourceUrl) {
     // Refresh the stream
     this.showMatchDetails(matchId);
 }
-
+toggleSupplier(matchId, channelId) {
+    const sourcesList = document.getElementById(`sources-${matchId}-${channelId}`);
+    const supplierArrow = document.querySelector(`#sources-${matchId}-${channelId}`).previousElementSibling.querySelector('.supplier-arrow');
+    
+    if (sourcesList.style.display === 'none') {
+        sourcesList.style.display = 'block';
+        supplierArrow.textContent = '▼';
+    } else {
+        sourcesList.style.display = 'none';
+        supplierArrow.textContent = '▶';
+    }
+}
 getLastChannel(matchId) {
     return localStorage.getItem(`9kilos-last-channel-${matchId}`) || 'tom';
 }
