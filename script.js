@@ -1525,17 +1525,18 @@ showMainMenu() {
         }
     }
 
-    registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('SW registered: ', registration);
-                })
-                .catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
-                });
-        }
-    }
+   registerServiceWorker() {
+    // Remove or comment out service worker for now
+    // if ('serviceWorker' in navigator) {
+    //     navigator.serviceWorker.register('/sw.js')
+    //         .then(registration => {
+    //             console.log('SW registered: ', registration);
+    //         })
+    //         .catch(registrationError => {
+    //             console.log('SW registration failed: ', registrationError);
+    //         });
+    // }
+}
 
     showErrorState(errorMessage = '') {
         const container = document.getElementById('dynamic-content');
