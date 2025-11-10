@@ -1,4 +1,4 @@
-// 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
+ // 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
 // 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
 
 
@@ -91,7 +91,7 @@ class MatchScheduler {
             });
         }
         
-        // 2. Sarah's streams - SIMPLE & SCALABLE VERSION
+       
         // 2. Sarah's streams - BUT DON'T BREAK IF IT FAILS
 try {
     console.log('🔄 Trying to get Sarah streams for:', match.teams);
@@ -126,7 +126,15 @@ try {
     } else {
         console.log('❌ No Sarah streams for this match');
     }
-
+    } catch (error) {
+        console.log('🚨 Sarah streams failed, but no problem - using Tom streams');
+        // Don't break if Sarah fails!
+    }
+    
+    console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
+                '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length);
+    return sources;
+}
             console.log('📦 Found', streamedMatches.length, 'matches from Streamed.pk');
             
             const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
