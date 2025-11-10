@@ -1324,18 +1324,18 @@ body {
         font-size: 0.65em;
     }
 }
-/* ==================== SOURCE DROPDOWN STYLES ==================== */
 .source-dropdown {
-    background: #f8f9fa;
-    border: 1px solid var(--border-light);
-    color: black;
-    padding: 6px 10px;
-    border-radius: 6px;
+    background: #1a1a2e;
+    border: 2px solid #3498db; /* 🔵 BLUE border instead of gold */
+    color: #3498db; /* 🔵 BLUE text instead of gold */
+    padding: 8px 12px;
+    border-radius: 10px;
     font-size: 0.9em;
     cursor: pointer;
-    min-width: 140px;
-    margin-left: 8px;
-    font-weight: 600;
+    min-width: 160px;
+    margin-left: 10px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); /* Blue glow */
 }
 
 .source-dropdown option {
@@ -1358,18 +1358,22 @@ body {
 /* Circle icons for sources */
 .circle-icon {
     display: inline-block;
-    width: 8px;
-    height: 8px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    margin-right: 6px;
+    margin-right: 8px;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
 .tom-icon {
-    background: #9b59b6; /* Purple for Tom */
+    background: #ff6b6b; /* 🔴 RED for Tom */
+    border-color: #ff6b6b;
 }
 
 .sarah-icon {
-    background: #3498db; /* Blue for Sarah */
+    background: #3498db; /* 🔵 BLUE for Sarah */  
+    border-color: #3498db;
 }
 
 .source-option {
@@ -1386,10 +1390,10 @@ body {
 /* Mobile optimizations for source dropdown */
 @media (max-width: 768px) {
     .source-dropdown {
-        padding: 4px 8px;
-        font-size: 0.8em;
-        min-width: 120px;
-        margin-left: 6px;
+        padding: 6px 10px;
+        font-size: 0.85em;
+        min-width: 140px;
+        margin-left: 8px;
     }
 }
 /* Ensure background consistency across all devices */
