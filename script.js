@@ -1155,11 +1155,33 @@ if (homeButton) {
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                 <span style="color: var(--text-muted);"> • ${match.league}</span>
                                 <span style="color: var(--accent-gold); font-weight: 600;"> • ${totalSources} ${sourceText}</span>
-                              <div class="channel-dropdown">
-    <div class="dropdown-header">
+                            <div class="channel-dropdown">
+    <div class="dropdown-header" onclick="matchScheduler.toggleMainDropdown()">
         <span class="dropdown-title">CHANNELS</span>
         <span class="dropdown-arrow">▼</span>
     </div>
+    
+    <div class="dropdown-content" id="dropdown-content" style="display: none;">
+        ${Object.entries(await this.getChannelGroups(match)).map(([channelId, channel]) => `
+            <div class="supplier-section">
+                <div class="supplier-header" onclick="matchScheduler.toggleSupplier('${channelId}')">
+                    <span class="supplier-name">${channel.name}</span>
+                    <span class="supplier-count">(${channel.sources.length})</span>
+                    <span class="supplier-arrow" id="arrow-${channelId}">▶</span>
+                </div>
+                
+                <div class="sources-list" id="sources-${channelId}" style="display: none;">
+                    ${channel.sources.map(source => `
+                        <div class="source-item ${this.selectedSource === source.value ? 'selected' : ''}" 
+                             onclick="matchScheduler.selectSource('${matchId}', '${source.value}', '${source.url}')">
+                            <span class="source-name">${source.label.replace(/<[^>]*>/g, '')}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('')}
+    </div>
+</div>
     
     <div class="dropdown-content">
         ${Object.entries(await this.getChannelGroups(match)).map(([channelId, channel]) => `
@@ -1287,32 +1309,45 @@ async getChannelGroups(match) {
         this.showMatchDetails(matchId);
     }
     
-    toggleSupplier(matchId, channelId) {
-        const sourcesList = document.getElementById(`sources-${matchId}-${channelId}`);
-        const supplierArrow = document.querySelector(`#sources-${matchId}-${channelId}`).previousElementSibling.querySelector('.supplier-arrow');
-        
-        if (sourcesList.style.display === 'none') {
-            sourcesList.style.display = 'block';
-            supplierArrow.textContent = '▼';
-        } else {
-            sourcesList.style.display = 'none';
-            supplierArrow.textContent = '▶';
-        }
+// ==================== CHANNEL DROPDOWN FUNCTIONS ====================
+toggleMainDropdown() {
+    const content = document.getElementById('dropdown-content');
+    const arrow = document.querySelector('.dropdown-arrow');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.textContent = '▲';
+    } else {
+        content.style.display = 'none';
+        arrow.textContent = '▼';
     }
+}
 
-    refreshCurrentStream(matchId) {
-        const match = this.verifiedMatches.find(m => m.id === matchId);
-        if (!match) return;
-        
-        const iframe = document.getElementById(`stream-iframe-${matchId}`);
-        if (iframe) {
-            const currentSrc = iframe.src;
-            iframe.src = '';
-            setTimeout(() => {
-                iframe.src = currentSrc;
-            }, 500);
-        }
+toggleSupplier(channelId) {
+    const sourcesList = document.getElementById(`sources-${channelId}`);
+    const arrow = document.getElementById(`arrow-${channelId}`);
+    
+    if (sourcesList.style.display === 'none') {
+        sourcesList.style.display = 'block';
+        arrow.textContent = '▼';
+    } else {
+        sourcesList.style.display = 'none';
+        arrow.textContent = '▶';
     }
+}
+
+selectSource(matchId, sourceValue, sourceUrl) {
+    console.log('🎯 Selecting source:', sourceValue);
+    this.selectedSource = sourceValue;
+    localStorage.setItem('9kilos-selected-source', sourceValue);
+    
+    // Close all dropdowns for clean UI
+    document.getElementById('dropdown-content').style.display = 'none';
+    document.querySelector('.dropdown-arrow').textContent = '▼';
+    
+    // Refresh the match details to update the stream
+    this.showMatchDetails(matchId);
+}
 
     // ==================== UTILITY METHODS ====================
 showMainMenu() {
