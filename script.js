@@ -1,6 +1,8 @@
 // 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
 // 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
 
+
+
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
@@ -57,10 +59,10 @@ class MatchScheduler {
     async fetchStreamedPkMatches(sport = 'all') {
         try {
             const endpoint = sport === 'all' ? 
-                'api/matches' :
-                `api/matches/${sport}`;
+                API_CONFIG.STREAMED.ENDPOINTS.ALL_MATCHES :
+                API_CONFIG.STREAMED.ENDPOINTS.SPORT_MATCHES.replace('{sport}', sport);
             
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent('https://streamed.pk/' + endpoint)}`;
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(API_CONFIG.STREAMED.BASE_URL + endpoint)}`;
             
             const response = await fetch(proxyUrl, {
                 headers: { 'Accept': 'application/json' }
@@ -89,20 +91,23 @@ class MatchScheduler {
             });
         }
         
-        // 2. Sarah's streams - BUT DON'T BREAK IF IT FAILS
+        // 2. Sarah's streams - SIMPLE & SCALABLE VERSION
         try {
-            console.log('🔄 Trying to get Sarah streams for:', match.teams);
+            console.log('🔄 Getting Streamed.pk matches for:', match.teams);
             const streamedMatches = await this.fetchStreamedPkMatches('football');
-            console.log('📦 Sarah found', streamedMatches.length, 'matches');
+            console.log('📦 Found', streamedMatches.length, 'matches from Streamed.pk');
             
             const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
             
-            if (matchingMatch && matchingMatch.sources) {
-                console.log('✅ FOUND Sarah match:', matchingMatch.title);
+            if (matchingMatch) {
+                console.log('✅ FOUND MATCH:', matchingMatch.title);
+                console.log('🔧 Sources available:', matchingMatch.sources);
                 
                 let sarahStreamNumber = 0;
+                
+                // Loop through each source and add multiple streams
                 matchingMatch.sources.forEach((source) => {
-                    // Add Sarah stream 1
+                    // Add stream 1 for this source
                     sources.push({
                         value: `sarah-${sarahStreamNumber}`,
                         label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
@@ -110,22 +115,29 @@ class MatchScheduler {
                     });
                     sarahStreamNumber++;
                     
-                    // Add Sarah stream 2  
+                    // Add stream 2 for this source
                     sources.push({
                         value: `sarah-${sarahStreamNumber}`,
                         label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
                         url: `https://embedsports.top/embed/${source.source}/${source.id}/2`
                     });
                     sarahStreamNumber++;
+                    
+                    // Add stream 3 for this source
+                    sources.push({
+                        value: `sarah-${sarahStreamNumber}`,
+                        label: `<span class="source-option"><span class="circle-icon sarah-icon"></span> sarah ${sarahStreamNumber + 1}</span>`,
+                        url: `https://embedsports.top/embed/${source.source}/${source.id}/3`
+                    });
+                    sarahStreamNumber++;
                 });
                 
                 console.log(`🔢 Created ${sarahStreamNumber} Sarah streams`);
             } else {
-                console.log('❌ No Sarah streams for this match');
+                console.log('❌ No matching Streamed.pk match found for:', match.teams);
             }
         } catch (error) {
-            console.log('🚨 Sarah streams failed, but no problem - using Tom streams');
-            // Don't break if Sarah fails!
+            console.log('🚨 Sarah streams error:', error);
         }
         
         console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
@@ -812,28 +824,58 @@ if (homeButton) {
         }
     }
 
-  async loadMatches() {
-    console.log('🔄 Loading matches from Tom API...');
-    
-    // 🎯 ALWAYS USE TOM'S API (since it works!)
-    const targetUrl = 'https://topembed.pw/api.php?format=json';
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
-    
-    try {
-        console.log('🔑 Calling Tom API...');
-        const response = await fetch(proxyUrl);
-        const tomData = await response.json();
-        console.log('✅ Tom API SUCCESS! Found matches:', Object.keys(tomData.events || {}).length);
+    async loadMatches() {
+        const cachedData = this.getCachedData();
+        if (cachedData) {
+            console.log('📦 Using cached data');
+            this.organizeMatches(cachedData);
+            return;
+        }
         
-        // Use Tom's data for everything
-        this.organizeMatches(tomData);
-        this.cacheData(tomData);
-        
-    } catch (error) {
-        console.log('❌ Tom API failed, using demo data');
-        this.useFallbackData();
+        try {
+            const apiData = await this.tryAllProxies();
+            this.organizeMatches(apiData);
+            this.cacheData(apiData);
+        } catch (error) {
+            console.warn('All API attempts failed:', error);
+            this.useFallbackData();
+        }
     }
-}
+
+    async tryAllProxies() {
+        const targetUrl = this.selectedSource.includes('tom') 
+            ? 'https://topembed.pw/api.php?format=json'
+            : 'https://streamed.pk/api.php?format=json';
+        
+        const proxyOptions = [
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            targetUrl
+        ];
+        
+        for (const proxyUrl of proxyOptions) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
+                
+                const response = await fetch(proxyUrl, {
+                    signal: controller.signal,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (error) {
+                console.warn(`Proxy failed: ${proxyUrl}`, error);
+                continue;
+            }
+        }
+        
+        throw new Error('All proxy attempts failed');
+    }
 
     useFallbackData() {
         const now = Math.floor(Date.now() / 1000);
@@ -1155,55 +1197,13 @@ if (homeButton) {
                                 <span class="views-count">${this.formatNumber(stats.views)} views</span>
                                 <span style="color: var(--text-muted);"> • ${match.league}</span>
                                 <span style="color: var(--accent-gold); font-weight: 600;"> • ${totalSources} ${sourceText}</span>
-                            <div class="channel-dropdown">
-    <div class="dropdown-header" onclick="matchScheduler.toggleMainDropdown()">
-        <span class="dropdown-title">CHANNELS</span>
-        <span class="dropdown-arrow">▼</span>
-    </div>
-    
-    <div class="dropdown-content" id="dropdown-content" style="display: none;">
-        ${Object.entries(await this.getChannelGroups(match)).map(([channelId, channel]) => `
-            <div class="supplier-section">
-                <div class="supplier-header" onclick="matchScheduler.toggleSupplier('${channelId}')">
-                    <span class="supplier-name">${channel.name}</span>
-                    <span class="supplier-count">(${channel.sources.length})</span>
-                    <span class="supplier-arrow" id="arrow-${channelId}">▶</span>
-                </div>
-                
-                <div class="sources-list" id="sources-${channelId}" style="display: none;">
-                    ${channel.sources.map(source => `
-                        <div class="source-item ${this.selectedSource === source.value ? 'selected' : ''}" 
-                             onclick="matchScheduler.selectSource('${matchId}', '${source.value}', '${source.url}')">
-                            <span class="source-name">${source.label.replace(/<[^>]*>/g, '')}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('')}
-    </div>
-</div>
-    
-    <div class="dropdown-content">
-        ${Object.entries(await this.getChannelGroups(match)).map(([channelId, channel]) => `
-            <div class="supplier-section">
-                <div class="supplier-header" onclick="matchScheduler.toggleSupplier('${matchId}', '${channelId}')">
-                    <span class="supplier-name">${channel.name}</span>
-                    <span class="supplier-count">(${channel.sources.length})</span>
-                    <span class="supplier-arrow">▶</span>
-                </div>
-                
-                <div class="sources-list" id="sources-${matchId}-${channelId}" style="display: none;">
-                    ${channel.sources.map(source => `
-                        <div class="source-item ${this.selectedSource === source.value ? 'selected' : ''}" 
-                             onclick="matchScheduler.selectSource('${matchId}', '${source.value}', '${source.url}')">
-                            <span class="source-name">${source.label.replace(/<[^>]*>/g, '')}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('')}
-    </div>
-</div>
+                                <select class="source-dropdown" onchange="matchScheduler.switchSource('${matchId}', this.value)">
+                                    ${allSources.map((source, index) => `
+                                        <option value="${source.value}" ${source.value === this.selectedSource ? 'selected' : ''}>
+                                            ${source.label}
+                                        </option>
+                                    `).join('')}
+                                </select>
                             </div>
                             
                             <div class="video-actions">
@@ -1257,97 +1257,20 @@ if (homeButton) {
         // Refresh the match details to update the stream
         this.showMatchDetails(matchId);
     }
-    // ==================== CHANNEL SYSTEM METHODS ====================
-async getChannelGroups(match) {
-    const groups = {};
-    
-    // Check Tom - only add if he has streams
-    if (match.channels && match.channels.length > 0) {
-        groups.tom = { 
-            name: 'Tom', 
-            sources: match.channels.map((channel, index) => ({
-                value: `tom-${index}`,
-                label: `Source ${index + 1}`,
-                url: channel
-            }))
-        };
-    }
-    
-    // Check Sarah - only add if she has streams  
-    const allSources = await this.getAllSourcesForMatch(match);
-    const sarahSources = allSources.filter(source => source.value.startsWith('sarah-'));
-    if (sarahSources.length > 0) {
-        groups.sarah = {
-            name: 'Sarah',
-            sources: sarahSources.map((source, index) => ({
-                value: source.value,
-                label: `Source ${index + 1}`,
-                url: source.url
-            }))
-        };
-    }
-    
-    // Check Footy - only add if he has streams
-    // We'll add Footy streams later - for now leave this empty
-    const footySources = [];
-    if (footySources.length > 0) {
-        groups.footy = {
-            name: 'Footy', 
-            sources: footySources
-        };
-    }
-    
-    return groups;
-}
 
-    selectSource(matchId, sourceValue, sourceUrl) {
-        this.selectedSource = sourceValue;
-        localStorage.setItem('9kilos-selected-source', sourceValue);
-        localStorage.setItem(`9kilos-last-source-${matchId}`, sourceValue);
+    refreshCurrentStream(matchId) {
+        const match = this.verifiedMatches.find(m => m.id === matchId);
+        if (!match) return;
         
-        // Refresh the stream
-        this.showMatchDetails(matchId);
+        const iframe = document.getElementById(`stream-iframe-${matchId}`);
+        if (iframe) {
+            const currentSrc = iframe.src;
+            iframe.src = '';
+            setTimeout(() => {
+                iframe.src = currentSrc;
+            }, 500);
+        }
     }
-    
-// ==================== CHANNEL DROPDOWN FUNCTIONS ====================
-toggleMainDropdown() {
-    const content = document.getElementById('dropdown-content');
-    const arrow = document.querySelector('.dropdown-arrow');
-    
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        arrow.textContent = '▲';
-    } else {
-        content.style.display = 'none';
-        arrow.textContent = '▼';
-    }
-}
-
-toggleSupplier(channelId) {
-    const sourcesList = document.getElementById(`sources-${channelId}`);
-    const arrow = document.getElementById(`arrow-${channelId}`);
-    
-    if (sourcesList.style.display === 'none') {
-        sourcesList.style.display = 'block';
-        arrow.textContent = '▼';
-    } else {
-        sourcesList.style.display = 'none';
-        arrow.textContent = '▶';
-    }
-}
-
-selectSource(matchId, sourceValue, sourceUrl) {
-    console.log('🎯 Selecting source:', sourceValue);
-    this.selectedSource = sourceValue;
-    localStorage.setItem('9kilos-selected-source', sourceValue);
-    
-    // Close all dropdowns for clean UI
-    document.getElementById('dropdown-content').style.display = 'none';
-    document.querySelector('.dropdown-arrow').textContent = '▼';
-    
-    // Refresh the match details to update the stream
-    this.showMatchDetails(matchId);
-}
 
     // ==================== UTILITY METHODS ====================
 showMainMenu() {
@@ -1548,7 +1471,9 @@ showMainMenu() {
     }
 
     async tryFastProxies() {
-        const targetUrl = 'https://topembed.pw/api.php?format=json';
+        const targetUrl = this.selectedSource.includes('tom') 
+            ? 'https://topembed.pw/api.php?format=json'
+            : 'https://streamed.pk/api.php?format=json';
         
         const fastProxies = [
             `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
