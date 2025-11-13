@@ -434,7 +434,7 @@ class MatchScheduler {
    // document.addEventListener('mouseover', (e) => {
   //      if (e.target.closest('.sports-button')) {
  //           this.preloadSportsData();
-        }
+   //     }
  //   });
 
         // ✅ ADD THIS BACK - MAKES BUTTONS CLICKABLE
