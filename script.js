@@ -1300,7 +1300,6 @@ showSportsView() {
         allow="autoplay; fullscreen; encrypted-media" 
         allowfullscreen
         referrerpolicy="no-referrer-when-downgrade"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         scrolling="no"
         frameborder="0"></iframe>` :
                                     `<div class="no-stream">
