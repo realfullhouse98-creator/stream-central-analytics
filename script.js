@@ -823,22 +823,74 @@ if (homeButton) {
     }
 
     async loadMatches() {
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            console.log('📦 Using cached data');
-            this.organizeMatches(cachedData);
-            return;
-        }
+    // TRY MASTER FILE FIRST (from GitHub)
+    try {
+        console.log('📁 Loading from master file...');
+        const MASTER_URL = 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/master-data.json';
+        const response = await fetch(MASTER_URL + '?t=' + Date.now());
         
-        try {
-            const apiData = await this.tryAllProxies();
-            this.organizeMatches(apiData);
-            this.cacheData(apiData);
-        } catch (error) {
-            console.warn('All API attempts failed:', error);
-            this.useFallbackData();
-        }
+        if (!response.ok) throw new Error('Master file not ready yet');
+        
+        const masterData = await response.json();
+        console.log('✅ Master file loaded:', masterData.lastUpdated);
+        
+        // Convert to app format
+        this.convertMasterToAppFormat(masterData);
+        this.isUsingMasterFile = true;
+        return;
+        
+    } catch (error) {
+        console.log('❌ Master file failed, using API fallback:', error.message);
+        // Fallback to original API system
+        await this.loadFromAPIs();
     }
+}
+    // ADD THIS NEW METHOD
+convertMasterToAppFormat(masterData) {
+    this.verifiedMatches = [];
+    this.allMatches = [];
+    
+    if (!masterData?.sports) return;
+    
+    Object.entries(masterData.sports).forEach(([sport, matches]) => {
+        matches.forEach(match => {
+            // Skip expired matches
+            if (match.expiresAt && new Date() > new Date(match.expiresAt)) {
+                return;
+            }
+            
+            const appMatch = {
+                id: match.id,
+                date: match.date,
+                time: match.time,
+                teams: match.teams,
+                league: match.league,
+                streamUrl: match.streams[0] || null,
+                channels: match.streams || [],
+                isLive: this.checkIfLive(match),
+                sport: sport,
+                unixTimestamp: match.timestamp
+            };
+            
+            this.allMatches.push(appMatch);
+            this.verifiedMatches.push(appMatch);
+            
+            if (!this.matchStats.has(match.id)) {
+                this.matchStats.set(match.id, {
+                    views: Math.floor(Math.random() * 10000) + 500,
+                    likes: Math.floor(Math.random() * 500) + 50,
+                    dislikes: Math.floor(Math.random() * 100) + 10
+                });
+            }
+        });
+    });
+    
+    this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
+    this.updateAnalytics();
+    
+    console.log(`📊 Converted ${this.verifiedMatches.length} matches from master file`);
+}
+
 
     async tryAllProxies() {
         const targetUrl = this.selectedSource.includes('tom') 
