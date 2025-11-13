@@ -20,10 +20,8 @@ jobs:
         run: |
           node scripts/update-master.js
           
-      - name: Commit and push changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add master-data.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "🤖 Auto-update sports data - $(date +'%Y-%m-%d %H:%M')"
-          git push
+           - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "🤖 Auto-update sports data"
+          file_pattern: master-data.json
