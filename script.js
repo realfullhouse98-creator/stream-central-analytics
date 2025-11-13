@@ -405,8 +405,8 @@ return sources;
                     <div class="video-container">
                         <div class="video-player-wrapper">
                             <div class="video-player" id="video-player-tv">
-                                <iframe src="${channel.streamUrl}" class="stream-iframe" id="stream-iframe-tv"
-                                        allow="autoplay; fullscreen" allowfullscreen></iframe>
+                                `<iframe src="${channel.streamUrl}" class="stream-iframe" id="stream-iframe-tv"
+        allow="autoplay; fullscreen" allowfullscreen></iframe>`
                             </div>
                         </div>
                         
@@ -1294,8 +1294,15 @@ showSportsView() {
                         <div class="video-player-wrapper">
                             <div class="video-player" id="video-player-${matchId}">
                                 ${currentStreamUrl ? 
-                                    `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
-                                            allow="autoplay; fullscreen" allowfullscreen></iframe>` :
+                                    `<iframe src="${currentStreamUrl}" 
+        class="stream-iframe" 
+        id="stream-iframe-${matchId}"
+        allow="autoplay; fullscreen; encrypted-media" 
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        scrolling="no"
+        frameborder="0"></iframe>` :
                                     `<div class="no-stream">
                                         <h3>Stream Offline</h3>
                                         <p>No streams available for this match</p>
