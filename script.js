@@ -1314,20 +1314,7 @@ showSportsView() {
                         
                             </div>
                         </div>
-<!-- DEBUG CODE GOES HERE -->
-<script>
-    setTimeout(() => {
-        const iframe = document.getElementById('stream-iframe-${matchId}');
-        console.log('🔍 IFRAME DEBUG:', {
-            exists: !!iframe,
-            src: iframe?.src,
-            complete: iframe?.complete,
-            contentWindow: !!iframe?.contentWindow
-        });
-        iframe.onload = () => console.log('✅ IFRAME LOADED');
-        iframe.onerror = () => console.log('❌ IFRAME FAILED');
-    }, 1000);
-</script>
+
                          
                         
                         <div class="video-controls">
@@ -1345,6 +1332,23 @@ showSportsView() {
                                     `).join('')}
                                 </select>
                             </div>
+
+                            <script>
+    // Debug iframe loading
+    setTimeout(() => {
+        const iframe = document.getElementById('stream-iframe-${matchId}');
+        console.log('🔍 IFRAME DEBUG:', {
+            exists: !!iframe,
+            src: iframe?.src,
+            complete: iframe?.complete,
+            contentWindow: !!iframe?.contentWindow
+        });
+        if (iframe) {
+            iframe.onload = () => console.log('✅ IFRAME LOADED');
+            iframe.onerror = () => console.log('❌ IFRAME FAILED');
+        }
+    }, 1000);
+</script>
                             
                             <div class="video-actions">
                                 <button class="action-btn like-btn" onclick="matchScheduler.handleLike('${matchId}')">
