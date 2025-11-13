@@ -1314,6 +1314,21 @@ showSportsView() {
                         
                             </div>
                         </div>
+<!-- DEBUG CODE GOES HERE -->
+<script>
+    setTimeout(() => {
+        const iframe = document.getElementById('stream-iframe-${matchId}');
+        console.log('🔍 IFRAME DEBUG:', {
+            exists: !!iframe,
+            src: iframe?.src,
+            complete: iframe?.complete,
+            contentWindow: !!iframe?.contentWindow
+        });
+        iframe.onload = () => console.log('✅ IFRAME LOADED');
+        iframe.onerror = () => console.log('❌ IFRAME FAILED');
+    }, 1000);
+</script>
+                         
                         
                         <div class="video-controls">
                             <div class="video-title">${formattedTeams}</div>
