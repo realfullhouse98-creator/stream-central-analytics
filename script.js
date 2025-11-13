@@ -863,7 +863,7 @@ showSportsView() {
                 const appMatch = {
                     id: match.id,
                     date: match.date,
-                    time: match.time,
+                    time: this.convertToLocalTime(match.date, match.time),  // ← CONVERT TO LOCAL TIME
                     teams: match.teams,
                     league: match.league,
                     streamUrl: match.streams[0] || null,
@@ -1432,6 +1432,19 @@ showMainMenu() {
             weekday: 'short', month: 'short', day: 'numeric'
         });
     }
+    convertToLocalTime(dateString, timeString) {
+    // Create date object from the match date/time (assume UTC)
+    const utcDate = new Date(`${dateString}T${timeString}Z`);
+    
+    // Convert to local time
+    return utcDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+}
+
+    
 
     getTeamName(teamString, index) {
         const teams = teamString.split(' - ');
