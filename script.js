@@ -823,28 +823,27 @@ if (homeButton) {
     }
 
     async loadMatches() {
-    // TRY MASTER FILE FIRST (from GitHub)
+    console.log('🔍 Testing master file...');
+    
+    // Test the master file directly
+    const testUrl = 'https://raw.githubusercontent.com/realfullhouse98-creator/stream-central-analytics/main/master-data.json';
     try {
-        console.log('📁 Loading from master file...');
-        const MASTER_URL = 'https://raw.githubusercontent.com/realfullhouse98-creator/stream-central-analytics/main/master-data.json';
-        const response = await fetch(MASTER_URL + '?t=' + Date.now());
-        
-        if (!response.ok) throw new Error('Master file not ready yet');
-        
-        const masterData = await response.json();
-        console.log('✅ Master file loaded:', masterData.lastUpdated);
-        
-        // Convert to app format
-        this.convertMasterToAppFormat(masterData);
-        this.isUsingMasterFile = true;
-        return;
-        
+        const response = await fetch(testUrl);
+        console.log('Master file status:', response.status);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Master file data:', data);
+            this.convertMasterToAppFormat(data);
+            return;
+        }
     } catch (error) {
-        console.log('❌ Master file failed, using API fallback:', error.message);
-        // Fallback to original API system
-        await this.loadFromAPIs();
+        console.log('Master file error:', error);
     }
+    
+    // Fallback to APIs
+    await this.loadFromAPIs();
 }
+
     // ADD THIS NEW METHOD
 convertMasterToAppFormat(masterData) {
     this.verifiedMatches = [];
