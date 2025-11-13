@@ -1298,14 +1298,8 @@ showSportsView() {
                         <div class="video-player-wrapper">
                             <div class="video-player" id="video-player-${matchId}">
                                 ${currentStreamUrl ? 
-                                    `<iframe src="${currentStreamUrl}" 
-        class="stream-iframe" 
-        id="stream-iframe-${matchId}"
-        allow="autoplay; fullscreen; encrypted-media" 
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        scrolling="no"
-        frameborder="0"></iframe>` :
+                                    `<iframe src="${currentStreamUrl}" class="stream-iframe" id="stream-iframe-${matchId}"
+        allow="autoplay; fullscreen" allowfullscreen></iframe>` :
                                     `<div class="no-stream">
                                         <h3>Stream Offline</h3>
                                         <p>No streams available for this match</p>
