@@ -847,51 +847,50 @@ showSportsView() {
             this.useFallbackData();
         }
     }
-    // ADD THIS NEW METHOD
-convertMasterToAppFormat(masterData) {
-    this.verifiedMatches = [];
-    this.allMatches = [];
-    
-    if (!masterData?.sports) return;
-    
-    Object.entries(masterData.sports).forEach(([sport, matches]) => {
-        matches.forEach(match => {
-            // Skip expired matches
-            if (match.expiresAt && new Date() > new Date(match.expiresAt)) {
-                return;
-            }
-            
-            const appMatch = {
-                id: match.id,
-                date: match.date,
-                time: match.time,
-                teams: match.teams,
-                league: match.league,
-                streamUrl: match.streams[0] || null,
-                channels: match.streams || [],
-                isLive: this.checkIfLive(match),
-                sport: sport,
-                unixTimestamp: match.timestamp
-            };
-            
-            this.allMatches.push(appMatch);
-            this.verifiedMatches.push(appMatch);
-            
-            if (!this.matchStats.has(match.id)) {
-                this.matchStats.set(match.id, {
-                    views: Math.floor(Math.random() * 10000) + 500,
-                    likes: Math.floor(Math.random() * 500) + 50,
-                    dislikes: Math.floor(Math.random() * 100) + 10
-                });
-            }
+     convertMasterToAppFormat(masterData) {
+        this.verifiedMatches = [];
+        this.allMatches = [];
+        
+        if (!masterData?.sports) return;
+        
+        Object.entries(masterData.sports).forEach(([sport, matches]) => {
+            matches.forEach(match => {
+                // Skip expired matches
+                if (match.expiresAt && new Date() > new Date(match.expiresAt)) {
+                    return;
+                }
+                
+                const appMatch = {
+                    id: match.id,
+                    date: match.date,
+                    time: match.time,
+                    teams: match.teams,
+                    league: match.league,
+                    streamUrl: match.streams[0] || null,
+                    channels: match.streams || [],
+                    isLive: this.checkIfLive(match),
+                    sport: sport,
+                    unixTimestamp: match.timestamp
+                };
+                
+                this.allMatches.push(appMatch);
+                this.verifiedMatches.push(appMatch);
+                
+                if (!this.matchStats.has(match.id)) {
+                    this.matchStats.set(match.id, {
+                        views: Math.floor(Math.random() * 10000) + 500,
+                        likes: Math.floor(Math.random() * 500) + 50,
+                        dislikes: Math.floor(Math.random() * 100) + 10
+                    });
+                }
+            });
         });
-    });
-    
-    this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
-    this.updateAnalytics();
-    
-    console.log(`📊 Converted ${this.verifiedMatches.length} matches from master file`);
-}
+        
+        this.verifiedMatches.sort((a, b) => a.unixTimestamp - b.unixTimestamp);
+        this.updateAnalytics();
+        
+        console.log(`📊 Converted ${this.verifiedMatches.length} matches from master file`);
+    }
 
 
     async tryAllProxies() {
