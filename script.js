@@ -860,18 +860,19 @@ showSportsView() {
                     return;
                 }
                 
-                const appMatch = {
-                    id: match.id,
-                    date: match.date,
-                    time: this.convertToLocalTime(match.date, match.time),  // ← CONVERT TO LOCAL TIME
-                    teams: match.teams,
-                    league: match.league,
-                    streamUrl: match.streams[0] || null,
-                    channels: match.streams || [],
-                    isLive: this.checkIfLive(match),
-                    sport: sport,
+               const appMatch = {
+                   id: match.id,
+                   date: match.date,
+                   time: this.convertToLocalTime(match.date, match.time),
+                   teams: match.teams,
+                   league: match.league,
+                   streamUrl: match.streams[0] || null,
+                   channels: match.streams || [],
+                   sport: sport,
                     unixTimestamp: match.timestamp
-                };
+               };
+
+      appMatch.isLive = this.checkIfLive(appMatch);
                 
                 this.allMatches.push(appMatch);
                 this.verifiedMatches.push(appMatch);
@@ -1410,13 +1411,19 @@ showMainMenu() {
         });
     }
 
-    checkIfLive(match) {
-        if (!match.unix_timestamp) return false;
-        const now = Math.floor(Date.now() / 1000);
-        const matchTime = match.unix_timestamp;
-        return now >= matchTime && now <= (matchTime + 10800);
-    }
-
+   checkIfLive(match) {
+    if (!match.date || !match.time) return false;
+    
+    // Create match time in user's local timezone
+    const matchDateTime = new Date(`${match.date}T${match.time}`);
+    const now = new Date();
+    
+    // Match is live if: now is between match time and 3 hours after
+    const matchStart = matchDateTime.getTime();
+    const matchEnd = matchStart + (3 * 60 * 60 * 1000); // +3 hours
+    
+    return now >= matchStart && now <= matchEnd;
+}
     formatTeamNames(teamString) {
         return teamString.replace(/ - /g, ' vs ');
     }
