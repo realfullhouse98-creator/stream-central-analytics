@@ -826,7 +826,7 @@ if (homeButton) {
     // TRY MASTER FILE FIRST (from GitHub)
     try {
         console.log('📁 Loading from master file...');
-        const MASTER_URL = 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/master-data.json';
+        const MASTER_URL = 'https://raw.githubusercontent.com/realfullhouse98-creator/stream-central-analytics/main/master-data.json';
         const response = await fetch(MASTER_URL + '?t=' + Date.now());
         
         if (!response.ok) throw new Error('Master file not ready yet');
