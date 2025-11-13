@@ -50,7 +50,7 @@ class MatchScheduler {
         await this.loadTVChannelsData();
         
         // Start preloading in background
-        this.backgroundPreload();
+        // this.backgroundPreload();
     }
 
     // ==================== STREAMED.PK API METHODS ====================
@@ -431,11 +431,11 @@ class MatchScheduler {
     console.log('🎯 Setting up enhanced event listeners...');
     
     // Mouseover for sports preloading
-    document.addEventListener('mouseover', (e) => {
-        if (e.target.closest('.sports-button')) {
-            this.preloadSportsData();
+   // document.addEventListener('mouseover', (e) => {
+  //      if (e.target.closest('.sports-button')) {
+ //           this.preloadSportsData();
         }
-    });
+ //   });
 
     // ✅ ADD THIS BACK - MAKES BUTTONS CLICKABLE
     document.addEventListener('click', (e) => {
@@ -829,7 +829,23 @@ showSportsView() {
     // Fallback to APIs
     await this.loadFromAPIs();
 }
-
+ async loadFromAPIs() {
+    console.log('🔄 Falling back to API system...');
+    try {
+        const cachedData = this.getCachedData();
+        if (cachedData) {
+            this.organizeMatches(cachedData);
+            return;
+        }
+        
+        const apiData = await this.tryAllProxies();
+        this.organizeMatches(apiData);
+        this.cacheData(apiData);
+    } catch (error) {
+        console.warn('All API attempts failed, using demo data');
+        this.useFallbackData();
+    }
+}
     // ADD THIS NEW METHOD
 convertMasterToAppFormat(masterData) {
     this.verifiedMatches = [];
