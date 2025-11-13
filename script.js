@@ -405,8 +405,8 @@ return sources;
                     <div class="video-container">
                         <div class="video-player-wrapper">
                             <div class="video-player" id="video-player-tv">
-                                `<iframe src="${channel.streamUrl}" class="stream-iframe" id="stream-iframe-tv"
-        allow="autoplay; fullscreen" allowfullscreen></iframe>`
+                                <iframe src="${channel.streamUrl}" class="stream-iframe" id="stream-iframe-tv"
+                                 allow="autoplay; fullscreen" allowfullscreen></iframe>
                             </div>
                         </div>
                         
