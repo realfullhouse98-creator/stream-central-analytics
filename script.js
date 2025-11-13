@@ -73,6 +73,17 @@ class MatchScheduler {
             return [];
         }
     }
+    async fetchFootyMatches(sport = 'football') {
+    try {
+        const endpoint = API_CONFIG.FOOTY.ENDPOINTS.ALL_MATCHES;
+        const url = API_CONFIG.FOOTY.BASE_URL + endpoint;
+        console.log('📡 Calling Footy API:', url);
+        return await fetchWithFallback(url);
+    } catch (error) {
+        console.warn('Footy API unavailable:', error);
+        return [];
+    }
+}
 
     // ==================== STREAMED.PK URL GENERATION ====================
     async getAllSourcesForMatch(match) {
@@ -137,9 +148,28 @@ class MatchScheduler {
         } catch (error) {
             console.log('🚨 Sarah streams error:', error);
         }
+       // 3. Footy's streams
+try {
+    const footyMatches = await this.fetchFootyMatches('football');
+    const matchingFootyMatch = this.findMatchingFootyMatch(match, footyMatches);
+    
+    if (matchingFootyMatch) {
+        matchingFootyMatch.streams.forEach((stream, index) => {
+            sources.push({
+                value: `footy-${index}`,
+                label: `<span class="source-option"><span class="circle-icon" style="background: #9b59b6;"></span> footy ${index + 1}</span>`,
+                url: stream.url
+            });
+        });
+    }
+} catch (error) {
+    console.log('🚨 Footy streams error:', error);
+}
+
         
         console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
                     '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length);
+                    '| Footy streams =', sources.filter(s => s.value.startsWith('footy-')).length); 
         return sources;
     }
 
@@ -188,6 +218,19 @@ class MatchScheduler {
             return false;
         });
     }
+
+    findMatchingFootyMatch(ourMatch, footyMatches) {
+    const ourTeams = ourMatch.teams.toLowerCase().replace(/ - /g, ' vs ');
+    console.log('🔍 Looking for Footy match:', ourTeams);
+    
+    return footyMatches.find(footyMatch => {
+        if (!footyMatch || !footyMatch.teams) return false;
+        
+        // Try to match by team names
+        const footyTeamString = `${footyMatch.teams.home} vs ${footyMatch.teams.away}`.toLowerCase();
+        return footyTeamString.includes(ourTeams) || ourTeams.includes(footyTeamString);
+    });
+}
 
     // ==================== TV CHANNELS DATA ====================
     async loadTVChannelsData() {
