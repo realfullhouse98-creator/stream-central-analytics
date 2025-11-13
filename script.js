@@ -105,8 +105,10 @@ class MatchScheduler {
             console.log('🔄 Getting Streamed.pk matches for:', match.teams);
             const streamedMatches = await this.fetchStreamedPkMatches('football');
             console.log('📦 Found', streamedMatches.length, 'matches from Streamed.pk');
+            console.log('📦 Sarah raw data:', streamedMatches); // ← ADD THIS
             
             const matchingMatch = this.findMatchingStreamedPkMatch(match, streamedMatches);
+            console.log('🔍 Sarah matching result:', matchingMatch); // ← ADD THIS
             
             if (matchingMatch) {
                 console.log('✅ FOUND MATCH:', matchingMatch.title);
@@ -178,8 +180,10 @@ return sources;
         const ourTeams = ourMatch.teams.toLowerCase().replace(/ - /g, ' vs ');
         console.log('🔍 Looking for match:', ourTeams);
         
-        const ourTeamNames = ourTeams.split(' vs ').map(team => 
-            team.trim().toLowerCase()
+         // More flexible matching - check if teams appear in any order
+        const ourTeamNames = ourTeams.split(' ');
+        const hasAllTeams = ourTeamNames.every(team => 
+            team.length > 2 && streamedTitle.includes(team) // Only check significant words
         );
         
         return streamedMatches.find(streamedMatch => {
