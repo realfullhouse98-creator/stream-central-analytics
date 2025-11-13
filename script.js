@@ -678,33 +678,19 @@ if (homeButton) {
     }
 
     // ==================== SIMPLIFIED SPORTS NAVIGATION ====================
-    showSportsView() {
-        console.log('🎯 Sports button clicked - Simplified version');
-        
-        // 1. IMMEDIATE UI Response
-        this.showSportsLoadingUI();
-        
-        // 2. Safety timeout
-        const safetyTimeout = setTimeout(() => {
-            console.log('⚡ Safety timeout: Showing available data');
-            this.showSportsDataUI();
-        }, 3000);
-        
-        // 3. Try to load fresh data
-        try {
-            const success = this.ensureDataLoaded();
-            clearTimeout(safetyTimeout);
-            
-            if (success) {
-                this.showSportsDataUI();
-            } else {
-                this.showSportsDataUI();
-            }
-        } catch (error) {
-            clearTimeout(safetyTimeout);
-            this.showSportsDataUI();
-        }
-    }
+showSportsView() {
+    console.log('🎯 Sports button clicked - Simplified version');
+    
+    // 1. Show loading UI immediately
+    this.showSportsLoadingUI();
+    
+    // 2. Load from MASTER FILE (not APIs)
+    this.loadMatches().then(() => {
+        this.showSportsDataUI();
+    }).catch(() => {
+        this.showSportsDataUI();
+    });
+}
 
     showSportsLoadingUI() {
         const container = document.getElementById('dynamic-content');
