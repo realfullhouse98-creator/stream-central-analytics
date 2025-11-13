@@ -219,16 +219,36 @@ return sources;
         });
     }
 
-    findMatchingFootyMatch(ourMatch, footyMatches) {
+  findMatchingFootyMatch(ourMatch, footyMatches) {
     const ourTeams = ourMatch.teams.toLowerCase().replace(/ - /g, ' vs ');
     console.log('🔍 Looking for Footy match:', ourTeams);
     
     return footyMatches.find(footyMatch => {
         if (!footyMatch || !footyMatch.teams) return false;
         
-        // Try to match by team names
-        const footyTeamString = `${footyMatch.teams.home} vs ${footyMatch.teams.away}`.toLowerCase();
-        return footyTeamString.includes(ourTeams) || ourTeams.includes(footyTeamString);
+        const homeTeam = footyMatch.teams.home.toLowerCase();
+        const awayTeam = footyMatch.teams.away.toLowerCase();
+        const footyTeamString = `${homeTeam} vs ${awayTeam}`;
+        
+        console.log('🔍 Comparing:', ourTeams, 'vs', footyTeamString);
+        
+        // More flexible matching
+        const ourTeamNames = ourTeams.split(' vs ');
+        const footyTeamNames = footyTeamString.split(' vs ');
+        
+        // Check if teams match in any order
+        const teamsMatch = ourTeamNames.every(ourTeam => 
+            footyTeamString.includes(ourTeam)
+        ) || footyTeamNames.every(footyTeam =>
+            ourTeams.includes(footyTeam)
+        );
+        
+        if (teamsMatch) {
+            console.log('✅ Footy match found!');
+            return true;
+        }
+        
+        return false;
     });
 }
 
