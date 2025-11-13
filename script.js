@@ -437,7 +437,7 @@ class MatchScheduler {
         }
  //   });
 
-    // ✅ ADD THIS BACK - MAKES BUTTONS CLICKABLE
+        // ✅ ADD THIS BACK - MAKES BUTTONS CLICKABLE
     document.addEventListener('click', (e) => {
         this.handleGlobalClick(e);
     });
