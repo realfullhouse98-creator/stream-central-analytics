@@ -167,10 +167,10 @@ try {
 }
 
         
-        console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
-                    '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length);
-                    '| Footy streams =', sources.filter(s => s.value.startsWith('footy-')).length); 
-        return sources;
+       console.log('📊 FINAL COUNT: Tom streams =', sources.filter(s => s.value.startsWith('tom-')).length, 
+            '| Sarah streams =', sources.filter(s => s.value.startsWith('sarah-')).length,
+            '| Footy streams =', sources.filter(s => s.value.startsWith('footy-')).length);
+return sources;
     }
 
     findMatchingStreamedPkMatch(ourMatch, streamedMatches) {
