@@ -219,28 +219,29 @@ return sources;
         });
     }
 
-  findMatchingFootyMatch(ourMatch, footyMatches) {
+findMatchingFootyMatch(ourMatch, footyMatches) {
     const ourTeams = ourMatch.teams.toLowerCase().replace(/ - /g, ' vs ');
     console.log('🔍 Looking for Footy match:', ourTeams);
     
     return footyMatches.find(footyMatch => {
         if (!footyMatch || !footyMatch.teams) return false;
         
-        const homeTeam = footyMatch.teams.home.toLowerCase();
-        const awayTeam = footyMatch.teams.away.toLowerCase();
-        const footyTeamString = `${homeTeam} vs ${awayTeam}`;
+        // SAFELY get team names - they might be objects or strings
+        const homeTeam = String(footyMatch.teams.home?.name || footyMatch.teams.home || '').toLowerCase();
+        const awayTeam = String(footyMatch.teams.away?.name || footyMatch.teams.away || '').toLowerCase();
         
-        console.log('🔍 Comparing:', ourTeams, 'vs', footyTeamString);
+        console.log('🔍 Footy teams:', { homeTeam, awayTeam });
+        
+        if (!homeTeam || !awayTeam) return false;
+        
+        const footyTeamString = `${homeTeam} vs ${awayTeam}`;
         
         // More flexible matching
         const ourTeamNames = ourTeams.split(' vs ');
-        const footyTeamNames = footyTeamString.split(' vs ');
         
         // Check if teams match in any order
         const teamsMatch = ourTeamNames.every(ourTeam => 
             footyTeamString.includes(ourTeam)
-        ) || footyTeamNames.every(footyTeam =>
-            ourTeams.includes(footyTeam)
         );
         
         if (teamsMatch) {
