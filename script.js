@@ -808,44 +808,45 @@ showSportsView() {
         }
     }
 
-    async loadMatches() {
-    console.log('🔍 Testing master file...');
-    
-    // Test the master file directly
-    const testUrl = 'https://raw.githubusercontent.com/realfullhouse98-creator/stream-central-analytics/main/master-data.json';
-    try {
-        const response = await fetch(testUrl);
-        console.log('Master file status:', response.status);
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Master file data:', data);
-            this.convertMasterToAppFormat(data);
-            return;
-        }
-    } catch (error) {
-        console.log('Master file error:', error);
-    }
-    
-    // Fallback to APIs
-    await this.loadFromAPIs();
-}
- async loadFromAPIs() {
-    console.log('🔄 Falling back to API system...');
-    try {
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            this.organizeMatches(cachedData);
-            return;
+       async loadMatches() {
+        console.log('🔍 Testing master file...');
+        
+        // Test the master file directly
+        const testUrl = 'https://raw.githubusercontent.com/realfullhouse98-creator/stream-central-analytics/main/master-data.json';
+        try {
+            const response = await fetch(testUrl);
+            console.log('Master file status:', response.status);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Master file data:', data);
+                this.convertMasterToAppFormat(data);
+                return;
+            }
+        } catch (error) {
+            console.log('Master file error:', error);
         }
         
-        const apiData = await this.tryAllProxies();
-        this.organizeMatches(apiData);
-        this.cacheData(apiData);
-    } catch (error) {
-        console.warn('All API attempts failed, using demo data');
-        this.useFallbackData();
+        // Fallback to APIs
+        await this.loadFromAPIs();
     }
-}
+
+    async loadFromAPIs() {
+        console.log('🔄 Falling back to API system...');
+        try {
+            const cachedData = this.getCachedData();
+            if (cachedData) {
+                this.organizeMatches(cachedData);
+                return;
+            }
+            
+            const apiData = await this.tryAllProxies();
+            this.organizeMatches(apiData);
+            this.cacheData(apiData);
+        } catch (error) {
+            console.warn('All API attempts failed, using demo data');
+            this.useFallbackData();
+        }
+    }
     // ADD THIS NEW METHOD
 convertMasterToAppFormat(masterData) {
     this.verifiedMatches = [];
