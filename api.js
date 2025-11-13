@@ -1,108 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <script src="api.js"></script>
-    <script src="script.js?v=1.9"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BMEYY62XPX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-BMEYY62XPX', {'anonymize_ip': true});
-    </script>
+// api.js - CORRECTED VERSION
+const API_CONFIG = {
+    // TOM (Working)
+    TOM: {
+        BASE_URL: 'https://topembed.pw',
+        ENDPOINTS: {
+            ALL_MATCHES: '/api.php?format=json'
+        }
+    }, // ← MISSING COMMA HERE
     
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="99504c84-7b63-4718-8718-3b8117a7d0ce"></script>
+   // CORRECT Sarah API configuration
+SARAH: {
+    BASE_URL: 'https://streamed.pk',  // ← CHANGED FROM embedsports.top!
+    ENDPOINTS: {
+        ALL_MATCHES: '/api/matches/all',
+        SPORT_MATCHES: '/api/matches/{sport}',
+        LIVE_MATCHES: '/api/matches/live',
+        TODAY_MATCHES: '/api/matches/all-today'
+    }
+}, 
     
-    <!-- PWA Meta Tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f3460">
+    // FOOTY (NEW)
+    FOOTY: {
+        BASE_URL: 'https://watchfooty.live',
+        ENDPOINTS: {
+            ALL_MATCHES: '/api/v1/matches/football',
+            SPORT_MATCHES: '/api/v1/matches/{sport}',
+            MATCH_DETAILS: '/api/v1/match/{id}'
+        }
+    }
+};
 
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="manifest.json">
+// Enhanced fetch with better error handling
+async function fetchWithFallback(url, options = {}) {
+    const proxies = [
+        `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        url // Direct attempt
+    ];
     
-    <title>9kilo Stream - Live Sports & TV</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- Error Boundary Container -->
-    <div id="error-boundary" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a1a; z-index: 10000; color: white; padding: 20px; text-align: center;">
-        <div style="margin-top: 100px;">
-            <h2 style="color: #ff6b6b;">Something went wrong</h2>
-            <p id="error-message" style="margin: 20px 0;"></p>
-            <button onclick="location.reload()" style="background: #ffd93d; color: black; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Reload Page</button>
-        </div>
-    </div>
+    for (const proxyUrl of proxies) {
+        try {
+            console.log(`🔄 Trying: ${proxyUrl}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch(proxyUrl, {
+                ...options,
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                console.log(`✅ Success: ${url}`);
+                return await response.json();
+            }
+        } catch (error) {
+            console.warn(`❌ Failed: ${proxyUrl}`, error);
+            continue;
+        }
+    }
+    
+    throw new Error(`All attempts failed for: ${url}`);
+}
 
-    <div class="stream-central-dashboard">
-        <!-- STATIC HEADER - Always Visible -->
-        <header class="dashboard-header" id="main-header">
-            <h1>9kilo18 Stream</h1>
-            <p>Live Sports & TV Channels</p>
-        </header>
-        
-        <!-- STATIC STATS - Always Visible -->
-        <div class="analytics-overview">
-            <div class="stat-card">
-                <div class="stat-value" id="live-viewers">0</div>
-                <div class="stat-label">Live Viewers</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="total-streams">0</div>
-                <div class="stat-label">Active Streams</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="countries">1</div>
-                <div class="stat-label">Countries</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="uptime">100%</div>
-                <div class="stat-label">System Status</div>
-            </div>
-        </div>
+// Fixed Sarah API calls
+async function fetchSarahMatches(sport = 'all') {
+    try {
+        const endpoint = API_CONFIG.SARAH.ENDPOINTS.ALL_MATCHES;
+        const url = API_CONFIG.SARAH.BASE_URL + endpoint;
+        return await fetchWithFallback(url);
+    } catch (error) {
+        console.warn('Sarah API unavailable:', error);
+        return [];
+    }
+}
 
-        <!-- DYNAMIC CONTENT AREA - Only This Changes -->
-        <main class="main-content">
-            <div id="dynamic-content">
-                <!-- Initial content will be loaded here -->
-                <div class="main-menu">
-                    <div class="menu-grid">
-                        <div class="menu-button sports-button" data-action="sports">
-                            <div class="button-title">LIVE SPORTS</div>
-                            <div class="button-subtitle">Games & schedules</div>
-                        </div>
-                        <div class="menu-button tv-button" data-action="tv">
-                            <div class="button-title">TV CHANNELS</div>
-                            <div class="button-subtitle">24/7 live streams</div>
-                        </div>
-                        <div class="menu-button community" data-action="community">
-                            <div class="button-title">COMMUNITY</div>
-                            <div class="button-subtitle">Fan discussions</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+// New Footy API calls
+async function fetchFootyMatches(sport = 'football') {
+    try {
+        const endpoint = API_CONFIG.FOOTY.ENDPOINTS.ALL_MATCHES;
+        const url = API_CONFIG.FOOTY.BASE_URL + endpoint;
+        return await fetchWithFallback(url);
+    } catch (error) {
+        console.warn('Footy API unavailable:', error);
+        return [];
+    }
+}
 
-        <!-- STATIC FOOTER - Always Visible -->
-        <footer class="dashboard-footer">
-            <div class="footer-legal">
-                <p class="copyright">© 2025 9kilo Stream. All rights reserved.</p>
-                <p class="legal-disclaimer">
-                    9kilo is simply a database of embedded streams and HLS files available throughout the internet. 
-                    We do not host, control or upload any streams and/or media files. Please contact appropriate 
-                    media owners or hosts.
-                </p>
-            </div>
-            <div class="last-updated">Updated: <span id="update-time">Just now</span></div>
-        </footer>
-    </div>
-
-   
-</body>
-</html>
+// Enhanced stream detection for Footy
+function extractFootyStreams(footyMatch) {
+    if (!footyMatch.streams || footyMatch.streams.length === 0) {
+        return [];
+    }
+    
+    return footyMatch.streams.map(stream => ({
+        url: stream.url,
+        quality: stream.quality || 'hd',
+        source: 'footy',
+        language: stream.language || 'en'
+    }));
+}
