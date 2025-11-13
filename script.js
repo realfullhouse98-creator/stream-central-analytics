@@ -1,8 +1,6 @@
 // 9kilo Stream - FINAL BULLETPROOF VERSION WITH PROFESSIONAL STYLING
 // 🚨 IMPORTANT: DO NOT MODIFY THIS SIMPLIFIED DESIGN - Optimized for TikTok-brain users
 
-
-
 class MatchScheduler {
     constructor() {
         this.allMatches = [];
