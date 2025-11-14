@@ -1,38 +1,48 @@
 name: Update Sports Data
+
 on:
   schedule:
-     - cron: '*/15 * * * *'  # Every 15 minutes
-  workflow_dispatch:      # Manual trigger
+    - cron: '*/15 * * * *'  # Every 20 minutes
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          
-      - name: Update sports data
-        run: |
-          node scripts/update-master.js
-          
-      - name: Commit changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add master-data.json
-          git commit -m "🤖 Auto-update sports data" || exit 0
-          
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Update sports data
+      run: node scripts/update-master.js
+      
+    - name: Pull latest changes
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git pull origin main --rebase
+        
+    - name: Commit changes
+      run: |
+        git add master-data.json
+        git add master-version.txt
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "🤖 Auto-update: $(date +'%Y-%m-%d %H:%M:%S')"
+        fi
+        
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: main
+        force: false
