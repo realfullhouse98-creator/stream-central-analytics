@@ -29,6 +29,23 @@ function normalizeTeamNames(teams) {
         .join(' - ');
 }
 
+// SPORT NAME NORMALIZATION FUNCTION
+function normalizeSportName(sport) {
+    const sportMappings = {
+        'american football': 'American Football',
+        'american-football': 'American Football',
+        'ice hockey': 'Ice Hockey',
+        'hockey': 'Ice Hockey',
+        'motorsport': 'Motor Sport',
+        'moto-sport': 'Motor Sport',
+        'fight': 'Fighting',
+        'fighting': 'Fighting'
+    };
+   
+    const normalized = sport.toLowerCase().trim();
+    return sportMappings[normalized] || sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+}
+
 async function fetchData(url) {
   return new Promise((resolve, reject) => {
     const https = require('https');
@@ -118,8 +135,7 @@ function processMatches(apiData, supplier) {
             `https://embedsports.top/embed/${source.source}/${source.id}/1`
           ) : [],
           expiresAt: expiresAt.toISOString(),
-          sport: (match.category || 'Football').charAt(0).toUpperCase() + 
-                 (match.category || 'Football').slice(1).toLowerCase(),
+          sport: normalizeSportName(match.category || 'Football'),
           supplier: supplier
         });
       }
@@ -150,8 +166,7 @@ function processMatches(apiData, supplier) {
           timestamp: match.timestamp || Math.floor(matchDate.getTime() / 1000),
           streams: match.streams ? match.streams.map(stream => stream.url) : [],
           expiresAt: expiresAt.toISOString(),
-          sport: (match.sport || 'Football').charAt(0).toUpperCase() + 
-                 (match.sport || 'Football').slice(1).toLowerCase(),
+          sport: normalizeSportName(match.sport || 'Football'),
           supplier: supplier
         });
       }
@@ -170,7 +185,7 @@ function processMatches(apiData, supplier) {
             const matchTime = match.unix_timestamp ? 
               new Date(match.unix_timestamp * 1000) : 
               new Date(date + 'T12:00:00Z');
-              
+               
             const expiresAt = new Date(matchTime.getTime() + (3 * 60 * 60 * 1000));
             
             matches.push({
@@ -184,8 +199,7 @@ function processMatches(apiData, supplier) {
               timestamp: match.unix_timestamp,
               streams: match.channels || [],
               expiresAt: expiresAt.toISOString(),
-              sport: (match.sport || 'Football').charAt(0).toUpperCase() + 
-                     (match.sport || 'Football').slice(1).toLowerCase(),
+              sport: normalizeSportName(match.sport || 'Football'),
               supplier: supplier
             });
           }
