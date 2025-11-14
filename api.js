@@ -76,28 +76,27 @@ async function fetchSarahMatches(sport = 'all') {
     }
 }
 
-// New Footy API calls
-async function fetchFootyMatches(sport = 'football') {
-    try {
-        const endpoint = API_CONFIG.FOOTY.ENDPOINTS.ALL_MATCHES;
-        const url = API_CONFIG.FOOTY.BASE_URL + endpoint;
-        return await fetchWithFallback(url);
-    } catch (error) {
-        console.warn('Footy API unavailable:', error);
-        return [];
-    }
-}
-
-// Enhanced stream detection for Footy
-function extractFootyStreams(footyMatch) {
-    if (!footyMatch.streams || footyMatch.streams.length === 0) {
-        return [];
-    }
+// LIVE FOOTY FUNCTION - WORKS IN BROWSER ONLY!
+async function fetchLiveFootyMatches(sport = 'all') {
+    console.log('🎯 Getting LIVE Footy streams from browser...');
     
-    return footyMatch.streams.map(stream => ({
-        url: stream.url,
-        quality: stream.quality || 'hd',
-        source: 'footy',
-        language: stream.language || 'en'
-    }));
+    try {
+        // Try with www first (works in browsers!)
+        const url = `https://www.watchfooty.live/api/v1/matches/${sport}`;
+        console.log(`📡 Calling: ${url}`);
+        
+        const response = await fetch(url);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log(`✅ Footy LIVE success! Found ${data.length} matches`);
+            return data;
+        } else {
+            console.log('❌ Footy failed with status:', response.status);
+            return [];
+        }
+    } catch (error) {
+        console.log('🚨 Footy error (but its OK!):', error.message);
+        return []; // Return empty array - no crashes!
+    }
 }
