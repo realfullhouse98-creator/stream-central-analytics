@@ -11,8 +11,17 @@ async function fetchData(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (response) => {
       let data = '';
+      
+      // ADD RESPONSE DEBUG
+      console.log(`🔍 ${url} - Status: ${response.statusCode}`);
+      console.log(`🔍 ${url} - Headers:`, response.headers);
+      
       response.on('data', chunk => data += chunk);
       response.on('end', () => {
+        // ADD DATA DEBUG
+        console.log(`🔍 ${url} - Raw response length: ${data.length}`);
+        console.log(`🔍 ${url} - First 200 chars: ${data.substring(0, 200)}`);
+        
         try {
           resolve(JSON.parse(data));
         } catch (e) {
