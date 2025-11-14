@@ -134,10 +134,21 @@ async function updateMasterFile() {
   });
   
   const masterData = {
-    version: new Date().toISOString(),
-    lastUpdated: new Date().toISOString(),
-    sports: sportsData
-  };
+  version: new Date().toISOString(),
+  lastUpdated: new Date().toISOString(),
+  sports: sportsData
+};
+
+// ADD DEBUG CODE RIGHT HERE:
+console.log('🔍 Checking Sarah data in final array:');
+const sarahMatches = allMatches.filter(m => m.supplier && m.supplier.toLowerCase() === 'sarah');
+console.log(`🔍 Sarah matches in final: ${sarahMatches.length}`);
+if (sarahMatches.length > 0) {
+  console.log('🔍 First Sarah match:', JSON.stringify(sarahMatches[0]));
+}
+
+console.log('🔍 All suppliers:', [...new Set(allMatches.map(m => m.supplier))]);
+// END DEBUG CODE
   
   fs.writeFileSync('master-data.json', JSON.stringify(masterData, null, 2));
   console.log(`🎉 Master file updated! ${allMatches.length} total matches`);
