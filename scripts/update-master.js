@@ -106,6 +106,19 @@ async function updateMasterFile() {
     try {
       console.log(`📡 Fetching from ${supplier}...`);
       const data = await fetchData(url);
+      
+      // DEBUG CODE FOR SARAH - ADD THIS BLOCK
+      if (supplier === 'sarah') {
+        console.log('🔍 Sarah API response type:', typeof data);
+        console.log('🔍 Sarah data length:', data ? data.length : 'no data');
+        if (data && data.length > 0) {
+          console.log('🔍 First Sarah item:', JSON.stringify(data[0]).substring(0, 200));
+        } else {
+          console.log('🔍 Sarah data is empty or null');
+        }
+      }
+      // END DEBUG CODE
+      
       const processed = processMatches(data, supplier);
       allMatches = [...allMatches, ...processed];
       console.log(`✅ ${supplier}: ${processed.length} matches`);
@@ -113,7 +126,6 @@ async function updateMasterFile() {
       console.log(`❌ ${supplier} failed: ${error.message}`);
     }
   }
-  
   // Group by sport
   const sportsData = {};
   allMatches.forEach(match => {
