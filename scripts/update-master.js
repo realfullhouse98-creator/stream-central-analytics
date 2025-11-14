@@ -36,8 +36,8 @@ function normalizeSportName(sport) {
         'american-football': 'American Football',
         'ice hockey': 'Ice Hockey',
         'hockey': 'Ice Hockey',
-        'motorsport': 'Motor Sport',
-        'moto-sport': 'Motor Sport',
+        'motorsport': 'Motorsport',
+        'moto-sport': 'Motorsport',
         'fight': 'Fighting',
         'fighting': 'Fighting'
     };
