@@ -4,7 +4,7 @@ const fs = require('fs');
 const SUPPLIERS = {
   tom: 'https://topembed.pw/api.php?format=json',
   sarah: 'https://streamed.pk/api/matches/all', 
-  footy: 'https://watchfooty.live/api/v1/matches/football'
+  footy: 'https://www.watchfooty.live/api/v1/matches/football'
 };
 
 async function fetchData(url) {
@@ -34,33 +34,34 @@ async function fetchData(url) {
 
 function processMatches(apiData, supplier) {
   if (supplier === 'sarah') {
-    // SARAH'S SPECIAL FORMAT
+    // SARAH'S SPECIAL FORMAT (keep existing)
+    // ... your existing sarah code ...
+  } else if (supplier === 'footy') {
+    // FOOTY'S SPECIAL FORMAT
     if (!Array.isArray(apiData)) return [];
     
     const matches = [];
     apiData.forEach(match => {
-      if (match?.title) {
+      if (match?.title && match.teams) {
         const matchDate = match.date ? new Date(match.date) : new Date();
         const expiresAt = new Date(matchDate.getTime() + (3 * 60 * 60 * 1000));
         
-        // Convert "Team A vs Team B" to "Team A - Team B" format
-        const teams = match.title.replace(/ vs /g, ' - ');
+        // Convert team objects to string format
+        const teams = `${match.teams.home?.name || 'Home'} - ${match.teams.away?.name || 'Away'}`;
         
         matches.push({
-          id: `${supplier}-${match.id}`,
+          id: `${supplier}-${match.matchId}`,
           teams: teams,
-          league: match.category || 'Sports',
+          league: match.league || 'Sports',
           date: matchDate.toISOString().split('T')[0],
           time: matchDate.toLocaleTimeString('en-US', { 
             hour: '2-digit', minute: '2-digit', hour12: false 
           }),
-          timestamp: Math.floor(matchDate.getTime() / 1000),
-          streams: match.sources ? match.sources.map(source => 
-            `https://embedsports.top/embed/${source.source}/${source.id}/1`
-          ) : [],
+          timestamp: match.timestamp || Math.floor(matchDate.getTime() / 1000),
+          streams: match.streams ? match.streams.map(stream => stream.url) : [],
           expiresAt: expiresAt.toISOString(),
-          sport: (match.category || 'Football').charAt(0).toUpperCase() + 
-                 (match.category || 'Football').slice(1).toLowerCase(),
+          sport: (match.sport || 'Football').charAt(0).toUpperCase() + 
+                 (match.sport || 'Football').slice(1).toLowerCase(),
           supplier: supplier
         });
       }
