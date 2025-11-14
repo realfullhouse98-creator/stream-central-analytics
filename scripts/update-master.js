@@ -122,8 +122,13 @@ async function updateMasterFile() {
       const processed = processMatches(data, supplier);
       allMatches = [...allMatches, ...processed];
       console.log(`✅ ${supplier}: ${processed.length} matches`);
-    } catch (error) {
+       } catch (error) {
       console.log(`❌ ${supplier} failed: ${error.message}`);
+      // ADD FOOTY DEBUG:
+      if (supplier === 'footy') {
+        console.log('🔍 Footy URL that failed:', url);
+        console.log('🔍 Full Footy error:', error);
+      }
     }
   }
   // Group by sport
