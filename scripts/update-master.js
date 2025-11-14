@@ -103,7 +103,7 @@ function processMatches(apiData, supplier) {
         const expiresAt = new Date(matchDate.getTime() + (3 * 60 * 60 * 1000));
         
         // Convert "Team A vs Team B" to "Team A - Team B" format
-        const teams = this.normalizeTeamNames(match.title.replace(/ vs /g, ' - '));
+        const teams = normalizeTeamNames(match.title.replace(/ vs /g, ' - '));
         
         matches.push({
           id: `${supplier}-${match.id}`,
