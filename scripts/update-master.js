@@ -24,40 +24,77 @@ async function fetchData(url) {
 }
 
 function processMatches(apiData, supplier) {
-  if (!apiData?.events) return [];
-  
-  const matches = [];
-  Object.entries(apiData.events).forEach(([date, matchList]) => {
-    if (Array.isArray(matchList)) {
-      matchList.forEach(match => {
-        if (match?.match) {
-          const matchTime = match.unix_timestamp ? 
-            new Date(match.unix_timestamp * 1000) : 
-            new Date(date + 'T12:00:00Z');
+  if (supplier === 'sarah') {
+    // SARAH'S SPECIAL FORMAT
+    if (!Array.isArray(apiData)) return [];
+    
+    const matches = [];
+    apiData.forEach(match => {
+      if (match?.title) {
+        const matchDate = match.date ? new Date(match.date) : new Date();
+        const expiresAt = new Date(matchDate.getTime() + (3 * 60 * 60 * 1000));
+        
+        // Convert "Team A vs Team B" to "Team A - Team B" format
+        const teams = match.title.replace(/ vs /g, ' - ');
+        
+        matches.push({
+          id: `${supplier}-${match.id}`,
+          teams: teams,
+          league: match.category || 'Sports',
+          date: matchDate.toISOString().split('T')[0],
+          time: matchDate.toLocaleTimeString('en-US', { 
+            hour: '2-digit', minute: '2-digit', hour12: false 
+          }),
+          timestamp: Math.floor(matchDate.getTime() / 1000),
+          streams: match.sources ? match.sources.map(source => 
+            `https://embedsports.top/embed/${source.source}/${source.id}/1`
+          ) : [],
+          expiresAt: expiresAt.toISOString(),
+          sport: (match.category || 'Football').charAt(0).toUpperCase() + 
+                 (match.category || 'Football').slice(1).toLowerCase(),
+          supplier: supplier
+        });
+      }
+    });
+    
+    return matches;
+  } else {
+    // TOM'S ORIGINAL FORMAT
+    if (!apiData?.events) return [];
+    
+    const matches = [];
+    Object.entries(apiData.events).forEach(([date, matchList]) => {
+      if (Array.isArray(matchList)) {
+        matchList.forEach(match => {
+          if (match?.match) {
+            const matchTime = match.unix_timestamp ? 
+              new Date(match.unix_timestamp * 1000) : 
+              new Date(date + 'T12:00:00Z');
+              
+            const expiresAt = new Date(matchTime.getTime() + (3 * 60 * 60 * 1000));
             
-          const expiresAt = new Date(matchTime.getTime() + (3 * 60 * 60 * 1000));
-          
-          matches.push({
-            id: `${supplier}-${match.match}-${match.unix_timestamp}`,
-            teams: match.match,
-            league: match.tournament || 'Sports',
-            date: date,
-            time: matchTime.toLocaleTimeString('en-US', { 
-              hour: '2-digit', minute: '2-digit', hour12: false 
-            }),
-            timestamp: match.unix_timestamp,
-            streams: match.channels || [],
-            expiresAt: expiresAt.toISOString(),
-            sport: (match.sport || 'Football').charAt(0).toUpperCase() + 
-                   (match.sport || 'Football').slice(1).toLowerCase(),
-            supplier: supplier
-          });
-        }
-      });
-    }
-  });
-  
-  return matches;
+            matches.push({
+              id: `${supplier}-${match.match}-${match.unix_timestamp}`,
+              teams: match.match,
+              league: match.tournament || 'Sports',
+              date: date,
+              time: matchTime.toLocaleTimeString('en-US', { 
+                hour: '2-digit', minute: '2-digit', hour12: false 
+              }),
+              timestamp: match.unix_timestamp,
+              streams: match.channels || [],
+              expiresAt: expiresAt.toISOString(),
+              sport: (match.sport || 'Football').charAt(0).toUpperCase() + 
+                     (match.sport || 'Football').slice(1).toLowerCase(),
+              supplier: supplier
+            });
+          }
+        });
+      }
+    });
+    
+    return matches;
+  }
 }
 
 async function updateMasterFile() {
