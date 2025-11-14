@@ -106,7 +106,7 @@ function processMatches(apiData, supplier) {
         const teams = normalizeTeamNames(match.title.replace(/ vs /g, ' - '));
         
         matches.push({
-          id: `${supplier}-${match.id}`,
+          id: `${supplier}-${normalizeTeamNames(match.title.replace(/ vs /g, ' - '))}-${Math.floor(matchDate.getTime() / 1000)}`,
           teams: teams,
           league: match.category || 'Sports',
           date: matchDate.toISOString().split('T')[0],
@@ -140,7 +140,7 @@ function processMatches(apiData, supplier) {
         const teams = `${match.teams.home?.name || 'Home'} - ${match.teams.away?.name || 'Away'}`;
         
         matches.push({
-          id: `${supplier}-${match.matchId}`,
+          id: `${supplier}-${normalizeTeamNames(teams)}-${match.timestamp || Math.floor(matchDate.getTime() / 1000)}`,
           teams: teams,
           league: match.league || 'Sports',
           date: matchDate.toISOString().split('T')[0],
@@ -174,7 +174,7 @@ function processMatches(apiData, supplier) {
             const expiresAt = new Date(matchTime.getTime() + (3 * 60 * 60 * 1000));
             
             matches.push({
-              id: `${supplier}-${match.match}-${match.unix_timestamp}`,
+              id: `${supplier}-${normalizeTeamNames(match.match)}-${match.unix_timestamp}`,
               teams: normalizeTeamNames(match.match),
               league: match.tournament || 'Sports',
               date: date,
