@@ -9,36 +9,56 @@ const SUPPLIERS = {
 
 async function fetchData(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, (response) => {
+    const https = require('https');
+    const { URL } = require('url');
+    
+    const parsedUrl = new URL(url);
+    
+    const options = {
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.pathname + parsedUrl.search,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Connection': 'keep-alive'
+      }
+    };
+
+    console.log(`🔍 Making request to: ${url}`);
+    
+    const req = https.request(options, (response) => {
       let data = '';
       
-      // DEBUG RESPONSE
       console.log(`🔍 ${url} - Status: ${response.statusCode}`);
       
       response.on('data', chunk => data += chunk);
       response.on('end', () => {
-        // DEBUG DATA
         console.log(`🔍 ${url} - Raw response length: ${data.length}`);
-
-          // ADD THIS TO SEE THE ACTUAL ERROR MESSAGE
-        if (response.statusCode === 403) {
-          console.log(`🚨 ${url} - HTML Error Content:`, data.substring(0, 500));
-        }
         
         try {
           resolve(JSON.parse(data));
         } catch (e) {
+          console.log(`🚨 ${url} - Parse error, raw data:`, data.substring(0, 200));
           reject(e);
         }
       });
-    }).on('error', reject);
+    });
+    
+    req.on('error', reject);
+    req.setTimeout(10000, () => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    });
+    
+    req.end();
   });
 }
-
 // ADD THIS FUNCTION TO GET FOOTY SPORTS
 async function getFootySports() {
   try {
-    const sportsUrl = 'https://corsproxy.io/?https://www.watchfooty.live/api/v1/sports';
+    const sportsUrl = 'https://www.watchfooty.live/api/v1/sports';
     console.log(`📡 Getting Footy sports from: ${sportsUrl}`);
     const sportsData = await fetchData(sportsUrl);
     console.log(`✅ Found ${sportsData.length} Footy sports`);
@@ -195,7 +215,7 @@ async function updateMasterFile() {
     for (const sport of footySports) {
       try {
         console.log(`📡 Fetching from footy (${sport})...`);
-        const url = `https://corsproxy.io/?${encodeURIComponent(`https://www.watchfooty.live/api/v1/matches/${sport}`)}`;
+        const url = `https://www.watchfooty.live/api/v1/matches/${sport}`;
         const data = await fetchData(url);
         const processed = processMatches(data, 'footy');
         allMatches = [...allMatches, ...processed];
