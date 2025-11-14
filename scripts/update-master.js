@@ -3,8 +3,8 @@ const fs = require('fs');
 
 const SUPPLIERS = {
   tom: 'https://topembed.pw/api.php?format=json',
-  sarah: 'https://streamed.pk/api/matches/all', 
-  footy: 'https://www.watchfooty.live/api/v1/matches/football'
+  sarah: 'https://streamed.pk/api/matches/all'
+  // footy removed - handled separately
 };
 
 async function fetchData(url) {
@@ -12,15 +12,13 @@ async function fetchData(url) {
     https.get(url, (response) => {
       let data = '';
       
-      // ADD RESPONSE DEBUG
+      // DEBUG RESPONSE
       console.log(`🔍 ${url} - Status: ${response.statusCode}`);
-      console.log(`🔍 ${url} - Headers:`, response.headers);
       
       response.on('data', chunk => data += chunk);
       response.on('end', () => {
-        // ADD DATA DEBUG
+        // DEBUG DATA
         console.log(`🔍 ${url} - Raw response length: ${data.length}`);
-        console.log(`🔍 ${url} - First 200 chars: ${data.substring(0, 200)}`);
         
         try {
           resolve(JSON.parse(data));
@@ -32,10 +30,55 @@ async function fetchData(url) {
   });
 }
 
+// ADD THIS FUNCTION TO GET FOOTY SPORTS
+async function getFootySports() {
+  try {
+    const sportsUrl = 'https://www.watchfooty.live/api/v1/sports';
+    console.log(`📡 Getting Footy sports from: ${sportsUrl}`);
+    const sportsData = await fetchData(sportsUrl);
+    console.log(`✅ Found ${sportsData.length} Footy sports`);
+    return sportsData.map(sport => sport.name); // returns ['football', 'tennis', 'basketball', ...]
+  } catch (error) {
+    console.log('❌ Failed to get Footy sports:', error.message);
+    return ['football', 'tennis', 'basketball', 'cricket', 'rugby', 'baseball']; // fallback
+  }
+}
+
 function processMatches(apiData, supplier) {
   if (supplier === 'sarah') {
-    // SARAH'S SPECIAL FORMAT (keep existing)
-    // ... your existing sarah code ...
+    // SARAH'S SPECIAL FORMAT
+    if (!Array.isArray(apiData)) return [];
+    
+    const matches = [];
+    apiData.forEach(match => {
+      if (match?.title) {
+        const matchDate = match.date ? new Date(match.date) : new Date();
+        const expiresAt = new Date(matchDate.getTime() + (3 * 60 * 60 * 1000));
+        
+        // Convert "Team A vs Team B" to "Team A - Team B" format
+        const teams = match.title.replace(/ vs /g, ' - ');
+        
+        matches.push({
+          id: `${supplier}-${match.id}`,
+          teams: teams,
+          league: match.category || 'Sports',
+          date: matchDate.toISOString().split('T')[0],
+          time: matchDate.toLocaleTimeString('en-US', { 
+            hour: '2-digit', minute: '2-digit', hour12: false 
+          }),
+          timestamp: Math.floor(matchDate.getTime() / 1000),
+          streams: match.sources ? match.sources.map(source => 
+            `https://embedsports.top/embed/${source.source}/${source.id}/1`
+          ) : [],
+          expiresAt: expiresAt.toISOString(),
+          sport: (match.category || 'Football').charAt(0).toUpperCase() + 
+                 (match.category || 'Football').slice(1).toLowerCase(),
+          supplier: supplier
+        });
+      }
+    });
+    
+    return matches;
   } else if (supplier === 'footy') {
     // FOOTY'S SPECIAL FORMAT
     if (!Array.isArray(apiData)) return [];
@@ -112,12 +155,13 @@ async function updateMasterFile() {
   
   let allMatches = [];
   
+  // 1. Fetch from Tom and Sarah
   for (const [supplier, url] of Object.entries(SUPPLIERS)) {
     try {
       console.log(`📡 Fetching from ${supplier}...`);
       const data = await fetchData(url);
       
-      // DEBUG CODE FOR SARAH - ADD THIS BLOCK
+      // DEBUG CODE FOR SARAH
       if (supplier === 'sarah') {
         console.log('🔍 Sarah API response type:', typeof data);
         console.log('🔍 Sarah data length:', data ? data.length : 'no data');
@@ -132,15 +176,33 @@ async function updateMasterFile() {
       const processed = processMatches(data, supplier);
       allMatches = [...allMatches, ...processed];
       console.log(`✅ ${supplier}: ${processed.length} matches`);
-       } catch (error) {
+    } catch (error) {
       console.log(`❌ ${supplier} failed: ${error.message}`);
-      // ADD FOOTY DEBUG:
-      if (supplier === 'footy') {
-        console.log('🔍 Footy URL that failed:', url);
-        console.log('🔍 Full Footy error:', error);
-      }
     }
   }
+  
+  // 2. Fetch from Footy for ALL sports
+  try {
+    console.log('📡 Getting Footy sports...');
+    const footySports = await getFootySports();
+    console.log(`✅ Found ${footySports.length} Footy sports:`, footySports);
+    
+    for (const sport of footySports) {
+      try {
+        console.log(`📡 Fetching from footy (${sport})...`);
+        const url = `https://www.watchfooty.live/api/v1/matches/${sport}`;
+        const data = await fetchData(url);
+        const processed = processMatches(data, 'footy');
+        allMatches = [...allMatches, ...processed];
+        console.log(`✅ footy (${sport}): ${processed.length} matches`);
+      } catch (error) {
+        console.log(`❌ footy (${sport}) failed: ${error.message}`);
+      }
+    }
+  } catch (error) {
+    console.log('❌ Footy sports failed:', error.message);
+  }
+  
   // Group by sport
   const sportsData = {};
   allMatches.forEach(match => {
@@ -149,21 +211,19 @@ async function updateMasterFile() {
   });
   
   const masterData = {
-  version: new Date().toISOString(),
-  lastUpdated: new Date().toISOString(),
-  sports: sportsData
-};
+    version: new Date().toISOString(),
+    lastUpdated: new Date().toISOString(),
+    sports: sportsData
+  };
 
-// ADD DEBUG CODE RIGHT HERE:
-console.log('🔍 Checking Sarah data in final array:');
-const sarahMatches = allMatches.filter(m => m.supplier && m.supplier.toLowerCase() === 'sarah');
-console.log(`🔍 Sarah matches in final: ${sarahMatches.length}`);
-if (sarahMatches.length > 0) {
-  console.log('🔍 First Sarah match:', JSON.stringify(sarahMatches[0]));
-}
-
-console.log('🔍 All suppliers:', [...new Set(allMatches.map(m => m.supplier))]);
-// END DEBUG CODE
+  // DEBUG CODE
+  console.log('🔍 Checking all data in final array:');
+  const sarahMatches = allMatches.filter(m => m.supplier && m.supplier.toLowerCase() === 'sarah');
+  const footyMatches = allMatches.filter(m => m.supplier && m.supplier.toLowerCase() === 'footy');
+  console.log(`🔍 Sarah matches in final: ${sarahMatches.length}`);
+  console.log(`🔍 Footy matches in final: ${footyMatches.length}`);
+  console.log('🔍 All suppliers:', [...new Set(allMatches.map(m => m.supplier))]);
+  // END DEBUG CODE
   
   fs.writeFileSync('master-data.json', JSON.stringify(masterData, null, 2));
   console.log(`🎉 Master file updated! ${allMatches.length} total matches`);
