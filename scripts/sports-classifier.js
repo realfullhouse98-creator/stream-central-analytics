@@ -31,7 +31,20 @@ class SportsClassifier {
             'table tennis': 'Table Tennis',
             'beach volleyball': 'Beach Volleyball'
         };
-        
+        // ADD TEAM NAME MAPPINGS HERE:
+        this.teamMap = {
+            'tara galilor': 'wales',
+            'wales': 'wales',
+            'côte d\'ivoire': 'ivory coast',
+            'bosnia & herzegovina': 'bosnia herzegovina', 
+            'czech republic': 'czechia',
+            'man united': 'manchester united',
+            'man city': 'manchester city',
+            'spurs': 'tottenham',
+            'inter miami cf': 'inter miami',
+            'la galaxy': 'los angeles galaxy'
+            // Add more as you find them!
+        };
         this.collegeFootballIndicators = [
             'middle tennessee', 'jacksonville state', 'college football', 
             'ncaa football', 'fbs', 'fcs', 'bowl game', 'cotton bowl',
