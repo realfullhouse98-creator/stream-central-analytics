@@ -7,6 +7,28 @@ const SUPPLIERS = {
   // footy removed - handled separately
 };
 
+// TEAM NAME NORMALIZATION FUNCTION
+function normalizeTeamNames(teams) {
+    const teamMappings = {
+        'tara galilor': 'wales',
+        'wales': 'wales',
+        'belarus': 'belarus'
+        // Add more as we find them
+    };
+    
+    let normalized = teams.toLowerCase();
+    
+    Object.keys(teamMappings).forEach(wrongName => {
+        const correctName = teamMappings[wrongName];
+        normalized = normalized.replace(wrongName, correctName);
+    });
+    
+    // Convert back to proper case (First Letter Capital)
+    return normalized.split(' - ')
+        .map(team => team.charAt(0).toUpperCase() + team.slice(1))
+        .join(' - ');
+}
+
 async function fetchData(url) {
   return new Promise((resolve, reject) => {
     const https = require('https');
@@ -81,7 +103,7 @@ function processMatches(apiData, supplier) {
         const expiresAt = new Date(matchDate.getTime() + (3 * 60 * 60 * 1000));
         
         // Convert "Team A vs Team B" to "Team A - Team B" format
-        const teams = match.title.replace(/ vs /g, ' - ');
+        const teams = this.normalizeTeamNames(match.title.replace(/ vs /g, ' - '));
         
         matches.push({
           id: `${supplier}-${match.id}`,
@@ -153,7 +175,7 @@ function processMatches(apiData, supplier) {
             
             matches.push({
               id: `${supplier}-${match.match}-${match.unix_timestamp}`,
-              teams: match.match,
+              teams: normalizeTeamNames(match.match),
               league: match.tournament || 'Sports',
               date: date,
               time: matchTime.toLocaleTimeString('en-US', { 
