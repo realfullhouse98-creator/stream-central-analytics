@@ -15,9 +15,12 @@ class TennisProcessor {
             needsReview: 0,
             errors: 0
         };
+        
+        // Track match counts per day for time assignment
+        this.dayMatchCounts = new Map();
     }
 
-    // 🎯 MAIN PROCESSING METHOD - WAS MISSING!
+    // 🎯 MAIN PROCESSING METHOD
     async processTennisMatches() {
         console.log('🎾 STARTING TENNIS PROCESSOR...\n');
         
@@ -50,7 +53,7 @@ class TennisProcessor {
         }
     }
 
-    // 1. LOAD SUPPLIER DATA - WAS MISSING!
+    // 1. LOAD SUPPLIER DATA
     async loadSupplierData() {
         const suppliers = ['tom', 'sarah'];
         const allMatches = [];
@@ -90,13 +93,22 @@ class TennisProcessor {
         const matches = [];
         if (!tomData.events) return matches;
         
+        // Reset day counters
+        this.dayMatchCounts.clear();
+        
         Object.entries(tomData.events).forEach(([date, dayMatches]) => {
+            // Initialize counter for this day
+            if (!this.dayMatchCounts.has(date)) {
+                this.dayMatchCounts.set(date, 0);
+            }
+            
             dayMatches.forEach(match => {
                 if (match.sport?.toLowerCase().includes('tennis')) {
-                    // 🕒 IMPROVED: Handle missing/unix_timestamp
-                    const matchTime = match.unix_timestamp ? 
-                        this.convertUnixToTime(match.unix_timestamp) : 
-                        this.generateRandomTime();
+                    const dayCount = this.dayMatchCounts.get(date);
+                    
+                    // 🕒 FIX: IGNORE broken timestamps, use smart time assignment
+                    const matchTime = this.extractTimeFromTournament(match.tournament) || 
+                                    this.assignReasonableTime(date, dayCount);
                     
                     matches.push({
                         source: 'tom',
@@ -106,8 +118,12 @@ class TennisProcessor {
                         tournament: match.tournament,
                         channels: match.channels || [],
                         raw: match,
-                        original_timestamp: match.unix_timestamp // Keep for debugging
+                        original_timestamp: match.unix_timestamp,
+                        time_assignment: 'smart' // Track how time was assigned
                     });
+                    
+                    // Increment counter for this day
+                    this.dayMatchCounts.set(date, dayCount + 1);
                 }
             });
         });
@@ -121,9 +137,9 @@ class TennisProcessor {
         
         sarahData.matches.forEach(match => {
             if (match.category?.toLowerCase().includes('tennis')) {
-                // 🕒 IMPROVED: Better MS timestamp handling
+                // For Sarah, we can still try to use timestamps since they might be better
                 const matchTime = match.date ? 
-                    this.convertMsToTime(match.date) : 
+                    this.convertMsToReasonableTime(match.date) : 
                     this.generateRandomTime();
                 
                 const matchDate = match.date ?
@@ -138,7 +154,8 @@ class TennisProcessor {
                     tournament: '', // Sarah doesn't have tournament info
                     channels: this.generateSarahStreams(match),
                     raw: match,
-                    original_timestamp: match.date // Keep for debugging
+                    original_timestamp: match.date,
+                    time_assignment: 'converted'
                 });
             }
         });
@@ -146,7 +163,74 @@ class TennisProcessor {
         return matches;
     }
 
-    // 2. EXTRACT TENNIS MATCHES - WAS MISSING!
+    // 🕒 SMART TIME ASSIGNMENT - IGNORES BROKEN TOM TIMESTAMPS
+    
+    // Try to extract time from tournament name (e.g., "UTR (M) - Waco (USA) 22:10")
+    extractTimeFromTournament(tournament) {
+        if (!tournament) return null;
+        
+        // Look for time patterns like "22:10", "14:30", etc.
+        const timeMatch = tournament.match(/(\d{1,2}):(\d{2})/);
+        if (timeMatch) {
+            const hours = parseInt(timeMatch[1]);
+            const minutes = parseInt(timeMatch[2]);
+            
+            // Validate time
+            if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+                console.log(`   🕒 Extracted time from tournament: ${timeMatch[0]} from "${tournament}"`);
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        return null;
+    }
+
+    // Assign reasonable times based on match order in each day
+    assignReasonableTime(date, matchIndex) {
+        const baseHour = 8; // 8 AM start
+        const matchesPerHour = 4; // 4 matches per hour (00, 15, 30, 45)
+        
+        const hour = baseHour + Math.floor(matchIndex / matchesPerHour);
+        const minute = (matchIndex % matchesPerHour) * 15; // 00, 15, 30, 45
+        
+        let finalHour = hour;
+        
+        // Ensure reasonable hours (6 AM to 11 PM)
+        if (finalHour < 6) finalHour = 6;
+        if (finalHour > 23) finalHour = 23 - (finalHour % 23);
+        
+        return `${finalHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    }
+
+    // For Sarah data - convert but ensure reasonable times
+    convertMsToReasonableTime(msTimestamp) {
+        try {
+            if (!msTimestamp || msTimestamp === 0 || msTimestamp < 1000000000000) {
+                return this.generateRandomTime();
+            }
+            
+            const date = new Date(msTimestamp);
+            
+            if (isNaN(date.getTime())) {
+                return this.generateRandomTime();
+            }
+            
+            // Convert to reasonable time (avoid midnight)
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            
+            // Ensure reasonable match times
+            if (hours < 6) hours = 6 + (hours % 6);
+            if (hours > 23) hours = 18 + (hours % 5);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            
+        } catch (error) {
+            return this.generateRandomTime();
+        }
+    }
+
+    // 2. EXTRACT TENNIS MATCHES
     extractTennisMatches(allMatches) {
         return allMatches.filter(match => 
             match.teams && this.isTennisMatch(match)
@@ -166,7 +250,7 @@ class TennisProcessor {
         return tennisPatterns.some(pattern => pattern.test(teamString));
     }
 
-    // 3. TIME SLOT GROUPING - WAS MISSING!
+    // 3. TIME SLOT GROUPING
     groupByTimeSlots(matches) {
         const slots = {};
         
@@ -207,16 +291,14 @@ class TennisProcessor {
         }
     }
 
-    // 4. PROCESS TIME SLOTS - WAS MISSING!
+    // 4. PROCESS TIME SLOTS
     processTimeSlots(timeSlots) {
         const processed = [];
         
         Object.values(timeSlots).forEach(slotMatches => {
             if (slotMatches.length === 1) {
-                // Single match in time slot
                 processed.push(this.processSingleMatch(slotMatches[0]));
             } else {
-                // Multiple matches - attempt merging
                 const merged = this.attemptMerging(slotMatches);
                 processed.push(...merged);
             }
@@ -266,7 +348,7 @@ class TennisProcessor {
         return results;
     }
 
-    // CORE MATCHING ALGORITHM - WAS MISSING!
+    // CORE MATCHING ALGORITHM
     calculateMatchScore(matchA, matchB) {
         if (matchA.source === matchB.source) return 0; // Don't merge same source
         
@@ -317,7 +399,7 @@ class TennisProcessor {
         return variations[tokenA] === tokenB || variations[tokenB] === tokenA;
     }
 
-    // MERGE LOGIC - WAS MISSING!
+    // MERGE LOGIC
     mergeMatches(matchA, matchB, confidence) {
         const normalizedNames = this.normalizeTeamNames(matchA.teams);
         
@@ -334,7 +416,8 @@ class TennisProcessor {
             confidence: confidence,
             merged: true,
             estimated_names: confidence < 0.8,
-            raw_sources: [matchA.source, matchB.source]
+            raw_sources: [matchA.source, matchB.source],
+            time_assignment: matchA.time_assignment || matchB.time_assignment
         };
     }
 
@@ -353,11 +436,12 @@ class TennisProcessor {
             confidence: 1.0,
             merged: false,
             estimated_names: false,
-            raw_sources: [match.source]
+            raw_sources: [match.source],
+            time_assignment: match.time_assignment || 'default'
         };
     }
 
-    // 5. GENERATE FINAL OUTPUT - WAS MISSING!
+    // 5. GENERATE FINAL OUTPUT
     generateFinalOutput(processedMatches) {
         return {
             sport: 'Tennis',
@@ -372,46 +456,7 @@ class TennisProcessor {
         };
     }
 
-    // 🕒 TIME CONVERSION FUNCTIONS (EXISTING)
-    convertUnixToTime(unixTimestamp) {
-        try {
-            // Handle invalid timestamps
-            if (!unixTimestamp || unixTimestamp === 0 || unixTimestamp < 1000000000) {
-                return this.generateRandomTime(); // Fallback for bad data
-            }
-            
-            const date = new Date(unixTimestamp * 1000);
-            
-            // Validate the date
-            if (isNaN(date.getTime()) || date.getFullYear() < 2020) {
-                return this.generateRandomTime();
-            }
-            
-            return date.toTimeString().slice(0, 5); // "14:30" format
-        } catch (error) {
-            return this.generateRandomTime();
-        }
-    }
-
-    convertMsToTime(msTimestamp) {
-        try {
-            if (!msTimestamp || msTimestamp === 0 || msTimestamp < 1000000000000) {
-                return this.generateRandomTime();
-            }
-            
-            const date = new Date(msTimestamp);
-            
-            if (isNaN(date.getTime()) || date.getFullYear() < 2020) {
-                return this.generateRandomTime();
-            }
-            
-            return date.toTimeString().slice(0, 5);
-        } catch (error) {
-            return this.generateRandomTime();
-        }
-    }
-
-    // 🎲 Generate reasonable random times for matches without valid timestamps
+    // 🎲 Generate reasonable random times
     generateRandomTime() {
         const hours = Math.floor(Math.random() * 12) + 8; // 8 AM - 8 PM
         const minutes = Math.floor(Math.random() * 4) * 15; // 00, 15, 30, 45
@@ -421,7 +466,7 @@ class TennisProcessor {
     convertMsToDate(msTimestamp) {
         try {
             if (!msTimestamp || msTimestamp === 0 || msTimestamp < 1000000000000) {
-                return new Date().toISOString().split('T')[0]; // Today as fallback
+                return new Date().toISOString().split('T')[0];
             }
             
             const date = new Date(msTimestamp);
@@ -431,7 +476,7 @@ class TennisProcessor {
         }
     }
 
-    // HELPER METHODS - WAS MISSING!
+    // HELPER METHODS
     generateSarahStreams(match) {
         if (!match.sources) return [];
         return match.sources.map(source => 
@@ -477,6 +522,18 @@ class TennisProcessor {
         console.log(`00:00 times: ${timeStats.zero_times}`);
         console.log(`Generated times: ${timeStats.generated_times}`);
         console.log(`Time range: ${timeStats.time_range.min} to ${timeStats.time_range.max}`);
+        
+        // Log time assignment methods
+        const assignmentStats = {};
+        matches.forEach(match => {
+            const method = match.time_assignment || 'unknown';
+            assignmentStats[method] = (assignmentStats[method] || 0) + 1;
+        });
+        
+        console.log('\n⏰ TIME ASSIGNMENT METHODS:');
+        Object.entries(assignmentStats).forEach(([method, count]) => {
+            console.log(`   ${method}: ${count} matches`);
+        });
     }
 }
 
