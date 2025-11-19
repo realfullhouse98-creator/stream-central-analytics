@@ -1,11 +1,12 @@
 name: 🔄 Update Supplier Data
 on:
   schedule:
-    - cron: '*/15 * * * *'
-  workflow_dispatch:
+    - cron: '*/15 * * * *'  # Every 15 minutes
+  workflow_dispatch:        # Manual trigger
   push:
     paths:
-      - 'scripts/**'
+      - 'scripts/update-suppliers.js'
+      - '.github/workflows/update-suppliers.yml'
 
 jobs:
   update-suppliers:
@@ -15,18 +16,19 @@ jobs:
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v3
-      
-    - name: 🔄 Update All Suppliers
-      run: |
-        # Node.js is already available on GitHub runners
-        node scripts/update-suppliers.js
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         
+    - name: 🔄 Update All Suppliers
+      run: node scripts/update-suppliers.js
+      
     - name: 🧪 Test Supplier Files
       run: node scripts/test-suppliers.js
       
     - name: 📝 Commit and Push if Changed
+      if: always()  # Run even if previous steps fail
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
         git add suppliers/
         git diff --staged --quiet || (git commit -m "🔁 chore: update supplier data [automated]" && git push)
