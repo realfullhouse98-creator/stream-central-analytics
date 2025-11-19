@@ -1,42 +1,62 @@
-const TennisProcessor = require('./tennis-processor');
 const fs = require('fs');
 
 async function testTennisProcessor() {
     console.log('🧪 TESTING TENNIS PROCESSOR IN GITHUB ACTIONS...\n');
     
     try {
-        // ✅ FIX: The tennis processor runs automatically when required
-        // Just require it and it will execute
         console.log('🚀 Starting tennis processor...');
         
-        // The processor will automatically:
-        // 1. Load supplier data
-        // 2. Process tennis matches  
-        // 3. Save results to ./tennis-results/tennis-results.json
-        // 4. Log output to console
+        // ✅ FIX: Import and run directly, bypassing the main module check
+        const TennisProcessor = require('./tennis-processor');
+        const processor = new TennisProcessor();
         
-        console.log('✅ Tennis processor execution completed');
+        // Manually call the processing pipeline
+        console.log('📥 Loading supplier data...');
+        const supplierData = await processor.loadSupplierData();
+        console.log(`📥 Loaded ${supplierData.length} total matches`);
         
-        // Now check if results were generated
-        const resultsPath = './tennis-results/tennis-results.json';
-        if (fs.existsSync(resultsPath)) {
-            const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
-            
-            console.log('🎯 TEST COMPLETED SUCCESSFULLY!');
-            console.log(`📊 Generated ${results.matches.length} tennis matches`);
-            
-            // Show sample output
-            console.log('\n🔍 SAMPLE MATCHES:');
-            results.matches.slice(0, 5).forEach((match, index) => {
-                console.log(`${index + 1}. ${match.teams}`);
-                console.log(`   Time: ${match.time} | Sources: ${Object.keys(match.sources).join(', ')}`);
-                console.log(`   Confidence: ${match.confidence} | Merged: ${match.merged}`);
-            });
-            
-            return results;
-        } else {
-            throw new Error('Tennis results file was not generated');
+        console.log('🎾 Extracting tennis matches...');
+        const tennisMatches = processor.extractTennisMatches(supplierData);
+        console.log(`🎾 Found ${tennisMatches.length} tennis matches`);
+        
+        console.log('⏰ Grouping by time slots...');
+        const timeSlots = processor.groupByTimeSlots(tennisMatches);
+        console.log(`⏰ Created ${Object.keys(timeSlots).length} time slots`);
+        
+        console.log('🔄 Processing time slots...');
+        const processedMatches = processor.processTimeSlots(timeSlots);
+        
+        console.log('📊 Generating final output...');
+        const results = processor.generateFinalOutput(processedMatches);
+        
+        processor.logResults();
+        processor.logTimeDebugInfo(results.matches);
+        
+        console.log('🎯 TEST COMPLETED SUCCESSFULLY!');
+        console.log(`📊 Generated ${results.matches.length} tennis matches`);
+        
+        // Show sample output
+        console.log('\n🔍 SAMPLE MATCHES:');
+        results.matches.slice(0, 5).forEach((match, index) => {
+            console.log(`${index + 1}. ${match.teams}`);
+            console.log(`   Time: ${match.time} | Sources: ${Object.keys(match.sources).join(', ')}`);
+            console.log(`   Confidence: ${match.confidence} | Merged: ${match.merged}`);
+        });
+
+        // Save to repository
+        const outputDir = './tennis-results';
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
         }
+        
+        fs.writeFileSync(
+            `${outputDir}/tennis-results.json`, 
+            JSON.stringify(results, null, 2)
+        );
+        
+        console.log(`💾 Tennis results saved to ${outputDir}/tennis-results.json`);
+        
+        return results;
         
     } catch (error) {
         console.error('❌ Test failed:', error);
