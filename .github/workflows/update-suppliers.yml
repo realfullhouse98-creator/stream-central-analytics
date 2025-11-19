@@ -7,19 +7,25 @@ on:
 jobs:
   update-suppliers:
     runs-on: ubuntu-latest
-    timeout-minutes: 5  # Faster timeout since parallel
+    timeout-minutes: 5
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-      
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
+        cache: 'npm'
         
     - name: Update All Suppliers
       run: node scripts/update-suppliers.js
+      
+    - name: Test Supplier Files
+      run: node scripts/test-suppliers.js
       
     - name: Commit and Push if Changed
       run: |
