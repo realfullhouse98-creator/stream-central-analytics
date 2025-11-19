@@ -2,6 +2,9 @@ name: 🎾 Test Tennis Processor
 on:
   workflow_dispatch:  # Manual trigger only for testing
 
+permissions:
+  contents: write  # ← THIS FIXES THE 403 ERROR
+
 jobs:
   test-tennis:
     runs-on: ubuntu-latest
@@ -10,7 +13,9 @@ jobs:
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v3
-      
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: 🎾 Run Tennis Processor Test
       run: node scripts/test-tennis.js
       
@@ -19,4 +24,4 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add tennis-results/
-        git diff --staged --quiet || (git commit -m "🎾 test: tennis processor results" && git push)
+        git diff --staged --quiet || (git commit -m "🎾 test: tennis processor results [automated]" && git push)
