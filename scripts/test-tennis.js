@@ -4,9 +4,9 @@ const fs = require('fs');
 async function testTennisProcessor() {
     console.log('🧪 TESTING TENNIS PROCESSOR IN GITHUB ACTIONS...\n');
     
-    const processor = new TennisProcessor();
-    
     try {
+        // ✅ FIX: Create instance FIRST, then call method
+        const processor = new TennisProcessor();
         const results = await processor.processTennisMatches();
         
         console.log('🎯 TEST COMPLETED SUCCESSFULLY!');
@@ -20,7 +20,7 @@ async function testTennisProcessor() {
             console.log(`   Confidence: ${match.confidence} | Merged: ${match.merged}`);
         });
 
-        // ✅ GITHUB-FIX: Save to repository (not temp directory)
+        // Save to repository
         const outputDir = './tennis-results';
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir, { recursive: true });
