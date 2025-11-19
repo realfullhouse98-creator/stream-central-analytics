@@ -1,12 +1,11 @@
 name: 🔄 Update Supplier Data
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Every 15 minutes
-  workflow_dispatch:        # Manual trigger
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
   push:
     paths:
-      - 'scripts/update-suppliers.js'
-      - '.github/workflows/update-suppliers.yml'
+      - 'scripts/**'
 
 jobs:
   update-suppliers:
@@ -16,18 +15,12 @@ jobs:
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: ⚙️ Setup Node.js (Simple)
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        # REMOVE cache line - we don't have package.json
-        
-    - name: 🔄 Update All Suppliers
-      run: node scripts/update-suppliers.js
       
+    - name: 🔄 Update All Suppliers
+      run: |
+        # Node.js is already available on GitHub runners
+        node scripts/update-suppliers.js
+        
     - name: 🧪 Test Supplier Files
       run: node scripts/test-suppliers.js
       
