@@ -3,10 +3,10 @@ on:
   schedule:
     - cron: '*/15 * * * *'  # Every 15 minutes
   workflow_dispatch:        # Manual trigger
-  push:
-    paths:
-      - 'scripts/update-suppliers.js'
-      - '.github/workflows/update-suppliers.yml'
+
+# ADD THIS PERMISSIONS BLOCK:
+permissions:
+  contents: write  # ← THIS FIXES THE 403 ERROR
 
 jobs:
   update-suppliers:
@@ -26,7 +26,6 @@ jobs:
       run: node scripts/test-suppliers.js
       
     - name: 📝 Commit and Push if Changed
-      if: always()  # Run even if previous steps fail
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
