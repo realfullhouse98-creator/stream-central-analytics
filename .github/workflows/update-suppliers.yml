@@ -1,0 +1,30 @@
+name: Update Supplier Data
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Every 15 minutes
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  update-suppliers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5  # Faster timeout since parallel
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Update All Suppliers
+      run: node scripts/update-suppliers.js
+      
+    - name: Commit and Push if Changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add suppliers/
+        git diff --staged --quiet || git commit -m "chore: update supplier data [automated]"
+        git push
