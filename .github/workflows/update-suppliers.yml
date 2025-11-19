@@ -2,7 +2,7 @@ name: 🔄 Update Supplier Data
 on:
   schedule:
     - cron: '*/15 * * * *'  # Every 15 minutes
-  workflow_dispatch:        # ← MANUAL TRIGGER - you can run this!
+  workflow_dispatch:        # Manual trigger
   push:
     paths:
       - 'scripts/update-suppliers.js'
@@ -19,11 +19,11 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: ⚙️ Setup Node.js
+    - name: ⚙️ Setup Node.js (Simple)
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
+        # REMOVE cache line - we don't have package.json
         
     - name: 🔄 Update All Suppliers
       run: node scripts/update-suppliers.js
