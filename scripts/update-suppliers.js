@@ -1,7 +1,28 @@
 const fs = require('fs');
 
+async function fetchWithTimeout(url, timeout = 8000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+        const response = await fetch(url, {
+            signal: controller.signal,
+            headers: { 
+                'User-Agent': '9kilos-research/1.0',
+                'Accept': 'application/json'
+            }
+        });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
+    }
+}
+
 async function updateAllSuppliers() {
-    console.log('🔄 Updating ALL suppliers...');
+    console.log('🚀 Starting combined supplier update...');
+    console.log('⏰', new Date().toISOString(), '\n');
     
     const suppliers = [
         {
@@ -10,80 +31,137 @@ async function updateAllSuppliers() {
                 'https://corsproxy.io/?https://topembed.pw/api.php?format=json',
                 'https://api.allorigins.win/raw?url=https://topembed.pw/api.php?format=json',
                 'https://topembed.pw/api.php?format=json'
-            ]
+            ],
+            processor: (data) => {
+                return {
+                    events: data.events || {},
+                    _metadata: {
+                        supplier: 'tom',
+                        lastUpdated: new Date().toISOString(),
+                        matchCount: data.events ? Object.values(data.events).flat().length : 0,
+                        days: data.events ? Object.keys(data.events).length : 0
+                    }
+                };
+            }
         },
         {
             name: 'sarah', 
             urls: [
                 'https://corsproxy.io/?https://streamed.pk/api/matches/all',
-                'https://api.allorigins.win/raw?url=https://streamed.pk/api/matches/all',
+                'https://api.allorigins.win/raw?url=https://streamed.pk/api/matches/all', 
                 'https://streamed.pk/api/matches/all'
-            ]
+            ],
+            processor: (data) => {
+                const matches = Array.isArray(data) ? data : [];
+                return {
+                    matches: matches,
+                    _metadata: {
+                        supplier: 'sarah',
+                        lastUpdated: new Date().toISOString(), 
+                        matchCount: matches.length,
+                        liveMatches: matches.filter(m => m.status === 'live').length
+                    }
+                };
+            }
         }
     ];
 
-    let results = {
+    const results = {
+        startTime: new Date().toISOString(),
         updated: [],
-        failed: []
+        failed: [],
+        details: {}
     };
 
-    // Update all suppliers in parallel for speed
+    // Ensure suppliers directory exists
+    if (!fs.existsSync('./suppliers')) {
+        fs.mkdirSync('./suppliers', { recursive: true });
+    }
+
+    // Process suppliers in parallel
     await Promise.all(suppliers.map(async (supplier) => {
-        try {
-            console.log(`\n📡 Updating ${supplier.name}...`);
-            
-            for (const url of supplier.urls) {
-                try {
-                    const response = await fetch(url, {
-                        headers: { 'User-Agent': '9kilos-research/1.0' },
-                        timeout: 8000
-                    });
+        console.log(`🔍 Updating ${supplier.name.toUpperCase()}...`);
+        
+        let lastError = null;
+        
+        for (const [index, url] of supplier.urls.entries()) {
+            try {
+                console.log(`   Trying proxy ${index + 1}/${supplier.urls.length}: ${new URL(url).hostname}`);
+                
+                const response = await fetchWithTimeout(url);
+                
+                if (response.ok) {
+                    const rawData = await response.json();
+                    const processedData = supplier.processor(rawData);
                     
-                    if (response.ok) {
-                        const data = await response.json();
-                        
-                        const enhancedData = {
-                            ...data,
-                            _metadata: {
-                                supplier: supplier.name,
-                                lastUpdated: new Date().toISOString(),
-                                source: url,
-                                matchCount: supplier.name === 'tom' 
-                                    ? (data.events ? Object.values(data.events).flat().length : 0)
-                                    : (Array.isArray(data) ? data.length : 0)
-                            }
-                        };
-                        
-                        fs.writeFileSync(`./suppliers/${supplier.name}-data.json`, JSON.stringify(enhancedData, null, 2));
-                        
-                        console.log(`✅ ${supplier.name} updated via ${new URL(url).hostname}`);
-                        console.log(`📊 ${supplier.name} matches: ${enhancedData._metadata.matchCount}`);
-                        
-                        results.updated.push(supplier.name);
-                        break; // Success - move to next supplier
-                    }
-                } catch (error) {
-                    console.log(`❌ ${supplier.name} proxy failed: ${url}`);
-                    continue; // Try next proxy
+                    fs.writeFileSync(
+                        `./suppliers/${supplier.name}-data.json`, 
+                        JSON.stringify(processedData, null, 2)
+                    );
+                    
+                    console.log(`   ✅ SUCCESS: ${supplier.name} updated`);
+                    console.log(`   📊 Matches: ${processedData._metadata.matchCount}`);
+                    
+                    results.updated.push(supplier.name);
+                    results.details[supplier.name] = {
+                        matchCount: processedData._metadata.matchCount,
+                        source: new URL(url).hostname,
+                        success: true
+                    };
+                    return; // Success - exit proxy loop
+                    
+                } else {
+                    console.log(`   ❌ HTTP ${response.status} from ${new URL(url).hostname}`);
                 }
+                
+            } catch (error) {
+                lastError = error;
+                console.log(`   ❌ Proxy failed: ${error.message}`);
+                continue; // Try next proxy
             }
-            
-            // If we get here, all proxies failed
-            results.failed.push(supplier.name);
-            console.log(`🚨 All ${supplier.name} proxies failed`);
-            
-        } catch (error) {
-            console.log(`🚨 ${supplier.name} update error:`, error.message);
-            results.failed.push(supplier.name);
         }
+        
+        // All proxies failed
+        console.log(`   🚨 ALL PROXIES FAILED for ${supplier.name}`);
+        results.failed.push(supplier.name);
+        results.details[supplier.name] = {
+            success: false,
+            error: lastError?.message || 'All proxies failed'
+        };
     }));
 
-    // Summary
+    // Generate summary
+    results.endTime = new Date().toISOString();
+    results.duration = new Date(results.endTime) - new Date(results.startTime);
+    
     console.log('\n📊 UPDATE SUMMARY:');
-    console.log(`✅ Updated: ${results.updated.join(', ') || 'None'}`);
-    console.log(`❌ Failed: ${results.failed.join(', ') || 'None'}`);
+    console.log('══════════════════════════════════════');
+    console.log(`✅ Updated: ${results.updated.length > 0 ? results.updated.join(', ') : 'None'}`);
+    console.log(`❌ Failed: ${results.failed.length > 0 ? results.failed.join(', ') : 'None'}`);
+    console.log(`⏱️  Duration: ${results.duration}ms`);
+    
+    Object.entries(results.details).forEach(([supplier, detail]) => {
+        if (detail.success) {
+            console.log(`   ${supplier}: ${detail.matchCount} matches via ${detail.source}`);
+        } else {
+            console.log(`   ${supplier}: FAILED - ${detail.error}`);
+        }
+    });
+    
+    console.log('══════════════════════════════════════\n');
+    
+    // Write results to file for GitHub Actions
+    fs.writeFileSync('./suppliers/update-results.json', JSON.stringify(results, null, 2));
     
     return results;
 }
 
-updateAllSuppliers();
+// Run if called directly
+if (require.main === module) {
+    updateAllSuppliers().catch(error => {
+        console.error('💥 CRITICAL ERROR:', error);
+        process.exit(1);
+    });
+}
+
+module.exports = { updateAllSuppliers };
