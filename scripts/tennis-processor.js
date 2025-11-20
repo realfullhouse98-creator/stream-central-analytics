@@ -228,6 +228,7 @@ class TennisProcessor {
     return clusters;
   }
 
+  // 🚀 ENHANCED MATCH SCORING WITH TEAM NAME BOOST
   calculateMatchScore(matchA, matchB) {
     if (matchA.source === matchB.source) return 0; // Don't merge same source
     
@@ -238,14 +239,44 @@ class TennisProcessor {
       tokensB.some(tokenB => this.tokensMatch(tokenA, tokenB))
     );
     
-    const maxTokens = Math.max(tokensA.length, tokensB.length);
-    return maxTokens > 0 ? commonTokens.length / maxTokens : 0;
+    let score = commonTokens.length / Math.max(tokensA.length, tokensB.length);
+    
+    // 🎯 CRITICAL FIX: Boost score if team names are very similar
+    const teamsScore = this.calculateTeamsSimilarity(matchA.teams, matchB.teams);
+    
+    // If teams match very well (same players), boost the confidence significantly
+    if (teamsScore >= 0.8) {
+      // Major boost for identical/similar team compositions
+      score = Math.max(score, 0.8);
+      console.log(`   🎯 TEAM MATCH BOOST: "${matchA.teams}" ↔ "${matchB.teams}" | Score: ${teamsScore} → ${score}`);
+    } else if (teamsScore >= 0.6 && score >= 0.3) {
+      // Moderate boost for good team matches
+      score = Math.max(score, teamsScore);
+    }
+    
+    return score;
+  }
+
+  // NEW: Calculate similarity based ONLY on team names (ignores tournament)
+  calculateTeamsSimilarity(teamsA, teamsB) {
+    const tokensA = this.tokenizeString(teamsA);
+    const tokensB = this.tokenizeString(teamsB);
+    
+    const commonTokens = tokensA.filter(tokenA =>
+      tokensB.some(tokenB => this.tokensMatch(tokenA, tokenB))
+    );
+    
+    return commonTokens.length / Math.max(tokensA.length, tokensB.length);
   }
 
   tokenizeMatch(match) {
-    // Combine teams + tournament for better matching
+    // Combine teams + tournament for broader matching
     const searchString = match.teams + ' ' + match.tournament;
-    return searchString
+    return this.tokenizeString(searchString);
+  }
+
+  tokenizeString(str) {
+    return str
       .toLowerCase()
       .split(/[\.\-\/\s]+/)
       .filter(token => token.length > 1);
