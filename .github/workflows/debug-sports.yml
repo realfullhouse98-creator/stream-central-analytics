@@ -1,0 +1,22 @@
+# .github/workflows/debug-sports.yml
+name: 🎯 Debug Sports Data
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  debug-sports:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: 🎯 Run Sports Debug
+      run: node scripts/debug-sports.js
