@@ -286,10 +286,25 @@ class SportsClassifier {
         if (this.isTennisMatch(match)) {
             return 'Tennis';
         }
+            // 4. FOOTBALL DETECTION
+    if (this.isFootballSoccer(match)) {
+        return 'Football';
+    }
+    
+    // 5. BASKETBALL DETECTION  
+    if (this.isBasketball(match)) {
+        return 'Basketball';
+    }
+    
+    // 6. RACING DETECTION
+    if (this.isRacing(match)) {
+        return 'Racing';
+    }
+    
+    // 7. Fallback to standard classification
+    const sportFromApi = match.sport || match.category || 'Other';
+    return this.normalizeSportName(sportFromApi);
         
-        // 4. Fallback to standard classification
-        const sportFromApi = match.sport || match.category || 'Other';
-        return this.normalizeSportName(sportFromApi);
     }
 
     // ENHANCED College Football Detection
@@ -308,30 +323,22 @@ class SportsClassifier {
         
         return hasCollegeTeam || hasCollegeIndicator;
     }
-
-    // NEW: Tennis Match Detection
+     // BETTER Tennis Match Detection
     isTennisMatch(match) {
         const matchText = match.match || match.title || '';
         
-        // Check if already classified as tennis
-        if ((match.sport || match.category || '').toLowerCase().includes('tennis')) {
-            return true;
-        }
+        // If it says tennis anywhere, it's tennis
+        if ((match.sport || match.category || '').toLowerCase().includes('tennis')) return true;
+        if (matchText.toLowerCase().includes('tennis')) return true;
+        if ((match.tournament || '').toLowerCase().includes('tennis')) return true;
         
-        // Check for tennis-specific patterns in match names
-        const tennisPatterns = [
-            / vs /, // Common in tennis
-            / - /,  // Common separator
-            /\//,    // Doubles format: PlayerA/PlayerB
-            /\./,    // Initials: T.Handel
-            /[A-Z]\./ // Initial format
-        ];
+        // Look for tennis player name patterns
+        const hasTennisPattern = /[A-Z]\./.test(matchText) ||  // J.Smith
+                               /\//.test(matchText) ||         // PlayerA/PlayerB  
+                               / vs /.test(matchText) ||       // Player A vs Player B
+                               / - /.test(matchText);          // Player A - Player B
         
-        const patternMatches = tennisPatterns.some(pattern => pattern.test(matchText));
-        const hasTennisKeywords = matchText.toLowerCase().includes('tennis') || 
-                                 (match.tournament || '').toLowerCase().includes('tennis');
-        
-        return patternMatches || hasTennisKeywords;
+        return hasTennisPattern;
     }
 
     // ENHANCED Sarah Data Handling
@@ -477,6 +484,39 @@ extractGenericCompetitors(match) {
         variations.forEach(variation => {
             this.sportMap[variation.toLowerCase()] = canonicalName;
         });
+    }
+
+      // 🚨 ADD THESE 3 NEW METHODS RIGHT HERE:
+
+    // NEW: Football/Soccer detection
+    isFootballSoccer(match) {
+        const text = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+        
+        const footballTeams = [
+            'manchester city', 'chelsea', 'barcelona', 'arsenal', 'liverpool',
+            'real madrid', 'bayern', 'psg', 'juventus', 'tottenham',
+            'dortmund', 'atletico', 'inter', 'ac milan'
+        ];
+        
+        return footballTeams.some(team => text.includes(team));
+    }
+
+    // NEW: Basketball detection  
+    isBasketball(match) {
+        const text = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+        
+        const basketballWords = [
+            'nba', 'basketball', 'kentucky', 'duke', 'north carolina',
+            'kansas', 'ucla', 'march madness', 'ncaa tournament'
+        ];
+        
+        return basketballWords.some(word => text.includes(word));
+    }
+
+    // NEW: Racing detection
+    isRacing(match) {
+        const text = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+        return text.includes('formula 1') || text.includes('f1') || text.includes('grand prix');
     }
 }
 module.exports = SportsClassifier;
