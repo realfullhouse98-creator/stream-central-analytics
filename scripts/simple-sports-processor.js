@@ -11,8 +11,151 @@ class SimpleSportsProcessor {
             sportBreakdown: {}
         };
     }
-// ADD THESE METHODS TO SimpleSportsProcessor class:
 
+    // 🚨 ADD MERGING METHODS RIGHT HERE:
+
+    findAndMergeMatches(matches, sport) {
+        const clusters = [];
+        const processed = new Set();
+        
+        for (let i = 0; i < matches.length; i++) {
+            if (processed.has(i)) continue;
+            
+            const cluster = [matches[i]];
+            processed.add(i);
+            
+            for (let j = i + 1; j < matches.length; j++) {
+                if (processed.has(j)) continue;
+                
+                // Simple token matching
+                const score = this.calculateMatchScore(matches[i], matches[j]);
+                if (score >= 0.55) {
+                    cluster.push(matches[j]);
+                    processed.add(j);
+                    console.log(`   🎯 MERGED: "${matches[i].teams}" ↔ "${matches[j].teams}" (${score})`);
+                }
+            }
+            
+            clusters.push(cluster);
+        }
+        
+        return clusters;
+    }
+
+    calculateMatchScore(matchA, matchB) {
+        if (matchA.source === matchB.source) return 0;
+        
+        const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
+        const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
+        
+        const tokensA = textA.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
+        const tokensB = textB.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
+        
+        const common = tokensA.filter(tA => tokensB.some(tB => tA === tB || tA.includes(tB) || tB.includes(tA)));
+        
+        return common.length / Math.max(tokensA.length, tokensB.length);
+    }
+
+    // 🚨 THEN UPDATE THE processSport METHOD:
+
+    processSport(sport, matches) {
+        // Use merging instead of individual
+        const clusters = this.findAndMergeMatches(matches, sport);
+        const processedMatches = [];
+        
+        clusters.forEach(cluster => {
+            if (cluster.length === 1) {
+                // Individual match
+                processedMatches.push(this.createMatchObject(cluster[0], sport, false));
+                this.results.individual++;
+            } else {
+                // Merged match
+                const merged = this.mergeCluster(cluster, sport);
+                processedMatches.push(merged);
+                this.results.merged++;
+            }
+        });
+        
+        this.results.totalProcessed += processedMatches.length;
+        
+        return {
+            summary: {
+                total_matches: matches.length,
+                processed_matches: processedMatches.length,
+                merged_matches: this.results.merged,
+                individual_matches: this.results.individual
+            },
+            matches: processedMatches
+        };
+    }
+
+    createMatchObject(match, sport, merged) {
+        return {
+            unix_timestamp: match.timestamp,
+            sport: sport,
+            tournament: match.tournament || '',
+            match: match.teams || match.title,
+            channels: match.channels || [],
+            sources: [match.source],
+            confidence: 1.0,
+            merged: merged
+        };
+    }
+
+    mergeCluster(cluster, sport) {
+        const baseMatch = cluster[0];
+        const otherMatches = cluster.slice(1);
+        
+        // Combine all channels
+        const allChannels = [...baseMatch.channels];
+        otherMatches.forEach(match => {
+            match.channels.forEach(channel => {
+                if (!allChannels.includes(channel)) {
+                    allChannels.push(channel);
+                }
+            });
+        });
+        
+        // Combine sources
+        const sources = [...new Set(cluster.map(m => m.source))];
+        
+        return {
+            unix_timestamp: baseMatch.timestamp,
+            sport: sport,
+            tournament: baseMatch.tournament || '',
+            match: baseMatch.teams || baseMatch.title,
+            channels: allChannels,
+            sources: sources,
+            confidence: 0.8, // High confidence for merged matches
+            merged: true,
+            merged_count: cluster.length
+        };
+    }
+
+    // 🚨 THEN UPDATE THE logResults METHOD:
+
+    logResults() {
+        console.log('\n📊 SIMPLE SPORTS PROCESSOR RESULTS:');
+        console.log('══════════════════════════════════════');
+        console.log(`✅ Total Processed: ${this.results.totalProcessed}`);
+        console.log(`🔄 Total Merged: ${this.results.merged}`);
+        console.log(`🎯 Total Individual: ${this.results.individual}`);
+        
+        console.log('\n🏆 Sport Breakdown:');
+        Object.entries(this.results.sportBreakdown).forEach(([sport, count]) => {
+            console.log(`   ${sport}: ${count} matches`);
+        });
+        console.log('══════════════════════════════════════\n');
+    }
+
+// THEN KEEP YOUR EXISTING loadAllSuppliers, extractTomMatches, etc.
+async loadAllSuppliers() {
+    // ... your existing code
+}
+    
+
+    
+// ADD THESE METHODS TO SimpleSportsProcessor class:
 async loadAllSuppliers() {
     const allMatches = [];
     
