@@ -423,7 +423,31 @@ class SportsClassifier {
         
         return { competitor1: matchText, competitor2: '', pattern: 'unknown' };
     }
+// ADD THIS METHOD TO YOUR SportsClassifier class:
 
+extractGenericCompetitors(match) {
+    const matchText = match.match || match.title || '';
+    
+    // Try common separators
+    const separators = [' - ', ' vs ', ' / ', ' @ '];
+    for (const separator of separators) {
+        if (matchText.includes(separator)) {
+            const [comp1, comp2] = matchText.split(separator);
+            return {
+                competitor1: comp1.trim(),
+                competitor2: comp2.trim(), 
+                pattern: 'generic'
+            };
+        }
+    }
+    
+    // Fallback: return the whole text as competitor1
+    return { 
+        competitor1: matchText, 
+        competitor2: '', 
+        pattern: 'unknown' 
+    };
+}
     // Keep existing methods
     isSarahData(match) {
         return match.category || (match.title && !match.match);
