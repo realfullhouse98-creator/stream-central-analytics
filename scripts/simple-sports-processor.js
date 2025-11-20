@@ -350,22 +350,29 @@ generateSarahStreams(match) {
         return categoryMap[category] || 
                category.charAt(0).toUpperCase() + category.slice(1);
     }
-
-
-
     // ... (keep your existing loadAllSuppliers, extractTomMatches, extractSarahMatches methods)
 
-    saveResults(processedData) {
-        const output = {
-            processed_at: new Date().toISOString(),
-            summary: {
-                total_sports: Object.keys(processedData).length,
-                total_matches: this.results.totalProcessed,
-                total_individual: this.results.individual
-            },
-            sport_breakdown: this.results.sportBreakdown,
-            sports: processedData
-        };
+   saveResults(processedData) {
+    // Convert to site-compatible format
+    const siteData = {
+        processed_at: new Date().toISOString(),
+        matches: []
+    };
+    
+    // Flatten all sports into one matches array
+    Object.values(processedData).forEach(sportData => {
+        siteData.matches.push(...sportData.matches);
+    });
+    
+    // Ensure directory exists
+    if (!fs.existsSync('./sports-results')) {
+        fs.mkdirSync('./sports-results', { recursive: true });
+    }
+    
+    // Save both formats
+    fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
+    fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2)); // 🚨 SITE FORMAT
+}
         
         // Ensure directory exists
         if (!fs.existsSync('./sports-results')) {
