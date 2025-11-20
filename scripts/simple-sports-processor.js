@@ -10,6 +10,14 @@ class SimpleSportsProcessor {
             individual: 0,
             sportBreakdown: {}
         };
+           // 🚀 ADD ADVANCED CONFIG:
+        this.sportConfigs = {
+            'Tennis': { mergeThreshold: 0.35, timeWindow: 120 },
+            'Football': { mergeThreshold: 0.50, timeWindow: 90 },
+            'Basketball': { mergeThreshold: 0.40, timeWindow: 180 },
+            'American Football': { mergeThreshold: 0.45, timeWindow: 60 },
+            'default': { mergeThreshold: 0.30, timeWindow: 120 }
+        };
     }
 
     // 🚨 ADD MERGING METHODS RIGHT HERE:
@@ -42,20 +50,34 @@ class SimpleSportsProcessor {
         return clusters;
     }
 
-    calculateMatchScore(matchA, matchB) {
-        if (matchA.source === matchB.source) return 0;
-        
-        const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
-        const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
-        
-        const tokensA = textA.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
-        const tokensB = textB.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
-        
-        const common = tokensA.filter(tA => tokensB.some(tB => tA === tB || tA.includes(tB) || tB.includes(tA)));
-        
-        return common.length / Math.max(tokensA.length, tokensB.length);
+    calculateMatchScore(matchA, matchB, sport) {
+    if (matchA.source === matchB.source) return 0;
+    
+    // 🚀 GET SPORT-SPECIFIC CONFIG
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+    
+    const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
+    const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
+    
+    const tokensA = textA.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
+    const tokensB = textB.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
+    
+    const common = tokensA.filter(tA => tokensB.some(tB => tA === tB || tA.includes(tB) || tB.includes(tA)));
+    
+    let score = common.length / Math.max(tokensA.length, tokensB.length);
+    
+    // 🚀 ADD SPORT-SPECIFIC BOOSTS
+    if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
+        score += 0.15;
     }
-
+    
+    return Math.min(1.0, score);
+}
+// 🚀 ADD HELPER METHOD RIGHT HERE:
+    hasTennisPlayerPattern(match) {
+        const text = match.teams || '';
+        return /[A-Z]\./.test(text) || /\//.test(text);
+    }
     // 🚨 THEN UPDATE THE processSport METHOD:
 
   processSport(sport, matches) {
