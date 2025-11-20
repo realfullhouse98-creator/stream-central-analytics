@@ -58,36 +58,39 @@ class SimpleSportsProcessor {
 
     // 🚨 THEN UPDATE THE processSport METHOD:
 
-    processSport(sport, matches) {
-        // Use merging instead of individual
-        const clusters = this.findAndMergeMatches(matches, sport);
-        const processedMatches = [];
-        
-        clusters.forEach(cluster => {
-            if (cluster.length === 1) {
-                // Individual match
-                processedMatches.push(this.createMatchObject(cluster[0], sport, false));
-                this.results.individual++;
-            } else {
-                // Merged match
-                const merged = this.mergeCluster(cluster, sport);
-                processedMatches.push(merged);
-                this.results.merged++;
-            }
-        });
-        
-        this.results.totalProcessed += processedMatches.length;
-        
-        return {
-            summary: {
-                total_matches: matches.length,
-                processed_matches: processedMatches.length,
-                merged_matches: this.results.merged,
-                individual_matches: this.results.individual
-            },
-            matches: processedMatches
-        };
-    }
+  processSport(sport, matches) {
+    console.log(`   🔍 Looking for duplicates in ${sport}...`);
+    
+    // Use merging instead of individual
+    const clusters = this.findAndMergeMatches(matches, sport);
+    const processedMatches = [];
+    
+    clusters.forEach(cluster => {
+        if (cluster.length === 1) {
+            // Individual match
+            processedMatches.push(this.createMatchObject(cluster[0], sport, false));
+            this.results.individual++;
+        } else {
+            // Merged match
+            const merged = this.mergeCluster(cluster, sport);
+            processedMatches.push(merged);
+            this.results.merged++;
+            console.log(`   ✅ MERGED ${cluster.length} matches in ${sport}`);
+        }
+    });
+    
+    this.results.totalProcessed += processedMatches.length;
+    
+    return {
+        summary: {
+            total_matches: matches.length,
+            processed_matches: processedMatches.length,
+            merged_matches: cluster.length > 1 ? 1 : 0,
+            individual_matches: cluster.length === 1 ? 1 : 0
+        },
+        matches: processedMatches
+    };
+}
 
     createMatchObject(match, sport, merged) {
         return {
