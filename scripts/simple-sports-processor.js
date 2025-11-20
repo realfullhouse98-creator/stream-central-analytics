@@ -373,6 +373,7 @@ generateSarahStreams(match) {
     fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
     fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2)); // 🚨 SITE FORMAT
 }
+}
         
         // Ensure directory exists
         if (!fs.existsSync('./sports-results')) {
