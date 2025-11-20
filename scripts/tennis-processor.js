@@ -10,28 +10,133 @@ class TennisProcessor {
       merged: 0,
       individual: 0,
       failed: 0,
-      confidenceBreakdown: { high: 0, medium: 0, low: 0, veryLow: 0 }
+      confidenceBreakdown: { high: 0, medium: 0, low: 0, veryLow: 0 },
+      sportBreakdown: { tennis: 0, football: 0, basketball: 0, other: 0 }
+    };
+    
+    // Tennis-specific enhancements
+    this.playerNameMap = this.buildPlayerNameMap();
+    this.tournamentSimilarity = this.buildTournamentSimilarity();
+  }
+
+  // 🎯 ENHANCEMENT 1: SPORT CLASSIFICATION
+  classifySport(match) {
+    const searchString = (match.teams + ' ' + match.tournament).toLowerCase();
+    
+    // Strong football indicators (prevent misclassification)
+    const footballIndicators = [
+      /(manchester united|manchester city|barcelona|real madrid|chelsea|arsenal)/i,
+      /(premier league|la liga|serie a|bundesliga|champions league|europa league)/i,
+      /(fc|cf|united|city| athletic| real| de)/i,
+      /\d+\s*-\s*\d+/, // Score lines like "2-1"
+      /(halftime|fulltime|penalty|corner|goal)/i
+    ];
+    
+    if (footballIndicators.some(pattern => pattern.test(searchString))) {
+      return 'football';
+    }
+    
+    // Strong basketball indicators
+    const basketballIndicators = [
+      /(nba|euroleague|basketball|b-ball|ncaa)/i,
+      /(lakers|warriors|celtics|bulls|knicks)/i,
+      /(quarter|halftime|three-pointer|dunk|rebound)/i
+    ];
+    
+    if (basketballIndicators.some(pattern => pattern.test(searchString))) {
+      return 'basketball';
+    }
+    
+    // Tennis indicators (our target)
+    const tennisIndicators = [
+      /tennis/i,
+      /(atp|wta|itf|challenger|grand slam|open|doubles|singles)/i,
+      /vs.*[A-Z]\..*[A-Z]\./, // Initials like "R. Federer vs N. Djokovic"
+      /[A-Z]\.[A-Za-z]+.*vs.*[A-Z]\.[A-Za-z]+/, // Initials pattern
+      /\w+\/\w+.*vs.*\w+\/\w+/, // Doubles pattern "A/B vs C/D"
+    ];
+    
+    if (tennisIndicators.some(pattern => pattern.test(searchString))) {
+      return 'tennis';
+    }
+    
+    return match.raw?.sport?.toLowerCase() || 'other';
+  }
+
+  // 🎯 ENHANCEMENT 2: PLAYER NAME CANONICALIZATION
+  buildPlayerNameMap() {
+    // Common tennis player name variations
+    return {
+      'r federer': 'roger federer',
+      'rafael nadal': 'rafael nadal', 
+      'n djokovic': 'novak djokovic',
+      'novak djokovic': 'novak djokovic',
+      'a murray': 'andy murray',
+      'andy murray': 'andy murray',
+      // Add more as we discover patterns
     };
   }
 
+  canonicalizePlayerName(name) {
+    const cleanName = name.toLowerCase().trim();
+    return this.playerNameMap[cleanName] || name;
+  }
+
+  // 🎯 ENHANCEMENT 3: TOURNAMENT SIMILARITY
+  buildTournamentSimilarity() {
+    return {
+      'atp': ['atp tour', 'atp world tour', 'atp masters'],
+      'wta': ['wta tour', 'wta championships'],
+      'itf': ['itf world tennis', 'itf tour'],
+      'wimbledon': ['the championships', 'wimbledon championships'],
+      'us open': ['us open tennis', 'u.s. open'],
+      'french open': ['roland garros', 'french open'],
+      'australian open': ['aus open', 'australian open']
+    };
+  }
+
+  calculateTournamentSimilarity(tournamentA, tournamentB) {
+    if (!tournamentA || !tournamentB) return 0;
+    
+    const tA = tournamentA.toLowerCase();
+    const tB = tournamentB.toLowerCase();
+    
+    // Exact match
+    if (tA === tB) return 1.0;
+    
+    // One is substring of another
+    if (tA.includes(tB) || tB.includes(tA)) return 0.8;
+    
+    // Check similarity groups
+    for (const [key, variations] of Object.entries(this.tournamentSimilarity)) {
+      if (variations.includes(tA) && variations.includes(tB)) {
+        return 0.9;
+      }
+      if (variations.includes(tA) && tB.includes(key)) return 0.7;
+      if (variations.includes(tB) && tA.includes(key)) return 0.7;
+    }
+    
+    return 0;
+  }
+
   async processAllSuppliers() {
-    console.log('🎾 STARTING TENNIS PROCESSOR...\n');
+    console.log('🎾 STARTING ENHANCED TENNIS PROCESSOR...\n');
     
     try {
       // 1. Load all supplier data
       const allMatches = await this.loadAllSuppliers();
       console.log(`📥 Loaded ${allMatches.length} total matches from all suppliers`);
       
-      // 2. Extract tennis matches only
-      const tennisMatches = this.extractTennisMatches(allMatches);
-      console.log(`🎾 Found ${tennisMatches.length} tennis matches`);
+      // 2. 🎯 ENHANCEMENT: Sport classification + tennis filtering
+      const tennisMatches = this.filterTennisMatches(allMatches);
+      console.log(`🎾 Found ${tennisMatches.length} tennis matches (after sport filtering)`);
       
-      // 3. Group by flexible time slots (45 minutes)
-      const timeSlots = this.groupByTimeSlots(tennisMatches, 45);
-      console.log(`⏰ Created ${Object.keys(timeSlots).length} time slots`);
+      // 3. Group by date only
+      const dateGroups = this.groupByDate(tennisMatches);
+      console.log(`📅 Created ${Object.keys(dateGroups).length} date groups`);
       
-      // 4. Process each time slot
-      const processedMatches = this.processTimeSlots(timeSlots);
+      // 4. Process each date group with enhanced matching
+      const processedMatches = this.processDateGroups(dateGroups);
       
       // 5. Generate final output
       const finalOutput = this.generateFinalOutput(processedMatches);
@@ -48,142 +153,80 @@ class TennisProcessor {
     }
   }
 
-  async loadAllSuppliers() {
-    const allMatches = [];
+  // 🎯 ENHANCEMENT: Better tennis filtering with sport classification
+  filterTennisMatches(allMatches) {
+    const tennisMatches = [];
     
-    for (const [key, config] of Object.entries(supplierConfig)) {
-      try {
-        if (!fs.existsSync(config.file)) {
-          console.log(`❌ ${key} data file missing: ${config.file}`);
-          continue;
-        }
-        
-        const data = JSON.parse(fs.readFileSync(config.file, 'utf8'));
-        const matches = this.extractMatchesFromSupplier(data, key);
-        
-        console.log(`✅ ${key}: ${matches.length} matches`);
-        allMatches.push(...matches);
-        
-      } catch (error) {
-        console.log(`❌ Failed to load ${key}:`, error.message);
-        this.results.failed++;
-      }
-    }
-    
-    return allMatches;
-  }
-
-  extractMatchesFromSupplier(data, supplier) {
-    if (supplier === 'tom') {
-      return this.extractTomMatches(data);
-    } else if (supplier === 'sarah') {
-      return this.extractSarahMatches(data);
-    }
-    return [];
-  }
-
-  extractTomMatches(tomData) {
-    const matches = [];
-    if (!tomData.events) return matches;
-    
-    Object.entries(tomData.events).forEach(([date, dayMatches]) => {
-      dayMatches.forEach(match => {
-        if (match.sport?.toLowerCase().includes('tennis')) {
-          matches.push({
-            source: 'tom',
-            date: date,
-            time: this.unixToTime(match.unix_timestamp),
-            teams: match.match,
-            tournament: match.tournament || '',
-            channels: match.channels || [],
-            raw: match,
-            timestamp: match.unix_timestamp
-          });
-        }
-      });
-    });
-    
-    return matches;
-  }
-
-  extractSarahMatches(sarahData) {
-    const matches = [];
-    if (!sarahData.matches) return matches;
-    
-    sarahData.matches.forEach(match => {
-      if (match.category?.toLowerCase().includes('tennis')) {
-        matches.push({
-          source: 'sarah',
-          date: this.msToDate(match.date),
-          time: this.msToTime(match.date),
-          teams: match.title,
-          tournament: '', // Sarah doesn't have tournament
-          channels: this.generateSarahStreams(match),
-          raw: match,
-          timestamp: match.date / 1000 // Convert to Unix
-        });
+    allMatches.forEach(match => {
+      const sport = this.classifySport(match);
+      this.results.sportBreakdown[sport] = (this.results.sportBreakdown[sport] || 0) + 1;
+      
+      if (sport === 'tennis') {
+        tennisMatches.push(match);
+      } else {
+        console.log(`   🏷️ Filtered out: ${match.teams} → ${sport}`);
       }
     });
     
-    return matches;
+    return tennisMatches;
   }
 
-  extractTennisMatches(allMatches) {
-    return allMatches.filter(match => 
-      match.teams && this.isTennisMatch(match)
-    );
-  }
-
-  isTennisMatch(match) {
-    const searchString = (match.teams + ' ' + match.tournament).toLowerCase();
-    return searchString.includes('tennis') || 
-           / vs | - |\/|[A-Z]\./.test(match.teams);
-  }
-
-  groupByTimeSlots(matches, windowMinutes = 45) {
-    const slots = {};
-    
+  groupByDate(matches) {
+    const groups = {};
     matches.forEach(match => {
-      const slotKey = this.getTimeSlotKey(match.date, match.time, windowMinutes);
-      if (!slots[slotKey]) slots[slotKey] = [];
-      slots[slotKey].push(match);
+      if (!groups[match.date]) groups[match.date] = [];
+      groups[match.date].push(match);
     });
-    
-    return slots;
+    return groups;
   }
 
-  getTimeSlotKey(date, time, windowMinutes) {
-    try {
-      const [hours, minutes] = time.split(':').map(Number);
-      const totalMinutes = hours * 60 + minutes;
-      const slot = Math.floor(totalMinutes / windowMinutes);
-      return `${date}-${slot}`;
-    } catch (error) {
-      // Fallback for invalid times
-      return `${date}-unknown`;
-    }
-  }
-
-  processTimeSlots(timeSlots) {
+  processDateGroups(dateGroups) {
     const processed = [];
     
-    Object.values(timeSlots).forEach(slotMatches => {
-      if (slotMatches.length === 1) {
-        processed.push(this.processSingleMatch(slotMatches[0]));
-        this.results.individual++;
-      } else {
-        const merged = this.mergeSlotMatches(slotMatches);
-        processed.push(...merged);
-      }
+    Object.values(dateGroups).forEach(dateMatches => {
+      const merged = this.findAndMergeMatches(dateMatches);
+      processed.push(...merged);
     });
     
     return processed;
   }
 
-  mergeSlotMatches(slotMatches) {
-    const clusters = this.findMatchClusters(slotMatches);
-    const results = [];
+  // 🎯 ENHANCEMENT 4: TENNIS-OPTIMIZED MATCHING
+  findAndMergeMatches(dateMatches) {
+    const clusters = [];
+    const processed = new Set();
     
+    for (let i = 0; i < dateMatches.length; i++) {
+      if (processed.has(i)) continue;
+      
+      const cluster = [dateMatches[i]];
+      processed.add(i);
+      
+      for (let j = i + 1; j < dateMatches.length; j++) {
+        if (processed.has(j)) continue;
+        
+        // 🎯 ENHANCED: Tennis-optimized scoring
+        const score = this.calculateTennisMatchScore(dateMatches[i], dateMatches[j]);
+        
+        if (score >= 0.55) {
+          const timeDiff = this.calculateTimeDifference(
+            dateMatches[i].time, 
+            dateMatches[j].time
+          );
+          
+          if (timeDiff <= 120) { // 2 hours
+            cluster.push(dateMatches[j]);
+            processed.add(j);
+            console.log(`   🎯 TENNIS MATCH: "${dateMatches[i].teams}" ↔ "${dateMatches[j].teams}"`);
+            console.log(`        Score: ${score} | Time Diff: ${timeDiff}min`);
+          }
+        }
+      }
+      
+      clusters.push(cluster);
+    }
+    
+    const results = [];
     clusters.forEach(cluster => {
       if (cluster.length === 1) {
         results.push(this.processSingleMatch(cluster[0]));
@@ -193,7 +236,6 @@ class TennisProcessor {
         results.push(merged);
         this.results.merged++;
         
-        // Track confidence
         const confidenceLevel = this.getConfidenceLevel(merged.confidence);
         this.results.confidenceBreakdown[confidenceLevel]++;
       }
@@ -202,65 +244,40 @@ class TennisProcessor {
     return results;
   }
 
-  findMatchClusters(matches) {
-    const clusters = [];
-    const processed = new Set();
+  // 🎯 ENHANCEMENT 5: TENNIS-OPTIMIZED SCORING
+  calculateTennisMatchScore(matchA, matchB) {
+    if (matchA.source === matchB.source) return 0;
+
+    // Base token score (our core engine)
+    let score = this.calculateTokenScore(matchA, matchB);
     
-    for (let i = 0; i < matches.length; i++) {
-      if (processed.has(i)) continue;
-      
-      const cluster = [matches[i]];
-      processed.add(i);
-      
-      for (let j = i + 1; j < matches.length; j++) {
-        if (processed.has(j)) continue;
-        
-        const score = this.calculateMatchScore(matches[i], matches[j]);
-        if (score >= 0.55) { // 55% threshold
-          cluster.push(matches[j]);
-          processed.add(j);
-        }
-      }
-      
-      clusters.push(cluster);
+    // 🎯 TENNIS ENHANCEMENTS:
+    
+    // 1. Player name canonicalization boost
+    const canonicalScore = this.calculateCanonicalSimilarity(matchA.teams, matchB.teams);
+    if (canonicalScore >= 0.8) {
+      score = Math.max(score, 0.8);
     }
     
-    return clusters;
+    // 2. Tournament similarity boost
+    const tournamentBoost = this.calculateTournamentSimilarity(matchA.tournament, matchB.tournament);
+    if (tournamentBoost > 0.7) {
+      score += 0.2; // Significant boost for same tournament
+    } else if (tournamentBoost > 0.5) {
+      score += 0.1; // Moderate boost
+    }
+    
+    // 3. Doubles pattern consistency boost
+    if (this.isDoublesMatch(matchA) === this.isDoublesMatch(matchB)) {
+      score += 0.05; // Small boost for same match type
+    }
+    
+    return Math.min(1.0, score); // Cap at 1.0
   }
 
-  // 🚀 ENHANCED MATCH SCORING WITH TEAM NAME BOOST
-  calculateMatchScore(matchA, matchB) {
-    if (matchA.source === matchB.source) return 0; // Don't merge same source
-    
+  calculateTokenScore(matchA, matchB) {
     const tokensA = this.tokenizeMatch(matchA);
     const tokensB = this.tokenizeMatch(matchB);
-    
-    const commonTokens = tokensA.filter(tokenA =>
-      tokensB.some(tokenB => this.tokensMatch(tokenA, tokenB))
-    );
-    
-    let score = commonTokens.length / Math.max(tokensA.length, tokensB.length);
-    
-    // 🎯 CRITICAL FIX: Boost score if team names are very similar
-    const teamsScore = this.calculateTeamsSimilarity(matchA.teams, matchB.teams);
-    
-    // If teams match very well (same players), boost the confidence significantly
-    if (teamsScore >= 0.8) {
-      // Major boost for identical/similar team compositions
-      score = Math.max(score, 0.8);
-      console.log(`   🎯 TEAM MATCH BOOST: "${matchA.teams}" ↔ "${matchB.teams}" | Score: ${teamsScore} → ${score}`);
-    } else if (teamsScore >= 0.6 && score >= 0.3) {
-      // Moderate boost for good team matches
-      score = Math.max(score, teamsScore);
-    }
-    
-    return score;
-  }
-
-  // NEW: Calculate similarity based ONLY on team names (ignores tournament)
-  calculateTeamsSimilarity(teamsA, teamsB) {
-    const tokensA = this.tokenizeString(teamsA);
-    const tokensB = this.tokenizeString(teamsB);
     
     const commonTokens = tokensA.filter(tokenA =>
       tokensB.some(tokenB => this.tokensMatch(tokenA, tokenB))
@@ -269,8 +286,46 @@ class TennisProcessor {
     return commonTokens.length / Math.max(tokensA.length, tokensB.length);
   }
 
+  // 🎯 ENHANCEMENT 6: CANONICAL SIMILARITY
+  calculateCanonicalSimilarity(teamsA, teamsB) {
+    const canonicalA = this.canonicalizeTeamString(teamsA);
+    const canonicalB = this.canonicalizeTeamString(teamsB);
+    
+    return this.calculateTokenScore(
+      { teams: canonicalA, tournament: '' },
+      { teams: canonicalB, tournament: '' }
+    );
+  }
+
+  canonicalizeTeamString(teamString) {
+    // Convert "R. Federer vs N. Djokovic" → "Roger Federer vs Novak Djokovic"
+    return teamString
+      .split(/ vs | - /)
+      .map(player => this.canonicalizePlayerName(player))
+      .join(' vs ');
+  }
+
+  isDoublesMatch(match) {
+    return match.teams.includes('/') || match.tournament.toLowerCase().includes('double');
+  }
+
+  // ... (keep all your existing utility methods: tokenizeMatch, tokensMatch, calculateTimeDifference, etc.)
+
+  calculateTimeDifference(timeA, timeB) {
+    try {
+      const [hoursA, minutesA] = timeA.split(':').map(Number);
+      const [hoursB, minutesB] = timeB.split(':').map(Number);
+      
+      const totalMinutesA = hoursA * 60 + minutesA;
+      const totalMinutesB = hoursB * 60 + minutesB;
+      
+      return Math.abs(totalMinutesA - totalMinutesB);
+    } catch (error) {
+      return 999;
+    }
+  }
+
   tokenizeMatch(match) {
-    // Combine teams + tournament for broader matching
     const searchString = match.teams + ' ' + match.tournament;
     return this.tokenizeString(searchString);
   }
@@ -283,29 +338,25 @@ class TennisProcessor {
   }
 
   tokensMatch(tokenA, tokenB) {
-    // Exact match or substring match
     return tokenA === tokenB || tokenA.includes(tokenB) || tokenB.includes(tokenA);
   }
 
   mergeCluster(cluster) {
-    // Use Tom as base if available, otherwise first match
     const tomMatch = cluster.find(m => m.source === 'tom');
     const baseMatch = tomMatch || cluster[0];
     const otherMatches = cluster.filter(m => m !== baseMatch);
     
-    // Calculate average confidence
     let totalConfidence = 0;
     let confidenceCount = 0;
     
     otherMatches.forEach(other => {
-      const score = this.calculateMatchScore(baseMatch, other);
+      const score = this.calculateTennisMatchScore(baseMatch, other);
       totalConfidence += score;
       confidenceCount++;
     });
     
     const avgConfidence = confidenceCount > 0 ? totalConfidence / confidenceCount : 1;
     
-    // Merge channels from all matches
     const allChannels = [...baseMatch.channels];
     otherMatches.forEach(match => {
       match.channels.forEach(channel => {
@@ -315,14 +366,13 @@ class TennisProcessor {
       });
     });
     
-    // Get all sources
     const sources = [...new Set(cluster.map(m => m.source))];
     
     return {
       unix_timestamp: baseMatch.timestamp,
       sport: 'Tennis',
       tournament: baseMatch.tournament,
-      match: baseMatch.teams.replace(' - ', ' vs '), // Standardize to "vs"
+      match: baseMatch.teams.replace(' - ', ' vs '),
       channels: allChannels,
       sources: sources,
       confidence: Math.round(avgConfidence * 100) / 100,
@@ -336,13 +386,15 @@ class TennisProcessor {
       unix_timestamp: match.timestamp,
       sport: 'Tennis',
       tournament: match.tournament,
-      match: match.teams.replace(' - ', ' vs '), // Standardize to "vs"
+      match: match.teams.replace(' - ', ' vs '),
       channels: match.channels,
       sources: [match.source],
       confidence: 1.0,
       merged: false
     };
   }
+
+  // ... (keep all your existing load methods: loadAllSuppliers, extractTomMatches, extractSarahMatches)
 
   generateFinalOutput(processedMatches) {
     this.results.totalProcessed = processedMatches.length;
@@ -357,6 +409,7 @@ class TennisProcessor {
         failed_processing: this.results.failed
       },
       confidence_breakdown: this.results.confidenceBreakdown,
+      sport_breakdown: this.results.sportBreakdown,
       matches: processedMatches
     };
   }
@@ -368,79 +421,44 @@ class TennisProcessor {
     return 'veryLow';
   }
 
-  // Utility methods
-  unixToTime(unixTimestamp) {
-    if (!unixTimestamp) return '12:00';
-    const date = new Date(unixTimestamp * 1000);
-    return date.toTimeString().slice(0, 5);
-  }
-
-  msToTime(msTimestamp) {
-    if (!msTimestamp) return '12:00';
-    const date = new Date(msTimestamp);
-    return date.toTimeString().slice(0, 5);
-  }
-
-  msToDate(msTimestamp) {
-    if (!msTimestamp) return new Date().toISOString().split('T')[0];
-    const date = new Date(msTimestamp);
-    return date.toISOString().split('T')[0];
-  }
-
-  generateSarahStreams(match) {
-    if (!match.sources) return [];
-    return match.sources.map(source => 
-      `https://embedsports.top/embed/${source.source}/${source.id}/1`
-    );
-  }
-
   logProcessingResults() {
-    console.log('\n📊 PROCESSING RESULTS:');
+    console.log('\n📊 ENHANCED PROCESSING RESULTS:');
     console.log('══════════════════════════════════════');
     console.log(`✅ Total Processed: ${this.results.totalProcessed}`);
     console.log(`🔄 Merged Matches: ${this.results.merged}`);
     console.log(`🎾 Individual Matches: ${this.results.individual}`);
     console.log(`❌ Failed: ${this.results.failed}`);
+    
     console.log('\n🎯 Confidence Breakdown:');
     console.log(`   High (≥0.8): ${this.results.confidenceBreakdown.high}`);
     console.log(`   Medium (0.65-0.79): ${this.results.confidenceBreakdown.medium}`);
     console.log(`   Low (0.55-0.64): ${this.results.confidenceBreakdown.low}`);
     console.log(`   Very Low (<0.55): ${this.results.confidenceBreakdown.veryLow}`);
+    
+    console.log('\n🏆 Sport Classification:');
+    Object.entries(this.results.sportBreakdown).forEach(([sport, count]) => {
+      console.log(`   ${sport}: ${count}`);
+    });
     console.log('══════════════════════════════════════\n');
   }
 }
 
-// Main execution
+// Main execution (same as before)
 if (require.main === module) {
   const processor = new TennisProcessor();
   
   processor.processAllSuppliers()
     .then(output => {
-      // Ensure directories exist
       const dirs = ['./tennis-results', './suppliers'];
       dirs.forEach(dir => {
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       });
       
-      // Save results
-      fs.writeFileSync(
-        './tennis-results/tennis-results.json', 
-        JSON.stringify(output, null, 2)
-      );
-      
+      fs.writeFileSync('./tennis-results/tennis-results.json', JSON.stringify(output, null, 2));
       console.log('💾 Tennis results saved to ./tennis-results/tennis-results.json');
       
-      // Update master-data.json if this is the main processor
-      const masterData = {
-        ...output,
-        last_updated: new Date().toISOString()
-      };
-      
-      fs.writeFileSync(
-        './master-data.json', 
-        JSON.stringify(masterData, null, 2)
-      );
-      
+      const masterData = { ...output, last_updated: new Date().toISOString() };
+      fs.writeFileSync('./master-data.json', JSON.stringify(masterData, null, 2));
       console.log('💾 Master data updated at ./master-data.json');
       
       process.exit(0);
