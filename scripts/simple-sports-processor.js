@@ -151,38 +151,6 @@ class SimpleSportsProcessor {
         console.log('══════════════════════════════════════\n');
     }
 
-// THEN KEEP YOUR EXISTING loadAllSuppliers, extractTomMatches, etc.
-async loadAllSuppliers() {
-    // ... your existing code
-}
-    
-
-    
-// ADD THESE METHODS TO SimpleSportsProcessor class:
-async loadAllSuppliers() {
-    const allMatches = [];
-    
-    for (const [key, config] of Object.entries(supplierConfig)) {
-        try {
-            if (!fs.existsSync(config.file)) {
-                console.log(`❌ ${key} data file missing: ${config.file}`);
-                continue;
-            }
-            
-            const data = JSON.parse(fs.readFileSync(config.file, 'utf8'));
-            const matches = this.extractMatchesFromSupplier(data, key);
-            
-            console.log(`✅ ${key}: ${matches.length} matches`);
-            allMatches.push(...matches);
-            
-        } catch (error) {
-            console.log(`❌ Failed to load ${key}:`, error.message);
-        }
-    }
-    
-    return allMatches;
-}
-
 extractMatchesFromSupplier(data, supplier) {
     if (supplier === 'tom') {
         return this.extractTomMatches(data);
@@ -337,31 +305,7 @@ generateSarahStreams(match) {
                category.charAt(0).toUpperCase() + category.slice(1);
     }
 
-    processSport(sport, matches) {
-        // For now, just return all matches as individual
-        // We'll add merging logic later
-        const processedMatches = matches.map(match => ({
-            unix_timestamp: match.timestamp,
-            sport: sport,
-            tournament: match.tournament || '',
-            match: match.teams || match.title,
-            channels: match.channels || [],
-            sources: [match.source],
-            confidence: 1.0,
-            merged: false
-        }));
-        
-        this.results.individual += processedMatches.length;
-        this.results.totalProcessed += processedMatches.length;
-        
-        return {
-            summary: {
-                total_matches: matches.length,
-                processed_matches: processedMatches.length
-            },
-            matches: processedMatches
-        };
-    }
+
 
     // ... (keep your existing loadAllSuppliers, extractTomMatches, extractSarahMatches methods)
 
