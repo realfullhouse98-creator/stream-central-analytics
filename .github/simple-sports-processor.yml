@@ -1,0 +1,30 @@
+# .github/workflows/simple-sports-processor.yml
+name: 🎯 Simple Sports Processor
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  process-sports:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: 🎯 Run Simple Sports Processor
+      run: node scripts/simple-sports-processor.js
+      
+    - name: 📝 Commit Results
+      run: |
+        git config user.email "actions@github.com"
+        git config user.name "GitHub Actions"
+        git add sports-results/ master-data.json
+        git commit -m "🎯 Simple sports processor results" || exit 0
+        git push
