@@ -99,6 +99,11 @@ class UnifiedSportsProcessor {
     allMatches.forEach(match => {
       try {
         const sport = this.classifier.classifySport(match);
+
+          // 🚨 TEMPORARY DEBUG: Log "Other" matches
+      if (sport === 'Other') {
+        console.log(`   🏷️ Other: "${match.teams || match.title}" | Source: ${match.source}`);
+      }
         
         // Initialize sport in results
         if (!this.results.sportBreakdown[sport]) {
@@ -394,6 +399,12 @@ class UnifiedSportsProcessor {
       if (!groups[match.date]) groups[match.date] = [];
       groups[match.date].push(match);
     });
+     // 🚨 DEBUG: Show date distribution
+  console.log(`   📅 Date groups: ${Object.keys(groups).length} dates`);
+  Object.entries(groups).forEach(([date, dateMatches]) => {
+    console.log(`      ${date}: ${dateMatches.length} matches`);
+  });
+    
     return groups;
   }
 
