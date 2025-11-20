@@ -271,41 +271,24 @@ class SportsClassifier {
     }
 
     classifySport(match) {
-        // 1. Handle Sarah's data specifically
-        if (this.isSarahData(match)) {
-            const sarahSport = this.normalizeSarahSport(match);
-            if (!this.isMalformedSport(sarahSport)) return sarahSport;
-        }
-        
-        // 2. Enhanced College Football Detection
-        if (this.isCollegeFootball(match)) {
-            return 'American Football';
-        }
-        
-        // 3. Enhanced Tennis Detection with pattern analysis
-        if (this.isTennisMatch(match)) {
-            return 'Tennis';
-        }
-            // 4. FOOTBALL DETECTION
-    if (this.isFootballSoccer(match)) {
-        return 'Football';
+    // 1. Use the sport field if it exists (Tom is always correct)
+    if (match.sport && match.sport !== 'Other') {
+        return this.normalizeSportName(match.sport);
     }
     
-    // 5. BASKETBALL DETECTION  
-    if (this.isBasketball(match)) {
-        return 'Basketball';
+    // 2. Handle Sarah's category field
+    if (match.category) {
+        return this.normalizeSportName(match.category);
     }
     
-    // 6. RACING DETECTION
-    if (this.isRacing(match)) {
-        return 'Racing';
+    // 3. Only use pattern detection as last resort
+    if (this.isCollegeFootball(match)) {
+        return 'American Football';
     }
     
-    // 7. Fallback to standard classification
-    const sportFromApi = match.sport || match.category || 'Other';
-    return this.normalizeSportName(sportFromApi);
-        
-    }
+    // 4. Everything else is Other
+    return 'Other';
+}
 
     // ENHANCED College Football Detection
     isCollegeFootball(match) {
@@ -323,23 +306,7 @@ class SportsClassifier {
         
         return hasCollegeTeam || hasCollegeIndicator;
     }
-     // BETTER Tennis Match Detection
-    isTennisMatch(match) {
-        const matchText = match.match || match.title || '';
-        
-        // If it says tennis anywhere, it's tennis
-        if ((match.sport || match.category || '').toLowerCase().includes('tennis')) return true;
-        if (matchText.toLowerCase().includes('tennis')) return true;
-        if ((match.tournament || '').toLowerCase().includes('tennis')) return true;
-        
-        // Look for tennis player name patterns
-        const hasTennisPattern = /[A-Z]\./.test(matchText) ||  // J.Smith
-                               /\//.test(matchText) ||         // PlayerA/PlayerB  
-                               / vs /.test(matchText) ||       // Player A vs Player B
-                               / - /.test(matchText);          // Player A - Player B
-        
-        return hasTennisPattern;
-    }
+  
 
     // ENHANCED Sarah Data Handling
     normalizeSarahSport(match) {
