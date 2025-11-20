@@ -20,57 +20,43 @@ class UnifiedSportsProcessor {
   }
 
   buildSportConfigs() {
-    return {
-      'Tennis': {
-        mergeThreshold: 0.55,
-        timeWindow: 120, // 2 hours
-        tokenWeights: { players: 0.8, tournament: 0.4 },
-        usePlayerCanonicalization: true,
-        maxTimeDifference: 120
-      },
-      'American Football': {
-        mergeThreshold: 0.70,
-        timeWindow: 60, // 1 hour
-        tokenWeights: { teams: 0.9, competition: 0.3 },
-        useTeamNormalization: true,
-        maxTimeDifference: 60
-      },
-      'Football': {
-        mergeThreshold: 0.75,
-        timeWindow: 90,
-        tokenWeights: { teams: 0.9, league: 0.4 },
-        useTeamNormalization: true,
-        maxTimeDifference: 90
-      },
-      'Basketball': {
-        mergeThreshold: 0.65,
-        timeWindow: 180,
-        tokenWeights: { teams: 0.8, players: 0.6 },
-        useTeamNormalization: true,
-        maxTimeDifference: 180
-      },
-      'Baseball': {
-        mergeThreshold: 0.68,
-        timeWindow: 120,
-        tokenWeights: { teams: 0.85, league: 0.4 },
-        useTeamNormalization: true,
-        maxTimeDifference: 120
-      },
-      'Ice Hockey': {
-        mergeThreshold: 0.67,
-        timeWindow: 90,
-        tokenWeights: { teams: 0.88, league: 0.35 },
-        useTeamNormalization: true,
-        maxTimeDifference: 90
-      },
-      'default': {
-        mergeThreshold: 0.60,
-        timeWindow: 120,
-        tokenWeights: { competitors: 0.7, context: 0.3 },
-        maxTimeDifference: 120
-      }
-    };
-  }
+  return {
+    'Tennis': {
+      mergeThreshold: 0.35,  // 🚨 CHANGED from 0.55 to 0.35
+      timeWindow: 120,
+      tokenWeights: { players: 0.8, tournament: 0.4 },
+      usePlayerCanonicalization: true,
+      maxTimeDifference: 120
+    },
+    'American Football': {
+      mergeThreshold: 0.45,  // 🚨 CHANGED from 0.70 to 0.45
+      timeWindow: 60,
+      tokenWeights: { teams: 0.9, competition: 0.3 },
+      useTeamNormalization: true,
+      maxTimeDifference: 60
+    },
+    'Football': {
+      mergeThreshold: 0.50,  // 🚨 CHANGED from 0.75 to 0.50
+      timeWindow: 90,
+      tokenWeights: { teams: 0.9, league: 0.4 },
+      useTeamNormalization: true,
+      maxTimeDifference: 90
+    },
+    'Basketball': {
+      mergeThreshold: 0.40,  // 🚨 CHANGED from 0.65 to 0.40
+      timeWindow: 180,
+      tokenWeights: { teams: 0.8, players: 0.6 },
+      useTeamNormalization: true,
+      maxTimeDifference: 180
+    },
+    'default': {
+      mergeThreshold: 0.30,  // 🚨 CHANGED from 0.60 to 0.30
+      timeWindow: 120,
+      tokenWeights: { competitors: 0.7, context: 0.3 },
+      maxTimeDifference: 120
+    }
+  };
+}
 
   async processAllSports() {
     console.log('🎯 STARTING UNIFIED SPORTS PROCESSOR...\n');
@@ -236,6 +222,11 @@ class UnifiedSportsProcessor {
     
     // Sport-specific enhancements
     score = this.applySportSpecificBoosts(score, matchA, matchB, sport, sportConfig);
+    
+     // 🚨 ADD DEBUG LOGGING:
+  if (score > 0.2) { // Only log potential matches
+    console.log(`   🔍 ${sport} SCORE: ${score.toFixed(2)} | "${competitorsA.competitor1}" ↔ "${competitorsB.competitor1}"`);
+  }
     
     return Math.min(1.0, score);
   }
