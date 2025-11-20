@@ -1,15 +1,15 @@
-# .github/workflows/tennis-processor.yml
-name: 🎾 Tennis Processor
+# .github/workflows/unified-sports-processor.yml
+name: 🎯 Unified Sports Processor
 on:
-  workflow_dispatch:      # ✅ MANUAL TRIGGER ONLY
+  workflow_dispatch: # Manual trigger only for testing
 
 permissions:
   contents: write
 
 jobs:
-  process-tennis:
+  process-sports:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     
     steps:
     - name: 📥 Checkout repository
@@ -22,19 +22,19 @@ jobs:
       with:
         node-version: '18'
         
-    - name: 🎾 Run Tennis Processor
+    - name: 🎯 Run Unified Sports Processor
       run: |
-        node scripts/tennis-processor.js
+        node scripts/unified-sports-processor.js
       
     - name: 📝 Commit & Push Results
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add tennis-results/ master-data.json
-        git diff --staged --quiet || (git commit -m "🎾 Updated tennis data [automated]" && git push)
+        git add sports-results/ master-data.json
+        git diff --staged --quiet || (git commit -m "🎯 Unified sports processor results [automated]" && git push)
         
     - name: 📊 Log Processing Summary
       run: |
-        echo "✅ Processing completed successfully"
-        echo "📁 Results saved to: tennis-results/tennis-results.json"
+        echo "✅ Unified processing completed successfully"
+        echo "📁 Results saved to: sports-results/unified-sports-results.json"
         echo "🌐 Master data updated: master-data.json"
