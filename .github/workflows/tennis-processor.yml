@@ -1,0 +1,40 @@
+# .github/workflows/tennis-processor.yml
+name: 🎾 Tennis Processor
+on:
+  workflow_dispatch:      # ✅ MANUAL TRIGGER ONLY
+
+permissions:
+  contents: write
+
+jobs:
+  process-tennis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: 🎾 Run Tennis Processor
+      run: |
+        node scripts/tennis-processor.js
+      
+    - name: 📝 Commit & Push Results
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add tennis-results/ master-data.json
+        git diff --staged --quiet || (git commit -m "🎾 Updated tennis data [automated]" && git push)
+        
+    - name: 📊 Log Processing Summary
+      run: |
+        echo "✅ Processing completed successfully"
+        echo "📁 Results saved to: tennis-results/tennis-results.json"
+        echo "🌐 Master data updated: master-data.json"
