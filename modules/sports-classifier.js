@@ -271,22 +271,21 @@ class SportsClassifier {
     }
 
     classifySport(match) {
-    // 1. Use the sport field if it exists (Tom is always correct)
+    // 1. Use Tom's sport field (always correct)
     if (match.sport && match.sport !== 'Other') {
         return this.normalizeSportName(match.sport);
     }
     
-    // 2. Handle Sarah's category field
+    // 2. Use Sarah's category field  
     if (match.category) {
         return this.normalizeSportName(match.category);
     }
     
-    // 3. Only use pattern detection as last resort
+    // 3. College football detection for edge cases
     if (this.isCollegeFootball(match)) {
         return 'American Football';
     }
     
-    // 4. Everything else is Other
     return 'Other';
 }
 
@@ -427,11 +426,14 @@ extractGenericCompetitors(match) {
         return match.category || (match.title && !match.match);
     }
 
-    normalizeSportName(sport) {
-        if (!sport || sport === 'Other') return 'Other';
-        const sportLower = sport.toLowerCase().trim();
-        return this.sportMap[sportLower] || this.titleCase(sport);
-    }
+   normalizeSportName(sport) {
+    if (!sport || sport === 'Other') return 'Other';
+    const sportLower = sport.toLowerCase().trim();
+    
+    // Make sure these are in your sportMap:
+    return this.sportMap[sportLower] || 
+           sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
+}
 
     titleCase(str) {
         return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
