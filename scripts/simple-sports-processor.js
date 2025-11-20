@@ -82,14 +82,14 @@ class SimpleSportsProcessor {
     this.results.totalProcessed += processedMatches.length;
     
     return {
-        summary: {
-            total_matches: matches.length,
-            processed_matches: processedMatches.length,
-            merged_matches: cluster.length > 1 ? 1 : 0,
-            individual_matches: cluster.length === 1 ? 1 : 0
-        },
-        matches: processedMatches
-    };
+    summary: {
+        total_matches: matches.length,
+        processed_matches: processedMatches.length,
+        merged_matches: this.results.merged,  // ✅ FIXED
+        individual_matches: this.results.individual  // ✅ FIXED
+    },
+    matches: processedMatches
+};
 }
 
     createMatchObject(match, sport, merged) {
