@@ -11,7 +11,110 @@ class SimpleSportsProcessor {
             sportBreakdown: {}
         };
     }
+// ADD THESE METHODS TO SimpleSportsProcessor class:
 
+async loadAllSuppliers() {
+    const allMatches = [];
+    
+    for (const [key, config] of Object.entries(supplierConfig)) {
+        try {
+            if (!fs.existsSync(config.file)) {
+                console.log(`❌ ${key} data file missing: ${config.file}`);
+                continue;
+            }
+            
+            const data = JSON.parse(fs.readFileSync(config.file, 'utf8'));
+            const matches = this.extractMatchesFromSupplier(data, key);
+            
+            console.log(`✅ ${key}: ${matches.length} matches`);
+            allMatches.push(...matches);
+            
+        } catch (error) {
+            console.log(`❌ Failed to load ${key}:`, error.message);
+        }
+    }
+    
+    return allMatches;
+}
+
+extractMatchesFromSupplier(data, supplier) {
+    if (supplier === 'tom') {
+        return this.extractTomMatches(data);
+    } else if (supplier === 'sarah') {
+        return this.extractSarahMatches(data);
+    }
+    return [];
+}
+
+extractTomMatches(tomData) {
+    const matches = [];
+    if (!tomData.events) return matches;
+    
+    Object.entries(tomData.events).forEach(([date, dayMatches]) => {
+        dayMatches.forEach(match => {
+            matches.push({
+                source: 'tom',
+                date: date,
+                time: this.unixToTime(match.unix_timestamp),
+                teams: match.match,
+                tournament: match.tournament || '',
+                channels: match.channels || [],
+                raw: match,
+                timestamp: match.unix_timestamp,
+                sport: match.sport // 🚨 IMPORTANT: Include sport field
+            });
+        });
+    });
+    
+    return matches;
+}
+
+extractSarahMatches(sarahData) {
+    const matches = [];
+    if (!sarahData.matches) return matches;
+    
+    sarahData.matches.forEach(match => {
+        matches.push({
+            source: 'sarah',
+            date: this.msToDate(match.date),
+            time: this.msToTime(match.date),
+            teams: match.title,
+            tournament: '',
+            channels: this.generateSarahStreams(match),
+            raw: match,
+            timestamp: match.date / 1000,
+            category: match.category // 🚨 IMPORTANT: Include category field
+        });
+    });
+    
+    return matches;
+}
+
+// UTILITY METHODS
+unixToTime(unixTimestamp) {
+    if (!unixTimestamp) return '12:00';
+    const date = new Date(unixTimestamp * 1000);
+    return date.toTimeString().slice(0, 5);
+}
+
+msToTime(msTimestamp) {
+    if (!msTimestamp) return '12:00';
+    const date = new Date(msTimestamp);
+    return date.toTimeString().slice(0, 5);
+}
+
+msToDate(msTimestamp) {
+    if (!msTimestamp) return new Date().toISOString().split('T')[0];
+    const date = new Date(msTimestamp);
+    return date.toISOString().split('T')[0];
+}
+
+generateSarahStreams(match) {
+    if (!match.sources) return [];
+    return match.sources.map(source => 
+        `https://embedsports.top/embed/${source.source}/${source.id}/1`
+    );
+}
     async processAllSports() {
         console.log('🎯 STARTING SIMPLE SPORTS PROCESSOR...\n');
         
