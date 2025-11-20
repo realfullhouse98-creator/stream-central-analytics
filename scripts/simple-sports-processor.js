@@ -151,6 +151,30 @@ class SimpleSportsProcessor {
         console.log('══════════════════════════════════════\n');
     }
 
+    async loadAllSuppliers() {
+    const allMatches = [];
+    
+    for (const [key, config] of Object.entries(supplierConfig)) {
+        try {
+            if (!fs.existsSync(config.file)) {
+                console.log(`❌ ${key} data file missing: ${config.file}`);
+                continue;
+            }
+            
+            const data = JSON.parse(fs.readFileSync(config.file, 'utf8'));
+            const matches = this.extractMatchesFromSupplier(data, key);
+            
+            console.log(`✅ ${key}: ${matches.length} matches`);
+            allMatches.push(...matches);
+            
+        } catch (error) {
+            console.log(`❌ Failed to load ${key}:`, error.message);
+        }
+    }
+    
+    return allMatches;
+}
+
 extractMatchesFromSupplier(data, supplier) {
     if (supplier === 'tom') {
         return this.extractTomMatches(data);
