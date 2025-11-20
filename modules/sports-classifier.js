@@ -455,3 +455,4 @@ class SportsClassifier {
         });
     }
 }
+module.exports = SportsClassifier;
