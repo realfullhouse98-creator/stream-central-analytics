@@ -271,40 +271,63 @@ class SportsClassifier {
     }
 
     classifySport(match) {
+    console.log('🔍 CLASSIFYING MATCH:', {
+        teams: match.match,
+        tournament: match.tournament,
+        sport: match.sport,
+        category: match.category
+    });
+    
     // 1. Use Tom's sport field (always correct)
     if (match.sport && match.sport !== 'Other') {
-        return this.normalizeSportName(match.sport);
+        const result = this.normalizeSportName(match.sport);
+        console.log('   Using Tom sport field:', result);
+        return result;
     }
     
     // 2. Use Sarah's category field  
     if (match.category) {
-        return this.normalizeSportName(match.category);
+        const result = this.normalizeSportName(match.category);
+        console.log('   Using Sarah category:', result);
+        return result;
     }
     
     // 3. College football detection for edge cases
     if (this.isCollegeFootball(match)) {
+        console.log('   🏈 COLLEGE FOOTBALL DETECTED!');
         return 'American Football';
     }
     
+    console.log('   ❌ Falling back to: Other');
     return 'Other';
 }
 
     // ENHANCED College Football Detection
     isCollegeFootball(match) {
-        const searchString = (match.match + ' ' + (match.tournament || '') + ' ' + (match.teams || '')).toLowerCase();
-        
-        // Check for team names in our database
-        const hasCollegeTeam = Array.from(this.collegeFootballTeams).some(team => 
-            searchString.includes(team)
-        );
-        
-        // Check for tournament/conference indicators
-        const hasCollegeIndicator = this.collegeFootballIndicators.some(indicator => 
-            searchString.includes(indicator)
-        );
-        
-        return hasCollegeTeam || hasCollegeIndicator;
-    }
+    const searchString = (match.match + ' ' + (match.tournament || '') + ' ' + (match.teams || '')).toLowerCase();
+    console.log('   🔍 Checking college football:', searchString);
+    
+    // Check for team names in our database
+    const hasCollegeTeam = Array.from(this.collegeFootballTeams).some(team => {
+        if (searchString.includes(team.toLowerCase())) {
+            console.log('   ✅ Found college team:', team);
+            return true;
+        }
+        return false;
+    });
+    
+    // Check for tournament/conference indicators
+    const hasCollegeIndicator = this.collegeFootballIndicators.some(indicator => {
+        if (searchString.includes(indicator)) {
+            console.log('   ✅ Found college indicator:', indicator);
+            return true;
+        }
+        return false;
+    });
+    
+    console.log('   📊 College detection result:', { hasCollegeTeam, hasCollegeIndicator });
+    return hasCollegeTeam || hasCollegeIndicator;
+}
   
 
     // ENHANCED Sarah Data Handling
