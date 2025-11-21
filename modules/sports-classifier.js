@@ -271,25 +271,28 @@ class SportsClassifier {
     }
 
 classifySport(match) {
-    // 🎯 USE OUR CLASSIFIER AS THE BOSS - IGNORE EVERYTHING ELSE!
-    
-    // 1. College football detection FIRST (most important)
-    if (this.isCollegeFootball(match)) {
+    // 1. Check Sarah's data first
+    if (match.category === 'american-football' || match.sport === 'college football') {
         return 'American Football';
     }
     
-    // 2. Use Tom's sport field (but only if not wrong)
-    if (match.sport && match.sport !== 'Other') {
-        return this.normalizeSportName(match.sport);
+    // 2. Check Tom's tournament field
+    if (match.tournament && match.tournament.toLowerCase().includes('college football')) {
+        return 'American Football';
     }
     
-    // 3. Use Sarah's category field  
-    if (match.category) {
-        return this.normalizeSportName(match.category);
+    // 3. Check for college teams in match text
+    const searchText = (match.match + ' ' + (match.tournament || '')).toLowerCase();
+    const hasCollegeTeam = Array.from(this.collegeFootballTeams).some(team => 
+        searchText.includes(team.toLowerCase())
+    );
+    
+    if (hasCollegeTeam && searchText.includes('football')) {
+        return 'American Football';
     }
     
-    // 4. Fallback
-    return 'Other';
+    // 4. Fallback to original sport
+    return this.normalizeSportName(match.sport || match.category || 'Other');
 }
 
   isCollegeFootball(match) {
