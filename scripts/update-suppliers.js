@@ -20,6 +20,42 @@ async function fetchWithTimeout(url, timeout = 8000) {
     }
 }
 
+function findNewMatches(oldData, newData, supplierName) {
+    const newMatches = [];
+    
+    if (supplierName === 'tom' && oldData.events && newData.events) {
+        Object.keys(newData.events).forEach(date => {
+            if (!oldData.events[date]) {
+                // Entire new date
+                newMatches.push(...newData.events[date]);
+            } else {
+                // Check individual matches in existing date
+                newData.events[date].forEach(newMatch => {
+                    const exists = oldData.events[date].some(oldMatch => 
+                        oldMatch.match === newMatch.match && 
+                        oldMatch.unix_timestamp === newMatch.unix_timestamp
+                    );
+                    if (!exists) {
+                        newMatches.push(newMatch);
+                    }
+                });
+            }
+        });
+    } else if (supplierName === 'sarah' && oldData.matches && newData.matches) {
+        newData.matches.forEach(newMatch => {
+            const exists = oldData.matches.some(oldMatch => 
+                oldMatch.title === newMatch.title && 
+                oldMatch.date === newMatch.date
+            );
+            if (!exists) {
+                newMatches.push(newMatch);
+            }
+        });
+    }
+    
+    return newMatches;
+}
+
 async function updateAllSuppliers() {
     console.log('🚀 Starting combined supplier update...');
     console.log('⏰', new Date().toISOString(), '\n');
@@ -69,7 +105,7 @@ async function updateAllSuppliers() {
     const results = {
         startTime: new Date().toISOString(),
         updated: [],
-        skipped: [], // ADD THIS LINE
+        skipped: [],
         failed: [],
         details: {}
     };
@@ -95,37 +131,88 @@ async function updateAllSuppliers() {
                     const rawData = await response.json();
                     const processedData = supplier.processor(rawData);
                     
-                    // SMART CHECK: Only update if data actually changed
+                    // SMART PROCESSING: Only add new matches, don't replace everything
                     const filePath = `./suppliers/${supplier.name}-data.json`;
                     const oldData = fs.existsSync(filePath) ? 
                         JSON.parse(fs.readFileSync(filePath, 'utf8')) : null;
 
-                    // Compare the IMPORTANT parts, not metadata like timestamps
-                    const shouldUpdate = !oldData || 
-                        oldData._metadata?.matchCount !== processedData._metadata?.matchCount ||
-                        JSON.stringify(oldData.events || oldData.matches) !== 
-                        JSON.stringify(processedData.events || processedData.matches);
-
-                    if (shouldUpdate) {
+                    if (oldData) {
+                        // FIND NEW MATCHES - compare with existing data
+                        const newMatches = findNewMatches(oldData, processedData, supplier.name);
+                        
+                        if (newMatches.length > 0) {
+                            // ADD NEW MATCHES to existing data
+                            if (supplier.name === 'tom' && oldData.events && processedData.events) {
+                                // For Tom: Merge events by date
+                                Object.keys(processedData.events).forEach(date => {
+                                    if (!oldData.events[date]) {
+                                        oldData.events[date] = processedData.events[date];
+                                    } else {
+                                        // Add new matches for existing date
+                                        processedData.events[date].forEach(newMatch => {
+                                            const exists = oldData.events[date].some(oldMatch => 
+                                                oldMatch.match === newMatch.match && 
+                                                oldMatch.unix_timestamp === newMatch.unix_timestamp
+                                            );
+                                            if (!exists) {
+                                                oldData.events[date].push(newMatch);
+                                            }
+                                        });
+                                    }
+                                });
+                            } else if (supplier.name === 'sarah' && oldData.matches && processedData.matches) {
+                                // For Sarah: Add new matches to array
+                                processedData.matches.forEach(newMatch => {
+                                    const exists = oldData.matches.some(oldMatch => 
+                                        oldMatch.title === newMatch.title && 
+                                        oldMatch.date === newMatch.date
+                                    );
+                                    if (!exists) {
+                                        oldData.matches.push(newMatch);
+                                    }
+                                });
+                            }
+                            
+                            // Update metadata
+                            oldData._metadata = processedData._metadata;
+                            oldData._metadata.addedMatches = newMatches.length;
+                            
+                            fs.writeFileSync(filePath, JSON.stringify(oldData, null, 2));
+                            console.log(`   ✅ UPDATED: ${supplier.name} (added ${newMatches.length} new matches)`);
+                            console.log(`   📊 Total matches: ${oldData._metadata.matchCount}`);
+                            
+                            results.updated.push(supplier.name);
+                            results.details[supplier.name] = {
+                                matchCount: oldData._metadata.matchCount,
+                                addedMatches: newMatches.length,
+                                source: new URL(url).hostname,
+                                success: true,
+                                changed: true
+                            };
+                        } else {
+                            console.log(`   ⚡ SKIPPED: ${supplier.name} (no new matches)`);
+                            results.skipped.push(supplier.name);
+                            results.details[supplier.name] = {
+                                matchCount: oldData._metadata.matchCount,
+                                addedMatches: 0,
+                                source: 'cached',
+                                success: true,
+                                changed: false
+                            };
+                        }
+                    } else {
+                        // First time - save everything
                         fs.writeFileSync(filePath, JSON.stringify(processedData, null, 2));
-                        console.log(`   ✅ UPDATED: ${supplier.name} (changes detected)`);
+                        console.log(`   ✅ INITIAL: ${supplier.name} (first download)`);
                         console.log(`   📊 Matches: ${processedData._metadata.matchCount}`);
                         
                         results.updated.push(supplier.name);
                         results.details[supplier.name] = {
                             matchCount: processedData._metadata.matchCount,
+                            addedMatches: processedData._metadata.matchCount,
                             source: new URL(url).hostname,
                             success: true,
                             changed: true
-                        };
-                    } else {
-                        console.log(`   ⚡ SKIPPED: ${supplier.name} (no changes)`);
-                        results.skipped.push(supplier.name);
-                        results.details[supplier.name] = {
-                            matchCount: processedData._metadata.matchCount,
-                            source: new URL(url).hostname,
-                            success: true,
-                            changed: false
                         };
                     }
                     
@@ -164,8 +251,11 @@ async function updateAllSuppliers() {
     
     Object.entries(results.details).forEach(([supplier, detail]) => {
         if (detail.success) {
-            const changeStatus = detail.changed ? 'UPDATED' : 'SKIPPED (no changes)';
-            console.log(`   ${supplier}: ${detail.matchCount} matches via ${detail.source} - ${changeStatus}`);
+            if (detail.changed) {
+                console.log(`   ${supplier}: ${detail.matchCount} matches (+${detail.addedMatches} new) via ${detail.source}`);
+            } else {
+                console.log(`   ${supplier}: ${detail.matchCount} matches (no new matches) via ${detail.source}`);
+            }
         } else {
             console.log(`   ${supplier}: FAILED - ${detail.error}`);
         }
