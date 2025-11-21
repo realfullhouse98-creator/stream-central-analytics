@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path'); // ADD THIS LINE
 const supplierConfig = require('../suppliers/supplier-config');
 
 class SimpleSportsProcessor {
@@ -89,7 +90,9 @@ class SimpleSportsProcessor {
                     fs.mkdirSync(backupDir, { recursive: true });
                 }
                 
-                const backupFile = `${backupDir}/${path.basename(file, '.json')}-${Date.now()}.json`;
+                // FIXED: Use path.basename correctly
+                const fileName = path.basename(file, '.json');
+                const backupFile = `${backupDir}/${fileName}-${Date.now()}.json`;
                 fs.copyFileSync(file, backupFile);
                 console.log(`💾 Backed up: ${backupFile}`);
             }
