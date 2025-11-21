@@ -69,6 +69,7 @@ async function updateAllSuppliers() {
     const results = {
         startTime: new Date().toISOString(),
         updated: [],
+        skipped: [], // ADD THIS LINE
         failed: [],
         details: {}
     };
@@ -94,20 +95,40 @@ async function updateAllSuppliers() {
                     const rawData = await response.json();
                     const processedData = supplier.processor(rawData);
                     
-                    fs.writeFileSync(
-                        `./suppliers/${supplier.name}-data.json`, 
-                        JSON.stringify(processedData, null, 2)
-                    );
+                    // SMART CHECK: Only update if data actually changed
+                    const filePath = `./suppliers/${supplier.name}-data.json`;
+                    const oldData = fs.existsSync(filePath) ? 
+                        JSON.parse(fs.readFileSync(filePath, 'utf8')) : null;
+
+                    // Compare the IMPORTANT parts, not metadata like timestamps
+                    const shouldUpdate = !oldData || 
+                        oldData._metadata?.matchCount !== processedData._metadata?.matchCount ||
+                        JSON.stringify(oldData.events || oldData.matches) !== 
+                        JSON.stringify(processedData.events || processedData.matches);
+
+                    if (shouldUpdate) {
+                        fs.writeFileSync(filePath, JSON.stringify(processedData, null, 2));
+                        console.log(`   ✅ UPDATED: ${supplier.name} (changes detected)`);
+                        console.log(`   📊 Matches: ${processedData._metadata.matchCount}`);
+                        
+                        results.updated.push(supplier.name);
+                        results.details[supplier.name] = {
+                            matchCount: processedData._metadata.matchCount,
+                            source: new URL(url).hostname,
+                            success: true,
+                            changed: true
+                        };
+                    } else {
+                        console.log(`   ⚡ SKIPPED: ${supplier.name} (no changes)`);
+                        results.skipped.push(supplier.name);
+                        results.details[supplier.name] = {
+                            matchCount: processedData._metadata.matchCount,
+                            source: new URL(url).hostname,
+                            success: true,
+                            changed: false
+                        };
+                    }
                     
-                    console.log(`   ✅ SUCCESS: ${supplier.name} updated`);
-                    console.log(`   📊 Matches: ${processedData._metadata.matchCount}`);
-                    
-                    results.updated.push(supplier.name);
-                    results.details[supplier.name] = {
-                        matchCount: processedData._metadata.matchCount,
-                        source: new URL(url).hostname,
-                        success: true
-                    };
                     return; // Success - exit proxy loop
                     
                 } else {
@@ -137,12 +158,14 @@ async function updateAllSuppliers() {
     console.log('\n📊 UPDATE SUMMARY:');
     console.log('══════════════════════════════════════');
     console.log(`✅ Updated: ${results.updated.length > 0 ? results.updated.join(', ') : 'None'}`);
+    console.log(`⚡ Skipped: ${results.skipped.length > 0 ? results.skipped.join(', ') : 'None'}`);
     console.log(`❌ Failed: ${results.failed.length > 0 ? results.failed.join(', ') : 'None'}`);
     console.log(`⏱️  Duration: ${results.duration}ms`);
     
     Object.entries(results.details).forEach(([supplier, detail]) => {
         if (detail.success) {
-            console.log(`   ${supplier}: ${detail.matchCount} matches via ${detail.source}`);
+            const changeStatus = detail.changed ? 'UPDATED' : 'SKIPPED (no changes)';
+            console.log(`   ${supplier}: ${detail.matchCount} matches via ${detail.source} - ${changeStatus}`);
         } else {
             console.log(`   ${supplier}: FAILED - ${detail.error}`);
         }
