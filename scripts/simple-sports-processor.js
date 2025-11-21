@@ -1,12 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const supplierConfig = require(path.join(__dirname, '../suppliers/supplier-config'));
-
-// ADD THESE 2 DEBUG LINES:
-const classifierPath = path.join(__dirname, '../modules/sports-classifier.js');
-console.log('🔍 DEBUG: Sports classifier path:', classifierPath);
-console.log('🔍 DEBUG: File exists:', fs.existsSync(classifierPath));
-
 const SportsClassifier = require('../modules/sports-classifier.js');
 
 class SimpleSportsProcessor {
@@ -47,6 +41,9 @@ class SimpleSportsProcessor {
             // 1. Load all suppliers with validation
             const allMatches = await this.loadAllSuppliers();
             console.log(`📥 Loaded ${allMatches.length} total matches`);
+
+            // 🆕 NEW: Fetch Sarah streams for merging
+            const sarahStreamsMap = await this.fetchAndMergeSarahStreams();
             
             // Memory usage tracking
             this.results.memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
@@ -64,7 +61,7 @@ class SimpleSportsProcessor {
                 const [sport, matches] = sports[i];
                 console.log(`\n🔧 Processing ${sport} (${i + 1}/${sports.length}): ${matches.length} matches`);
                 
-                processedData[sport] = this.processSport(sport, matches);
+                processedData[sport] = this.processSport(sport, matches, sarahStreamsMap);
                 
                 // Clear cache periodically to manage memory
                 if (i % 5 === 0) {
@@ -88,6 +85,44 @@ class SimpleSportsProcessor {
         }
     }
 
+    // 🆕 ADD THIS METHOD TO YOUR SimpleSportsProcessor class
+    async fetchAndMergeSarahStreams() {
+        console.log('🔄 Fetching Sarah streams for merging...');
+        
+        try {
+            const sarahMatches = await this.fetchSarahMatches();
+            console.log('📦 Sarah matches found:', sarahMatches.length);
+            
+            // Create a map for quick Sarah stream lookup
+            const sarahStreamsMap = new Map();
+            
+            sarahMatches.forEach(sarahMatch => {
+                if (sarahMatch.title && sarahMatch.sources) {
+                    const key = sarahMatch.title.toLowerCase().replace(/ vs /g, ' - ');
+                    sarahStreamsMap.set(key, sarahMatch.sources);
+                }
+            });
+            
+            return sarahStreamsMap;
+        } catch (error) {
+            console.log('❌ Sarah streams fetch failed:', error);
+            return new Map();
+        }
+    }
+
+    // 🆕 ADD THIS HELPER METHOD TOO
+    async fetchSarahMatches() {
+        try {
+            const response = await fetch('https://streamed.pk/api/matches/all');
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (error) {
+            console.log('Sarah API failed');
+        }
+        return [];
+    }
+
     backupCurrentData() {
         const filesToBackup = ['./master-data.json', './sports-results/simple-sports-results.json'];
         
@@ -98,7 +133,6 @@ class SimpleSportsProcessor {
                     fs.mkdirSync(backupDir, { recursive: true });
                 }
                 
-                // FIXED: Use path.basename correctly
                 const fileName = path.basename(file, '.json');
                 const backupFile = `${backupDir}/${fileName}-${Date.now()}.json`;
                 fs.copyFileSync(file, backupFile);
@@ -112,7 +146,7 @@ class SimpleSportsProcessor {
             const partialResults = {
                 error: 'Partial results due to failure',
                 processed_at: new Date().toISOString(),
-                matches: [] // Empty or partial matches if available
+                matches: []
             };
             
             if (!fs.existsSync('./sports-results')) {
@@ -126,45 +160,38 @@ class SimpleSportsProcessor {
         }
     }
 
-   classifyUsingExistingFields(matches) {
-    const sportGroups = {};
-    const progress = this.createProgressIndicator(matches.length, 'Classifying sports');
-    
-    matches.forEach(match => {
-        // ⭐ USE THE SPORTS CLASSIFIER INSTEAD OF OLD LOGIC ⭐
-        let sport = this.sportsClassifier.classifySport(match);
+    classifyUsingExistingFields(matches) {
+        const sportGroups = {};
+        const progress = this.createProgressIndicator(matches.length, 'Classifying sports');
         
-        // Initialize sport group
-        if (!sportGroups[sport]) {
-            sportGroups[sport] = [];
-            this.results.sportBreakdown[sport] = 0;
-        }
+        matches.forEach(match => {
+            let sport = this.sportsClassifier.classifySport(match);
+            
+            if (!sportGroups[sport]) {
+                sportGroups[sport] = [];
+                this.results.sportBreakdown[sport] = 0;
+            }
+            
+            sportGroups[sport].push(match);
+            this.results.sportBreakdown[sport]++;
+            progress.increment();
+        });
         
-        sportGroups[sport].push(match);
-        this.results.sportBreakdown[sport]++;
-        progress.increment();
-    });
-    
-    return sportGroups;
-}
+        return sportGroups;
+    }
 
-
-
-    processSport(sport, matches) {
+    processSport(sport, matches, sarahStreamsMap) {
         console.log(`   🔍 Looking for duplicates in ${sport}...`);
         
-        // Use merging instead of individual
         const clusters = this.findAndMergeMatches(matches, sport);
         const processedMatches = [];
         
         clusters.forEach(cluster => {
             if (cluster.length === 1) {
-                // Individual match
-                processedMatches.push(this.createMatchObject(cluster[0], sport, false));
+                processedMatches.push(this.createMatchObject(cluster[0], sport, false, sarahStreamsMap));
                 this.results.individual++;
             } else {
-                // Merged match
-                const merged = this.mergeCluster(cluster, sport);
+                const merged = this.mergeCluster(cluster, sport, sarahStreamsMap);
                 processedMatches.push(merged);
                 this.results.merged++;
                 console.log(`   ✅ MERGED ${cluster.length} matches in ${sport}`);
@@ -201,7 +228,6 @@ class SimpleSportsProcessor {
             for (let j = i + 1; j < matches.length; j++) {
                 if (processed.has(j)) continue;
                 
-                // Use sport-specific threshold
                 const score = this.calculateMatchScore(matches[i], matches[j], sport);
                 if (score >= sportConfig.mergeThreshold) {
                     cluster.push(matches[j]);
@@ -232,7 +258,6 @@ class SimpleSportsProcessor {
         
         let score = common.length / Math.max(tokensA.length, tokensB.length);
         
-        // Sport-specific boosts
         if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
             score += 0.15;
         }
@@ -245,20 +270,46 @@ class SimpleSportsProcessor {
         return /[A-Z]\./.test(text) || /\//.test(text);
     }
 
-    createMatchObject(match, sport, merged) {
+    createMatchObject(match, sport, merged, sarahStreamsMap) {
+        // 🆕 NEW: Get Sarah streams for this match
+        const sarahStreams = this.getSarahStreamsForMatch(match, sarahStreamsMap);
+        const allChannels = [...(match.channels || []), ...sarahStreams];
+        
         return {
             unix_timestamp: match.timestamp,
             sport: sport,
             tournament: match.tournament || '',
             match: match.teams || match.title,
-            channels: match.channels || [],
+            channels: allChannels, // 🆕 NOW INCLUDES SARAH STREAMS
             sources: [match.source],
             confidence: 1.0,
-            merged: merged
+            merged: merged,
+            // 🆕 NEW: Track stream sources
+            stream_sources: {
+                tom: match.channels || [],
+                sarah: sarahStreams
+            }
         };
     }
 
-    mergeCluster(cluster, sport) {
+    // 🆕 ADD THIS HELPER METHOD
+    getSarahStreamsForMatch(match, sarahStreamsMap) {
+        const matchKey = match.teams.toLowerCase();
+        const sarahSources = sarahStreamsMap.get(matchKey);
+        
+        if (!sarahSources) return [];
+        
+        const sarahStreams = [];
+        sarahSources.forEach((source) => {
+            for (let i = 1; i <= 3; i++) {
+                sarahStreams.push(`https://embedsports.top/embed/${source.source}/${source.id}/${i}`);
+            }
+        });
+        
+        return sarahStreams;
+    }
+
+    mergeCluster(cluster, sport, sarahStreamsMap) {
         const baseMatch = cluster[0];
         const otherMatches = cluster.slice(1);
         
@@ -272,7 +323,10 @@ class SimpleSportsProcessor {
             });
         });
         
-        // Combine sources
+        // 🆕 ADD Sarah streams to merged match
+        const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
+        allChannels.push(...sarahStreams);
+        
         const sources = [...new Set(cluster.map(m => m.source))];
         
         return {
@@ -284,48 +338,51 @@ class SimpleSportsProcessor {
             sources: sources,
             confidence: 0.8,
             merged: true,
-            merged_count: cluster.length
+            merged_count: cluster.length,
+            stream_sources: {
+                tom: allChannels.filter(ch => !ch.includes('embedsports.top')),
+                sarah: sarahStreams
+            }
         };
     }
 
     async loadAllSuppliers() {
-    const allMatches = [];
-    
-    console.log('🔧 DEBUG: Starting supplier loading...');
-    console.log('🔧 DEBUG: Current directory:', process.cwd());
-    
-    // TEST EACH SUPPLIER MANUALLY
-    const suppliers = [
-        { name: 'tom', file: './suppliers/tom-data.json' },
-        { name: 'sarah', file: './suppliers/sarah-data.json' }
-    ];
-    
-    for (const supplier of suppliers) {
-        try {
-            console.log(`🔧 DEBUG: Loading ${supplier.name} from ${supplier.file}`);
-            
-            if (!fs.existsSync(supplier.file)) {
-                console.log(`❌ DEBUG: File not found: ${supplier.file}`);
-                continue;
+        const allMatches = [];
+        
+        console.log('🔧 DEBUG: Starting supplier loading...');
+        console.log('🔧 DEBUG: Current directory:', process.cwd());
+        
+        const suppliers = [
+            { name: 'tom', file: './suppliers/tom-data.json' },
+            { name: 'sarah', file: './suppliers/sarah-data.json' }
+        ];
+        
+        for (const supplier of suppliers) {
+            try {
+                console.log(`🔧 DEBUG: Loading ${supplier.name} from ${supplier.file}`);
+                
+                if (!fs.existsSync(supplier.file)) {
+                    console.log(`❌ DEBUG: File not found: ${supplier.file}`);
+                    continue;
+                }
+                
+                const data = JSON.parse(fs.readFileSync(supplier.file, 'utf8'));
+                console.log(`✅ DEBUG: ${supplier.name} loaded successfully`);
+                console.log(`📊 DEBUG: ${supplier.name} data keys:`, Object.keys(data));
+                
+                const matches = this.extractMatchesFromSupplier(data, supplier.name);
+                console.log(`🎯 DEBUG: ${supplier.name} extracted ${matches.length} matches`);
+                
+                allMatches.push(...matches);
+                
+            } catch (error) {
+                console.log(`💥 DEBUG: Failed to load ${supplier.name}:`, error.message);
             }
-            
-            const data = JSON.parse(fs.readFileSync(supplier.file, 'utf8'));
-            console.log(`✅ DEBUG: ${supplier.name} loaded successfully`);
-            console.log(`📊 DEBUG: ${supplier.name} data keys:`, Object.keys(data));
-            
-            const matches = this.extractMatchesFromSupplier(data, supplier.name);
-            console.log(`🎯 DEBUG: ${supplier.name} extracted ${matches.length} matches`);
-            
-            allMatches.push(...matches);
-            
-        } catch (error) {
-            console.log(`💥 DEBUG: Failed to load ${supplier.name}:`, error.message);
         }
+        
+        console.log(`🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
+        return allMatches;
     }
-    
-    console.log(`🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
-    return allMatches;
-}
 
     extractMatchesFromSupplier(data, supplier) {
         if (supplier === 'tom') {
@@ -408,7 +465,6 @@ class SimpleSportsProcessor {
     }
 
     saveResults(processedData) {
-        // Convert to site-compatible format
         const siteData = {
             processed_at: new Date().toISOString(),
             processor_version: '2.0',
@@ -423,17 +479,14 @@ class SimpleSportsProcessor {
             matches: []
         };
         
-        // Flatten all sports into one matches array
         Object.values(processedData).forEach(sportData => {
             siteData.matches.push(...sportData.matches);
         });
         
-        // Ensure directory exists
         if (!fs.existsSync('./sports-results')) {
             fs.mkdirSync('./sports-results', { recursive: true });
         }
         
-        // Save both formats
         fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
         fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2));
     }
@@ -471,7 +524,6 @@ class SimpleSportsProcessor {
     }
 
     clearCache() {
-        // Clear caches to manage memory
         this.sportCache.clear();
         this.teamNormalizationCache.clear();
         
