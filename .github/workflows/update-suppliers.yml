@@ -37,7 +37,7 @@ jobs:
         
         console.log('CWD:', process.cwd());
         
-        // Test config loading - FIXED PATH
+        // Test config loading
         try {
           const configPath = path.join(process.cwd(), 'suppliers/supplier-config.js');
           console.log('Config path:', configPath);
@@ -54,6 +54,11 @@ jobs:
     - name: 🧪 Test Supplier Files
       run: node scripts/test-suppliers.js
       
+    - name: 🔍 Check Modules Folder
+      run: |
+        echo "=== CHECKING MODULES FOLDER ==="
+        ls -la modules/ || echo "❌ No modules folder found"
+        
     - name: 🎯 Process Sports Data
       run: node scripts/simple-sports-processor.js
       
