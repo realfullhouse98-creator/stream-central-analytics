@@ -25,6 +25,9 @@ jobs:
     - name: 🧪 Test Supplier Files
       run: node scripts/test-suppliers.js
       
+    - name: 🎯 Process Sports Data
+      run: node scripts/simple-sports-processor.js
+      
     - name: 📝 Commit and Push if Changed
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
