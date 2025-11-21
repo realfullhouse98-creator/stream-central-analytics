@@ -54,6 +54,23 @@ jobs:
     - name: 🧪 Test Supplier Files
       run: node scripts/test-suppliers.js
       
+    - name: 🔍 Debug Processor Loading
+      run: |
+        echo "=== TESTING PROCESSOR LOAD ==="
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        
+        try {
+          console.log('Testing processor require...');
+          const processor = require('./scripts/simple-sports-processor.js');
+          console.log('✅ Processor loaded successfully');
+        } catch (error) {
+          console.log('❌ Processor load failed:', error.message);
+          console.log('Error stack:', error.stack);
+        }
+        "
+        
     - name: 🔍 Check If Modules Exists
       run: |
         echo "=== CHECKING FOR MODULES ==="
