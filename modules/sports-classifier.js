@@ -270,7 +270,7 @@ class SportsClassifier {
         };
     }
 
-    classifySport(match) {
+classifySport(match) {
     console.log('🔍 CLASSIFYING MATCH:', {
         teams: match.match,
         tournament: match.tournament,
@@ -278,8 +278,14 @@ class SportsClassifier {
         category: match.category
     });
     
-    // 1. Use Tom's sport field (always correct)
+    // 1. CHECK if Tom's sport field might be WRONG for college sports
     if (match.sport && match.sport !== 'Other') {
+        // ⭐ NEW: Verify Tom's classification isn't wrong for college sports
+        if (this.isCollegeFootball(match) && match.sport.toLowerCase() === 'football') {
+            console.log('   🏈 OVERRIDING Tom: College Football → American Football');
+            return 'American Football';
+        }
+        
         const result = this.normalizeSportName(match.sport);
         console.log('   Using Tom sport field:', result);
         return result;
