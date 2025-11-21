@@ -77,6 +77,29 @@ jobs:
         find . -name "modules" -type d
         find . -name "sports-classifier.js"
         
+    - name: 🔍 Test Data Processing
+      run: |
+        echo "=== TESTING DATA PROCESSING ==="
+        node -e "
+        const processor = require('./scripts/simple-sports-processor.js');
+        const instance = new processor();
+        
+        console.log('Testing loadAllSuppliers...');
+        instance.loadAllSuppliers().then(matches => {
+          console.log('✅ Loaded matches:', matches.length);
+          if (matches.length > 0) {
+            console.log('Sample match:', matches[0]);
+          } else {
+            console.log('❌ NO MATCHES LOADED - checking supplier files...');
+            const fs = require('fs');
+            console.log('Tom file exists:', fs.existsSync('./suppliers/tom-data.json'));
+            console.log('Sarah file exists:', fs.existsSync('./suppliers/sarah-data.json'));
+          }
+        }).catch(error => {
+          console.log('❌ Load failed:', error);
+        });
+        "
+        
     - name: 🎯 Process Sports Data
       run: node scripts/simple-sports-processor.js
       
