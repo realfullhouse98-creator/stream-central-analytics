@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path'); // ADD THIS LINE
 const supplierConfig = require('../suppliers/supplier-config');
+const SportsClassifier = require('./sports-classifier.js');
 
 class SimpleSportsProcessor {
     constructor() {
@@ -14,6 +15,7 @@ class SimpleSportsProcessor {
         };
         
         this.startTime = Date.now();
+        this.sportsClassifier = new SportsClassifier();
         
         // Sport-specific configurations
         this.sportConfigs = {
@@ -118,52 +120,29 @@ class SimpleSportsProcessor {
         }
     }
 
-    classifyUsingExistingFields(matches) {
-        const sportGroups = {};
-        const progress = this.createProgressIndicator(matches.length, 'Classifying sports');
+   classifyUsingExistingFields(matches) {
+    const sportGroups = {};
+    const progress = this.createProgressIndicator(matches.length, 'Classifying sports');
+    
+    matches.forEach(match => {
+        // ⭐ USE THE SPORTS CLASSIFIER INSTEAD OF OLD LOGIC ⭐
+        let sport = this.sportsClassifier.classifySport(match);
         
-        matches.forEach(match => {
-            let sport = 'Other';
-            
-            // Use Tom's sport field first
-            if (match.sport && match.sport !== 'Other') {
-                sport = match.sport;
-            }
-            // Use Sarah's category field
-            else if (match.category && match.category !== 'other') {
-                sport = this.normalizeSarahCategory(match.category);
-            }
-            
-            // Initialize sport group
-            if (!sportGroups[sport]) {
-                sportGroups[sport] = [];
-                this.results.sportBreakdown[sport] = 0;
-            }
-            
-            sportGroups[sport].push(match);
-            this.results.sportBreakdown[sport]++;
-            progress.increment();
-        });
+        // Initialize sport group
+        if (!sportGroups[sport]) {
+            sportGroups[sport] = [];
+            this.results.sportBreakdown[sport] = 0;
+        }
         
-        return sportGroups;
-    }
+        sportGroups[sport].push(match);
+        this.results.sportBreakdown[sport]++;
+        progress.increment();
+    });
+    
+    return sportGroups;
+}
 
-    normalizeSarahCategory(category) {
-        const categoryMap = {
-            'american-football': 'American Football',
-            'motor-sports': 'Motorsport',
-            'fight': 'Fighting',
-            'afl': 'Aussie rules',
-            'football': 'Football',
-            'tennis': 'Tennis',
-            'basketball': 'Basketball',
-            'baseball': 'Baseball',
-            'hockey': 'Ice Hockey'
-        };
-        
-        return categoryMap[category] || 
-               category.charAt(0).toUpperCase() + category.slice(1);
-    }
+
 
     processSport(sport, matches) {
         console.log(`   🔍 Looking for duplicates in ${sport}...`);
