@@ -292,31 +292,45 @@ classifySport(match) {
     return 'Other';
 }
 
-    // ENHANCED College Football Detection
-    isCollegeFootball(match) {
+  isCollegeFootball(match) {
     const searchString = (match.match + ' ' + (match.tournament || '') + ' ' + (match.teams || '')).toLowerCase();
-    console.log('   🔍 Checking college football:', searchString);
     
-    // Check for team names in our database
-    const hasCollegeTeam = Array.from(this.collegeFootballTeams).some(team => {
-        if (searchString.includes(team.toLowerCase())) {
-            console.log('   ✅ Found college team:', team);
-            return true;
-        }
-        return false;
-    });
+    // 🎯 ONLY flag as American Football if it's ACTUALLY FOOTBALL!
     
-    // Check for tournament/conference indicators
-    const hasCollegeIndicator = this.collegeFootballIndicators.some(indicator => {
-        if (searchString.includes(indicator)) {
-            console.log('   ✅ Found college indicator:', indicator);
-            return true;
-        }
-        return false;
-    });
+    // 1. Check for FOOTBALL-specific college indicators
+    const footballIndicators = [
+        'college football', 'ncaa football', 'fbs', 'fcs', 'bowl game',
+        'cotton bowl', 'rose bowl', 'orange bowl', 'sugar bowl', 'playoff'
+    ];
     
-    console.log('   📊 College detection result:', { hasCollegeTeam, hasCollegeIndicator });
-    return hasCollegeTeam || hasCollegeIndicator;
+    const hasFootballIndicator = footballIndicators.some(indicator => 
+        searchString.includes(indicator)
+    );
+    
+    if (hasFootballIndicator) {
+        console.log('   ✅ Found football-specific college indicator');
+        return true;
+    }
+    
+    // 2. Check for college teams BUT only if context suggests football
+    const hasCollegeTeam = Array.from(this.collegeFootballTeams).some(team => 
+        searchString.includes(team.toLowerCase())
+    );
+    
+    // 🎯 ONLY return true if we have BOTH college team AND football context
+    if (hasCollegeTeam) {
+        // Check if this is actually football (not soccer, basketball, etc.)
+        const isLikelyFootball = 
+            searchString.includes('football') ||
+            !searchString.includes('soccer') && 
+            !searchString.includes('basketball') && 
+            !searchString.includes('volleyball');
+            
+        console.log('   📊 College team found, likely football:', isLikelyFootball);
+        return isLikelyFootball;
+    }
+    
+    return false;
 }
   
 
