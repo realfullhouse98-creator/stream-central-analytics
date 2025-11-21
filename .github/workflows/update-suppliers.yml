@@ -54,10 +54,11 @@ jobs:
     - name: 🧪 Test Supplier Files
       run: node scripts/test-suppliers.js
       
-    - name: 🔍 Check Modules Folder
+    - name: 🔍 Check If Modules Exists
       run: |
-        echo "=== CHECKING MODULES FOLDER ==="
-        ls -la modules/ || echo "❌ No modules folder found"
+        echo "=== CHECKING FOR MODULES ==="
+        find . -name "modules" -type d
+        find . -name "sports-classifier.js"
         
     - name: 🎯 Process Sports Data
       run: node scripts/simple-sports-processor.js
