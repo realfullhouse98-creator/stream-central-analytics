@@ -17,6 +17,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0  # ← FIX: Get full history to detect changes
         
     - name: 🐛 Debug Data Flow
       run: |
@@ -30,29 +31,8 @@ jobs:
         echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
         echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
         
-        echo "=== RUN PROCESSOR WITH DEBUG ==="
-        node -e "
-        const fs = require('fs');
-        const path = require('path');
-        
-        console.log('CWD:', process.cwd());
-        
-        // Test config loading
-        try {
-          const configPath = path.join(process.cwd(), 'suppliers/supplier-config.js');
-          console.log('Config path:', configPath);
-          const config = require(configPath);
-          console.log('Config loaded:', config);
-        } catch(e) {
-          console.log('Config load error:', e.message);
-        }
-        "
-        
     - name: 🔄 Update All Suppliers
       run: node scripts/update-suppliers.js
-      
-    - name: 🧪 Test Supplier Files
-      run: node scripts/test-suppliers.js
       
     - name: 🎯 Process Sports Data
       run: node scripts/simple-sports-processor.js
@@ -70,7 +50,8 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add .
+        # Force add the files that should change
+        git add master-data.json suppliers/ sports-results/
         git status
-        git commit -m "🔁 chore: update sports data [automated]" || echo "No changes to commit"
+        git commit -m "🔁 chore: update sports data [automated - $(date +%Y%m%d_%H%M%S)]" || echo "No changes to commit"
         git push
