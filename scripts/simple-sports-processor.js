@@ -1,6 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const supplierConfig = require(path.join(__dirname, '../suppliers/supplier-config'));
+
+// ADD THESE 2 DEBUG LINES:
+const classifierPath = path.join(__dirname, '../modules/sports-classifier.js');
+console.log('🔍 DEBUG: Sports classifier path:', classifierPath);
+console.log('🔍 DEBUG: File exists:', fs.existsSync(classifierPath));
+
 const SportsClassifier = require('../modules/sports-classifier.js');
 
 class SimpleSportsProcessor {
