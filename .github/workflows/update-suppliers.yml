@@ -19,6 +19,46 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         
+    - name: 🐛 Debug Data Flow
+      run: |
+        echo "=== FILE STRUCTURE ==="
+        find . -name "*.json" -path "*/suppliers/*" -o -name "master-data.json" | head -20
+        
+        echo "=== SUPPLIER FILE SIZES ==="
+        ls -la suppliers/*.json
+        
+        echo "=== CHECK SUPPLIER DATA ==="
+        echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
+        echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
+        
+        echo "=== RUN PROCESSOR WITH DEBUG ==="
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        
+        console.log('CWD:', process.cwd());
+        console.log('__dirname:', __dirname);
+        
+        // Test config loading
+        try {
+          const configPath = path.join(__dirname, 'suppliers/supplier-config.js');
+          console.log('Config path:', configPath);
+          const config = require(configPath);
+          console.log('Config loaded:', config);
+        } catch(e) {
+          console.log('Config load error:', e.message);
+        }
+        
+        // Test supplier file loading
+        try {
+          const tomData = JSON.parse(fs.readFileSync('suppliers/tom-data.json', 'utf8'));
+          console.log('Tom data keys:', Object.keys(tomData));
+          console.log('Tom events count:', Object.values(tomData.events || {}).flat().length);
+        } catch(e) {
+          console.log('Tom load error:', e.message);
+        }
+        "
+        
     - name: 🔄 Update All Suppliers
       run: node scripts/update-suppliers.js
       
