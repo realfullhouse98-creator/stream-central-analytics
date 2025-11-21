@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path'); // ADD THIS LINE
 const supplierConfig = require('../suppliers/supplier-config');
-const SportsClassifier = require('./sports-classifier.js');
+const SportsClassifier = require('../modules/sports-classifier.js');
 
 class SimpleSportsProcessor {
     constructor() {
