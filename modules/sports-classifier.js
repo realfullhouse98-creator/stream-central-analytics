@@ -271,40 +271,24 @@ class SportsClassifier {
     }
 
 classifySport(match) {
-    console.log('🔍 CLASSIFYING MATCH:', {
-        teams: match.match,
-        tournament: match.tournament,
-        sport: match.sport,
-        category: match.category
-    });
+    // 🎯 USE OUR CLASSIFIER AS THE BOSS - IGNORE EVERYTHING ELSE!
     
-    // 1. CHECK if Tom's sport field might be WRONG for college sports
-    if (match.sport && match.sport !== 'Other') {
-        // ⭐ NEW: Verify Tom's classification isn't wrong for college sports
-        if (this.isCollegeFootball(match) && match.sport.toLowerCase() === 'football') {
-            console.log('   🏈 OVERRIDING Tom: College Football → American Football');
-            return 'American Football';
-        }
-        
-        const result = this.normalizeSportName(match.sport);
-        console.log('   Using Tom sport field:', result);
-        return result;
-    }
-    
-    // 2. Use Sarah's category field  
-    if (match.category) {
-        const result = this.normalizeSportName(match.category);
-        console.log('   Using Sarah category:', result);
-        return result;
-    }
-    
-    // 3. College football detection for edge cases
+    // 1. College football detection FIRST (most important)
     if (this.isCollegeFootball(match)) {
-        console.log('   🏈 COLLEGE FOOTBALL DETECTED!');
         return 'American Football';
     }
     
-    console.log('   ❌ Falling back to: Other');
+    // 2. Use Tom's sport field (but only if not wrong)
+    if (match.sport && match.sport !== 'Other') {
+        return this.normalizeSportName(match.sport);
+    }
+    
+    // 3. Use Sarah's category field  
+    if (match.category) {
+        return this.normalizeSportName(match.category);
+    }
+    
+    // 4. Fallback
     return 'Other';
 }
 
