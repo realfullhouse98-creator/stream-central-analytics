@@ -1,9 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-
-// Since both files are inside "main" folder, use same level:
 const supplierConfig = require(path.join(__dirname, '../suppliers/supplier-config'));
-
 const SportsClassifier = require('../modules/sports-classifier.js');
 
 class SimpleSportsProcessor {
