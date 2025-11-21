@@ -24,11 +24,11 @@ jobs:
         find . -name "*.json" -path "*/suppliers/*" -o -name "master-data.json" | head -20
         
         echo "=== SUPPLIER FILE SIZES ==="
-        ls -la main/suppliers/*.json
+        ls -la suppliers/*.json
         
         echo "=== CHECK SUPPLIER DATA ==="
-        echo "Tom records:" $(jq '.events | flatten | length' main/suppliers/tom-data.json 2>/dev/null || echo "FAILED")
-        echo "Sarah records:" $(jq '.matches | length' main/suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
+        echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
+        echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
         
         echo "=== RUN PROCESSOR WITH DEBUG ==="
         node -e "
@@ -36,41 +36,31 @@ jobs:
         const path = require('path');
         
         console.log('CWD:', process.cwd());
-        console.log('__dirname:', __dirname);
         
-        // Test config loading
+        // Test config loading - FIXED PATH
         try {
-          const configPath = path.join(process.cwd(), 'main/suppliers/supplier-config.js');
+          const configPath = path.join(process.cwd(), 'suppliers/supplier-config.js');
           console.log('Config path:', configPath);
           const config = require(configPath);
           console.log('Config loaded:', config);
         } catch(e) {
           console.log('Config load error:', e.message);
         }
-        
-        // Test supplier file loading
-        try {
-          const tomData = JSON.parse(fs.readFileSync('main/suppliers/tom-data.json', 'utf8'));
-          console.log('Tom data keys:', Object.keys(tomData));
-          console.log('Tom events count:', Object.values(tomData.events || {}).flat().length);
-        } catch(e) {
-          console.log('Tom load error:', e.message);
-        }
         "
         
     - name: 🔄 Update All Suppliers
-      run: node main/scripts/update-suppliers.js
+      run: node scripts/update-suppliers.js
       
     - name: 🧪 Test Supplier Files
-      run: node main/scripts/test-suppliers.js
+      run: node scripts/test-suppliers.js
       
     - name: 🎯 Process Sports Data
-      run: node main/scripts/simple-sports-processor.js
+      run: node scripts/simple-sports-processor.js
       
     - name: 📝 Commit and Push if Changed
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add main/suppliers/
-        git add main/master-data.json
+        git add suppliers/
+        git add master-data.json
         git diff --staged --quiet || (git commit -m "🔁 chore: update supplier data [automated]" && git push)
