@@ -4,9 +4,8 @@ on:
     - cron: '*/60 * * * *'  # Every 60 minutes
   workflow_dispatch:        # Manual trigger
 
-# ADD THIS PERMISSIONS BLOCK:
 permissions:
-  contents: write  # ← THIS FIXES THE 403 ERROR
+  contents: write
 
 jobs:
   update-suppliers:
@@ -25,11 +24,11 @@ jobs:
         find . -name "*.json" -path "*/suppliers/*" -o -name "master-data.json" | head -20
         
         echo "=== SUPPLIER FILE SIZES ==="
-        ls -la suppliers/*.json
+        ls -la main/suppliers/*.json
         
         echo "=== CHECK SUPPLIER DATA ==="
-        echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
-        echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
+        echo "Tom records:" $(jq '.events | flatten | length' main/suppliers/tom-data.json 2>/dev/null || echo "FAILED")
+        echo "Sarah records:" $(jq '.matches | length' main/suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
         
         echo "=== RUN PROCESSOR WITH DEBUG ==="
         node -e "
@@ -41,7 +40,7 @@ jobs:
         
         // Test config loading
         try {
-          const configPath = path.join(__dirname, 'suppliers/supplier-config.js');
+          const configPath = path.join(process.cwd(), 'main/suppliers/supplier-config.js');
           console.log('Config path:', configPath);
           const config = require(configPath);
           console.log('Config loaded:', config);
@@ -51,7 +50,7 @@ jobs:
         
         // Test supplier file loading
         try {
-          const tomData = JSON.parse(fs.readFileSync('suppliers/tom-data.json', 'utf8'));
+          const tomData = JSON.parse(fs.readFileSync('main/suppliers/tom-data.json', 'utf8'));
           console.log('Tom data keys:', Object.keys(tomData));
           console.log('Tom events count:', Object.values(tomData.events || {}).flat().length);
         } catch(e) {
@@ -60,17 +59,18 @@ jobs:
         "
         
     - name: 🔄 Update All Suppliers
-      run: node scripts/update-suppliers.js
+      run: node main/scripts/update-suppliers.js
       
     - name: 🧪 Test Supplier Files
-      run: node scripts/test-suppliers.js
+      run: node main/scripts/test-suppliers.js
       
     - name: 🎯 Process Sports Data
-      run: node scripts/simple-sports-processor.js
+      run: node main/scripts/simple-sports-processor.js
       
     - name: 📝 Commit and Push if Changed
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add suppliers/
+        git add main/suppliers/
+        git add main/master-data.json
         git diff --staged --quiet || (git commit -m "🔁 chore: update supplier data [automated]" && git push)
