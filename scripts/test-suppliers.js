@@ -1,61 +1,48 @@
 const fs = require('fs');
 
-async function testTennisProcessor() {
-    console.log('🧪 TESTING TENNIS PROCESSOR IN GITHUB ACTIONS...\n');
+async function testSportsProcessor() {
+    console.log('🧪 TESTING SPORTS PROCESSOR IN GITHUB ACTIONS...\n');
     
     try {
-        console.log('🚀 Starting tennis processor...');
+        console.log('🚀 Starting sports processor...');
         
-        // ✅ FIX: Force execution by running the processor directly
-        // Instead of requiring, we'll spawn a child process to run it
+        // ✅ FIX: Test the new simple-sports-processor instead of tennis-processor
         const { spawnSync } = require('child_process');
         
-        const result = spawnSync('node', ['scripts/tennis-processor.js'], {
+        const result = spawnSync('node', ['scripts/simple-sports-processor.js'], {
             stdio: 'inherit', // Show all output
             encoding: 'utf-8'
         });
         
         if (result.status !== 0) {
-            throw new Error(`Tennis processor failed with exit code: ${result.status}`);
+            throw new Error(`Sports processor failed with exit code: ${result.status}`);
         }
         
-        console.log('✅ Tennis processor execution completed');
+        console.log('✅ Sports processor execution completed');
         
-        // Check if results were generated
-        const resultsPath = './tennis-results/tennis-results.json';
+        // Check if results were generated (adjust path based on your new processor output)
+        const resultsPath = './master-data.json'; // Or wherever your new processor saves data
         if (fs.existsSync(resultsPath)) {
             const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
             
             console.log('🎯 TEST COMPLETED SUCCESSFULLY!');
-            console.log(`📊 Generated ${results.matches.length} tennis matches`);
+            console.log(`📊 Processed data structure:`, Object.keys(results));
             
-            // Show sample output
-            console.log('\n🔍 SAMPLE MATCHES:');
-            results.matches.slice(0, 5).forEach((match, index) => {
-                console.log(`${index + 1}. ${match.teams}`);
-                console.log(`   Time: ${match.time} | Sources: ${Object.keys(match.sources).join(', ')}`);
-                console.log(`   Confidence: ${match.confidence} | Merged: ${match.merged}`);
+            // Show sample output based on your new data structure
+            console.log('\n🔍 DATA OVERVIEW:');
+            Object.entries(results).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    console.log(`${key}: ${value.length} items`);
+                } else if (typeof value === 'object') {
+                    console.log(`${key}: object with keys ${Object.keys(value).join(', ')}`);
+                } else {
+                    console.log(`${key}: ${value}`);
+                }
             });
-            
-            // 🕒 CHECK TIME STATS
-            console.log('\n🕒 TIME ANALYSIS:');
-            const times = results.matches.map(m => m.time);
-            const timeCounts = {};
-            times.forEach(time => {
-                timeCounts[time] = (timeCounts[time] || 0) + 1;
-            });
-            
-            console.log('Time distribution:');
-            Object.entries(timeCounts)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10)
-                .forEach(([time, count]) => {
-                    console.log(`  ${time}: ${count} matches`);
-                });
             
             return results;
         } else {
-            throw new Error('Tennis results file was not generated');
+            throw new Error('Sports results file was not generated');
         }
         
     } catch (error) {
@@ -66,10 +53,10 @@ async function testTennisProcessor() {
 
 // Only run if called directly
 if (require.main === module) {
-    testTennisProcessor().catch(error => {
+    testSportsProcessor().catch(error => {
         console.error('💥 Test runner failed:', error);
         process.exit(1);
     });
 }
 
-module.exports = testTennisProcessor;
+module.exports = testSportsProcessor;
