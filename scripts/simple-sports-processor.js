@@ -1,4 +1,3 @@
-// scripts/simple-sports-processor.js
 const fs = require('fs');
 const supplierConfig = require('../suppliers/supplier-config');
 
@@ -8,8 +7,12 @@ class SimpleSportsProcessor {
             totalProcessed: 0,
             merged: 0,
             individual: 0,
-            sportBreakdown: {}
+            sportBreakdown: {},
+            processingTime: 0,
+            memoryUsage: 0
         };
+        
+        this.startTime = Date.now();
         
         // Sport-specific configurations
         this.sportConfigs = {
@@ -19,41 +22,102 @@ class SimpleSportsProcessor {
             'American Football': { mergeThreshold: 0.45, timeWindow: 60 },
             'default': { mergeThreshold: 0.30, timeWindow: 120 }
         };
+
+        // Cache for performance
+        this.sportCache = new Map();
+        this.teamNormalizationCache = new Map();
     }
 
     async processAllSports() {
-        console.log('🎯 STARTING SIMPLE SPORTS PROCESSOR...\n');
+        console.log('🎯 STARTING ENHANCED SPORTS PROCESSOR...\n');
         
         try {
-            // 1. Load all matches
+            // Backup current data before processing
+            this.backupCurrentData();
+
+            // 1. Load all suppliers with validation
             const allMatches = await this.loadAllSuppliers();
             console.log(`📥 Loaded ${allMatches.length} total matches`);
             
+            // Memory usage tracking
+            this.results.memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
+            console.log(`💾 Memory usage: ${this.results.memoryUsage.toFixed(2)} MB`);
+
             // 2. Classify using existing sport fields
             const sportGroups = this.classifyUsingExistingFields(allMatches);
             console.log(`🏆 Found ${Object.keys(sportGroups).length} sports`);
-            
-            // 3. Process each sport
+
+            // 3. Process each sport with progress tracking
             const processedData = {};
-            for (const [sport, matches] of Object.entries(sportGroups)) {
-                console.log(`\n🔧 Processing ${sport}: ${matches.length} matches`);
-                processedData[sport] = this.processSport(sport, matches);
-            }
+            const sports = Object.entries(sportGroups);
             
+            for (let i = 0; i < sports.length; i++) {
+                const [sport, matches] = sports[i];
+                console.log(`\n🔧 Processing ${sport} (${i + 1}/${sports.length}): ${matches.length} matches`);
+                
+                processedData[sport] = this.processSport(sport, matches);
+                
+                // Clear cache periodically to manage memory
+                if (i % 5 === 0) {
+                    this.clearCache();
+                }
+            }
+
             // 4. Save results
             this.saveResults(processedData);
             this.logResults();
+            
+            this.results.processingTime = Date.now() - this.startTime;
             
             return processedData;
             
         } catch (error) {
             console.error('💥 Processor failed:', error);
+            // Try to save partial results if possible
+            this.savePartialResults();
             throw error;
+        }
+    }
+
+    backupCurrentData() {
+        const filesToBackup = ['./master-data.json', './sports-results/simple-sports-results.json'];
+        
+        filesToBackup.forEach(file => {
+            if (fs.existsSync(file)) {
+                const backupDir = './sports-results/backups';
+                if (!fs.existsSync(backupDir)) {
+                    fs.mkdirSync(backupDir, { recursive: true });
+                }
+                
+                const backupFile = `${backupDir}/${path.basename(file, '.json')}-${Date.now()}.json`;
+                fs.copyFileSync(file, backupFile);
+                console.log(`💾 Backed up: ${backupFile}`);
+            }
+        });
+    }
+
+    savePartialResults() {
+        try {
+            const partialResults = {
+                error: 'Partial results due to failure',
+                processed_at: new Date().toISOString(),
+                matches: [] // Empty or partial matches if available
+            };
+            
+            if (!fs.existsSync('./sports-results')) {
+                fs.mkdirSync('./sports-results', { recursive: true });
+            }
+            
+            fs.writeFileSync('./sports-results/partial-results.json', JSON.stringify(partialResults, null, 2));
+            console.log('💾 Partial results saved due to error');
+        } catch (e) {
+            console.log('❌ Could not save partial results:', e.message);
         }
     }
 
     classifyUsingExistingFields(matches) {
         const sportGroups = {};
+        const progress = this.createProgressIndicator(matches.length, 'Classifying sports');
         
         matches.forEach(match => {
             let sport = 'Other';
@@ -75,6 +139,7 @@ class SimpleSportsProcessor {
             
             sportGroups[sport].push(match);
             this.results.sportBreakdown[sport]++;
+            progress.increment();
         });
         
         return sportGroups;
@@ -125,7 +190,8 @@ class SimpleSportsProcessor {
                 total_matches: matches.length,
                 processed_matches: processedMatches.length,
                 merged_matches: this.results.merged,
-                individual_matches: this.results.individual
+                individual_matches: this.results.individual,
+                merge_efficiency: ((matches.length - processedMatches.length) / matches.length * 100).toFixed(1) + '%'
             },
             matches: processedMatches
         };
@@ -135,6 +201,8 @@ class SimpleSportsProcessor {
         const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
         const clusters = [];
         const processed = new Set();
+        
+        const progress = this.createProgressIndicator(matches.length, 'Finding duplicates');
         
         for (let i = 0; i < matches.length; i++) {
             if (processed.has(i)) continue;
@@ -155,6 +223,7 @@ class SimpleSportsProcessor {
             }
             
             clusters.push(cluster);
+            progress.increment();
         }
         
         return clusters;
@@ -249,6 +318,7 @@ class SimpleSportsProcessor {
                 
             } catch (error) {
                 console.log(`❌ Failed to load ${key}:`, error.message);
+                // Continue with other suppliers even if one fails
             }
         }
         
@@ -269,19 +339,21 @@ class SimpleSportsProcessor {
         if (!tomData.events) return matches;
         
         Object.entries(tomData.events).forEach(([date, dayMatches]) => {
-            dayMatches.forEach(match => {
-                matches.push({
-                    source: 'tom',
-                    date: date,
-                    time: this.unixToTime(match.unix_timestamp),
-                    teams: match.match,
-                    tournament: match.tournament || '',
-                    channels: match.channels || [],
-                    raw: match,
-                    timestamp: match.unix_timestamp,
-                    sport: match.sport
+            if (Array.isArray(dayMatches)) {
+                dayMatches.forEach(match => {
+                    matches.push({
+                        source: 'tom',
+                        date: date,
+                        time: this.unixToTime(match.unix_timestamp),
+                        teams: match.match,
+                        tournament: match.tournament || '',
+                        channels: match.channels || [],
+                        raw: match,
+                        timestamp: match.unix_timestamp,
+                        sport: match.sport
+                    });
                 });
-            });
+            }
         });
         
         return matches;
@@ -337,6 +409,15 @@ class SimpleSportsProcessor {
         // Convert to site-compatible format
         const siteData = {
             processed_at: new Date().toISOString(),
+            processor_version: '2.0',
+            summary: {
+                total_sports: Object.keys(processedData).length,
+                total_matches: this.results.totalProcessed,
+                merged_matches: this.results.merged,
+                individual_matches: this.results.individual,
+                processing_time_ms: this.results.processingTime,
+                memory_usage_mb: this.results.memoryUsage
+            },
             matches: []
         };
         
@@ -356,17 +437,46 @@ class SimpleSportsProcessor {
     }
 
     logResults() {
-        console.log('\n📊 SIMPLE SPORTS PROCESSOR RESULTS:');
+        console.log('\n📊 ENHANCED SPORTS PROCESSOR RESULTS:');
         console.log('══════════════════════════════════════');
         console.log(`✅ Total Processed: ${this.results.totalProcessed}`);
         console.log(`🔄 Total Merged: ${this.results.merged}`);
         console.log(`🎯 Total Individual: ${this.results.individual}`);
+        console.log(`⏱️  Processing Time: ${this.results.processingTime}ms`);
+        console.log(`💾 Peak Memory: ${this.results.memoryUsage.toFixed(2)} MB`);
         
         console.log('\n🏆 Sport Breakdown:');
-        Object.entries(this.results.sportBreakdown).forEach(([sport, count]) => {
-            console.log(`   ${sport}: ${count} matches`);
-        });
+        Object.entries(this.results.sportBreakdown)
+            .sort((a, b) => b[1] - a[1])
+            .forEach(([sport, count]) => {
+                console.log(`   ${sport}: ${count} matches`);
+            });
         console.log('══════════════════════════════════════\n');
+    }
+
+    createProgressIndicator(total, message) {
+        let processed = 0;
+        return {
+            increment: () => {
+                processed++;
+                if (processed % 100 === 0 || processed === total) {
+                    const percent = Math.round((processed / total) * 100);
+                    console.log(`   ${message}: ${processed}/${total} (${percent}%)`);
+                }
+            },
+            getCurrent: () => processed
+        };
+    }
+
+    clearCache() {
+        // Clear caches to manage memory
+        this.sportCache.clear();
+        this.teamNormalizationCache.clear();
+        
+        if (global.gc) {
+            global.gc();
+            console.log('   🗑️  Garbage collection triggered');
+        }
     }
 }
 
