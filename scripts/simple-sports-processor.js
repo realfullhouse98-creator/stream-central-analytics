@@ -1,10 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-
-// FIXED: Use absolute path from current directory
-const supplierConfig = require(path.join(process.cwd(), 'suppliers/supplier-config'));
-
-const SportsClassifier = require('./modules/sports-classifier.js');
+const supplierConfig = require(path.join(__dirname, '../suppliers/supplier-config'));
+const SportsClassifier = require('../modules/sports-classifier.js');
 
 class SimpleSportsProcessor {
     constructor() {
