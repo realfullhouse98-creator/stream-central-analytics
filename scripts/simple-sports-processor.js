@@ -271,26 +271,26 @@ class SimpleSportsProcessor {
     }
 
     createMatchObject(match, sport, merged, sarahStreamsMap) {
-        // 🆕 NEW: Get Sarah streams for this match
-        const sarahStreams = this.getSarahStreamsForMatch(match, sarahStreamsMap);
-        const allChannels = [...(match.channels || []), ...sarahStreams];
-        
-        return {
-            unix_timestamp: match.timestamp,
-            sport: sport,
-            tournament: match.tournament || '',
-            match: match.teams || match.title,
-            channels: allChannels, // 🆕 NOW INCLUDES SARAH STREAMS
-            sources: [match.source],
-            confidence: 1.0,
-            merged: merged,
-            // 🆕 NEW: Track stream sources
-            stream_sources: {
-                tom: match.channels || [],
-                sarah: sarahStreams
-            }
-        };
-    }
+    const sarahStreams = this.getSarahStreamsForMatch(match, sarahStreamsMap);
+    const tomStreams = match.channels || [];
+    const allChannels = [...tomStreams, ...sarahStreams];
+    
+    return {
+        unix_timestamp: match.timestamp,
+        sport: sport,
+        tournament: match.tournament || '',
+        match: match.teams || match.title,
+        channels: allChannels,
+        sources: [match.source], // Keep original sources
+        confidence: 1.0,
+        merged: merged,
+        // 🎯 CLEANER: Use "sources" instead of "stream_sources"
+        sources: {
+            tom: tomStreams,
+            sarah: sarahStreams
+        }
+    };
+}
 
     // 🆕 ADD THIS HELPER METHOD
     getSarahStreamsForMatch(match, sarahStreamsMap) {
@@ -309,42 +309,42 @@ class SimpleSportsProcessor {
         return sarahStreams;
     }
 
-    mergeCluster(cluster, sport, sarahStreamsMap) {
-        const baseMatch = cluster[0];
-        const otherMatches = cluster.slice(1);
-        
-        // Combine all channels
-        const allChannels = [...baseMatch.channels];
-        otherMatches.forEach(match => {
-            match.channels.forEach(channel => {
-                if (!allChannels.includes(channel)) {
-                    allChannels.push(channel);
-                }
-            });
-        });
-        
-        // 🆕 ADD Sarah streams to merged match
-        const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
-        allChannels.push(...sarahStreams);
-        
-        const sources = [...new Set(cluster.map(m => m.source))];
-        
-        return {
-            unix_timestamp: baseMatch.timestamp,
-            sport: sport,
-            tournament: baseMatch.tournament || '',
-            match: baseMatch.teams || baseMatch.title,
-            channels: allChannels,
-            sources: sources,
-            confidence: 0.8,
-            merged: true,
-            merged_count: cluster.length,
-            stream_sources: {
-                tom: allChannels.filter(ch => !ch.includes('embedsports.top')),
-                sarah: sarahStreams
+   mergeCluster(cluster, sport, sarahStreamsMap) {
+    const baseMatch = cluster[0];
+    
+    // Combine all Tom streams
+    const allTomStreams = [];
+    cluster.forEach(match => {
+        const tomStreams = match.channels || [];
+        tomStreams.forEach(stream => {
+            if (!allTomStreams.includes(stream)) {
+                allTomStreams.push(stream);
             }
-        };
-    }
+        });
+    });
+    
+    // Get Sarah streams
+    const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
+    const allChannels = [...allTomStreams, ...sarahStreams];
+    const sources = [...new Set(cluster.map(m => m.source))];
+    
+    return {
+        unix_timestamp: baseMatch.timestamp,
+        sport: sport,
+        tournament: baseMatch.tournament || '',
+        match: baseMatch.teams || baseMatch.title,
+        channels: allChannels,
+        sources: sources,
+        confidence: 0.8,
+        merged: true,
+        merged_count: cluster.length,
+        // 🎯 CLEANER: Use "sources" for stream classification
+        sources: {
+            tom: allTomStreams,
+            sarah: sarahStreams
+        }
+    };
+}
 
     async loadAllSuppliers() {
         const allMatches = [];
