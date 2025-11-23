@@ -273,7 +273,18 @@ class SimpleSportsProcessor {
     createMatchObject(match, sport, merged, sarahStreamsMap) {
     const sarahStreams = this.getSarahStreamsForMatch(match, sarahStreamsMap);
     const tomStreams = match.channels || [];
-    const allChannels = [...tomStreams, ...sarahStreams];
+    
+    // 🎯 CORRECT CLASSIFICATION: Filter streams by URL pattern
+    const correctTomStreams = tomStreams.filter(channel => 
+        channel.includes('topembed.pw') && !channel.includes('embedsports.top')
+    );
+    
+    const correctSarahStreams = [
+        ...sarahStreams,
+        ...tomStreams.filter(channel => channel.includes('embedsports.top'))
+    ];
+    
+    const allChannels = [...correctTomStreams, ...correctSarahStreams];
     
     return {
         unix_timestamp: match.timestamp,
@@ -281,13 +292,13 @@ class SimpleSportsProcessor {
         tournament: match.tournament || '',
         match: match.teams || match.title,
         channels: allChannels,
-        sources: [match.source], // Keep original sources
+        sources: [match.source],
         confidence: 1.0,
         merged: merged,
-        // 🎯 CLEANER: Use "sources" instead of "stream_sources"
+        // 🎯 CORRECT STREAM CLASSIFICATION
         sources: {
-            tom: tomStreams,
-            sarah: sarahStreams
+            tom: correctTomStreams,    // Only real Tom streams
+            sarah: correctSarahStreams // Only real Sarah streams
         }
     };
 }
@@ -309,22 +320,35 @@ class SimpleSportsProcessor {
         return sarahStreams;
     }
 
-   mergeCluster(cluster, sport, sarahStreamsMap) {
+mergeCluster(cluster, sport, sarahStreamsMap) {
     const baseMatch = cluster[0];
     
-    // Combine all Tom streams
+    // 🎯 CORRECTLY COLLECT TOM STREAMS (only topembed.pw)
     const allTomStreams = [];
     cluster.forEach(match => {
         const tomStreams = match.channels || [];
         tomStreams.forEach(stream => {
-            if (!allTomStreams.includes(stream)) {
-                allTomStreams.push(stream);
+            if (stream.includes('topembed.pw') && !stream.includes('embedsports.top')) {
+                if (!allTomStreams.includes(stream)) {
+                    allTomStreams.push(stream);
+                }
             }
         });
     });
     
     // Get Sarah streams
     const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
+    
+    // 🎯 ALSO INCLUDE embedsports.top STREAMS FROM TOM'S DATA
+    cluster.forEach(match => {
+        const tomStreams = match.channels || [];
+        tomStreams.forEach(stream => {
+            if (stream.includes('embedsports.top') && !sarahStreams.includes(stream)) {
+                sarahStreams.push(stream);
+            }
+        });
+    });
+    
     const allChannels = [...allTomStreams, ...sarahStreams];
     const sources = [...new Set(cluster.map(m => m.source))];
     
@@ -338,7 +362,7 @@ class SimpleSportsProcessor {
         confidence: 0.8,
         merged: true,
         merged_count: cluster.length,
-        // 🎯 CLEANER: Use "sources" for stream classification
+        // 🎯 CORRECT STREAM CLASSIFICATION FOR MERGED MATCHES
         sources: {
             tom: allTomStreams,
             sarah: sarahStreams
