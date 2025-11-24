@@ -1,5 +1,3 @@
-// Simple-Sport-Processor
-
 const fs = require('fs');
 const path = require('path');
 const supplierConfig = require(path.join(__dirname, '../suppliers/supplier-config'));
@@ -35,9 +33,11 @@ class SimpleSportsProcessor {
 
     async processAllSports() {
         console.log('🎯 STARTING ENHANCED SPORTS PROCESSOR...\n');
-        this.debugWendyStreamMatches();
         
         try {
+            // 🆕 WENDY STREAMS ANALYSIS
+            this.debugWendyStreamMatches();
+            
             // Backup current data before processing
             this.backupCurrentData();
 
@@ -85,6 +85,39 @@ class SimpleSportsProcessor {
             // Try to save partial results if possible
             this.savePartialResults();
             throw error;
+        }
+    }
+
+    // 🆕 ADD THIS DEBUG METHOD
+    debugWendyStreamMatches() {
+        try {
+            const wendyData = JSON.parse(fs.readFileSync('./suppliers/wendy-data.json', 'utf8'));
+            console.log('🔍 WENDY STREAMS ANALYSIS:');
+            
+            if (wendyData.matches) {
+                const matchesWithStreams = wendyData.matches.filter(m => m.streams && m.streams.length > 0);
+                console.log(`📊 ${matchesWithStreams.length} matches have streams out of ${wendyData.matches.length}`);
+                
+                // Count by sport
+                const sportCounts = {};
+                wendyData.matches.forEach(match => {
+                    const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
+                    sportCounts[sport] = (sportCounts[sport] || 0) + 1;
+                });
+                
+                console.log('🏆 Wendy sport breakdown:', sportCounts);
+                
+                matchesWithStreams.slice(0, 3).forEach(match => {
+                    console.log(`🎯 MATCH WITH STREAMS:`);
+                    console.log(`   Title: ${match.title}`);
+                    console.log(`   Sport: ${match.sportCategory || match.sport || match.wendySport}`);
+                    console.log(`   Status: ${match.status}`);
+                    console.log(`   Streams: ${match.streams.length}`);
+                    console.log(`   First stream: ${match.streams[0]?.url}`);
+                });
+            }
+        } catch (error) {
+            console.log('❌ Wendy streams analysis failed:', error.message);
         }
     }
 
@@ -161,6 +194,196 @@ class SimpleSportsProcessor {
         } catch (e) {
             console.log('❌ Could not save partial results:', e.message);
         }
+    }
+
+    async loadAllSuppliers() {
+        const allMatches = [];
+        
+        console.log('🔧 DEBUG: Starting supplier loading...');
+        console.log('🔧 DEBUG: Current directory:', process.cwd());
+        
+        const suppliers = Object.values(supplierConfig);
+        
+        for (const supplier of suppliers) {
+            try {
+                console.log(`\n🔧 DEBUG: Loading ${supplier.name}...`);
+                
+                if (!fs.existsSync(supplier.file)) {
+                    console.log(`❌ DEBUG: File not found: ${supplier.file}`);
+                    continue;
+                }
+                
+                const data = JSON.parse(fs.readFileSync(supplier.file, 'utf8'));
+                console.log(`✅ DEBUG: ${supplier.name} loaded - ${data.matches?.length || 0} matches`);
+                
+                const matches = this.extractMatchesFromSupplier(data, supplier.name);
+                console.log(`🎯 DEBUG: ${supplier.name} extracted ${matches.length} matches`);
+                
+                allMatches.push(...matches);
+                
+            } catch (error) {
+                console.log(`💥 DEBUG: Failed to load ${supplier.name}:`, error.message);
+            }
+        }
+        
+        console.log(`\n🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
+        return allMatches;
+    }
+
+    extractMatchesFromSupplier(data, supplier) {
+        if (supplier === 'tom') {
+            return this.extractTomMatches(data);
+        } else if (supplier === 'sarah') {
+            return this.extractSarahMatches(data);
+        } else if (supplier === 'wendy') {
+            return this.extractWendyMatches(data);
+        }
+        return [];
+    }
+
+    extractTomMatches(tomData) {
+        const matches = [];
+        if (!tomData.events) return matches;
+        
+        Object.entries(tomData.events).forEach(([date, dayMatches]) => {
+            if (Array.isArray(dayMatches)) {
+                dayMatches.forEach(match => {
+                    matches.push({
+                        source: 'tom',
+                        date: date,
+                        time: this.unixToTime(match.unix_timestamp),
+                        teams: match.match,
+                        tournament: match.tournament || '',
+                        channels: match.channels || [],
+                        raw: match,
+                        timestamp: match.unix_timestamp,
+                        sport: match.sport
+                    });
+                });
+            }
+        });
+        
+        return matches;
+    }
+
+    extractSarahMatches(sarahData) {
+        const matches = [];
+        if (!sarahData.matches) return matches;
+        
+        sarahData.matches.forEach(match => {
+            matches.push({
+                source: 'sarah',
+                date: this.msToDate(match.date),
+                time: this.msToTime(match.date),
+                teams: match.title,
+                tournament: '',
+                channels: this.generateSarahStreams(match),
+                raw: match,
+                timestamp: match.date / 1000,
+                category: match.category
+            });
+        });
+        
+        return matches;
+    }
+
+    // 🆕 UPDATED WENDY EXTRACTION WITH DEBUG
+    extractWendyMatches(wendyData) {
+        console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
+        console.log('   Input data type:', typeof wendyData);
+        console.log('   Has matches property:', !!wendyData.matches);
+        console.log('   Matches array length:', wendyData.matches?.length || 0);
+        
+        const matches = [];
+        if (!wendyData.matches) {
+            console.log('❌ No matches array in Wendy data');
+            return matches;
+        }
+        
+        console.log('🎯 Processing Wendy matches...');
+        
+        wendyData.matches.forEach((match, index) => {
+            // 🆕 ONLY PROCESS MATCHES THAT HAVE STREAMS
+            const hasStreams = match.streams && match.streams.length > 0;
+            
+            if (hasStreams) {
+                const teams = match.teams ? 
+                    `${match.teams.home?.name || ''} vs ${match.teams.away?.name || ''}`.trim() : 
+                    match.title;
+                
+                const tournament = match.league?.name || '';
+                
+                // Use actual Wendy streams
+                const channels = match.streams.map(stream => stream.url);
+                
+                const processedMatch = {
+                    source: 'wendy',
+                    date: this.msToDate(match.timestamp || Date.now()),
+                    time: this.msToTime(match.timestamp || Date.now()),
+                    teams: teams,
+                    tournament: tournament,
+                    channels: channels,
+                    raw: match,
+                    timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
+                    sport: this.classifyWendySport(match)
+                };
+                
+                matches.push(processedMatch);
+                
+                // Debug first few matches
+                if (index < 3) {
+                    console.log(`   📝 Processed match ${index + 1}:`);
+                    console.log(`      Teams: ${processedMatch.teams}`);
+                    console.log(`      Sport: ${processedMatch.sport}`);
+                    console.log(`      Channels: ${processedMatch.channels.length}`);
+                    console.log(`      Source: ${processedMatch.source}`);
+                }
+            }
+        });
+        
+        console.log(`✅ Wendy extraction: ${matches.length} matches with streams processed`);
+        console.log(`   Total input matches: ${wendyData.matches.length}`);
+        console.log(`   Matches with streams: ${matches.length}`);
+        
+        return matches;
+    }
+
+    // 🆕 UPDATED WENDY SPORT CLASSIFIER
+    classifyWendySport(match) {
+        // 🆕 PRIORITIZE wendySport field from our enhanced data
+        if (match.wendySport) {
+            const sportMap = {
+                'football': 'Football',
+                'tennis': 'Tennis', 
+                'basketball': 'Basketball',
+                'hockey': 'Ice Hockey',
+                'baseball': 'Baseball',
+                'american-football': 'American Football',
+                'rugby': 'Rugby',
+                'cricket': 'Cricket',
+                'volleyball': 'Volleyball',
+                'fighting': 'Fight',
+                'darts': 'Darts',
+                'golf': 'Golf',
+                'racing': 'Motor-sports',
+                'australian-football': 'Australian Football'
+            };
+            return sportMap[match.wendySport] || match.wendySport;
+        }
+        
+        // Fallback to original classification
+        const league = match.league?.name?.toLowerCase() || '';
+        const title = match.title?.toLowerCase() || '';
+        
+        if (league.includes('nfl') || title.includes('nfl')) return 'American Football';
+        if (league.includes('nba') || title.includes('nba')) return 'Basketball'; 
+        if (league.includes('mlb') || title.includes('mlb')) return 'Baseball';
+        if (league.includes('nhl') || title.includes('nhl')) return 'Ice Hockey';
+        if (league.includes('rugby') || title.includes('rugby')) return 'Rugby';
+        if (league.includes('tennis') || title.includes('tennis')) return 'Tennis';
+        
+        // Default to football
+        return 'Football';
     }
 
     classifyUsingExistingFields(matches) {
@@ -274,37 +497,37 @@ class SimpleSportsProcessor {
     }
 
     createMatchObject(match, sport, merged, sarahStreamsMap) {
-    const sarahStreams = this.getSarahStreamsForMatch(match, sarahStreamsMap);
-    const tomStreams = match.channels || [];
-    
-    // 🎯 CORRECT CLASSIFICATION: Filter streams by URL pattern
-    const correctTomStreams = tomStreams.filter(channel => 
-        channel.includes('topembed.pw') && !channel.includes('embedsports.top')
-    );
-    
-    const correctSarahStreams = [
-        ...sarahStreams,
-        ...tomStreams.filter(channel => channel.includes('embedsports.top'))
-    ];
-    
-    const allChannels = [...correctTomStreams, ...correctSarahStreams];
-    
-    return {
-        unix_timestamp: match.timestamp,
-        sport: sport,
-        tournament: match.tournament || '',
-        match: match.teams || match.title,
-        channels: allChannels,
-        sources: [match.source],
-        confidence: 1.0,
-        merged: merged,
-        // 🎯 CORRECT STREAM CLASSIFICATION
-        sources: {
-            tom: correctTomStreams,    // Only real Tom streams
-            sarah: correctSarahStreams // Only real Sarah streams
-        }
-    };
-}
+        const sarahStreams = this.getSarahStreamsForMatch(match, sarahStreamsMap);
+        const tomStreams = match.channels || [];
+        
+        // 🎯 CORRECT CLASSIFICATION: Filter streams by URL pattern
+        const correctTomStreams = tomStreams.filter(channel => 
+            channel.includes('topembed.pw') && !channel.includes('embedsports.top')
+        );
+        
+        const correctSarahStreams = [
+            ...sarahStreams,
+            ...tomStreams.filter(channel => channel.includes('embedsports.top'))
+        ];
+        
+        const allChannels = [...correctTomStreams, ...correctSarahStreams];
+        
+        return {
+            unix_timestamp: match.timestamp,
+            sport: sport,
+            tournament: match.tournament || '',
+            match: match.teams || match.title,
+            channels: allChannels,
+            sources: [match.source],
+            confidence: 1.0,
+            merged: merged,
+            // 🎯 CORRECT STREAM CLASSIFICATION
+            sources: {
+                tom: correctTomStreams,    // Only real Tom streams
+                sarah: correctSarahStreams // Only real Sarah streams
+            }
+        };
+    }
 
     // 🆕 ADD THIS HELPER METHOD
     getSarahStreamsForMatch(match, sarahStreamsMap) {
@@ -323,206 +546,55 @@ class SimpleSportsProcessor {
         return sarahStreams;
     }
 
-mergeCluster(cluster, sport, sarahStreamsMap) {
-    const baseMatch = cluster[0];
-    
-    // 🎯 CORRECTLY COLLECT TOM STREAMS (only topembed.pw)
-    const allTomStreams = [];
-    cluster.forEach(match => {
-        const tomStreams = match.channels || [];
-        tomStreams.forEach(stream => {
-            if (stream.includes('topembed.pw') && !stream.includes('embedsports.top')) {
-                if (!allTomStreams.includes(stream)) {
-                    allTomStreams.push(stream);
+    mergeCluster(cluster, sport, sarahStreamsMap) {
+        const baseMatch = cluster[0];
+        
+        // 🎯 CORRECTLY COLLECT TOM STREAMS (only topembed.pw)
+        const allTomStreams = [];
+        cluster.forEach(match => {
+            const tomStreams = match.channels || [];
+            tomStreams.forEach(stream => {
+                if (stream.includes('topembed.pw') && !stream.includes('embedsports.top')) {
+                    if (!allTomStreams.includes(stream)) {
+                        allTomStreams.push(stream);
+                    }
                 }
-            }
-        });
-    });
-    
-    // Get Sarah streams
-    const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
-    
-    // 🎯 ALSO INCLUDE embedsports.top STREAMS FROM TOM'S DATA
-    cluster.forEach(match => {
-        const tomStreams = match.channels || [];
-        tomStreams.forEach(stream => {
-            if (stream.includes('embedsports.top') && !sarahStreams.includes(stream)) {
-                sarahStreams.push(stream);
-            }
-        });
-    });
-    
-    const allChannels = [...allTomStreams, ...sarahStreams];
-    const sources = [...new Set(cluster.map(m => m.source))];
-    
-    return {
-        unix_timestamp: baseMatch.timestamp,
-        sport: sport,
-        tournament: baseMatch.tournament || '',
-        match: baseMatch.teams || baseMatch.title,
-        channels: allChannels,
-        sources: sources,
-        confidence: 0.8,
-        merged: true,
-        merged_count: cluster.length,
-        // 🎯 CORRECT STREAM CLASSIFICATION FOR MERGED MATCHES
-        sources: {
-            tom: allTomStreams,
-            sarah: sarahStreams
-        }
-    };
-}
-
-    async loadAllSuppliers() {
-    const allMatches = [];
-    
-    console.log('🔧 DEBUG: Starting supplier loading...');
-    console.log('🔧 DEBUG: Current directory:', process.cwd());
-    
-    // ✅ FIX: Use supplierConfig instead of hardcoded array
-    const suppliers = Object.values(supplierConfig);
-    
-    for (const supplier of suppliers) {
-        try {
-            console.log(`🔧 DEBUG: Loading ${supplier.name} from ${supplier.file}`);
-            
-            if (!fs.existsSync(supplier.file)) {
-                console.log(`❌ DEBUG: File not found: ${supplier.file}`);
-                continue;
-            }
-            
-            const data = JSON.parse(fs.readFileSync(supplier.file, 'utf8'));
-            console.log(`✅ DEBUG: ${supplier.name} loaded successfully`);
-            console.log(`📊 DEBUG: ${supplier.name} data keys:`, Object.keys(data));
-            
-            const matches = this.extractMatchesFromSupplier(data, supplier.name);
-            console.log(`🎯 DEBUG: ${supplier.name} extracted ${matches.length} matches`);
-            
-            allMatches.push(...matches);
-            
-        } catch (error) {
-            console.log(`💥 DEBUG: Failed to load ${supplier.name}:`, error.message);
-        }
-    }
-    
-    console.log(`🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
-    return allMatches;
-}
-
-    extractMatchesFromSupplier(data, supplier) {
-    if (supplier === 'tom') {
-        return this.extractTomMatches(data);
-    } else if (supplier === 'sarah') {
-        return this.extractSarahMatches(data);
-    } else if (supplier === 'wendy') {  // ← ADD THIS LINE
-        return this.extractWendyMatches(data);  // ← ADD THIS LINE
-    }  // ← ADD THIS LINE
-    return [];
-}
-
-    extractTomMatches(tomData) {
-        const matches = [];
-        if (!tomData.events) return matches;
-        
-        Object.entries(tomData.events).forEach(([date, dayMatches]) => {
-            if (Array.isArray(dayMatches)) {
-                dayMatches.forEach(match => {
-                    matches.push({
-                        source: 'tom',
-                        date: date,
-                        time: this.unixToTime(match.unix_timestamp),
-                        teams: match.match,
-                        tournament: match.tournament || '',
-                        channels: match.channels || [],
-                        raw: match,
-                        timestamp: match.unix_timestamp,
-                        sport: match.sport
-                    });
-                });
-            }
-        });
-        
-        return matches;
-    }
-
-    extractSarahMatches(sarahData) {
-        const matches = [];
-        if (!sarahData.matches) return matches;
-        
-        sarahData.matches.forEach(match => {
-            matches.push({
-                source: 'sarah',
-                date: this.msToDate(match.date),
-                time: this.msToTime(match.date),
-                teams: match.title,
-                tournament: '',
-                channels: this.generateSarahStreams(match),
-                raw: match,
-                timestamp: match.date / 1000,
-                category: match.category
             });
         });
         
-        return matches;
-    }
-    // 🆕 ADD THIS WHOLE FUNCTION FOR WENDY
-extractWendyMatches(wendyData) {
-    const matches = [];
-    if (!wendyData.matches) return matches;
-    
-    wendyData.matches.forEach(match => {
-        const hasStreams = match.streams && match.streams.length > 0;
+        // Get Sarah streams
+        const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
         
-        if (hasStreams) {
-            const teams = match.teams ? 
-                `${match.teams.home?.name || ''} vs ${match.teams.away?.name || ''}`.trim() : 
-                match.title;
-            
-            const tournament = match.league?.name || '';
-            const channels = match.streams.map(stream => stream.url);
-            
-            matches.push({
-                source: 'wendy',
-                date: this.msToDate(match.timestamp || Date.now()),
-                time: this.msToTime(match.timestamp || Date.now()),
-                teams: teams,
-                tournament: tournament,
-                channels: channels,
-                raw: match,
-                timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
-                sport: this.classifyWendySport(match),
-                // 🆕 ADD THIS TO IDENTIFY REPLAY STREAMS
-                is_replay: true,
-                original_status: match.status
+        // 🎯 ALSO INCLUDE embedsports.top STREAMS FROM TOM'S DATA
+        cluster.forEach(match => {
+            const tomStreams = match.channels || [];
+            tomStreams.forEach(stream => {
+                if (stream.includes('embedsports.top') && !sarahStreams.includes(stream)) {
+                    sarahStreams.push(stream);
+                }
             });
-        }
-    });
-    
-    console.log(`🎯 Wendy: Processed ${matches.length} REPLAY matches with streams`);
-    return matches;
-}
-
-// 🆕 ADD THIS STREAM GENERATION FUNCTION
-generateWendyStreams(match) {
-    if (!match.matchId) return [];
-    
-    const streams = [];
-    const qualities = ['elite', 'venus', 'sigma', 'deluxe'];
-    const titleSlug = match.title.toLowerCase()
-        .replace(/ vs /g, '-')
-        .replace(/[^a-z0-9-]/g, '')
-        .replace(/-+/g, '-');
-    
-    // Generate multiple quality streams for each match
-    qualities.forEach(quality => {
-        for (let i = 1; i <= 3; i++) {  // Generate 3 streams per quality
-            const streamUrl = `https://spiderembed.top/embed/${match.matchId}/watchfooty-${quality}-${i}-${titleSlug}/${quality}/${i}`;
-            streams.push(streamUrl);
-        }
-    });
-    
-    return streams;
-}
+        });
+        
+        const allChannels = [...allTomStreams, ...sarahStreams];
+        const sources = [...new Set(cluster.map(m => m.source))];
+        
+        return {
+            unix_timestamp: baseMatch.timestamp,
+            sport: sport,
+            tournament: baseMatch.tournament || '',
+            match: baseMatch.teams || baseMatch.title,
+            channels: allChannels,
+            sources: sources,
+            confidence: 0.8,
+            merged: true,
+            merged_count: cluster.length,
+            // 🎯 CORRECT STREAM CLASSIFICATION FOR MERGED MATCHES
+            sources: {
+                tom: allTomStreams,
+                sarah: sarahStreams
+            }
+        };
+    }
 
     unixToTime(unixTimestamp) {
         if (!unixTimestamp) return '12:00';
@@ -543,26 +615,11 @@ generateWendyStreams(match) {
     }
 
     generateSarahStreams(match) {
-    if (!match.sources) return [];
-    return match.sources.map(source => 
-        `https://embedsports.top/embed/${source.source}/${source.id}/1`
-    );
-}
-
-// 🆕 ADD THIS RIGHT HERE
-classifyWendySport(match) {
-    const league = match.league?.name?.toLowerCase() || '';
-    const title = match.title?.toLowerCase() || '';
-    
-    if (league.includes('nfl') || title.includes('nfl')) return 'American Football';
-    if (league.includes('nba') || title.includes('nba')) return 'Basketball'; 
-    if (league.includes('mlb') || title.includes('mlb')) return 'Baseball';
-    if (league.includes('nhl') || title.includes('nhl')) return 'Hockey';
-    if (league.includes('rugby') || title.includes('rugby')) return 'Rugby';
-    
-    // Default to football
-    return 'Football';
-}
+        if (!match.sources) return [];
+        return match.sources.map(source => 
+            `https://embedsports.top/embed/${source.source}/${source.id}/1`
+        );
+    }
 
     saveResults(processedData) {
         const siteData = {
@@ -632,38 +689,7 @@ classifyWendySport(match) {
             console.log('   🗑️  Garbage collection triggered');
         }
     }
-    // 🆕 ADD THIS DEBUG METHOD
-debugWendyStreamMatches() {
-    try {
-        const wendyData = JSON.parse(fs.readFileSync('./suppliers/wendy-data.json', 'utf8'));
-        console.log('🔍 WENDY STREAMS ANALYSIS:');
-        
-        if (wendyData.matches) {
-            const matchesWithStreams = wendyData.matches.filter(m => m.streams && m.streams.length > 0);
-            console.log(`📊 ${matchesWithStreams.length} matches have streams out of ${wendyData.matches.length}`);
-            
-            matchesWithStreams.forEach(match => {
-                console.log(`🎯 MATCH WITH STREAMS:`);
-                console.log(`   Title: ${match.title}`);
-                console.log(`   Status: ${match.status}`);
-                console.log(`   Date: ${match.date}`);
-                console.log(`   Streams: ${match.streams.length}`);
-                console.log(`   First stream: ${match.streams[0]?.url}`);
-            });
-            
-            // Also check current live matches
-            const liveMatches = wendyData.matches.filter(m => m.status === 'live');
-            console.log(`\n🔥 LIVE MATCHES: ${liveMatches.length}`);
-            liveMatches.forEach(match => {
-                console.log(`   LIVE: ${match.title} - Streams: ${match.streams?.length || 0}`);
-            });
-        }
-    } catch (error) {
-        console.log('❌ Wendy streams analysis failed:', error.message);
-    }
 }
-}
-
 
 // Main execution
 if (require.main === module) {
