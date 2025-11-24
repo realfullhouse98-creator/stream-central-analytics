@@ -411,13 +411,15 @@ mergeCluster(cluster, sport, sarahStreamsMap) {
     }
 
     extractMatchesFromSupplier(data, supplier) {
-        if (supplier === 'tom') {
-            return this.extractTomMatches(data);
-        } else if (supplier === 'sarah') {
-            return this.extractSarahMatches(data);
-        }
-        return [];
-    }
+    if (supplier === 'tom') {
+        return this.extractTomMatches(data);
+    } else if (supplier === 'sarah') {
+        return this.extractSarahMatches(data);
+    } else if (supplier === 'wendy') {  // ← ADD THIS LINE
+        return this.extractWendyMatches(data);  // ← ADD THIS LINE
+    }  // ← ADD THIS LINE
+    return [];
+}
 
     extractTomMatches(tomData) {
         const matches = [];
@@ -464,6 +466,39 @@ mergeCluster(cluster, sport, sarahStreamsMap) {
         
         return matches;
     }
+    // 🆕 ADD THIS WHOLE FUNCTION FOR WENDY
+extractWendyMatches(wendyData) {
+    const matches = [];
+    if (!wendyData.matches) return matches;
+    
+    wendyData.matches.forEach(match => {
+        // Convert teams object to string format
+        const teams = match.teams ? 
+            `${match.teams.home?.name || ''} vs ${match.teams.away?.name || ''}`.trim() : 
+            match.title;
+        
+        // Extract tournament/league
+        const tournament = match.league?.name || '';
+        
+        // Extract stream URLs
+        const channels = match.streams ? 
+            match.streams.map(stream => stream.url).filter(url => url) : [];
+        
+        matches.push({
+            source: 'wendy',
+            date: this.msToDate(match.timestamp || Date.now()),
+            time: this.msToTime(match.timestamp || Date.now()),
+            teams: teams,
+            tournament: tournament,
+            channels: channels,
+            raw: match,
+            timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
+            sport: this.classifyWendySport(match)
+        });
+    });
+    
+    return matches;
+}
 
     unixToTime(unixTimestamp) {
         if (!unixTimestamp) return '12:00';
@@ -484,11 +519,26 @@ mergeCluster(cluster, sport, sarahStreamsMap) {
     }
 
     generateSarahStreams(match) {
-        if (!match.sources) return [];
-        return match.sources.map(source => 
-            `https://embedsports.top/embed/${source.source}/${source.id}/1`
-        );
-    }
+    if (!match.sources) return [];
+    return match.sources.map(source => 
+        `https://embedsports.top/embed/${source.source}/${source.id}/1`
+    );
+}
+
+// 🆕 ADD THIS RIGHT HERE
+classifyWendySport(match) {
+    const league = match.league?.name?.toLowerCase() || '';
+    const title = match.title?.toLowerCase() || '';
+    
+    if (league.includes('nfl') || title.includes('nfl')) return 'American Football';
+    if (league.includes('nba') || title.includes('nba')) return 'Basketball'; 
+    if (league.includes('mlb') || title.includes('mlb')) return 'Baseball';
+    if (league.includes('nhl') || title.includes('nhl')) return 'Hockey';
+    if (league.includes('rugby') || title.includes('rugby')) return 'Rugby';
+    
+    // Default to football
+    return 'Football';
+}
 
     saveResults(processedData) {
         const siteData = {
