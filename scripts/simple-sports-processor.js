@@ -478,9 +478,8 @@ extractWendyMatches(wendyData) {
         // Extract tournament/league
         const tournament = match.league?.name || '';
         
-        // Extract stream URLs
-        const channels = match.streams ? 
-            match.streams.map(stream => stream.url).filter(url => url) : [];
+        // 🆕 GENERATE STREAMS using Wendy's pattern
+        const channels = this.generateWendyStreams(match);
         
         matches.push({
             source: 'wendy',
@@ -488,7 +487,7 @@ extractWendyMatches(wendyData) {
             time: this.msToTime(match.timestamp || Date.now()),
             teams: teams,
             tournament: tournament,
-            channels: channels,
+            channels: channels,  // ← Now this will have actual streams!
             raw: match,
             timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
             sport: this.classifyWendySport(match)
@@ -496,6 +495,28 @@ extractWendyMatches(wendyData) {
     });
     
     return matches;
+}
+
+// 🆕 ADD THIS STREAM GENERATION FUNCTION
+generateWendyStreams(match) {
+    if (!match.matchId) return [];
+    
+    const streams = [];
+    const qualities = ['elite', 'venus', 'sigma', 'deluxe'];
+    const titleSlug = match.title.toLowerCase()
+        .replace(/ vs /g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+        .replace(/-+/g, '-');
+    
+    // Generate multiple quality streams for each match
+    qualities.forEach(quality => {
+        for (let i = 1; i <= 3; i++) {  // Generate 3 streams per quality
+            const streamUrl = `https://spiderembed.top/embed/${match.matchId}/watchfooty-${quality}-${i}-${titleSlug}/${quality}/${i}`;
+            streams.push(streamUrl);
+        }
+    });
+    
+    return streams;
 }
 
     unixToTime(unixTimestamp) {
