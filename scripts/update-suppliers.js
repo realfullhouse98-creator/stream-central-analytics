@@ -174,13 +174,13 @@ async function updateAllSuppliers() {
         // In update-suppliers.js - Add to suppliers array:
 {
   name: 'wendy',
-  urls: [
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/football',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/rugby', 
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/basketball',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/hockey',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/baseball',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/american-football'
+   urls: [
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/tennis', 
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/basketball',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football'
   ],
   processor: (data) => {
     const matches = Array.isArray(data) ? data : [];
