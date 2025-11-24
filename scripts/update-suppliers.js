@@ -181,9 +181,19 @@ async function updateAllSuppliers() {
   //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
  //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
   //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football',
-    //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football'
   ],
   processor: (data) => {
+    console.log('🔍 WENDY PROCESSOR DEBUG:');
+    console.log('   Data type:', typeof data);
+    console.log('   Is array:', Array.isArray(data));
+    if (Array.isArray(data)) {
+      console.log('   Match count:', data.length);
+      if (data.length > 0) {
+        console.log('   First match title:', data[0].title);
+        console.log('   First match streams:', data[0].streams?.length || 0);
+      }
+    }
+    
     const matches = Array.isArray(data) ? data : [];
     const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
     
@@ -215,23 +225,25 @@ async function updateAllSuppliers() {
         fs.mkdirSync('./suppliers', { recursive: true });
     }
 
-    // Process suppliers in parallel with improved error handling
-    await Promise.all(suppliers.map(async (supplier) => {
-        const circuitBreaker = circuitBreakers[supplier.name];
-        
-        // Check circuit breaker
-        if (!circuitBreaker.canExecute()) {
-            console.log(`   ⚡ Circuit breaker active - skipping ${supplier.name}`);
-            results.skipped.push(supplier.name);
-            results.details[supplier.name] = {
-                success: false,
-                error: 'Circuit breaker open',
-                skipped: true
-            };
-            return;
-        }
+   await Promise.all(suppliers.map(async (supplier) => {
+    const circuitBreaker = circuitBreakers[supplier.name];
+    
+    // 🆕 ADDED DEBUG LINE
+    console.log(`🔧 ${supplier.name} circuit breaker state:`, circuitBreaker.state);
+    
+    // Check circuit breaker
+    if (!circuitBreaker.canExecute()) {
+        console.log(`   ⚡ Circuit breaker active - skipping ${supplier.name}`);
+        results.skipped.push(supplier.name);
+        results.details[supplier.name] = {
+            success: false,
+            error: 'Circuit breaker open',
+            skipped: true
+        };
+        return;
+    }
 
-        console.log(`🔍 Updating ${supplier.name.toUpperCase()}...`);
+    console.log(`🔍 Updating ${supplier.name.toUpperCase()}...`);
         
         let lastError = null;
         let success = false;
