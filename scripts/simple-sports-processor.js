@@ -628,8 +628,7 @@ classifyWendySport(match) {
             console.log('   🗑️  Garbage collection triggered');
         }
     }
-}
-// 🆕 ADD THIS DEBUG METHOD
+    / 🆕 ADD THIS DEBUG METHOD
 debugWendyStreamMatches() {
     try {
         const wendyData = JSON.parse(fs.readFileSync('./suppliers/wendy-data.json', 'utf8'));
@@ -659,6 +658,8 @@ debugWendyStreamMatches() {
         console.log('❌ Wendy streams analysis failed:', error.message);
     }
 }
+}
+
 
 // Main execution
 if (require.main === module) {
