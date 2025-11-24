@@ -373,42 +373,40 @@ mergeCluster(cluster, sport, sarahStreamsMap) {
 }
 
     async loadAllSuppliers() {
-        const allMatches = [];
-        
-        console.log('🔧 DEBUG: Starting supplier loading...');
-        console.log('🔧 DEBUG: Current directory:', process.cwd());
-        
-        const suppliers = [
-            { name: 'tom', file: './suppliers/tom-data.json' },
-            { name: 'sarah', file: './suppliers/sarah-data.json' }
-        ];
-        
-        for (const supplier of suppliers) {
-            try {
-                console.log(`🔧 DEBUG: Loading ${supplier.name} from ${supplier.file}`);
-                
-                if (!fs.existsSync(supplier.file)) {
-                    console.log(`❌ DEBUG: File not found: ${supplier.file}`);
-                    continue;
-                }
-                
-                const data = JSON.parse(fs.readFileSync(supplier.file, 'utf8'));
-                console.log(`✅ DEBUG: ${supplier.name} loaded successfully`);
-                console.log(`📊 DEBUG: ${supplier.name} data keys:`, Object.keys(data));
-                
-                const matches = this.extractMatchesFromSupplier(data, supplier.name);
-                console.log(`🎯 DEBUG: ${supplier.name} extracted ${matches.length} matches`);
-                
-                allMatches.push(...matches);
-                
-            } catch (error) {
-                console.log(`💥 DEBUG: Failed to load ${supplier.name}:`, error.message);
+    const allMatches = [];
+    
+    console.log('🔧 DEBUG: Starting supplier loading...');
+    console.log('🔧 DEBUG: Current directory:', process.cwd());
+    
+    // ✅ FIX: Use supplierConfig instead of hardcoded array
+    const suppliers = Object.values(supplierConfig);
+    
+    for (const supplier of suppliers) {
+        try {
+            console.log(`🔧 DEBUG: Loading ${supplier.name} from ${supplier.file}`);
+            
+            if (!fs.existsSync(supplier.file)) {
+                console.log(`❌ DEBUG: File not found: ${supplier.file}`);
+                continue;
             }
+            
+            const data = JSON.parse(fs.readFileSync(supplier.file, 'utf8'));
+            console.log(`✅ DEBUG: ${supplier.name} loaded successfully`);
+            console.log(`📊 DEBUG: ${supplier.name} data keys:`, Object.keys(data));
+            
+            const matches = this.extractMatchesFromSupplier(data, supplier.name);
+            console.log(`🎯 DEBUG: ${supplier.name} extracted ${matches.length} matches`);
+            
+            allMatches.push(...matches);
+            
+        } catch (error) {
+            console.log(`💥 DEBUG: Failed to load ${supplier.name}:`, error.message);
         }
-        
-        console.log(`🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
-        return allMatches;
     }
+    
+    console.log(`🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
+    return allMatches;
+}
 
     extractMatchesFromSupplier(data, supplier) {
     if (supplier === 'tom') {
