@@ -30,6 +30,7 @@ jobs:
         echo "=== CHECK SUPPLIER DATA ==="
         echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
         echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
+        echo "Wendy records:" $(jq '.matches | length' suppliers/wendy-data.json 2>/dev/null || echo "FAILED")
         
     - name: 🔄 Update All Suppliers
       run: node scripts/update-suppliers.js
@@ -46,12 +47,30 @@ jobs:
         echo "=== GIT DIFF ==="
         git diff --name-only || echo "No changes detected"
         
+        # 🆕 CHECK IF WENDY DATA IS IN MASTER FILE
+        echo "=== WENDY VERIFICATION ==="
+        grep -c "spiderembed" master-data.json && echo "✅ Wendy streams found in master file" || echo "❌ No Wendy streams in master file"
+        jq '.matches | length' master-data.json && echo "✅ Master file has matches" || echo "❌ Master file empty"
+        
     - name: 📝 Commit and Push Changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        # Force add the files that should change
+        
+        # Add all changed files
         git add master-data.json suppliers/ sports-results/
+        
+        # 🆕 FIXED: Check if there are changes to commit
+        echo "=== GIT STATUS ==="
         git status
-        git commit -m "🔁 chore: update sports data [automated - $(date +%Y%m%d_%H%M%S)]" || echo "No changes to commit"
-        git push
+        
+        echo "=== CHECKING FOR CHANGES ==="
+        if git diff --staged --quiet; then
+          echo "📝 No changes to commit - files are unchanged"
+        else
+          echo "📝 Changes detected - committing..."
+          git commit -m "🔁 chore: update sports data [automated - $(date +%Y%m%d_%H%M%S)]"
+          echo "🚀 Pushing changes to repository..."
+          git push
+          echo "✅ Changes committed and pushed successfully!"
+        fi
