@@ -471,30 +471,34 @@ extractWendyMatches(wendyData) {
     if (!wendyData.matches) return matches;
     
     wendyData.matches.forEach(match => {
-        // Convert teams object to string format
-        const teams = match.teams ? 
-            `${match.teams.home?.name || ''} vs ${match.teams.away?.name || ''}`.trim() : 
-            match.title;
+        // � ONLY PROCESS MATCHES THAT HAVE STREAMS
+        const hasStreams = match.streams && match.streams.length > 0;
         
-        // Extract tournament/league
-        const tournament = match.league?.name || '';
-        
-        // 🆕 GENERATE STREAMS using Wendy's pattern
-        const channels = this.generateWendyStreams(match);
-        
-        matches.push({
-            source: 'wendy',
-            date: this.msToDate(match.timestamp || Date.now()),
-            time: this.msToTime(match.timestamp || Date.now()),
-            teams: teams,
-            tournament: tournament,
-            channels: channels,  // ← Now this will have actual streams!
-            raw: match,
-            timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
-            sport: this.classifyWendySport(match)
-        });
+        if (hasStreams) {
+            const teams = match.teams ? 
+                `${match.teams.home?.name || ''} vs ${match.teams.away?.name || ''}`.trim() : 
+                match.title;
+            
+            const tournament = match.league?.name || '';
+            
+            // Use actual Wendy streams
+            const channels = match.streams.map(stream => stream.url);
+            
+            matches.push({
+                source: 'wendy',
+                date: this.msToDate(match.timestamp || Date.now()),
+                time: this.msToTime(match.timestamp || Date.now()),
+                teams: teams,
+                tournament: tournament,
+                channels: channels,  // ← Real Wendy streams!
+                raw: match,
+                timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
+                sport: this.classifyWendySport(match)
+            });
+        }
     });
     
+    console.log(`🎯 Wendy: Processed ${matches.length} matches WITH STREAMS`);
     return matches;
 }
 
