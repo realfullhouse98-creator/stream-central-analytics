@@ -288,65 +288,80 @@ class SimpleSportsProcessor {
     }
 
     // 🆕 UPDATED WENDY EXTRACTION WITH DEBUG
-    extractWendyMatches(wendyData) {
-        console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
-        console.log('   Input data type:', typeof wendyData);
-        console.log('   Has matches property:', !!wendyData.matches);
-        console.log('   Matches array length:', wendyData.matches?.length || 0);
-        
-        const matches = [];
-        if (!wendyData.matches) {
-            console.log('❌ No matches array in Wendy data');
-            return matches;
-        }
-        
-        console.log('🎯 Processing Wendy matches...');
-        
-        wendyData.matches.forEach((match, index) => {
-            // 🆕 ONLY PROCESS MATCHES THAT HAVE STREAMS
-            const hasStreams = match.streams && match.streams.length > 0;
-            
-            if (hasStreams) {
-                const teams = match.teams ? 
-                    `${match.teams.home?.name || ''} vs ${match.teams.away?.name || ''}`.trim() : 
-                    match.title;
-                
-                const tournament = match.league?.name || '';
-                
-                // Use actual Wendy streams
-                const channels = match.streams.map(stream => stream.url);
-                
-                const processedMatch = {
-                    source: 'wendy',
-                    date: this.msToDate(match.timestamp || Date.now()),
-                    time: this.msToTime(match.timestamp || Date.now()),
-                    teams: teams,
-                    tournament: tournament,
-                    channels: channels,
-                    raw: match,
-                    timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
-                    sport: this.classifyWendySport(match)
-                };
-                
-                matches.push(processedMatch);
-                
-                // Debug first few matches
-                if (index < 3) {
-                    console.log(`   📝 Processed match ${index + 1}:`);
-                    console.log(`      Teams: ${processedMatch.teams}`);
-                    console.log(`      Sport: ${processedMatch.sport}`);
-                    console.log(`      Channels: ${processedMatch.channels.length}`);
-                    console.log(`      Source: ${processedMatch.source}`);
-                }
-            }
-        });
-        
-        console.log(`✅ Wendy extraction: ${matches.length} matches with streams processed`);
-        console.log(`   Total input matches: ${wendyData.matches.length}`);
-        console.log(`   Matches with streams: ${matches.length}`);
-        
+   // 🆕 FIXED WENDY EXTRACTION - HANDLES BOTH TEAM STRUCTURES
+extractWendyMatches(wendyData) {
+    console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
+    console.log('   Input data type:', typeof wendyData);
+    console.log('   Has matches property:', !!wendyData.matches);
+    console.log('   Matches array length:', wendyData.matches?.length || 0);
+    
+    const matches = [];
+    if (!wendyData.matches) {
+        console.log('❌ No matches array in Wendy data');
         return matches;
     }
+    
+    console.log('🎯 Processing Wendy matches...');
+    
+    wendyData.matches.forEach((match, index) => {
+        // 🆕 ONLY PROCESS MATCHES THAT HAVE STREAMS
+        const hasStreams = match.streams && match.streams.length > 0;
+        
+        if (hasStreams) {
+            // 🆕 FIX: Handle both team structures
+            let teams = '';
+            if (match.teams) {
+                if (match.teams.event) {
+                    // Structure A: Fighting/Boxing with "event" field
+                    teams = match.teams.event;
+                } else if (match.teams.home && match.teams.away) {
+                    // Structure B: Regular sports with home/away
+                    teams = `${match.teams.home.name || ''} vs ${match.teams.away.name || ''}`.trim();
+                } else {
+                    // Fallback to title
+                    teams = match.title;
+                }
+            } else {
+                teams = match.title;
+            }
+            
+            const tournament = match.league?.name || '';
+            
+            // Use actual Wendy streams
+            const channels = match.streams.map(stream => stream.url);
+            
+            const processedMatch = {
+                source: 'wendy',
+                date: this.msToDate(match.timestamp || Date.now()),
+                time: this.msToTime(match.timestamp || Date.now()),
+                teams: teams,
+                tournament: tournament,
+                channels: channels,
+                raw: match,
+                timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
+                sport: this.classifyWendySport(match)
+            };
+            
+            matches.push(processedMatch);
+            
+            // Debug first few matches
+            if (index < 3) {
+                console.log(`   📝 Processed match ${index + 1}:`);
+                console.log(`      Teams: "${processedMatch.teams}"`);
+                console.log(`      Sport: ${processedMatch.sport}`);
+                console.log(`      Channels: ${processedMatch.channels.length}`);
+                console.log(`      Source: ${processedMatch.source}`);
+                console.log(`      Team structure: ${match.teams?.event ? 'EVENT' : 'HOME/AWAY'}`);
+            }
+        }
+    });
+    
+    console.log(`✅ Wendy extraction: ${matches.length} matches with streams processed`);
+    console.log(`   Total input matches: ${wendyData.matches.length}`);
+    console.log(`   Matches with streams: ${matches.length}`);
+    
+    return matches;
+}
 
     // 🆕 UPDATED WENDY SPORT CLASSIFIER
     classifyWendySport(match) {
