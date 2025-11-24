@@ -197,6 +197,13 @@ class SimpleSportsProcessor {
     }
 
     async loadAllSuppliers() {
+
+        console.log('🔧 SUPPLIER CONFIG CHECK:');
+    console.log('   Available suppliers:', Object.keys(supplierConfig));
+    console.log('   Wendy config:', supplierConfig.wendy);
+    console.log('   Wendy file path:', supplierConfig.wendy?.file);
+    console.log('   Wendy file exists:', fs.existsSync(supplierConfig.wendy?.file));
+        
         const allMatches = [];
         
         console.log('🔧 DEBUG: Starting supplier loading...');
@@ -654,6 +661,34 @@ extractWendyMatches(wendyData) {
         Object.values(processedData).forEach(sportData => {
             siteData.matches.push(...sportData.matches);
         });
+
+          
+    // 🆕 ADD THIS FINAL CHECK BEFORE SAVING
+    console.log('🔍 FINAL CHECK - SOURCES IN MASTER DATA:');
+    const sourceCount = {};
+    siteData.matches.forEach(match => {
+        if (match.sources && Array.isArray(match.sources)) {
+            match.sources.forEach(source => {
+                sourceCount[source] = (sourceCount[source] || 0) + 1;
+            });
+        }
+    });
+    console.log('   Source distribution:', sourceCount);
+    
+    // Check for Wendy streams specifically
+    const wendyStreams = siteData.matches.filter(m => 
+        m.channels && m.channels.some(ch => ch.includes('spiderembed'))
+    );
+    console.log(`   Matches with Wendy streams: ${wendyStreams.length}`);
+    
+    if (wendyStreams.length > 0) {
+        console.log('   Sample Wendy match:', {
+            teams: wendyStreams[0].teams,
+            sources: wendyStreams[0].sources,
+            channels: wendyStreams[0].channels?.length
+        });
+    }
+    
         
         if (!fs.existsSync('./sports-results')) {
             fs.mkdirSync('./sports-results', { recursive: true });
