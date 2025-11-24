@@ -43,9 +43,11 @@ class SupplierCircuitBreaker {
 }
 
 // Initialize circuit breakers
+// Initialize circuit breakers
 const circuitBreakers = {
     tom: new SupplierCircuitBreaker('tom'),
-    sarah: new SupplierCircuitBreaker('sarah')
+    sarah: new SupplierCircuitBreaker('sarah'),
+    wendy: new SupplierCircuitBreaker('wendy') // ← NEW LINE
 };
 
 async function fetchWithTimeout(url, timeout = 8000) {
