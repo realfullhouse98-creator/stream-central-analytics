@@ -174,13 +174,21 @@ async function updateAllSuppliers() {
         // In update-suppliers.js - Add to suppliers array:
 {
   name: 'wendy',  // ---------------WENDY HAS 14-SPORTS GENRE ADD MORE--------------
-   urls: [
-   // 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/football', 
-   // 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/basketball',
-  //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
- //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
-  //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football',
+  urls: [
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/tennis',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football', 
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/fighting',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/golf',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/darts',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/rugby',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/volleyball',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/racing',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/australian-football',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/basketball',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/cricket'
   ],
   processor: (data) => {
     console.log('🔍 WENDY PROCESSOR DEBUG:');
