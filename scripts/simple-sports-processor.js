@@ -471,7 +471,6 @@ extractWendyMatches(wendyData) {
     if (!wendyData.matches) return matches;
     
     wendyData.matches.forEach(match => {
-        // � ONLY PROCESS MATCHES THAT HAVE STREAMS
         const hasStreams = match.streams && match.streams.length > 0;
         
         if (hasStreams) {
@@ -480,8 +479,6 @@ extractWendyMatches(wendyData) {
                 match.title;
             
             const tournament = match.league?.name || '';
-            
-            // Use actual Wendy streams
             const channels = match.streams.map(stream => stream.url);
             
             matches.push({
@@ -490,15 +487,18 @@ extractWendyMatches(wendyData) {
                 time: this.msToTime(match.timestamp || Date.now()),
                 teams: teams,
                 tournament: tournament,
-                channels: channels,  // ← Real Wendy streams!
+                channels: channels,
                 raw: match,
                 timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
-                sport: this.classifyWendySport(match)
+                sport: this.classifyWendySport(match),
+                // 🆕 ADD THIS TO IDENTIFY REPLAY STREAMS
+                is_replay: true,
+                original_status: match.status
             });
         }
     });
     
-    console.log(`🎯 Wendy: Processed ${matches.length} matches WITH STREAMS`);
+    console.log(`🎯 Wendy: Processed ${matches.length} REPLAY matches with streams`);
     return matches;
 }
 
