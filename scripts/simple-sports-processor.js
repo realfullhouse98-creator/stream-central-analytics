@@ -35,6 +35,7 @@ class SimpleSportsProcessor {
 
     async processAllSports() {
         console.log('🎯 STARTING ENHANCED SPORTS PROCESSOR...\n');
+        this.debugWendyStreamMatches();
         
         try {
             // Backup current data before processing
@@ -626,6 +627,36 @@ classifyWendySport(match) {
             global.gc();
             console.log('   🗑️  Garbage collection triggered');
         }
+    }
+}
+// 🆕 ADD THIS DEBUG METHOD
+debugWendyStreamMatches() {
+    try {
+        const wendyData = JSON.parse(fs.readFileSync('./suppliers/wendy-data.json', 'utf8'));
+        console.log('🔍 WENDY STREAMS ANALYSIS:');
+        
+        if (wendyData.matches) {
+            const matchesWithStreams = wendyData.matches.filter(m => m.streams && m.streams.length > 0);
+            console.log(`📊 ${matchesWithStreams.length} matches have streams out of ${wendyData.matches.length}`);
+            
+            matchesWithStreams.forEach(match => {
+                console.log(`🎯 MATCH WITH STREAMS:`);
+                console.log(`   Title: ${match.title}`);
+                console.log(`   Status: ${match.status}`);
+                console.log(`   Date: ${match.date}`);
+                console.log(`   Streams: ${match.streams.length}`);
+                console.log(`   First stream: ${match.streams[0]?.url}`);
+            });
+            
+            // Also check current live matches
+            const liveMatches = wendyData.matches.filter(m => m.status === 'live');
+            console.log(`\n🔥 LIVE MATCHES: ${liveMatches.length}`);
+            liveMatches.forEach(match => {
+                console.log(`   LIVE: ${match.title} - Streams: ${match.streams?.length || 0}`);
+            });
+        }
+    } catch (error) {
+        console.log('❌ Wendy streams analysis failed:', error.message);
     }
 }
 
