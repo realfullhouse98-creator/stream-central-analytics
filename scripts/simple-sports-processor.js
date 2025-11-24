@@ -1,3 +1,5 @@
+// Simple-Sport-Processor
+
 const fs = require('fs');
 const path = require('path');
 const supplierConfig = require(path.join(__dirname, '../suppliers/supplier-config'));
