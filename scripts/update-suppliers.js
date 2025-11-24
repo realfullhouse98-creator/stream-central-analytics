@@ -168,7 +168,7 @@ async function updateAllSuppliers() {
                     }
                 };
             }
-        }
+        },
         // In update-suppliers.js - Add to suppliers array:
 {
   name: 'wendy',
