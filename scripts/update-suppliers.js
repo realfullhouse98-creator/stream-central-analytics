@@ -169,6 +169,34 @@ async function updateAllSuppliers() {
                 };
             }
         }
+        // In update-suppliers.js - Add to suppliers array:
+{
+  name: 'wendy',
+  urls: [
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/football',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/rugby', 
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/basketball',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/hockey',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/baseball',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/american-football'
+  ],
+  processor: (data) => {
+    const matches = Array.isArray(data) ? data : [];
+    const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
+    
+    return {
+      matches: matches,
+      _metadata: {
+        supplier: 'wendy',
+        lastUpdated: new Date().toISOString(),
+        matchCount: matches.length,
+        matchesWithStreams: matchesWithStreams,
+        totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
+        dataHash: require('crypto').createHash('md5').update(JSON.stringify(matches)).digest('hex')
+      }
+    };
+  }
+}
     ];
 
     const results = {
