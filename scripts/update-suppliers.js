@@ -176,7 +176,7 @@ async function updateAllSuppliers() {
   name: 'wendy',  // ---------------WENDY HAS 14-SPORTS GENRE ADD MORE--------------
    urls: [
    // 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/tennis', 
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/footy/football', 
    // 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/basketball',
   //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
  //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
