@@ -173,14 +173,15 @@ async function updateAllSuppliers() {
         },
         // In update-suppliers.js - Add to suppliers array:
 {
-  name: 'wendy',
+  name: 'wendy',  // ---------------WENDY HAS 14-SPORTS GENRE ADD MORE--------------
    urls: [
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football',
+   // 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football',
     'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/tennis', 
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/basketball',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
-    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football'
+   // 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/basketball',
+  //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
+ //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
+  //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football',
+    //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football'
   ],
   processor: (data) => {
     const matches = Array.isArray(data) ? data : [];
