@@ -175,7 +175,7 @@ async function updateAllSuppliers() {
 {
   name: 'wendy',  // ---------------WENDY HAS 14-SPORTS GENRE ADD MORE--------------
   urls: [
-   //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/all'
+      'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/all'
   //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/tennis',
   //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football', 
  //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
@@ -183,7 +183,7 @@ async function updateAllSuppliers() {
  //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/fighting',
 //     'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/golf',
 //     'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football',
-     'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/darts',
+  //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/darts',
  //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/rugby',
  //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/volleyball',
   //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/racing',
