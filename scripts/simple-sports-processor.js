@@ -80,7 +80,7 @@ class SimpleSportsProcessor {
         
         try {
             // 🆕 WENDY STREAMS ANALYSIS
-            this.debugWendyStreamMatches();
+           // this.debugWendyStreamMatches();
             // 🆕 DEBUG MERGING LOGIC
             this.debugMergingLogic();
             
@@ -141,9 +141,13 @@ class SimpleSportsProcessor {
 
     // 🆕 ADD THIS DEBUG METHOD
     debugWendyStreamMatches() {
-        try {
-            const wendyData = JSON.parse(fs.readFileSync('./suppliers/wendy-data.json', 'utf8'));
-            console.log('🔍 WENDY STREAMS ANALYSIS:');
+    try {
+        // 🆕 FIX: Read from the SAME source as main processor
+        const wendyFile = supplierConfig.wendy.file;
+        const wendyData = JSON.parse(fs.readFileSync(wendyFile, 'utf8'));
+        
+        console.log('🔍 WENDY STREAMS ANALYSIS:');
+        console.log('   Reading from:', wendyFile);
             
             if (wendyData.matches) {
                 const matchesWithStreams = wendyData.matches.filter(m => m.streams && m.streams.length > 0);
