@@ -19,12 +19,13 @@ class SimpleSportsProcessor {
         
         // Sport-specific configurations
         this.sportConfigs = {
-            'Tennis': { mergeThreshold: 0.35, timeWindow: 120 },
-            'Football': { mergeThreshold: 0.30, timeWindow: 180 },
-            'Basketball': { mergeThreshold: 0.40, timeWindow: 180 },
-            'American Football': { mergeThreshold: 0.45, timeWindow: 180 },
-            'default': { mergeThreshold: 0.30, timeWindow: 120 }
-        };
+    'Tennis': { mergeThreshold: 0.35, timeWindow: 480 },    // 8 hours
+    'Football': { mergeThreshold: 0.30, timeWindow: 600 },   // 10 hours  
+    'Basketball': { mergeThreshold: 0.40, timeWindow: 600 }, // 10 hours
+    'American Football': { mergeThreshold: 0.45, timeWindow: 600 }, // 10 hours
+    'Ice Hockey': { mergeThreshold: 0.35, timeWindow: 600 }, // 10 hours
+    'default': { mergeThreshold: 0.30, timeWindow: 480 }     // 8 hours
+}
 
         // Cache for performance
         this.sportCache = new Map();
