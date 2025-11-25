@@ -283,7 +283,7 @@ class SimpleSportsProcessor {
             }
         }
 
-        // 🆕 ADD WENDY FROM MASTER-WENDY.JSON
+        
       /*  try {
             if (fs.existsSync('./master-wendy.json')) {
                 const wendyData = JSON.parse(fs.readFileSync('./master-wendy.json', 'utf8'));
