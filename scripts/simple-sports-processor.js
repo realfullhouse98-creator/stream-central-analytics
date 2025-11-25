@@ -31,6 +31,44 @@ class SimpleSportsProcessor {
         this.teamNormalizationCache = new Map();
     }
 
+    async loadAllSuppliers() {
+    console.log('🔧 Loading all suppliers including Wendy...');
+    const allMatches = [];
+    
+    // Load Tom, Sarah, Wendy as before...
+    // Your existing code for Tom and Sarah...
+    
+    // 🆕 ADD WENDY FROM MASTER-WENDY.JSON
+    try {
+        if (fs.existsSync('./master-wendy.json')) {
+            const wendyData = JSON.parse(fs.readFileSync('./master-wendy.json', 'utf8'));
+            console.log(`📦 Loading ${wendyData.matches?.length || 0} pre-processed Wendy matches`);
+            
+            if (wendyData.matches) {
+                // Convert Wendy matches to the processor's internal format
+                wendyData.matches.forEach(match => {
+                    allMatches.push({
+                        source: 'wendy',
+                        date: this.msToDate(match.timestamp * 1000),
+                        time: this.msToTime(match.timestamp * 1000),
+                        teams: match.match,
+                        tournament: match.tournament || '',
+                        channels: match.channels || [],
+                        raw: match,
+                        timestamp: match.timestamp,
+                        sport: match.sport
+                    });
+                });
+            }
+        }
+    } catch (error) {
+        console.log('❌ Error loading Wendy data:', error.message);
+    }
+    
+    console.log(`📥 Total matches loaded: ${allMatches.length}`);
+    return allMatches;
+}
+
     async processAllSports() {
         console.log('🎯 STARTING ENHANCED SPORTS PROCESSOR...\n');
         
@@ -71,7 +109,7 @@ class SimpleSportsProcessor {
                     this.clearCache();
                 }
             }
-
+            processedData = this.mergeWendyData(processedData);
             // 4. Save results
             this.saveResults(processedData);
             this.logResults();
