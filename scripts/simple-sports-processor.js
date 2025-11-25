@@ -757,9 +757,55 @@ class SimpleSportsProcessor {
         if (!fs.existsSync('./sports-results')) {
             fs.mkdirSync('./sports-results', { recursive: true });
         }
-        
-        fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
-        fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2));
+        // 🆕 ADD JSON VALIDATION AND ERROR HANDLING
+try {
+    console.log('💾 Validating JSON before saving...');
+    
+    // First save sports-results
+    const sportsResultsJson = JSON.stringify(processedData, null, 2);
+    JSON.parse(sportsResultsJson); // Validate
+    fs.writeFileSync('./sports-results/simple-sports-results.json', sportsResultsJson);
+    console.log('✅ Sports results saved successfully');
+    
+    // Then save master-data with validation
+    const masterDataJson = JSON.stringify(siteData, null, 2);
+    
+    // Double validation
+    JSON.parse(masterDataJson);
+    console.log('✅ JSON validation passed');
+    
+    // Write the file
+    fs.writeFileSync('./master-data.json', masterDataJson);
+    console.log('✅ Master data saved successfully');
+    
+    // Final verification
+    const fileStats = fs.statSync('./master-data.json');
+    console.log(`✅ File verification: ${fileStats.size} bytes written`);
+    
+} catch (error) {
+    console.error('❌ JSON validation failed:', error.message);
+    
+    // Create emergency backup with minimal valid data
+    const emergencyData = {
+        error: 'JSON validation failed - emergency backup',
+        error_details: error.message,
+        processed_at: new Date().toISOString(),
+        total_matches: siteData.matches.length,
+        matches: [] // Empty matches to ensure valid JSON
+    };
+    
+    try {
+        const emergencyJson = JSON.stringify(emergencyData, null, 2);
+        fs.writeFileSync('./master-data.json', emergencyJson);
+        console.log('⚠️  Emergency backup created');
+    } catch (backupError) {
+        console.error('💥 Critical: Could not create emergency backup:', backupError.message);
+        // Last resort - create absolutely minimal valid JSON
+        fs.writeFileSync('./master-data.json', '{"error": "complete_failure", "matches": []}');
+    }
+    
+    throw new Error(`JSON validation failed: ${error.message}`);
+}
     }
 
     logResults() {
