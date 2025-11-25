@@ -366,71 +366,59 @@ class SimpleSportsProcessor {
         return matches;
     }
 
-    extractWendyMatches(wendyData) {
-        console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
-        console.log('   Input data type:', typeof wendyData);
-        console.log('   Has matches property:', !!wendyData.matches);
-        console.log('   Matches array length:', wendyData.matches?.length || 0);
-        
-        const matches = [];
-        if (!wendyData.matches) {
-            console.log('❌ No matches array in Wendy data');
-            return matches;
-        }
-        
-        console.log('🎯 Processing Wendy matches...');
-        
-        wendyData.matches.forEach((match, index) => {
-            const hasStreams = match.streams && match.streams.length > 0;
-            
-            if (hasStreams) {
-                let teams = '';
-                if (match.teams) {
-                    if (match.teams.event) {
-                        teams = match.teams.event;
-                    } else if (match.teams.home && match.teams.away) {
-                        teams = `${match.teams.home.name || ''} vs ${match.teams.away.name || ''}`.trim();
-                    } else {
-                        teams = match.title;
-                    }
-                } else {
-                    teams = match.title;
-                }
-                
-                const tournament = match.league?.name || '';
-                const channels = match.streams.map(stream => stream.url);
-                
-                const processedMatch = {
-                    source: 'wendy',
-                    date: this.msToDate(match.timestamp || Date.now()),
-                    time: this.msToTime(match.timestamp || Date.now()),
-                    teams: teams,
-                    tournament: tournament,
-                    channels: channels,
-                    raw: match,
-                    timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
-                    sport: this.classifyWendySport(match)
-                };
-                
-                matches.push(processedMatch);
-                
-                if (index < 3) {
-                    console.log(`   📝 Processed match ${index + 1}:`);
-                    console.log(`      Teams: "${processedMatch.teams}"`);
-                    console.log(`      Sport: ${processedMatch.sport}`);
-                    console.log(`      Channels: ${processedMatch.channels.length}`);
-                    console.log(`      Source: ${processedMatch.source}`);
-                    console.log(`      Team structure: ${match.teams?.event ? 'EVENT' : 'HOME/AWAY'}`);
-                }
-            }
-        });
-        
-        console.log(`✅ Wendy extraction: ${matches.length} matches with streams processed`);
-        console.log(`   Total input matches: ${wendyData.matches.length}`);
-        console.log(`   Matches with streams: ${matches.length}`);
-        
+   extractWendyMatches(wendyData) {
+    console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
+    console.log('   Input data type:', typeof wendyData);
+    console.log('   Has matches property:', !!wendyData.matches);
+    console.log('   Matches array length:', wendyData.matches?.length || 0);
+    
+    const matches = [];
+    if (!wendyData.matches) {
+        console.log('❌ No matches array in Wendy data');
         return matches;
     }
+    
+    console.log('🎯 Processing Wendy matches...');
+    
+    wendyData.matches.forEach((match, index) => {
+        // 🆕 TEMPORARY FIX: PROCESS ALL WENDY MATCHES
+        // Remove the stream/channel filter completely
+        
+        let teams = match.teams || match.title || '';
+        const tournament = match.league?.name || '';
+        
+        const channels = match.streams ? 
+            match.streams.map(stream => stream.url) : 
+            (match.channels || []);
+        
+        const processedMatch = {
+            source: 'wendy',
+            date: this.msToDate(match.timestamp || Date.now()),
+            time: this.msToTime(match.timestamp || Date.now()),
+            teams: teams,
+            tournament: tournament,
+            channels: channels,
+            raw: match,
+            timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
+            sport: this.classifyWendySport(match)
+        };
+        
+        matches.push(processedMatch);
+        
+        // Debug first few matches
+        if (index < 3) {
+            console.log(`   📝 Wendy match ${index + 1}:`);
+            console.log(`      Teams: "${processedMatch.teams}"`);
+            console.log(`      Channels: ${processedMatch.channels.length}`);
+            console.log(`      Source: ${processedMatch.source}`);
+        }
+    });
+    
+    console.log(`✅ Wendy extraction: ${matches.length} matches processed`);
+    console.log(`   Total input matches: ${wendyData.matches.length}`);
+    
+    return matches;
+}
 
     classifyWendySport(match) {
         if (match.wendySport) {
