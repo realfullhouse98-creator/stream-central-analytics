@@ -75,43 +75,24 @@ class SimpleSportsProcessor {
 
     // 🆕 ADD THE WENDY MERGE METHOD
     mergeWendyData(processedData) {
+                // 🆕 FIXED: ADD WENDY FROM MASTER-WENDY.JSON
         try {
-            console.log('🔄 Attempting to merge Wendy data from master-wendy.json...');
-            
             if (fs.existsSync('./master-wendy.json')) {
                 const wendyData = JSON.parse(fs.readFileSync('./master-wendy.json', 'utf8'));
-                console.log(`📦 Found ${wendyData.matches?.length || 0} Wendy matches to merge`);
+                console.log(`📦 Loading ${wendyData.matches?.length || 0} pre-processed Wendy matches`);
                 
-                // Add Wendy matches to processed data
-                if (wendyData.matches && wendyData.matches.length > 0) {
-                    // Create or add to "Wendy" sport category
-                    if (!processedData['Wendy']) {
-                        processedData['Wendy'] = {
-                            summary: {
-                                total_matches: wendyData.matches.length,
-                                processed_matches: wendyData.matches.length,
-                                merged_matches: 0,
-                                individual_matches: wendyData.matches.length,
-                                merge_efficiency: '0%'
-                            },
-                            matches: []
-                        };
-                    }
+                if (wendyData.matches) {
+                    // 🆕 FIX: Use the EXACT SAME processing as raw Wendy data
+                    const processedWendyMatches = this.extractWendyMatches({
+                        matches: wendyData.matches
+                    });
                     
-                    // Add Wendy matches
-                    processedData['Wendy'].matches.push(...wendyData.matches);
-                    
-                    // Update totals
-                    this.results.totalProcessed += wendyData.matches.length;
-                    this.results.individual += wendyData.matches.length;
-                    
-                    console.log(`✅ Successfully merged ${wendyData.matches.length} Wendy matches`);
+                    console.log(`✅ Processed ${processedWendyMatches.length} Wendy matches from master-wendy.json`);
+                    allMatches.push(...processedWendyMatches);
                 }
-            } else {
-                console.log('❌ master-wendy.json not found');
             }
         } catch (error) {
-            console.log('❌ Error merging Wendy data:', error.message);
+            console.log('❌ Error loading Wendy data:', error.message);
         }
         
         return processedData;
