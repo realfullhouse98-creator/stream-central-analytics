@@ -473,45 +473,42 @@ class SimpleSportsProcessor {
     }
 
     calculateMatchScore(matchA, matchB, sport) {
-        // 🆕 FIX: Only prevent same-source merges if they're NOT Wendy
-        if (matchA.source === matchB.source && matchA.source !== 'wendy') {
-            return 0;
-        }
-
-        // 🆕 ADD TEAM NAME NORMALIZATION
+    // 🆕 FIX: Only prevent same-source merges if they're NOT Wendy
+    if (matchA.source === matchB.source && matchA.source !== 'wendy') {
+        return 0;
+    }
+    
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+    
+    // 🆕 ADD TEAM NAME NORMALIZATION
     const normalizeTeams = (teams) => {
         return teams.replace(/ vs /g, ' - ').replace(/\s+/g, ' ').trim().toLowerCase();
     };
     
     const textA = normalizeTeams(matchA.teams) + ' ' + (matchA.tournament || '');
     const textB = normalizeTeams(matchB.teams) + ' ' + (matchB.tournament || '');
-        
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-        
-        const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
-        const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
-        
-         // 🆕 IMPROVE TOKENIZATION FOR BETTER MATCHING
+    
+    // 🆕 IMPROVE TOKENIZATION FOR BETTER MATCHING
     const tokensA = this.advancedTokenize(textA);
     const tokensB = this.advancedTokenize(textB);
     
     const common = tokensA.filter(tA => 
         tokensB.some(tB => this.tokensMatch(tA, tB))
-    )
-        
-        let score = common.length / Math.max(tokensA.length, tokensB.length);
-        
-        // 🆕 BOOST SCORE FOR WENDY MATCHES
-        if (matchA.source === 'wendy' || matchB.source === 'wendy') {
-            score += 0.1;
-        }
-        
-        if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
-            score += 0.15;
-        }
-        
-        return Math.min(1.0, score);
+    );
+    
+    let score = common.length / Math.max(tokensA.length, tokensB.length);
+    
+    // 🆕 BOOST SCORE FOR WENDY MATCHES
+    if (matchA.source === 'wendy' || matchB.source === 'wendy') {
+        score += 0.1;
     }
+    
+    if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
+        score += 0.15;
+    }
+    
+    return Math.min(1.0, score);
+}
 
     // 🆕 ADD THESE HELPER METHODS
     advancedTokenize(text) {
