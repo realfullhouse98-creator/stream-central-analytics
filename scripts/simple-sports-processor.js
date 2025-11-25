@@ -16,6 +16,8 @@ class SimpleSportsProcessor {
         
         this.startTime = Date.now();
         this.sportsClassifier = new SportsClassifier();
+
+        
         
         // Sport-specific configurations
         this.sportConfigs = {
@@ -30,6 +32,47 @@ class SimpleSportsProcessor {
         this.sportCache = new Map();
         this.teamNormalizationCache = new Map();
     }
+
+        clearCache() {
+        this.sportCache.clear();
+        this.teamNormalizationCache.clear();
+        
+        if (global.gc) {
+            global.gc();
+            console.log('   🗑️  Garbage collection triggered');
+        }
+    }
+
+    // 🆕 ADD THESE HELPER METHODS RIGHT HERE
+    advancedTokenize(text) {
+        return text
+            .replace(/[^\w\s-]/g, ' ') // Replace special chars with spaces
+            .split(/[\s\-]+/) // Split on spaces and hyphens
+            .filter(t => t.length > 2) // Only keep tokens longer than 2 chars
+            .map(t => t.toLowerCase());
+    }
+
+    tokensMatch(tokenA, tokenB) {
+        // Exact match
+        if (tokenA === tokenB) return true;
+        
+        // Partial matches
+        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
+        
+        // Common abbreviations
+        const abbreviations = {
+            'fc': 'football club',
+            'utd': 'united', 
+            'afc': 'association football club',
+            'vs': 'versus'
+        };
+        
+        const expandedA = abbreviations[tokenA] || tokenA;
+        const expandedB = abbreviations[tokenB] || tokenB;
+        
+        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
+    }
+} 
 
     // 🆕 ADD THE WENDY MERGE METHOD
     mergeWendyData(processedData) {
@@ -81,6 +124,8 @@ class SimpleSportsProcessor {
         try {
             // 🆕 WENDY STREAMS ANALYSIS
             this.debugWendyStreamMatches();
+            // 🆕 DEBUG MERGING LOGIC
+            this.debugMergingLogic();
             
             // Backup current data before processing
             this.backupCurrentData();
@@ -563,27 +608,38 @@ class SimpleSportsProcessor {
         return clusters;
     }
 
-    calculateMatchScore(matchA, matchB, sport) {
-        if (matchA.source === matchB.source) return 0;
-        
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-        
-        const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
-        const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
-        
-        const tokensA = textA.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
-        const tokensB = textB.split(/[\.\-\/\s]+/).filter(t => t.length > 1);
-        
-        const common = tokensA.filter(tA => tokensB.some(tB => tA === tB || tA.includes(tB) || tB.includes(tA)));
-        
-        let score = common.length / Math.max(tokensA.length, tokensB.length);
-        
-        if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
-            score += 0.15;
-        }
-        
-        return Math.min(1.0, score);
+calculateMatchScore(matchA, matchB, sport) {
+    // 🆕 FIX: Only prevent same-source merges if they're NOT Wendy
+    if (matchA.source === matchB.source && matchA.source !== 'wendy') {
+        return 0;
     }
+    
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+    
+    const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
+    const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
+    
+    // 🆕 IMPROVE TOKENIZATION FOR BETTER MATCHING
+    const tokensA = this.advancedTokenize(textA);
+    const tokensB = this.advancedTokenize(textB);
+    
+    const common = tokensA.filter(tA => 
+        tokensB.some(tB => this.tokensMatch(tA, tB))
+    );
+    
+    let score = common.length / Math.max(tokensA.length, tokensB.length);
+    
+    // 🆕 BOOST SCORE FOR WENDY MATCHES
+    if (matchA.source === 'wendy' || matchB.source === 'wendy') {
+        score += 0.1; // Give Wendy matches a slight boost
+    }
+    
+    if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
+        score += 0.15;
+    }
+    
+    return Math.min(1.0, score);
+}
 
     hasTennisPlayerPattern(match) {
         const text = match.teams || '';
@@ -814,6 +870,36 @@ class SimpleSportsProcessor {
         }
     }
 }
+
+advancedTokenize(text) {
+        return text
+            .replace(/[^\w\s-]/g, ' ') // Replace special chars with spaces
+            .split(/[\s\-]+/) // Split on spaces and hyphens
+            .filter(t => t.length > 2) // Only keep tokens longer than 2 chars
+            .map(t => t.toLowerCase());
+    }
+
+    tokensMatch(tokenA, tokenB) {
+        // Exact match
+        if (tokenA === tokenB) return true;
+        
+        // Partial matches
+        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
+        
+        // Common abbreviations
+        const abbreviations = {
+            'fc': 'football club',
+            'utd': 'united', 
+            'afc': 'association football club',
+            'vs': 'versus'
+        };
+        
+        const expandedA = abbreviations[tokenA] || tokenA;
+        const expandedB = abbreviations[tokenB] || tokenB;
+        
+        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
+    }
+} 
 
 // Main execution
 if (require.main === module) {
