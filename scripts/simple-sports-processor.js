@@ -101,7 +101,7 @@ class SimpleSportsProcessor {
             console.log(`🏆 Found ${Object.keys(sportGroups).length} sports`);
 
             // 3. Process each sport with progress tracking
-            const processedData = {};
+            let processedData = {}; // 🆕 FIX: Changed from const to let
             const sports = Object.entries(sportGroups);
             
             for (let i = 0; i < sports.length; i++) {
@@ -368,7 +368,6 @@ class SimpleSportsProcessor {
     }
 
     // 🆕 UPDATED WENDY EXTRACTION WITH DEBUG
-    // 🆕 FIXED WENDY EXTRACTION - HANDLES BOTH TEAM STRUCTURES
     extractWendyMatches(wendyData) {
         console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
         console.log('   Input data type:', typeof wendyData);
@@ -624,8 +623,12 @@ class SimpleSportsProcessor {
         };
     }
 
-    // 🆕 ADD THIS HELPER METHOD
+    // 🆕 FIXED: Add null check for teams
     getSarahStreamsForMatch(match, sarahStreamsMap) {
+        if (!match.teams) {
+            return [];
+        }
+        
         const matchKey = match.teams.toLowerCase();
         const sarahSources = sarahStreamsMap.get(matchKey);
         
@@ -735,33 +738,31 @@ class SimpleSportsProcessor {
             siteData.matches.push(...sportData.matches);
         });
 
-          
-    // 🆕 ADD THIS FINAL CHECK BEFORE SAVING
-    console.log('🔍 FINAL CHECK - SOURCES IN MASTER DATA:');
-    const sourceCount = {};
-    siteData.matches.forEach(match => {
-        if (match.sources && Array.isArray(match.sources)) {
-            match.sources.forEach(source => {
-                sourceCount[source] = (sourceCount[source] || 0) + 1;
+        // 🆕 ADD THIS FINAL CHECK BEFORE SAVING
+        console.log('🔍 FINAL CHECK - SOURCES IN MASTER DATA:');
+        const sourceCount = {};
+        siteData.matches.forEach(match => {
+            if (match.sources && Array.isArray(match.sources)) {
+                match.sources.forEach(source => {
+                    sourceCount[source] = (sourceCount[source] || 0) + 1;
+                });
+            }
+        });
+        console.log('   Source distribution:', sourceCount);
+        
+        // Check for Wendy streams specifically
+        const wendyStreams = siteData.matches.filter(m => 
+            m.channels && m.channels.some(ch => ch.includes('spiderembed'))
+        );
+        console.log(`   Matches with Wendy streams: ${wendyStreams.length}`);
+        
+        if (wendyStreams.length > 0) {
+            console.log('   Sample Wendy match:', {
+                teams: wendyStreams[0].teams,
+                sources: wendyStreams[0].sources,
+                channels: wendyStreams[0].channels?.length
             });
         }
-    });
-    console.log('   Source distribution:', sourceCount);
-    
-    // Check for Wendy streams specifically
-    const wendyStreams = siteData.matches.filter(m => 
-        m.channels && m.channels.some(ch => ch.includes('spiderembed'))
-    );
-    console.log(`   Matches with Wendy streams: ${wendyStreams.length}`);
-    
-    if (wendyStreams.length > 0) {
-        console.log('   Sample Wendy match:', {
-            teams: wendyStreams[0].teams,
-            sources: wendyStreams[0].sources,
-            channels: wendyStreams[0].channels?.length
-        });
-    }
-    
         
         if (!fs.existsSync('./sports-results')) {
             fs.mkdirSync('./sports-results', { recursive: true });
