@@ -11,7 +11,7 @@ module.exports = {
   },
   wendy: {
     name: 'wendy',
-    file: './suppliers/wendy-data.json'
+    file: './master-wendy.json'
   }
   // Add new suppliers here
 };
