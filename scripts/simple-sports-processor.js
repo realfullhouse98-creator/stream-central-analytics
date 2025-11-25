@@ -366,7 +366,7 @@ class SimpleSportsProcessor {
         return matches;
     }
 
-   extractWendyMatches(wendyData) {
+  extractWendyMatches(wendyData) {
     console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
     console.log('   Input data type:', typeof wendyData);
     console.log('   Has matches property:', !!wendyData.matches);
