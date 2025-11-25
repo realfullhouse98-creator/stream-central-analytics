@@ -484,6 +484,12 @@ if (match.teams && match.teams.home && match.teams.away) {
     }
     
     const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+
+         // 🆕 ADD TIME WINDOW CHECK
+    const timeDiff = Math.abs(matchA.timestamp - matchB.timestamp);
+    if (timeDiff > sportConfig.timeWindow * 60) { // Convert minutes to seconds
+        return 0; // Too far apart in time
+    }
     
     // 🆕 ADD TEAM NAME NORMALIZATION
     const normalizeTeams = (teams) => {
