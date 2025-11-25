@@ -16,8 +16,6 @@ class SimpleSportsProcessor {
         
         this.startTime = Date.now();
         this.sportsClassifier = new SportsClassifier();
-
-        
         
         // Sport-specific configurations
         this.sportConfigs = {
@@ -33,46 +31,27 @@ class SimpleSportsProcessor {
         this.teamNormalizationCache = new Map();
     }
 
-        clearCache() {
-        this.sportCache.clear();
-        this.teamNormalizationCache.clear();
+    // 🆕 ADD THIS DEBUG METHOD TO CHECK MERGING
+    debugMergingLogic() {
+        console.log('🔍 DEBUGGING MERGE LOGIC:');
         
-        if (global.gc) {
-            global.gc();
-            console.log('   🗑️  Garbage collection triggered');
+        // Sample matches from different sources
+        const sampleMatches = [
+            { source: 'tom', teams: 'Team A vs Team B', tournament: 'Premier League' },
+            { source: 'sarah', teams: 'Team A - Team B', tournament: '' },
+            { source: 'wendy', teams: 'Team A vs Team B', tournament: 'Premier League' }
+        ];
+        
+        console.log('   Sample match sources:', sampleMatches.map(m => m.source));
+        
+        // Test merge scores
+        for (let i = 0; i < sampleMatches.length; i++) {
+            for (let j = i + 1; j < sampleMatches.length; j++) {
+                const score = this.calculateMatchScore(sampleMatches[i], sampleMatches[j], 'Football');
+                console.log(`   ${sampleMatches[i].source} ↔ ${sampleMatches[j].source}: ${score.toFixed(2)}`);
+            }
         }
     }
-
-    // 🆕 ADD THESE HELPER METHODS RIGHT HERE
-    advancedTokenize(text) {
-        return text
-            .replace(/[^\w\s-]/g, ' ') // Replace special chars with spaces
-            .split(/[\s\-]+/) // Split on spaces and hyphens
-            .filter(t => t.length > 2) // Only keep tokens longer than 2 chars
-            .map(t => t.toLowerCase());
-    }
-
-    tokensMatch(tokenA, tokenB) {
-        // Exact match
-        if (tokenA === tokenB) return true;
-        
-        // Partial matches
-        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
-        
-        // Common abbreviations
-        const abbreviations = {
-            'fc': 'football club',
-            'utd': 'united', 
-            'afc': 'association football club',
-            'vs': 'versus'
-        };
-        
-        const expandedA = abbreviations[tokenA] || tokenA;
-        const expandedB = abbreviations[tokenB] || tokenB;
-        
-        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
-    }
-} 
 
     // 🆕 ADD THE WENDY MERGE METHOD
     mergeWendyData(processedData) {
@@ -146,7 +125,7 @@ class SimpleSportsProcessor {
             console.log(`🏆 Found ${Object.keys(sportGroups).length} sports`);
 
             // 3. Process each sport with progress tracking
-            let processedData = {}; // 🆕 FIX: Changed from const to let
+            let processedData = {};
             const sports = Object.entries(sportGroups);
             
             for (let i = 0; i < sports.length; i++) {
@@ -174,7 +153,6 @@ class SimpleSportsProcessor {
             
         } catch (error) {
             console.error('💥 Processor failed:', error);
-            // Try to save partial results if possible
             this.savePartialResults();
             throw error;
         }
@@ -190,7 +168,6 @@ class SimpleSportsProcessor {
                 const matchesWithStreams = wendyData.matches.filter(m => m.streams && m.streams.length > 0);
                 console.log(`📊 ${matchesWithStreams.length} matches have streams out of ${wendyData.matches.length}`);
                 
-                // Count by sport
                 const sportCounts = {};
                 wendyData.matches.forEach(match => {
                     const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
@@ -213,7 +190,6 @@ class SimpleSportsProcessor {
         }
     }
 
-    // 🆕 ADD THIS METHOD TO YOUR SimpleSportsProcessor class
     async fetchAndMergeSarahStreams() {
         console.log('🔄 Fetching Sarah streams for merging...');
         
@@ -221,7 +197,6 @@ class SimpleSportsProcessor {
             const sarahMatches = await this.fetchSarahMatches();
             console.log('📦 Sarah matches found:', sarahMatches.length);
             
-            // Create a map for quick Sarah stream lookup
             const sarahStreamsMap = new Map();
             
             sarahMatches.forEach(sarahMatch => {
@@ -238,7 +213,6 @@ class SimpleSportsProcessor {
         }
     }
 
-    // 🆕 ADD THIS HELPER METHOD TOO
     async fetchSarahMatches() {
         try {
             const response = await fetch('https://streamed.pk/api/matches/all');
@@ -331,7 +305,6 @@ class SimpleSportsProcessor {
                 console.log(`📦 Loading ${wendyData.matches?.length || 0} pre-processed Wendy matches`);
                 
                 if (wendyData.matches) {
-                    // Convert Wendy matches to the processor's internal format
                     wendyData.matches.forEach(match => {
                         allMatches.push({
                             source: 'wendy',
@@ -412,7 +385,6 @@ class SimpleSportsProcessor {
         return matches;
     }
 
-    // 🆕 UPDATED WENDY EXTRACTION WITH DEBUG
     extractWendyMatches(wendyData) {
         console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
         console.log('   Input data type:', typeof wendyData);
@@ -428,21 +400,16 @@ class SimpleSportsProcessor {
         console.log('🎯 Processing Wendy matches...');
         
         wendyData.matches.forEach((match, index) => {
-            // 🆕 ONLY PROCESS MATCHES THAT HAVE STREAMS
             const hasStreams = match.streams && match.streams.length > 0;
             
             if (hasStreams) {
-                // 🆕 FIX: Handle both team structures
                 let teams = '';
                 if (match.teams) {
                     if (match.teams.event) {
-                        // Structure A: Fighting/Boxing with "event" field
                         teams = match.teams.event;
                     } else if (match.teams.home && match.teams.away) {
-                        // Structure B: Regular sports with home/away
                         teams = `${match.teams.home.name || ''} vs ${match.teams.away.name || ''}`.trim();
                     } else {
-                        // Fallback to title
                         teams = match.title;
                     }
                 } else {
@@ -450,8 +417,6 @@ class SimpleSportsProcessor {
                 }
                 
                 const tournament = match.league?.name || '';
-                
-                // Use actual Wendy streams
                 const channels = match.streams.map(stream => stream.url);
                 
                 const processedMatch = {
@@ -468,7 +433,6 @@ class SimpleSportsProcessor {
                 
                 matches.push(processedMatch);
                 
-                // Debug first few matches
                 if (index < 3) {
                     console.log(`   📝 Processed match ${index + 1}:`);
                     console.log(`      Teams: "${processedMatch.teams}"`);
@@ -487,9 +451,7 @@ class SimpleSportsProcessor {
         return matches;
     }
 
-    // 🆕 UPDATED WENDY SPORT CLASSIFIER
     classifyWendySport(match) {
-        // 🆕 PRIORITIZE wendySport field from our enhanced data
         if (match.wendySport) {
             const sportMap = {
                 'football': 'Football',
@@ -510,7 +472,6 @@ class SimpleSportsProcessor {
             return sportMap[match.wendySport] || match.wendySport;
         }
         
-        // Fallback to original classification
         const league = match.league?.name?.toLowerCase() || '';
         const title = match.title?.toLowerCase() || '';
         
@@ -521,7 +482,6 @@ class SimpleSportsProcessor {
         if (league.includes('rugby') || title.includes('rugby')) return 'Rugby';
         if (league.includes('tennis') || title.includes('tennis')) return 'Tennis';
         
-        // Default to football
         return 'Football';
     }
 
@@ -608,38 +568,64 @@ class SimpleSportsProcessor {
         return clusters;
     }
 
-calculateMatchScore(matchA, matchB, sport) {
-    // 🆕 FIX: Only prevent same-source merges if they're NOT Wendy
-    if (matchA.source === matchB.source && matchA.source !== 'wendy') {
-        return 0;
+    calculateMatchScore(matchA, matchB, sport) {
+        // 🆕 FIX: Only prevent same-source merges if they're NOT Wendy
+        if (matchA.source === matchB.source && matchA.source !== 'wendy') {
+            return 0;
+        }
+        
+        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+        
+        const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
+        const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
+        
+        // 🆕 IMPROVE TOKENIZATION FOR BETTER MATCHING
+        const tokensA = this.advancedTokenize(textA);
+        const tokensB = this.advancedTokenize(textB);
+        
+        const common = tokensA.filter(tA => 
+            tokensB.some(tB => this.tokensMatch(tA, tB))
+        );
+        
+        let score = common.length / Math.max(tokensA.length, tokensB.length);
+        
+        // 🆕 BOOST SCORE FOR WENDY MATCHES
+        if (matchA.source === 'wendy' || matchB.source === 'wendy') {
+            score += 0.1;
+        }
+        
+        if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
+            score += 0.15;
+        }
+        
+        return Math.min(1.0, score);
     }
-    
-    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-    
-    const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
-    const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
-    
-    // 🆕 IMPROVE TOKENIZATION FOR BETTER MATCHING
-    const tokensA = this.advancedTokenize(textA);
-    const tokensB = this.advancedTokenize(textB);
-    
-    const common = tokensA.filter(tA => 
-        tokensB.some(tB => this.tokensMatch(tA, tB))
-    );
-    
-    let score = common.length / Math.max(tokensA.length, tokensB.length);
-    
-    // 🆕 BOOST SCORE FOR WENDY MATCHES
-    if (matchA.source === 'wendy' || matchB.source === 'wendy') {
-        score += 0.1; // Give Wendy matches a slight boost
+
+    // 🆕 ADD THESE HELPER METHODS
+    advancedTokenize(text) {
+        return text
+            .replace(/[^\w\s-]/g, ' ')
+            .split(/[\s\-]+/)
+            .filter(t => t.length > 2)
+            .map(t => t.toLowerCase());
     }
-    
-    if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
-        score += 0.15;
+
+    tokensMatch(tokenA, tokenB) {
+        if (tokenA === tokenB) return true;
+        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
+        
+        const abbreviations = {
+            'fc': 'football club',
+            'utd': 'united', 
+            'afc': 'association football club',
+            'vs': 'versus'
+        };
+        
+        const expandedA = abbreviations[tokenA] || tokenA;
+        const expandedB = abbreviations[tokenB] || tokenB;
+        
+        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
     }
-    
-    return Math.min(1.0, score);
-}
 
     hasTennisPlayerPattern(match) {
         const text = match.teams || '';
@@ -650,7 +636,6 @@ calculateMatchScore(matchA, matchB, sport) {
         const sarahStreams = this.getSarahStreamsForMatch(match, sarahStreamsMap);
         const tomStreams = match.channels || [];
         
-        // 🎯 CORRECT CLASSIFICATION: Filter streams by URL pattern
         const correctTomStreams = tomStreams.filter(channel => 
             channel.includes('topembed.pw') && !channel.includes('embedsports.top')
         );
@@ -671,15 +656,13 @@ calculateMatchScore(matchA, matchB, sport) {
             sources: [match.source],
             confidence: 1.0,
             merged: merged,
-            // 🎯 CORRECT STREAM CLASSIFICATION
             sources: {
-                tom: correctTomStreams,    // Only real Tom streams
-                sarah: correctSarahStreams // Only real Sarah streams
+                tom: correctTomStreams,
+                sarah: correctSarahStreams
             }
         };
     }
 
-    // 🆕 FIXED: Add null check for teams
     getSarahStreamsForMatch(match, sarahStreamsMap) {
         if (!match.teams) {
             return [];
@@ -703,7 +686,6 @@ calculateMatchScore(matchA, matchB, sport) {
     mergeCluster(cluster, sport, sarahStreamsMap) {
         const baseMatch = cluster[0];
         
-        // 🎯 CORRECTLY COLLECT TOM STREAMS (only topembed.pw)
         const allTomStreams = [];
         cluster.forEach(match => {
             const tomStreams = match.channels || [];
@@ -716,10 +698,8 @@ calculateMatchScore(matchA, matchB, sport) {
             });
         });
         
-        // Get Sarah streams
         const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
         
-        // 🎯 ALSO INCLUDE embedsports.top STREAMS FROM TOM'S DATA
         cluster.forEach(match => {
             const tomStreams = match.channels || [];
             tomStreams.forEach(stream => {
@@ -742,7 +722,6 @@ calculateMatchScore(matchA, matchB, sport) {
             confidence: 0.8,
             merged: true,
             merged_count: cluster.length,
-            // 🎯 CORRECT STREAM CLASSIFICATION FOR MERGED MATCHES
             sources: {
                 tom: allTomStreams,
                 sarah: sarahStreams
@@ -794,7 +773,6 @@ calculateMatchScore(matchA, matchB, sport) {
             siteData.matches.push(...sportData.matches);
         });
 
-        // 🆕 ADD THIS FINAL CHECK BEFORE SAVING
         console.log('🔍 FINAL CHECK - SOURCES IN MASTER DATA:');
         const sourceCount = {};
         siteData.matches.forEach(match => {
@@ -806,7 +784,6 @@ calculateMatchScore(matchA, matchB, sport) {
         });
         console.log('   Source distribution:', sourceCount);
         
-        // Check for Wendy streams specifically
         const wendyStreams = siteData.matches.filter(m => 
             m.channels && m.channels.some(ch => ch.includes('spiderembed'))
         );
@@ -870,36 +847,6 @@ calculateMatchScore(matchA, matchB, sport) {
         }
     }
 }
-
-advancedTokenize(text) {
-        return text
-            .replace(/[^\w\s-]/g, ' ') // Replace special chars with spaces
-            .split(/[\s\-]+/) // Split on spaces and hyphens
-            .filter(t => t.length > 2) // Only keep tokens longer than 2 chars
-            .map(t => t.toLowerCase());
-    }
-
-    tokensMatch(tokenA, tokenB) {
-        // Exact match
-        if (tokenA === tokenB) return true;
-        
-        // Partial matches
-        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
-        
-        // Common abbreviations
-        const abbreviations = {
-            'fc': 'football club',
-            'utd': 'united', 
-            'afc': 'association football club',
-            'vs': 'versus'
-        };
-        
-        const expandedA = abbreviations[tokenA] || tokenA;
-        const expandedB = abbreviations[tokenB] || tokenB;
-        
-        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
-    }
-} 
 
 // Main execution
 if (require.main === module) {
