@@ -76,25 +76,21 @@ class SimpleSportsProcessor {
     // 🆕 ADD THE WENDY MERGE METHOD
     mergeWendyData(processedData) {
                 // 🆕 FIXED: ADD WENDY FROM MASTER-WENDY.JSON
+              // 🆕 SIMPLE FIX: ADD WENDY FROM MASTER-WENDY.JSON
         try {
             if (fs.existsSync('./master-wendy.json')) {
                 const wendyData = JSON.parse(fs.readFileSync('./master-wendy.json', 'utf8'));
                 console.log(`📦 Loading ${wendyData.matches?.length || 0} pre-processed Wendy matches`);
                 
                 if (wendyData.matches) {
-                    // 🆕 FIX: Use the EXACT SAME processing as raw Wendy data
-                    const processedWendyMatches = this.extractWendyMatches({
-                        matches: wendyData.matches
-                    });
-                    
-                    console.log(`✅ Processed ${processedWendyMatches.length} Wendy matches from master-wendy.json`);
-                    allMatches.push(...processedWendyMatches);
+                    // 🆕 SIMPLE FIX: Just add the matches directly
+                    allMatches.push(...wendyData.matches);
+                    console.log(`✅ Added ${wendyData.matches.length} Wendy matches from master-wendy.json`);
                 }
             }
         } catch (error) {
             console.log('❌ Error loading Wendy data:', error.message);
         }
-        
         return processedData;
     }
 
