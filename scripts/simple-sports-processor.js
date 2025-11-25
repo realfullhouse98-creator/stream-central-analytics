@@ -506,7 +506,18 @@ class SimpleSportsProcessor {
     if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
         score += 0.15;
     }
-    
+
+        // 🆕 DEBUG FOR PYRAMIDS MATCH
+if (matchA.teams.includes('Pyramids') && matchB.teams.includes('Pyramids')) {
+    console.log(`   🔍 PYRAMIDS DEBUG: "${matchA.teams}" (${matchA.source}) vs "${matchB.teams}" (${matchB.source})`);
+    console.log(`      TextA: "${textA}"`);
+    console.log(`      TextB: "${textB}"`);
+    console.log(`      TokensA:`, tokensA);
+    console.log(`      TokensB:`, tokensB);
+    console.log(`      Common:`, common);
+    console.log(`      Score: ${score.toFixed(2)}`);
+    console.log(`      Sport: ${sport}, Threshold: ${sportConfig.mergeThreshold}`);
+}
     return Math.min(1.0, score);
 }
 
