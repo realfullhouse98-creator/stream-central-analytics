@@ -477,19 +477,27 @@ class SimpleSportsProcessor {
         if (matchA.source === matchB.source && matchA.source !== 'wendy') {
             return 0;
         }
+
+        // 🆕 ADD TEAM NAME NORMALIZATION
+    const normalizeTeams = (teams) => {
+        return teams.replace(/ vs /g, ' - ').replace(/\s+/g, ' ').trim().toLowerCase();
+    };
+    
+    const textA = normalizeTeams(matchA.teams) + ' ' + (matchA.tournament || '');
+    const textB = normalizeTeams(matchB.teams) + ' ' + (matchB.tournament || '');
         
         const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
         
         const textA = (matchA.teams + ' ' + matchA.tournament).toLowerCase();
         const textB = (matchB.teams + ' ' + matchB.tournament).toLowerCase();
         
-        // 🆕 IMPROVE TOKENIZATION FOR BETTER MATCHING
-        const tokensA = this.advancedTokenize(textA);
-        const tokensB = this.advancedTokenize(textB);
-        
-        const common = tokensA.filter(tA => 
-            tokensB.some(tB => this.tokensMatch(tA, tB))
-        );
+         // 🆕 IMPROVE TOKENIZATION FOR BETTER MATCHING
+    const tokensA = this.advancedTokenize(textA);
+    const tokensB = this.advancedTokenize(textB);
+    
+    const common = tokensA.filter(tA => 
+        tokensB.some(tB => this.tokensMatch(tA, tB))
+    )
         
         let score = common.length / Math.max(tokensA.length, tokensB.length);
         
@@ -594,6 +602,17 @@ class SimpleSportsProcessor {
     }
 
     mergeCluster(cluster, sport, sarahStreamsMap) {
+
+            // 🆕 ADD DEBUG HERE
+    console.log(`🔄 MERGING CLUSTER for ${sport}:`);
+    cluster.forEach((match, index) => {
+        console.log(`   ${index + 1}. ${match.source}: "${match.teams}" - ${match.channels?.length} streams`);
+        if (match.source === 'wendy') {
+            console.log(`      Wendy streams:`, match.channels?.slice(0, 2)); // Show first 2 streams
+        }
+    });
+
+        
         const baseMatch = cluster[0];
         
         const allTomStreams = [];
@@ -619,6 +638,9 @@ class SimpleSportsProcessor {
                 });
             }
         });
+
+        // 🆕 ADD DEBUG TO SEE COLLECTED STREAMS
+    console.log(`   Collected streams - Tom: ${allTomStreams.length}, Wendy: ${allWendyStreams.length}`);
         
         const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
         
@@ -639,6 +661,10 @@ class SimpleSportsProcessor {
             sarah: sarahStreams,
             wendy: allWendyStreams
         };
+
+        // 🆕 FINAL DEBUG
+    console.log(`   Final sources - Tom: ${sources.tom.length}, Sarah: ${sources.sarah.length}, Wendy: ${sources.wendy.length}`);
+    
         
         return {
             unix_timestamp: baseMatch.timestamp,
