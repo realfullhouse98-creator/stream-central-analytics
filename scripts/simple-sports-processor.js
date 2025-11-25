@@ -319,7 +319,12 @@ class SimpleSportsProcessor {
             // 🆕 TEMPORARY FIX: PROCESS ALL WENDY MATCHES
             // Remove the stream/channel filter completely
             
-            let teams = match.teams || match.title || '';
+            let teams = '';
+if (match.teams && match.teams.home && match.teams.away) {
+    teams = `${match.teams.home.name} vs ${match.teams.away.name}`;
+} else {
+    teams = match.teams || match.title || '';
+}
             const tournament = match.league?.name || '';
             
             const channels = match.streams ? 
@@ -508,7 +513,8 @@ class SimpleSportsProcessor {
     }
 
         // 🆕 DEBUG FOR PYRAMIDS MATCH
-if (matchA.teams.includes('Pyramids') && matchB.teams.includes('Pyramids')) {
+if ((matchA.teams && matchA.teams.includes('Pyramids')) && 
+    (matchB.teams && matchB.teams.includes('Pyramids'))) {
     console.log(`   🔍 PYRAMIDS DEBUG: "${matchA.teams}" (${matchA.source}) vs "${matchB.teams}" (${matchB.source})`);
     console.log(`      TextA: "${textA}"`);
     console.log(`      TextB: "${textB}"`);
