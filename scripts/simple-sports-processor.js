@@ -53,6 +53,26 @@ class SimpleSportsProcessor {
         }
     }
 
+        // 🆕 ADD THIS METHOD TO CHECK WENDY MERGING
+    debugWendyMerging(sportGroups) {
+        console.log('🔍 CHECKING WENDY MERGE POTENTIAL:');
+        
+        Object.entries(sportGroups).forEach(([sport, matches]) => {
+            const wendyMatches = matches.filter(m => m.source === 'wendy');
+            const otherMatches = matches.filter(m => m.source !== 'wendy');
+            
+            if (wendyMatches.length > 0 && otherMatches.length > 0) {
+                console.log(`   ${sport}: ${wendyMatches.length} Wendy vs ${otherMatches.length} others`);
+                
+                // Check first Wendy match against first other match
+                if (wendyMatches[0] && otherMatches[0]) {
+                    const score = this.calculateMatchScore(wendyMatches[0], otherMatches[0], sport);
+                    console.log(`      Sample merge score: ${score.toFixed(2)}`);
+                }
+            }
+        });
+    }
+
     // 🆕 ADD THE WENDY MERGE METHOD
     mergeWendyData(processedData) {
         try {
@@ -123,6 +143,9 @@ class SimpleSportsProcessor {
             // 2. Classify using existing sport fields
             const sportGroups = this.classifyUsingExistingFields(allMatches);
             console.log(`🏆 Found ${Object.keys(sportGroups).length} sports`);
+
+             // 🆕 DEBUG WENDY MERGING
+            this.debugWendyMerging(sportGroups);
 
             // 3. Process each sport with progress tracking
             let processedData = {};
