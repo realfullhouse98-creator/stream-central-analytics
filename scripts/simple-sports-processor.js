@@ -73,26 +73,7 @@ class SimpleSportsProcessor {
         });
     }
 
-    // 🆕 ADD THE WENDY MERGE METHOD
-    mergeWendyData(processedData) {
-                // 🆕 FIXED: ADD WENDY FROM MASTER-WENDY.JSON
-              // 🆕 SIMPLE FIX: ADD WENDY FROM MASTER-WENDY.JSON
-        try {
-            if (fs.existsSync('./master-wendy.json')) {
-                const wendyData = JSON.parse(fs.readFileSync('./master-wendy.json', 'utf8'));
-                console.log(`📦 Loading ${wendyData.matches?.length || 0} pre-processed Wendy matches`);
-                
-                if (wendyData.matches) {
-                    // 🆕 SIMPLE FIX: Just add the matches directly
-                    allMatches.push(...wendyData.matches);
-                    console.log(`✅ Added ${wendyData.matches.length} Wendy matches from master-wendy.json`);
-                }
-            }
-        } catch (error) {
-            console.log('❌ Error loading Wendy data:', error.message);
-        }
-        return processedData;
-    }
+ 
 
     async processAllSports() {
         console.log('🎯 STARTING ENHANCED SPORTS PROCESSOR...\n');
@@ -141,7 +122,7 @@ class SimpleSportsProcessor {
             }
 
             // 🆕 4. MERGE WENDY DATA BEFORE SAVING
-            processedData = this.mergeWendyData(processedData);
+
 
             // 5. Save results
             this.saveResults(processedData);
@@ -310,12 +291,12 @@ class SimpleSportsProcessor {
                             source: 'wendy',
                             date: this.msToDate(match.timestamp * 1000),
                             time: this.msToTime(match.timestamp * 1000),
-                            teams: match.match,
+                            teams: match.teams, 
                             tournament: match.tournament || '',
                             channels: match.channels || [],
                             raw: match,
                             timestamp: match.timestamp,
-                            sport: match.sport
+                            sport: match.wendy_sport || match.raw_sport
                         });
                     });
                 }
