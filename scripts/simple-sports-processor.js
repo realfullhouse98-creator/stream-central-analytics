@@ -284,32 +284,6 @@ class SimpleSportsProcessor {
         }
 
         
-      /*  try {
-            if (fs.existsSync('./master-wendy.json')) {
-                const wendyData = JSON.parse(fs.readFileSync('./master-wendy.json', 'utf8'));
-                console.log(`📦 Loading ${wendyData.matches?.length || 0} pre-processed Wendy matches`);
-                
-                if (wendyData.matches) {
-                    wendyData.matches.forEach(match => {
-                        allMatches.push({
-                            source: 'wendy',
-                            date: this.msToDate(match.timestamp * 1000),
-                            time: this.msToTime(match.timestamp * 1000),
-                            teams: match.teams, 
-                            tournament: match.tournament || '',
-                            channels: match.channels || [],
-                            raw: match,
-                            timestamp: match.timestamp,
-                            sport: match.wendy_sport || match.raw_sport
-                        });
-                    });
-                }
-            }
-        } catch (error) {
-            console.log('❌ Error loading Wendy data:', error.message);
-        }
-        */
-        
         console.log(`\n🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
         return allMatches;
     }
@@ -729,26 +703,26 @@ class SimpleSportsProcessor {
     }
 
     saveResults(processedData) {
-        const siteData = {
-            processed_at: new Date().toISOString(),
-            processor_version: '2.0',
-            summary: {
-                total_sports: Object.keys(processedData).length,
-                total_matches: this.results.totalProcessed,
-                merged_matches: this.results.merged,
-                individual_matches: this.results.individual,
-                processing_time_ms: this.results.processingTime,
-                memory_usage_mb: this.results.memoryUsage
-            },
-            matches: []
-        };
-        
-        Object.values(processedData).forEach(sportData => {
-            siteData.matches.push(...sportData.matches);
-        });
+    const siteData = {
+        processed_at: new Date().toISOString(),
+        processor_version: '2.0',
+        summary: {
+            total_sports: Object.keys(processedData).length,
+            total_matches: this.results.totalProcessed,
+            merged_matches: this.results.merged,
+            individual_matches: this.results.individual,
+            processing_time_ms: this.results.processingTime,
+            memory_usage_mb: this.results.memoryUsage
+        },
+        matches: []
+    };
+    
+    Object.values(processedData).forEach(sportData => {
+        siteData.matches.push(...sportData.matches);
+    });
 
-         🆕 ADD WENDY DEBUG HERE - RIGHT BEFORE THE EXISTING DEBUG
-    console.log('🔍 WENDY FINAL CHECK:');
+    // WENDY DEBUG - RIGHT BEFORE THE EXISTING DEBUG
+    console.log('WENDY FINAL CHECK:');
     const wendySources = siteData.matches.filter(m => 
         m.sources && m.sources.includes('wendy')
     );
@@ -766,40 +740,41 @@ class SimpleSportsProcessor {
             console.log(`      ${i+1}. ${match.match} - ${match.sources.join(', ')}`);
         });
     } else {
-        console.log('   ❌ No Wendy sources found in final output');
+        console.log('   No Wendy sources found in final output');
     }
 
-        console.log('🔍 FINAL CHECK - SOURCES IN MASTER DATA:');
-        const sourceCount = {};
-        siteData.matches.forEach(match => {
-            if (match.sources && Array.isArray(match.sources)) {
-                match.sources.forEach(source => {
-                    sourceCount[source] = (sourceCount[source] || 0) + 1;
-                });
-            }
-        });
-        console.log('   Source distribution:', sourceCount);
-        
-        const wendyStreams = siteData.matches.filter(m => 
-            m.channels && m.channels.some(ch => ch.includes('spiderembed'))
-        );
-        console.log(`   Matches with Wendy streams: ${wendyStreams.length}`);
-        
-        if (wendyStreams.length > 0) {
-            console.log('   Sample Wendy match:', {
-                teams: wendyStreams[0].teams,
-                sources: wendyStreams[0].sources,
-                channels: wendyStreams[0].channels?.length
+    // EXISTING FINAL CHECK
+    console.log('FINAL CHECK - SOURCES IN MASTER DATA:');
+    const sourceCount = {};
+    siteData.matches.forEach(match => {
+        if (match.sources && Array.isArray(match.sources)) {
+            match.sources.forEach(source => {
+                sourceCount[source] = (sourceCount[source] || 0) + 1;
             });
         }
-        
-        if (!fs.existsSync('./sports-results')) {
-            fs.mkdirSync('./sports-results', { recursive: true });
-        }
-        
-        fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
-        fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2));
+    });
+    console.log('   Source distribution:', sourceCount);
+    
+    const existingWendyStreams = siteData.matches.filter(m => 
+        m.channels && m.channels.some(ch => ch.includes('spiderembed'))
+    );
+    console.log(`   Matches with Wendy streams: ${existingWendyStreams.length}`);
+    
+    if (existingWendyStreams.length > 0) {
+        console.log('   Sample Wendy match:', {
+            teams: existingWendyStreams[0].teams,
+            sources: existingWendyStreams[0].sources,
+            channels: existingWendyStreams[0].channels?.length
+        });
     }
+    
+    if (!fs.existsSync('./sports-results')) {
+        fs.mkdirSync('./sports-results', { recursive: true });
+    }
+    
+    fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
+    fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2));
+}
 
     logResults() {
         console.log('\n📊 ENHANCED SPORTS PROCESSOR RESULTS:');
