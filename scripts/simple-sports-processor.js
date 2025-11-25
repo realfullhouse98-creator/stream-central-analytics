@@ -53,7 +53,7 @@ class SimpleSportsProcessor {
         }
     }
 
-        // 🆕 ADD THIS METHOD TO CHECK WENDY MERGING
+    // 🆕 ADD THIS METHOD TO CHECK WENDY MERGING
     debugWendyMerging(sportGroups) {
         console.log('🔍 CHECKING WENDY MERGE POTENTIAL:');
         
@@ -73,14 +73,10 @@ class SimpleSportsProcessor {
         });
     }
 
- 
-
     async processAllSports() {
         console.log('🎯 STARTING ENHANCED SPORTS PROCESSOR...\n');
         
         try {
-            // 🆕 WENDY STREAMS ANALYSIS
-           // this.debugWendyStreamMatches();
             // 🆕 DEBUG MERGING LOGIC
             this.debugMergingLogic();
             
@@ -102,7 +98,7 @@ class SimpleSportsProcessor {
             const sportGroups = this.classifyUsingExistingFields(allMatches);
             console.log(`🏆 Found ${Object.keys(sportGroups).length} sports`);
 
-             // 🆕 DEBUG WENDY MERGING
+            // 🆕 DEBUG WENDY MERGING
             this.debugWendyMerging(sportGroups);
 
             // 3. Process each sport with progress tracking
@@ -121,9 +117,6 @@ class SimpleSportsProcessor {
                 }
             }
 
-            // 🆕 4. MERGE WENDY DATA BEFORE SAVING
-
-
             // 5. Save results
             this.saveResults(processedData);
             this.logResults();
@@ -136,42 +129,6 @@ class SimpleSportsProcessor {
             console.error('💥 Processor failed:', error);
             this.savePartialResults();
             throw error;
-        }
-    }
-
-    // 🆕 ADD THIS DEBUG METHOD
-    debugWendyStreamMatches() {
-    try {
-        // 🆕 FIX: Read from the SAME source as main processor
-        const wendyFile = supplierConfig.wendy.file;
-        const wendyData = JSON.parse(fs.readFileSync(wendyFile, 'utf8'));
-        
-        console.log('🔍 WENDY STREAMS ANALYSIS:');
-        console.log('   Reading from:', wendyFile);
-            
-            if (wendyData.matches) {
-                const matchesWithStreams = wendyData.matches.filter(m => m.streams && m.streams.length > 0);
-                console.log(`📊 ${matchesWithStreams.length} matches have streams out of ${wendyData.matches.length}`);
-                
-                const sportCounts = {};
-                wendyData.matches.forEach(match => {
-                    const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
-                    sportCounts[sport] = (sportCounts[sport] || 0) + 1;
-                });
-                
-                console.log('🏆 Wendy sport breakdown:', sportCounts);
-                
-                matchesWithStreams.slice(0, 3).forEach(match => {
-                    console.log(`🎯 MATCH WITH STREAMS:`);
-                    console.log(`   Title: ${match.title}`);
-                    console.log(`   Sport: ${match.sportCategory || match.sport || match.wendySport}`);
-                    console.log(`   Status: ${match.status}`);
-                    console.log(`   Streams: ${match.streams.length}`);
-                    console.log(`   First stream: ${match.streams[0]?.url}`);
-                });
-            }
-        } catch (error) {
-            console.log('❌ Wendy streams analysis failed:', error.message);
         }
     }
 
@@ -282,7 +239,6 @@ class SimpleSportsProcessor {
                 console.log(`💥 DEBUG: Failed to load ${supplier.name}:`, error.message);
             }
         }
-
         
         console.log(`\n🔧 DEBUG: Total matches loaded: ${allMatches.length}`);
         return allMatches;
@@ -345,59 +301,59 @@ class SimpleSportsProcessor {
         return matches;
     }
 
-  extractWendyMatches(wendyData) {
-    console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
-    console.log('   Input data type:', typeof wendyData);
-    console.log('   Has matches property:', !!wendyData.matches);
-    console.log('   Matches array length:', wendyData.matches?.length || 0);
-    
-    const matches = [];
-    if (!wendyData.matches) {
-        console.log('❌ No matches array in Wendy data');
+    extractWendyMatches(wendyData) {
+        console.log('🔍 EXTRACT WENDY MATCHES DEBUG:');
+        console.log('   Input data type:', typeof wendyData);
+        console.log('   Has matches property:', !!wendyData.matches);
+        console.log('   Matches array length:', wendyData.matches?.length || 0);
+        
+        const matches = [];
+        if (!wendyData.matches) {
+            console.log('❌ No matches array in Wendy data');
+            return matches;
+        }
+        
+        console.log('🎯 Processing Wendy matches...');
+        
+        wendyData.matches.forEach((match, index) => {
+            // 🆕 TEMPORARY FIX: PROCESS ALL WENDY MATCHES
+            // Remove the stream/channel filter completely
+            
+            let teams = match.teams || match.title || '';
+            const tournament = match.league?.name || '';
+            
+            const channels = match.streams ? 
+                match.streams.map(stream => stream.url) : 
+                (match.channels || []);
+            
+            const processedMatch = {
+                source: 'wendy',
+                date: this.msToDate(match.timestamp || Date.now()),
+                time: this.msToTime(match.timestamp || Date.now()),
+                teams: teams,
+                tournament: tournament,
+                channels: channels,
+                raw: match,
+                timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
+                sport: this.classifyWendySport(match)
+            };
+            
+            matches.push(processedMatch);
+            
+            // Debug first few matches
+            if (index < 3) {
+                console.log(`   📝 Wendy match ${index + 1}:`);
+                console.log(`      Teams: "${processedMatch.teams}"`);
+                console.log(`      Channels: ${processedMatch.channels.length}`);
+                console.log(`      Source: ${processedMatch.source}`);
+            }
+        });
+        
+        console.log(`✅ Wendy extraction: ${matches.length} matches processed`);
+        console.log(`   Total input matches: ${wendyData.matches.length}`);
+        
         return matches;
     }
-    
-    console.log('🎯 Processing Wendy matches...');
-    
-    wendyData.matches.forEach((match, index) => {
-        // 🆕 TEMPORARY FIX: PROCESS ALL WENDY MATCHES
-        // Remove the stream/channel filter completely
-        
-        let teams = match.teams || match.title || '';
-        const tournament = match.league?.name || '';
-        
-        const channels = match.streams ? 
-            match.streams.map(stream => stream.url) : 
-            (match.channels || []);
-        
-        const processedMatch = {
-            source: 'wendy',
-            date: this.msToDate(match.timestamp || Date.now()),
-            time: this.msToTime(match.timestamp || Date.now()),
-            teams: teams,
-            tournament: tournament,
-            channels: channels,
-            raw: match,
-            timestamp: match.timestamp ? match.timestamp / 1000 : Date.now() / 1000,
-            sport: this.classifyWendySport(match)
-        };
-        
-        matches.push(processedMatch);
-        
-        // Debug first few matches
-        if (index < 3) {
-            console.log(`   📝 Wendy match ${index + 1}:`);
-            console.log(`      Teams: "${processedMatch.teams}"`);
-            console.log(`      Channels: ${processedMatch.channels.length}`);
-            console.log(`      Source: ${processedMatch.source}`);
-        }
-    });
-    
-    console.log(`✅ Wendy extraction: ${matches.length} matches processed`);
-    console.log(`   Total input matches: ${wendyData.matches.length}`);
-    
-    return matches;
-}
 
     classifyWendySport(match) {
         if (match.wendySport) {
@@ -593,7 +549,17 @@ class SimpleSportsProcessor {
             ...tomStreams.filter(channel => channel.includes('embedsports.top'))
         ];
         
-        const allChannels = [...correctTomStreams, ...correctSarahStreams];
+        // 🆕 FIX: Extract Wendy streams
+        const wendyStreams = match.source === 'wendy' ? match.channels || [] : [];
+        
+        const allChannels = [...correctTomStreams, ...correctSarahStreams, ...wendyStreams];
+        
+        // 🆕 FIX: Create sources as object, not array
+        const sources = {
+            tom: correctTomStreams,
+            sarah: correctSarahStreams,
+            wendy: wendyStreams
+        };
         
         return {
             unix_timestamp: match.timestamp,
@@ -601,13 +567,9 @@ class SimpleSportsProcessor {
             tournament: match.tournament || '',
             match: match.teams || match.title,
             channels: allChannels,
-            sources: [match.source],
+            sources: sources, // 🆕 FIX: This is now an object
             confidence: 1.0,
-            merged: merged,
-            sources: {
-                tom: correctTomStreams,
-                sarah: correctSarahStreams
-            }
+            merged: merged
         };
     }
 
@@ -635,6 +597,8 @@ class SimpleSportsProcessor {
         const baseMatch = cluster[0];
         
         const allTomStreams = [];
+        const allWendyStreams = [];
+        
         cluster.forEach(match => {
             const tomStreams = match.channels || [];
             tomStreams.forEach(stream => {
@@ -644,6 +608,16 @@ class SimpleSportsProcessor {
                     }
                 }
             });
+            
+            // 🆕 FIX: Collect Wendy streams
+            if (match.source === 'wendy') {
+                const wendyStreams = match.channels || [];
+                wendyStreams.forEach(stream => {
+                    if (stream.includes('spiderembed') && !allWendyStreams.includes(stream)) {
+                        allWendyStreams.push(stream);
+                    }
+                });
+            }
         });
         
         const sarahStreams = this.getSarahStreamsForMatch(baseMatch, sarahStreamsMap);
@@ -657,8 +631,14 @@ class SimpleSportsProcessor {
             });
         });
         
-        const allChannels = [...allTomStreams, ...sarahStreams];
-        const sources = [...new Set(cluster.map(m => m.source))];
+        const allChannels = [...allTomStreams, ...sarahStreams, ...allWendyStreams];
+        
+        // 🆕 FIX: Create sources as object
+        const sources = {
+            tom: allTomStreams,
+            sarah: sarahStreams,
+            wendy: allWendyStreams
+        };
         
         return {
             unix_timestamp: baseMatch.timestamp,
@@ -666,14 +646,10 @@ class SimpleSportsProcessor {
             tournament: baseMatch.tournament || '',
             match: baseMatch.teams || baseMatch.title,
             channels: allChannels,
-            sources: sources,
+            sources: sources, // 🆕 FIX: This is now an object
             confidence: 0.8,
             merged: true,
-            merged_count: cluster.length,
-            sources: {
-                tom: allTomStreams,
-                sarah: sarahStreams
-            }
+            merged_count: cluster.length
         };
     }
 
@@ -703,78 +679,65 @@ class SimpleSportsProcessor {
     }
 
     saveResults(processedData) {
-    const siteData = {
-        processed_at: new Date().toISOString(),
-        processor_version: '2.0',
-        summary: {
-            total_sports: Object.keys(processedData).length,
-            total_matches: this.results.totalProcessed,
-            merged_matches: this.results.merged,
-            individual_matches: this.results.individual,
-            processing_time_ms: this.results.processingTime,
-            memory_usage_mb: this.results.memoryUsage
-        },
-        matches: []
-    };
-    
-    Object.values(processedData).forEach(sportData => {
-        siteData.matches.push(...sportData.matches);
-    });
-
-    // WENDY DEBUG - RIGHT BEFORE THE EXISTING DEBUG
-    console.log('WENDY FINAL CHECK:');
-    const wendySources = siteData.matches.filter(m => 
-        m.sources && m.sources.includes('wendy')
-    );
-    console.log(`   Matches with Wendy source: ${wendySources.length}`);
-
-    const wendyStreams = siteData.matches.filter(m => 
-        m.channels && m.channels.some(ch => ch.includes('spiderembed'))
-    );
-    console.log(`   Matches with Wendy streams: ${wendyStreams.length}`);
-
-    // Show sample of Wendy matches
-    if (wendySources.length > 0) {
-        console.log('   Sample Wendy matches:');
-        wendySources.slice(0, 3).forEach((match, i) => {
-            console.log(`      ${i+1}. ${match.match} - ${match.sources.join(', ')}`);
+        const siteData = {
+            processed_at: new Date().toISOString(),
+            processor_version: '2.0',
+            summary: {
+                total_sports: Object.keys(processedData).length,
+                total_matches: this.results.totalProcessed,
+                merged_matches: this.results.merged,
+                individual_matches: this.results.individual,
+                processing_time_ms: this.results.processingTime,
+                memory_usage_mb: this.results.memoryUsage
+            },
+            matches: []
+        };
+        
+        Object.values(processedData).forEach(sportData => {
+            siteData.matches.push(...sportData.matches);
         });
-    } else {
-        console.log('   No Wendy sources found in final output');
-    }
 
-    // EXISTING FINAL CHECK
-    console.log('FINAL CHECK - SOURCES IN MASTER DATA:');
-    const sourceCount = {};
-    siteData.matches.forEach(match => {
-        if (match.sources && Array.isArray(match.sources)) {
-            match.sources.forEach(source => {
-                sourceCount[source] = (sourceCount[source] || 0) + 1;
+        // 🆕 FIXED WENDY DEBUG - uses object format
+        console.log('WENDY FINAL CHECK:');
+        const wendySources = siteData.matches.filter(m => 
+            m.sources && m.sources.wendy && m.sources.wendy.length > 0
+        );
+        console.log(`   Matches with Wendy source: ${wendySources.length}`);
+
+        const wendyStreams = siteData.matches.filter(m => 
+            m.channels && m.channels.some(ch => ch.includes('spiderembed'))
+        );
+        console.log(`   Matches with Wendy streams: ${wendyStreams.length}`);
+
+        // Show sample of Wendy matches
+        if (wendySources.length > 0) {
+            console.log('   Sample Wendy matches:');
+            wendySources.slice(0, 3).forEach((match, i) => {
+                console.log(`      ${i+1}. ${match.match} - Wendy streams: ${match.sources.wendy.length}`);
             });
+        } else {
+            console.log('   No Wendy sources found in final output');
         }
-    });
-    console.log('   Source distribution:', sourceCount);
-    
-    const existingWendyStreams = siteData.matches.filter(m => 
-        m.channels && m.channels.some(ch => ch.includes('spiderembed'))
-    );
-    console.log(`   Matches with Wendy streams: ${existingWendyStreams.length}`);
-    
-    if (existingWendyStreams.length > 0) {
-        console.log('   Sample Wendy match:', {
-            teams: existingWendyStreams[0].teams,
-            sources: existingWendyStreams[0].sources,
-            channels: existingWendyStreams[0].channels?.length
+
+        // 🆕 FIXED SOURCE COUNT - uses object format
+        console.log('FINAL CHECK - SOURCES IN MASTER DATA:');
+        const sourceCount = { tom: 0, sarah: 0, wendy: 0 };
+        siteData.matches.forEach(match => {
+            if (match.sources && typeof match.sources === 'object') {
+                if (match.sources.tom && match.sources.tom.length > 0) sourceCount.tom++;
+                if (match.sources.sarah && match.sources.sarah.length > 0) sourceCount.sarah++;
+                if (match.sources.wendy && match.sources.wendy.length > 0) sourceCount.wendy++;
+            }
         });
+        console.log('   Source distribution:', sourceCount);
+        
+        if (!fs.existsSync('./sports-results')) {
+            fs.mkdirSync('./sports-results', { recursive: true });
+        }
+        
+        fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
+        fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2));
     }
-    
-    if (!fs.existsSync('./sports-results')) {
-        fs.mkdirSync('./sports-results', { recursive: true });
-    }
-    
-    fs.writeFileSync('./sports-results/simple-sports-results.json', JSON.stringify(processedData, null, 2));
-    fs.writeFileSync('./master-data.json', JSON.stringify(siteData, null, 2));
-}
 
     logResults() {
         console.log('\n📊 ENHANCED SPORTS PROCESSOR RESULTS:');
