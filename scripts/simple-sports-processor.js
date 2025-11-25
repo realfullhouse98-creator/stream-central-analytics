@@ -20,9 +20,9 @@ class SimpleSportsProcessor {
         // Sport-specific configurations
         this.sportConfigs = {
             'Tennis': { mergeThreshold: 0.35, timeWindow: 120 },
-            'Football': { mergeThreshold: 0.30, timeWindow: 90 },
+            'Football': { mergeThreshold: 0.30, timeWindow: 180 },
             'Basketball': { mergeThreshold: 0.40, timeWindow: 180 },
-            'American Football': { mergeThreshold: 0.45, timeWindow: 60 },
+            'American Football': { mergeThreshold: 0.45, timeWindow: 180 },
             'default': { mergeThreshold: 0.30, timeWindow: 120 }
         };
 
