@@ -29,10 +29,8 @@ jobs:
       run: |
         echo "=== FILE STRUCTURE ==="
         find . -name "*.json" -path "*/suppliers/*" -o -name "master-data.json" | head -20
-        
         echo "=== SUPPLIER FILE SIZES ==="
         ls -la suppliers/*.json
-        
         echo "=== CHECK SUPPLIER DATA ==="
         echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
         echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
@@ -41,10 +39,10 @@ jobs:
     - name: 🔄 Update All Suppliers
       run: node scripts/update-suppliers.js
       
-    - name: 🚀 PHASE 1: Universal Standardization
+    - name: 🚀 PHASE 1 Universal Standardization
       run: node scripts/universal-standardizer.js
       
-    - name: 🚀 PHASE 2: Advanced Processing
+    - name: 🚀 PHASE 2 Advanced Processing
       run: node scripts/phase2-processor.js
       
     - name: ✅ Verify Final Output
@@ -54,30 +52,24 @@ jobs:
         echo "File size:" $(wc -c < master-data.json)
         echo "Total matches:" $(jq '.matches | length' master-data.json)
         echo "Wendy streams found:" $(grep -c "spiderembed" master-data.json)
-        
         echo "=== PIPELINE SUMMARY ==="
-        echo "Phase 1 (Standardization): Creates standardization-UNIVERSAL.json"
-        echo "Phase 2 (Processing): Creates master-data.json"
+        echo "Phase 1: Creates standardization-UNIVERSAL.json"
+        echo "Phase 2: Creates master-data.json"
         echo "Universal System: Ready for 20+ suppliers"
         
     - name: 📝 Commit and Push Changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        
-        # Add all changed files
         git add master-data.json suppliers/ standardization-UNIVERSAL.json
-        
         echo "=== GIT STATUS ==="
         git status
-        
         echo "=== CHECKING FOR CHANGES ==="
         if git diff --staged --quiet; then
-          echo "📝 No changes to commit - files are unchanged"
+          echo "No changes to commit"
         else
-          echo "📝 Changes detected - committing..."
-          git commit -m "🔄 chore: universal data update [automated - $(date +%Y%m%d_%H%M%S)]"
-          echo "🚀 Pushing changes to repository..."
+          echo "Changes detected - committing..."
+          git commit -m "🔄 Universal data update [$(date +%Y%m%d_%H%M%S)]"
           git push
-          echo "✅ Changes committed and pushed successfully!"
+          echo "Changes committed successfully!"
         fi
