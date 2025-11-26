@@ -101,63 +101,53 @@ class Phase1Standardizer {
         }
     }
 
-    processSarahData() {
+   processSarahData() {
     console.log('🔧 PROCESSING SARAH DATA...');
     
     try {
         const sarahPath = './suppliers/sarah-data.json';
-        if (!fs.existsSync(sarahPath)) {
-            console.log('❌ Sarah data file not found');
+        const sarahData = JSON.parse(fs.readFileSync(sarahPath, 'utf8'));
+        
+        // FORCE: Try different possible structures
+        let matchesArray = sarahData;
+        
+        if (sarahData.matches && Array.isArray(sarahData.matches)) {
+            matchesArray = sarahData.matches;
+            console.log(`📦 Found ${matchesArray.length} matches in .matches`);
+        } else if (Array.isArray(sarahData)) {
+            matchesArray = sarahData;
+            console.log(`📦 Found ${matchesArray.length} matches in root array`);
+        } else {
+            console.log('❌ Cannot find Sarah matches array');
             return [];
         }
 
-        const sarahData = JSON.parse(fs.readFileSync(sarahPath, 'utf8'));
         const matches = [];
-
-        console.log(`📦 Sarah data type: ${typeof sarahData}`);
-        console.log(`📦 Is array: ${Array.isArray(sarahData)}`);
-        
-        // FIX: Sarah data IS the array directly
-        if (Array.isArray(sarahData)) {
-            console.log(`📦 Found ${sarahData.length} Sarah matches`);
-            
-            sarahData.forEach((match, index) => {
-                const unixTimestamp = match.date ? Math.floor(match.date / 1000) : 0;
-                
-                // Convert sources to URLs
-                const sarahStreams = match.sources ? 
-                    match.sources.map(source => 
-                        `https://embedsports.top/embed/${source.source}/${source.id}/1`
-                    ) : [];
-
-                const standardizedMatch = {
-                    source: 'sarah',
-                    unix_timestamp: unixTimestamp,
-                    sport: this.sportsClassifier.classifySport(match),
-                    tournament: '',
-                    match: match.title,
-                    sources: {
-                        sarah: sarahStreams
-                    }
-                };
-                
-                matches.push(standardizedMatch);
-                
-                // Show first 3 matches to confirm
-                if (index < 3) {
-                    console.log(`   ✅ Sarah match ${index + 1}: "${match.title}"`);
-                    console.log(`      Sources: ${sarahStreams.length}`);
+        matchesArray.forEach((match, index) => {
+            const standardizedMatch = {
+                source: 'sarah',
+                unix_timestamp: match.date ? Math.floor(match.date / 1000) : 0,
+                sport: this.sportsClassifier.classifySport(match),
+                tournament: '',
+                match: match.title,
+                sources: {
+                    sarah: match.sources ? match.sources.map(s => 
+                        `https://embedsports.top/embed/${s.source}/${s.id}/1`
+                    ) : []
                 }
-            });
-        } else {
-            console.log('❌ Sarah data is not an array - it is:', typeof sarahData);
-        }
+            };
+            matches.push(standardizedMatch);
+            
+            if (index < 2) {
+                console.log(`   ✅ "${match.title}" → ${standardizedMatch.sport}`);
+            }
+        });
 
         console.log(`✅ Sarah: ${matches.length} matches processed`);
         return matches;
 
     } catch (error) {
-        console.log('❌ Sarah processing failed:', error.message);
+        console.log('❌ Sarah failed:', error.message);
         return [];
     }
 }
