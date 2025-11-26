@@ -300,39 +300,28 @@ class Phase2Processor {
             }
         });
 
-        // Combine all channels for backward compatibility
-        const allChannels = [
-            ...allSources.tom,
-            ...allSources.sarah,
-            ...allSources.wendy
-        ];
-
+        // CLEAN STRUCTURE: No channels, no original_sources
         return {
             unix_timestamp: baseMatch.unix_timestamp,
             sport: sport,
             tournament: baseMatch.tournament || '',
             match: baseMatch.match,
-            channels: allChannels,
-            sources: allSources,
+            sources: allSources,  // Only sources - no redundant channels
             confidence: 0.8,
             merged: true,
-            merged_count: cluster.length,
-            original_sources: cluster.map(m => m.source)
+            merged_count: cluster.length
+            // No original_sources - we can get this from Object.keys(sources)
         };
     }
 
     createFinalMatch(match) {
+        // CLEAN STRUCTURE: No channels field
         return {
             unix_timestamp: match.unix_timestamp,
             sport: match.sport,
             tournament: match.tournament || '',
             match: match.match,
-            channels: [
-                ...(match.sources.tom || []),
-                ...(match.sources.sarah || []),
-                ...(match.sources.wendy || [])
-            ],
-            sources: match.sources,
+            sources: match.sources,  // Only sources - no redundant channels
             confidence: 1.0,
             merged: false
         };
@@ -341,7 +330,7 @@ class Phase2Processor {
     createMasterData(processedData, standardizedData) {
         const masterData = {
             processed_at: new Date().toISOString(),
-            processor_version: '2.0-universal',
+            processor_version: '2.0-universal-clean',
             phase1_source: standardizedData.created_at,
             summary: {
                 total_sports: Object.keys(processedData).length,
@@ -383,7 +372,7 @@ class Phase2Processor {
             const masterDataJson = JSON.stringify(masterData, null, 2);
             JSON.parse(masterDataJson); // Validate
             fs.writeFileSync('./master-data.json', masterDataJson);
-            console.log('✅ Master data saved successfully');
+            console.log('✅ Clean master data saved successfully');
             
         } catch (error) {
             console.error('❌ JSON validation failed:', error.message);
@@ -439,7 +428,7 @@ if (require.main === module) {
     processor.processStandardizedData()
         .then(() => {
             console.log('🎉 PHASE 2 COMPLETED!');
-            console.log('💾 Master data updated at master-data.json');
+            console.log('💾 Clean master data updated at master-data.json');
             process.exit(0);
         })
         .catch(error => {
