@@ -18,11 +18,11 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
         
-    - name: 📋 Setup Node.js
+    - name: 📋 Setup Node.js (Simple)
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
+        # REMOVED cache: 'npm' - we don't have package.json
         
     - name: 🔍 Check Files Before Processing
       run: |
@@ -31,6 +31,10 @@ jobs:
         echo "Tom file size:" $(wc -c < suppliers/tom-data.json)
         echo "Sarah file size:" $(wc -c < suppliers/sarah-data.json) 
         echo "Wendy file size:" $(wc -c < suppliers/wendy-data.json)
+        
+        echo "=== CHECKING SCRIPTS ==="
+        ls -la scripts/*.js
+        ls -la modules/*.js
         
     - name: 🚀 Run Phase 1 Standardization
       run: node scripts/phase1-standardizer.js
