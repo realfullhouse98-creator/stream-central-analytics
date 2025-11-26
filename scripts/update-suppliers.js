@@ -133,37 +133,120 @@ async function fetchWithTimeout(url, timeout = 8000) {
 }
 
 // Data validation
+// ENHANCED: Data validation with comprehensive checks
 function validateSupplierData(data, supplier) {
     if (!data) {
         throw new Error('No data received from supplier');
     }
     
+    // Supplier-specific validation
     if (supplier === 'tom') {
         if (!data.events && !data.matches) {
             throw new Error('Invalid Tom API format - missing events/matches');
         }
-    } else if (supplier === 'sarah') {
+        if (data.events && Object.keys(data.events).length === 0) {
+            throw new Error('Tom data empty - possible API issue');
+        }
+        // Check if events contain actual matches
+        if (data.events) {
+            const totalMatches = Object.values(data.events).reduce((sum, dayMatches) => {
+                return sum + (Array.isArray(dayMatches) ? dayMatches.length : 0);
+            }, 0);
+            if (totalMatches === 0) {
+                throw new Error('Tom data has events but no matches');
+            }
+        }
+    } 
+    else if (supplier === 'sarah') {
         if (!Array.isArray(data)) {
             throw new Error('Invalid Sarah API format - expected array');
         }
+        if (data.length === 0) {
+            throw new Error('Sarah data empty - no matches found');
+        }
+        // Check first few items have expected structure
+        const sample = data[0];
+        if (sample && (!sample.title || !sample.date)) {
+            throw new Error('Sarah data structure changed - missing title/date fields');
+        }
+        if (data.length > 1000) {
+            console.log(`   ⚠️ Warning: Sarah returned ${data.length} matches (unusually high)`);
+        }
+    }
+    else if (supplier === 'wendy') {
+        if (!data.matches || !Array.isArray(data.matches)) {
+            throw new Error('Invalid Wendy API format - missing matches array');
+        }
+        if (data.matches.length === 0) {
+            throw new Error('Wendy data empty - no matches found');
+        }
+        // Check sample match structure
+        const sample = data.matches[0];
+        if (sample && !sample.title && !sample.teams) {
+            throw new Error('Wendy data structure changed - missing title/teams');
+        }
+    }
+    
+    // General data quality checks
+    if (typeof data !== 'object') {
+        throw new Error('Invalid data format - expected object');
     }
     
     return true;
 }
 
 // Backup current data
+// ENHANCED: Backup with verification
 function backupSupplierData(supplierName) {
     const filePath = `./suppliers/${supplierName}-data.json`;
     const backupPath = `./suppliers/backups/${supplierName}-data-${Date.now()}.json`;
     
-    if (fs.existsSync(filePath)) {
+    if (!fs.existsSync(filePath)) {
+        console.log(`   ⚠️ No existing data to backup for ${supplierName}`);
+        return;
+    }
+
+    try {
         // Ensure backups directory exists
         if (!fs.existsSync('./suppliers/backups')) {
             fs.mkdirSync('./suppliers/backups', { recursive: true });
         }
         
+        // Verify source file is valid JSON and has content
+        const sourceData = fs.readFileSync(filePath, 'utf8');
+        const parsedData = JSON.parse(sourceData);
+        
+        // Check if source data has meaningful content
+        let hasContent = false;
+        if (supplierName === 'tom' && parsedData.events) {
+            hasContent = Object.keys(parsedData.events).length > 0;
+        } else if (supplierName === 'sarah' && Array.isArray(parsedData)) {
+            hasContent = parsedData.length > 0;
+        } else if (supplierName === 'wendy' && parsedData.matches) {
+            hasContent = parsedData.matches.length > 0;
+        }
+        
+        if (!hasContent) {
+            console.log(`   ⚠️ Skipping backup - ${supplierName} data appears empty`);
+            return;
+        }
+        
+        // Create backup
         fs.copyFileSync(filePath, backupPath);
-        console.log(`   💾 Backup created: ${backupPath}`);
+        
+        // Verify backup was created and is valid
+        if (fs.existsSync(backupPath)) {
+            const backupData = fs.readFileSync(backupPath, 'utf8');
+            JSON.parse(backupData); // Verify backup is valid JSON
+            const stats = fs.statSync(backupPath);
+            console.log(`   💾 Backup created and verified: ${backupPath} (${stats.size} bytes)`);
+        } else {
+            throw new Error('Backup file was not created');
+        }
+        
+    } catch (error) {
+        console.log(`   ❌ Backup failed for ${supplierName}: ${error.message}`);
+        // Don't throw - allow update to continue even if backup fails
     }
 }
 
@@ -290,7 +373,9 @@ async function updateAllSuppliers() {
         fs.mkdirSync('./suppliers', { recursive: true });
     }
 
-    await Promise.all(suppliers.map(async (supplier) => {
+    // FIX: Process suppliers with proper error handling
+await Promise.all(suppliers.map(async (supplier) => {
+    try {
         const circuitBreaker = circuitBreakers[supplier.name];
         
         console.log(`🔧 ${supplier.name} circuit breaker state:`, circuitBreaker.state);
@@ -311,6 +396,7 @@ async function updateAllSuppliers() {
         
         let lastError = null;
         let success = false;
+        let restored = false;
         
         for (const [index, url] of supplier.urls.entries()) {
             try {
@@ -367,18 +453,40 @@ async function updateAllSuppliers() {
             console.log(`   🚨 ALL PROXIES FAILED for ${supplier.name}`);
             circuitBreaker.recordFailure();
             
-            // ADDED: Attempt to restore from backup when API fails
-            console.log(`   🔄 Attempting to restore ${supplier.name} from backup...`);
-            restoreFromBackup(supplier.name);
+            // FIX: Wrap backup restoration in try-catch
+            try {
+                console.log(`   🔄 Attempting to restore ${supplier.name} from backup...`);
+                restored = restoreFromBackup(supplier.name);
+                if (restored) {
+                    console.log(`   ✅ Successfully restored ${supplier.name} from backup`);
+                } else {
+                    console.log(`   ⚠️ No backup available for ${supplier.name}`);
+                }
+            } catch (restoreError) {
+                console.log(`   ❌ Backup restoration failed: ${restoreError.message}`);
+                restored = false;
+            }
             
             results.failed.push(supplier.name);
             results.details[supplier.name] = {
                 success: false,
                 error: lastError?.message || 'All proxies failed',
-                circuitBreakerState: circuitBreaker.state
+                circuitBreakerState: circuitBreaker.state,
+                restored: restored
             };
         }
-    }));
+        
+    } catch (supplierError) {
+        // FIX: Catch any unexpected errors and log them
+        console.log(`💥 UNEXPECTED ERROR processing ${supplier.name}:`, supplierError.message);
+        results.failed.push(supplier.name);
+        results.details[supplier.name] = {
+            success: false,
+            error: `Unexpected error: ${supplierError.message}`,
+            circuitBreakerState: 'UNKNOWN'
+        };
+    }
+}));
 
     // Generate enhanced summary
     results.endTime = new Date().toISOString();
