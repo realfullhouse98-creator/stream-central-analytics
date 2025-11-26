@@ -1,6 +1,7 @@
 // Update Suppliers
 
 const fs = require('fs');
+const path = require('path'); // ← ADDED THIS LINE
 
 // Circuit Breaker for supplier resilience
 class SupplierCircuitBreaker {
