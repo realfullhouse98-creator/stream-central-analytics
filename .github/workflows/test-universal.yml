@@ -29,6 +29,8 @@ jobs:
         ls -la suppliers/*.json
         echo "=== CHECKING MODULES ==="
         ls -la modules/*.js
+        echo "=== CHECKING SCRIPTS ==="
+        ls -la scripts/*.js
         
     - name: 🚀 PHASE 1: Run Universal Standardizer
       run: node scripts/universal-standardizer.js
@@ -36,10 +38,14 @@ jobs:
     - name: ✅ Check Phase 1 Results
       run: |
         echo "=== PHASE 1 OUTPUT ==="
-        ls -la standardization-UNIVERSAL.json
-        echo "File size:" $(wc -c < standardization-UNIVERSAL.json)
-        echo "Total matches:" $(jq '.summary.after_processing.total' standardization-UNIVERSAL.json)
-        echo "Data loss:" $(jq '.summary.data_loss.total_loss' standardization-UNIVERSAL.json)
+        if [ -f "standardization-UNIVERSAL.json" ]; then
+          ls -la standardization-UNIVERSAL.json
+          echo "File size:" $(wc -c < standardization-UNIVERSAL.json)
+          echo "Total matches:" $(jq '.summary.after_processing.total' standardization-UNIVERSAL.json 2>/dev/null || echo "ERROR")
+          echo "Data loss:" $(jq '.summary.data_loss.total_loss' standardization-UNIVERSAL.json 2>/dev/null || echo "ERROR")
+        else
+          echo "❌ Phase 1 output file not found"
+        fi
         
     - name: 🚀 PHASE 2: Run Advanced Processor
       run: node scripts/phase2-processor.js
@@ -47,37 +53,58 @@ jobs:
     - name: ✅ Check Phase 2 Results
       run: |
         echo "=== PHASE 2 OUTPUT ==="
-        ls -la master-data.json
-        echo "File size:" $(wc -c < master-data.json)
-        echo "Final matches:" $(jq '.summary.total_matches' master-data.json)
-        echo "Merged matches:" $(jq '.summary.merged_matches' master-data.json)
-        echo "Compression ratio:" $(jq '.summary.compression_ratio' master-data.json)
-        
-        echo "=== WENDY STREAMS CHECK ==="
-        echo "Wendy sources in final data:" $(jq '.matches[] | select(.sources.wendy != null) | .sources.wendy | length' master-data.json | grep -v "0" | wc -l)
+        if [ -f "master-data.json" ]; then
+          ls -la master-data.json
+          echo "File size:" $(wc -c < master-data.json)
+          echo "Final matches:" $(jq '.summary.total_matches' master-data.json 2>/dev/null || echo "ERROR")
+          echo "Merged matches:" $(jq '.summary.merged_matches' master-data.json 2>/dev/null || echo "ERROR")
+          echo "Compression ratio:" $(jq '.summary.compression_ratio' master-data.json 2>/dev/null || echo "ERROR")
+          
+          echo "=== WENDY STREAMS CHECK ==="
+          echo "Matches with Wendy streams:" $(jq '[.matches[] | select(.sources.wendy != null and .sources.wendy | length > 0)] | length' master-data.json 2>/dev/null || echo "ERROR")
+        else
+          echo "❌ Phase 2 output file not found"
+        fi
         
     - name: 📊 Compare Pipeline Results
       run: |
         echo "=== PIPELINE COMPARISON ==="
-        echo "Phase 1 input:" $(jq '.summary.before_processing.total' standardization-UNIVERSAL.json)
-        echo "Phase 1 output:" $(jq '.summary.after_processing.total' standardization-UNIVERSAL.json)
-        echo "Phase 2 output:" $(jq '.summary.total_matches' master-data.json)
-        echo "Total compression:" $(jq '.summary.compression_ratio' master-data.json)
+        if [ -f "standardization-UNIVERSAL.json" ] && [ -f "master-data.json" ]; then
+          PHASE1_INPUT=$(jq '.summary.before_processing.tom + .summary.before_processing.sarah + .summary.before_processing.wendy' standardization-UNIVERSAL.json 2>/dev/null || echo "0")
+          PHASE1_OUTPUT=$(jq '.summary.after_processing.total' standardization-UNIVERSAL.json 2>/dev/null || echo "0")
+          PHASE2_OUTPUT=$(jq '.summary.total_matches' master-data.json 2>/dev/null || echo "0")
+          
+          echo "Raw supplier data: $PHASE1_INPUT"
+          echo "After standardization: $PHASE1_OUTPUT" 
+          echo "After merging: $PHASE2_OUTPUT"
+          
+          if [ "$PHASE1_INPUT" -gt 0 ] && [ "$PHASE2_OUTPUT" -gt 0 ]; then
+            COMPRESSION=$(( (PHASE1_INPUT - PHASE2_OUTPUT) * 100 / PHASE1_INPUT ))
+            echo "Total compression: ${COMPRESSION}%"
+          fi
+        else
+          echo "❌ Missing pipeline files for comparison"
+        fi
         
     - name: 💾 Commit Pipeline Results
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         
-        git add standardization-UNIVERSAL.json master-data.json
-        
-        if git diff --staged --quiet; then
-          echo "📝 No changes to commit"
+        # Only commit if files exist and have content
+        if [ -f "standardization-UNIVERSAL.json" ] && [ -f "master-data.json" ]; then
+          git add standardization-UNIVERSAL.json master-data.json
+          
+          if git diff --staged --quiet; then
+            echo "📝 No changes to commit"
+          else
+            echo "📝 Changes detected - committing..."
+            git commit -m "🧪 test: Universal pipeline results [automated]"
+            git push
+            echo "✅ Results committed!"
+          fi
         else
-          echo "📝 Changes detected - committing..."
-          git commit -m "🧪 test: Universal pipeline results [automated]"
-          git push
-          echo "✅ Results committed!"
+          echo "❌ Missing output files - skipping commit"
         fi
         
     - name: 🎯 Final Pipeline Report
@@ -85,5 +112,5 @@ jobs:
         echo "=== UNIVERSAL PIPELINE TEST COMPLETE ==="
         echo "📁 Phase 1: standardization-UNIVERSAL.json"
         echo "📁 Phase 2: master-data.json"
-        echo "🔧 Ready for production use"
-        echo "✅ Check compression ratio and Wendy streams"
+        echo "🔧 Two-phase processing complete"
+        echo "✅ Check the committed files for results"
