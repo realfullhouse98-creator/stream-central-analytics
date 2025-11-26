@@ -43,12 +43,73 @@ class SupplierCircuitBreaker {
 }
 
 // Initialize circuit breakers
-// Initialize circuit breakers
 const circuitBreakers = {
     tom: new SupplierCircuitBreaker('tom'),
     sarah: new SupplierCircuitBreaker('sarah'),
-    wendy: new SupplierCircuitBreaker('wendy') // ← NEW LINE
+    wendy: new SupplierCircuitBreaker('wendy')
 };
+
+// ADDED: Cleanup function - deletes backups older than 24 hours
+function cleanupOldBackups() {
+    // Step 1: Look for backup folder
+    const backupDir = './suppliers/backups';
+    if (!fs.existsSync(backupDir)) return;
+    
+    // Step 2: Get all backup files
+    const files = fs.readdirSync(backupDir);
+    const now = Date.now();
+    const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+    
+    console.log('🗑️ Cleaning up backups older than 24 hours...');
+    
+    let deletedCount = 0;
+    
+    // Step 3: Check each file
+    files.forEach(file => {
+        const filePath = path.join(backupDir, file);
+        try {
+            const stats = fs.statSync(filePath);
+            
+            // Step 4: If file is older than 24 hours, delete it
+            if (now - stats.mtimeMs > maxAge) {
+                fs.unlinkSync(filePath);
+                console.log(`   Deleted: ${file}`);
+                deletedCount++;
+            }
+        } catch (error) {
+            console.log(`   Could not delete ${file}:`, error.message);
+        }
+    });
+    
+    console.log(`✅ Cleanup complete: ${deletedCount} old backups deleted`);
+}
+
+// ADDED: Recovery function - restores from backup when API fails
+function restoreFromBackup(supplierName) {
+    // Step 1: Look for backup folder
+    const backupDir = './suppliers/backups';
+    if (!fs.existsSync(backupDir)) return false;
+    
+    // Step 2: Find all backup files for this supplier
+    const files = fs.readdirSync(backupDir)
+        .filter(f => f.startsWith(`${supplierName}-data-`))
+        .sort()
+        .reverse(); // Most recent first
+    
+    // Step 3: If found, restore from latest backup
+    if (files.length > 0) {
+        const latestBackup = path.join(backupDir, files[0]);
+        const currentFile = `./suppliers/${supplierName}-data.json`;
+        
+        // Step 4: Copy backup file to current file
+        fs.copyFileSync(latestBackup, currentFile);
+        console.log(`✅ Restored ${supplierName} from backup: ${files[0]}`);
+        return true;
+    }
+    
+    console.log(`❌ No backup found for ${supplierName}`);
+    return false;
+}
 
 async function fetchWithTimeout(url, timeout = 8000) {
     const controller = new AbortController();
@@ -171,63 +232,48 @@ async function updateAllSuppliers() {
                 };
             }
         },
-        // In update-suppliers.js - Add to suppliers array:
-{
-  name: 'wendy',  // ---------------WENDY HAS 14-SPORTS GENRE ADD MORE--------------
-  urls: [
-      'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/all'
-  //  'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/tennis',
-  //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/football', 
- //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/hockey',
-//     'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/baseball',
- //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/fighting',
-//     'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/golf',
-//     'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/american-football',
-  //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/darts',
- //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/rugby',
- //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/volleyball',
-  //   'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/racing',
- //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/australian-football',
- //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/basketball',
- //    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/cricket'
-  ],
-  processor: (data) => {
-    const matches = Array.isArray(data) ? data : [];
-    const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
-    
-    console.log(`🔍 WENDY ALL SPORTS: ${matches.length} total matches, ${matchesWithStreams} with streams`);
-    
-    // Count by sport for debugging
-    const sportCounts = {};
-    matches.forEach(match => {
-      const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
-      sportCounts[sport] = (sportCounts[sport] || 0) + 1;
-    });
-    
-    console.log('🏆 Wendy sport breakdown:', sportCounts);
-    
-    // Show sample of matches with streams
-    const matchesWithStreamsSample = matches.filter(m => m.streams && m.streams.length > 0).slice(0, 3);
-    if (matchesWithStreamsSample.length > 0) {
-      console.log('📺 Sample matches with streams:');
-      matchesWithStreamsSample.forEach(match => {
-        console.log(`   ${match.sportCategory}: ${match.title} - ${match.streams.length} streams`);
-      });
-    }
-    
-    return {
-      matches: matches,
-      _metadata: {
-        supplier: 'wendy',
-        lastUpdated: new Date().toISOString(),
-        matchCount: matches.length,
-        matchesWithStreams: matchesWithStreams,
-        totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
-        dataHash: require('crypto').createHash('md5').update(JSON.stringify(matches)).digest('hex')
-      }
-    };
-  }
-}
+        {
+            name: 'wendy',
+            urls: [
+                'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/all'
+            ],
+            processor: (data) => {
+                const matches = Array.isArray(data) ? data : [];
+                const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
+                
+                console.log(`🔍 WENDY ALL SPORTS: ${matches.length} total matches, ${matchesWithStreams} with streams`);
+                
+                // Count by sport for debugging
+                const sportCounts = {};
+                matches.forEach(match => {
+                    const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
+                    sportCounts[sport] = (sportCounts[sport] || 0) + 1;
+                });
+                
+                console.log('🏆 Wendy sport breakdown:', sportCounts);
+                
+                // Show sample of matches with streams
+                const matchesWithStreamsSample = matches.filter(m => m.streams && m.streams.length > 0).slice(0, 3);
+                if (matchesWithStreamsSample.length > 0) {
+                    console.log('📺 Sample matches with streams:');
+                    matchesWithStreamsSample.forEach(match => {
+                        console.log(`   ${match.sportCategory}: ${match.title} - ${match.streams.length} streams`);
+                    });
+                }
+                
+                return {
+                    matches: matches,
+                    _metadata: {
+                        supplier: 'wendy',
+                        lastUpdated: new Date().toISOString(),
+                        matchCount: matches.length,
+                        matchesWithStreams: matchesWithStreams,
+                        totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
+                        dataHash: require('crypto').createHash('md5').update(JSON.stringify(matches)).digest('hex')
+                    }
+                };
+            }
+        }
     ];
 
     const results = {
@@ -243,25 +289,24 @@ async function updateAllSuppliers() {
         fs.mkdirSync('./suppliers', { recursive: true });
     }
 
-   await Promise.all(suppliers.map(async (supplier) => {
-    const circuitBreaker = circuitBreakers[supplier.name];
-    
-    // 🆕 ADDED DEBUG LINE
-    console.log(`🔧 ${supplier.name} circuit breaker state:`, circuitBreaker.state);
-    
-    // Check circuit breaker
-    if (!circuitBreaker.canExecute()) {
-        console.log(`   ⚡ Circuit breaker active - skipping ${supplier.name}`);
-        results.skipped.push(supplier.name);
-        results.details[supplier.name] = {
-            success: false,
-            error: 'Circuit breaker open',
-            skipped: true
-        };
-        return;
-    }
+    await Promise.all(suppliers.map(async (supplier) => {
+        const circuitBreaker = circuitBreakers[supplier.name];
+        
+        console.log(`🔧 ${supplier.name} circuit breaker state:`, circuitBreaker.state);
+        
+        // Check circuit breaker
+        if (!circuitBreaker.canExecute()) {
+            console.log(`   ⚡ Circuit breaker active - skipping ${supplier.name}`);
+            results.skipped.push(supplier.name);
+            results.details[supplier.name] = {
+                success: false,
+                error: 'Circuit breaker open',
+                skipped: true
+            };
+            return;
+        }
 
-    console.log(`🔍 Updating ${supplier.name.toUpperCase()}...`);
+        console.log(`🔍 Updating ${supplier.name.toUpperCase()}...`);
         
         let lastError = null;
         let success = false;
@@ -320,6 +365,11 @@ async function updateAllSuppliers() {
         if (!success) {
             console.log(`   🚨 ALL PROXIES FAILED for ${supplier.name}`);
             circuitBreaker.recordFailure();
+            
+            // ADDED: Attempt to restore from backup when API fails
+            console.log(`   🔄 Attempting to restore ${supplier.name} from backup...`);
+            restoreFromBackup(supplier.name);
+            
             results.failed.push(supplier.name);
             results.details[supplier.name] = {
                 success: false,
@@ -367,6 +417,9 @@ async function updateAllSuppliers() {
     
     // Write enhanced results to file
     fs.writeFileSync('./suppliers/update-results.json', JSON.stringify(results, null, 2));
+    
+    // ADDED: Clean up old backups after update completes
+    cleanupOldBackups();
     
     return results;
 }
