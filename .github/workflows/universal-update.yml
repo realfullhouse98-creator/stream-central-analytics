@@ -1,0 +1,83 @@
+name: 🔄 Universal Data Pipeline
+
+on:
+  schedule:
+    - cron: '*/60 * * * *'  # Every 60 minutes
+  workflow_dispatch:        # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  universal-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+        
+    - name: 📋 Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: 🐛 Debug Data Flow
+      run: |
+        echo "=== FILE STRUCTURE ==="
+        find . -name "*.json" -path "*/suppliers/*" -o -name "master-data.json" | head -20
+        
+        echo "=== SUPPLIER FILE SIZES ==="
+        ls -la suppliers/*.json
+        
+        echo "=== CHECK SUPPLIER DATA ==="
+        echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
+        echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
+        echo "Wendy records:" $(jq '.matches | length' suppliers/wendy-data.json 2>/dev/null || echo "FAILED")
+        
+    - name: 🔄 Update All Suppliers
+      run: node scripts/update-suppliers.js
+      
+    - name: 🚀 PHASE 1: Universal Standardization
+      run: node scripts/universal-standardizer.js
+      
+    - name: 🚀 PHASE 2: Advanced Processing
+      run: node scripts/phase2-processor.js
+      
+    - name: ✅ Verify Final Output
+      run: |
+        echo "=== FINAL VERIFICATION ==="
+        echo "Master file exists:" $(test -f "master-data.json" && echo "YES" || echo "NO")
+        echo "File size:" $(wc -c < master-data.json)
+        echo "Total matches:" $(jq '.matches | length' master-data.json)
+        echo "Wendy streams found:" $(grep -c "spiderembed" master-data.json)
+        
+        echo "=== PIPELINE SUMMARY ==="
+        echo "Phase 1 (Standardization): Creates standardization-UNIVERSAL.json"
+        echo "Phase 2 (Processing): Creates master-data.json"
+        echo "Universal System: Ready for 20+ suppliers"
+        
+    - name: 📝 Commit and Push Changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # Add all changed files
+        git add master-data.json suppliers/ standardization-UNIVERSAL.json
+        
+        echo "=== GIT STATUS ==="
+        git status
+        
+        echo "=== CHECKING FOR CHANGES ==="
+        if git diff --staged --quiet; then
+          echo "📝 No changes to commit - files are unchanged"
+        else
+          echo "📝 Changes detected - committing..."
+          git commit -m "🔄 chore: universal data update [automated - $(date +%Y%m%d_%H%M%S)]"
+          echo "🚀 Pushing changes to repository..."
+          git push
+          echo "✅ Changes committed and pushed successfully!"
+        fi
