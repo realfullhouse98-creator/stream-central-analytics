@@ -1,0 +1,43 @@
+name: 🧪 Test Universal Pipeline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v3
+      
+    - name: 📋 Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: 🚀 Run Phase 1
+      run: node scripts/universal-standardizer.js
+      
+    - name: 🚀 Run Phase 2  
+      run: node scripts/phase2-processor.js
+      
+    - name: ✅ Check Results
+      run: |
+        echo "=== FINAL CHECK ==="
+        echo "Master file exists:" $(test -f "master-data.json" && echo "YES" || echo "NO")
+        echo "File size:" $(wc -c < master-data.json)
+        echo "Total matches:" $(jq '.matches | length' master-data.json)
+        echo "Wendy streams found:" $(grep -c "spiderembed" master-data.json)
+        
+    - name: 💾 Save Results
+      run: |
+        git config user.email "actions@github.com"
+        git config user.name "GitHub Actions"
+        git add master-data.json
+        git commit -m "🤖 Update master data" || echo "No changes"
+        git push
