@@ -1,4 +1,4 @@
-name: 🧪 Test Phase 1 Standardization
+name: 🧪 Test Universal Standardizer
 
 on:
   workflow_dispatch:  # Manual trigger only
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 jobs:
-  test-phase1:
+  test-universal-standardizer:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     
@@ -18,75 +18,55 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
         
-    - name: 📋 Setup Node.js (Simple)
+    - name: 📋 Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        # REMOVED cache: 'npm' - we don't have package.json
         
     - name: 🔍 Check Files Before Processing
       run: |
         echo "=== CHECKING SUPPLIER FILES ==="
         ls -la suppliers/*.json
-        echo "Tom file size:" $(wc -c < suppliers/tom-data.json)
-        echo "Sarah file size:" $(wc -c < suppliers/sarah-data.json) 
-        echo "Wendy file size:" $(wc -c < suppliers/wendy-data.json)
-        
-        echo "=== CHECKING SCRIPTS ==="
-        ls -la scripts/*.js
+        echo "=== CHECKING MODULES ==="
         ls -la modules/*.js
         
-    - name: 🚀 Run Phase 1 Standardization
-      run: node scripts/phase1-standardizer.js
+    - name: 🚀 Run Universal Standardizer
+      run: node scripts/universal-standardizer.js
       
-    - name: ✅ Check Phase 1 Results
+    - name: ✅ Check Universal Standardizer Results
       run: |
-        echo "=== CHECKING PHASE 1 OUTPUT ==="
-        ls -la standardization-TEST.json
-        echo "File size:" $(wc -c < standardization-TEST.json)
+        echo "=== CHECKING UNIVERSAL OUTPUT ==="
+        ls -la standardization-UNIVERSAL.json
+        echo "File size:" $(wc -c < standardization-UNIVERSAL.json)
         
-        echo "=== QUICK DATA CHECK ==="
-        echo "Total matches:" $(jq '.summary.total_matches' standardization-TEST.json)
-        echo "Tom matches:" $(jq '.summary.tom_matches' standardization-TEST.json)
-        echo "Sarah matches:" $(jq '.summary.sarah_matches' standardization-TEST.json)
-        echo "Wendy matches:" $(jq '.summary.wendy_matches' standardization-TEST.json)
+        echo "=== UNIVERSAL DATA CHECK ==="
+        echo "Total matches:" $(jq '.summary.after_processing.total' standardization-UNIVERSAL.json)
+        echo "Tom matches:" $(jq '.summary.after_processing.tom' standardization-UNIVERSAL.json)
+        echo "Sarah matches:" $(jq '.summary.after_processing.sarah' standardization-UNIVERSAL.json)
+        echo "Wendy matches:" $(jq '.summary.after_processing.wendy' standardization-UNIVERSAL.json)
         
-        echo "=== WENDY STREAMS CHECK ==="
-        jq '.matches[] | select(.source == "wendy") | .sources.wendy | length' standardization-TEST.json | head -5
-        echo "Wendy matches with streams:" $(jq '.matches[] | select(.source == "wendy") | .sources.wendy | length' standardization-TEST.json | grep -v "0" | wc -l)
+        echo "=== DATA LOSS CHECK ==="
+        echo "Total data loss:" $(jq '.summary.data_loss.total_loss' standardization-UNIVERSAL.json)
         
-    - name: 📊 Compare with Current System
-      run: |
-        echo "=== COMPARISON WITH CURRENT SYSTEM ==="
-        if [ -f "master-data.json" ]; then
-          echo "Current master matches:" $(jq '.matches | length' master-data.json)
-          echo "Current Wendy streams found:" $(grep -c "spiderembed" master-data.json || echo "0")
-        else
-          echo "No master-data.json found for comparison"
-        fi
-        
-        echo "=== PHASE 1 WENDY STREAMS ==="
-        grep -c "spiderembed" standardization-TEST.json || echo "0"
-        
-    - name: 💾 Commit Test Results
+    - name: 💾 Commit Universal Results
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         
-        git add standardization-TEST.json
+        git add standardization-UNIVERSAL.json
         
         if git diff --staged --quiet; then
           echo "📝 No changes to commit"
         else
           echo "📝 Changes detected - committing..."
-          git commit -m "🧪 test: Phase 1 standardization results [automated]"
+          git commit -m "🧪 test: Universal standardizer results [automated]"
           git push
           echo "✅ Results committed!"
         fi
         
     - name: 🎯 Final Report
       run: |
-        echo "=== PHASE 1 TEST COMPLETE ==="
-        echo "📁 Output: standardization-TEST.json"
-        echo "🔧 Check the file for standardized data"
-        echo "✅ Compare Wendy streams with current system"
+        echo "=== UNIVERSAL STANDARDIZER TEST COMPLETE ==="
+        echo "📁 Output: standardization-UNIVERSAL.json"
+        echo "🔧 Ready for 20+ suppliers with field mapping"
+        echo "✅ Check data loss report in the file"
