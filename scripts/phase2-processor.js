@@ -14,14 +14,14 @@ class Phase2Processor {
         this.startTime = Date.now();
         
         // LOWER MERGE THRESHOLDS (below 30% as requested)
-        this.sportConfigs = {
-            'Tennis': { mergeThreshold: 0.25, timeWindow: 480 },
-            'Football': { mergeThreshold: 0.20, timeWindow: 600 },
-            'Basketball': { mergeThreshold: 0.25, timeWindow: 600 },
-            'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
-            'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
-            'default': { mergeThreshold: 0.20, timeWindow: 480 }
-        };
+       this.sportConfigs = {
+    'Tennis': { mergeThreshold: 0.15, timeWindow: 480 },        // ↓ from 0.25
+    'Football': { mergeThreshold: 0.10, timeWindow: 600 },      // ↓ from 0.20
+    'Basketball': { mergeThreshold: 0.15, timeWindow: 600 },    // ↓ from 0.25
+    'American Football': { mergeThreshold: 0.15, timeWindow: 600 }, // ↓ from 0.25
+    'Ice Hockey': { mergeThreshold: 0.15, timeWindow: 600 },    // ↓ from 0.25
+    'default': { mergeThreshold: 0.10, timeWindow: 480 }        // ↓ from 0.20
+};
 
         // Cache for performance
         this.teamNormalizationCache = new Map();
