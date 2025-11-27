@@ -13,19 +13,53 @@ class Phase2Processor {
         };
         this.startTime = Date.now();
         
-        // LOWER MERGE THRESHOLDS (below 30% as requested)
-       this.sportConfigs = {
-    'Tennis': { mergeThreshold: 0.15, timeWindow: 480 },        // ↓ from 0.25
-    'Football': { mergeThreshold: 0.10, timeWindow: 600 },      // ↓ from 0.20
-    'Basketball': { mergeThreshold: 0.15, timeWindow: 600 },    // ↓ from 0.25
-    'American Football': { mergeThreshold: 0.15, timeWindow: 600 }, // ↓ from 0.25
-    'Ice Hockey': { mergeThreshold: 0.15, timeWindow: 600 },    // ↓ from 0.25
-    'default': { mergeThreshold: 0.10, timeWindow: 480 }        // ↓ from 0.20
-};
+        this.sportConfigs = {
+            'Tennis': { mergeThreshold: 0.25, timeWindow: 480 },
+            'Football': { mergeThreshold: 0.20, timeWindow: 600 },
+            // ... other sports
+        };
 
         // Cache for performance
         this.teamNormalizationCache = new Map();
     }
+
+    // 🚨 ADD THIS NEW METHOD TO BLOCK BAD MERGES:
+    areClearlyDifferent(matchA, matchB) {
+        if (!matchA.match || !matchB.match) return false;
+        
+        // Block Portugal U17 from merging with Lincoln vs Port Vale
+        if (matchA.match.includes('Portugal U17') && 
+            (matchB.match.includes('Lincoln') || matchB.match.includes('Port Vale'))) {
+            console.log(`   ❌ BLOCKED: Portugal U17 vs Lincoln/Port Vale`);
+            return true;
+        }
+        
+        // Block if teams are completely different
+        const teamsA = this.extractTeams(matchA.match);
+        const teamsB = this.extractTeams(matchB.match);
+        
+        if (teamsA.team1 && teamsB.team1 && 
+            teamsA.team1 !== teamsB.team1 && 
+            teamsA.team2 !== teamsB.team1) {
+            console.log(`   ❌ BLOCKED: Different teams "${teamsA.team1}" vs "${teamsB.team1}"`);
+            return true;
+        }
+        
+        return false;
+    }
+
+    extractTeams(matchText) {
+        if (!matchText) return { team1: '', team2: '' };
+        const vsIndex = matchText.indexOf(' vs ');
+        if (vsIndex === -1) return { team1: matchText, team2: '' };
+        
+        return {
+            team1: matchText.substring(0, vsIndex).trim(),
+            team2: matchText.substring(vsIndex + 4).trim()
+        };
+    }
+
+    // ... REST OF YOUR EXISTING METHODS (processStandardizedData, etc.)
 
     async processStandardizedData() {
         console.log('🚀 STARTING PHASE 2 - ADVANCED PROCESSING\n');
@@ -173,63 +207,54 @@ class Phase2Processor {
         return clusters;
     }
 
-    calculateMatchScore(matchA, matchB, sport) {
-        // Allow same-source merges for Wendy (since we want to merge Wendy streams)
-        if (matchA.source === matchB.source && matchA.source !== 'wendy') {
-            return 0;
-        }
-        
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-
-        // Time window check (commented out like in current processor)
-        /*
-        const timeDiff = Math.abs(matchA.unix_timestamp - matchB.unix_timestamp);
-        if (timeDiff > sportConfig.timeWindow * 60) {
-            return 0;
-        }
-        */
-        
-        // Normalize team names for comparison
-        const normalizeTeams = (teams) => {
-            if (this.teamNormalizationCache.has(teams)) {
-                return this.teamNormalizationCache.get(teams);
-            }
-            const normalized = teams.replace(/ vs /g, ' - ').replace(/\s+/g, ' ').trim().toLowerCase();
-            this.teamNormalizationCache.set(teams, normalized);
-            return normalized;
-        };
-        
-        const textA = normalizeTeams(matchA.match) + ' ' + (matchA.tournament || '');
-        const textB = normalizeTeams(matchB.match) + ' ' + (matchB.tournament || '');
-        
-        // Advanced tokenization
-        const tokensA = this.advancedTokenize(textA);
-        const tokensB = this.advancedTokenize(textB);
-        
-        const common = tokensA.filter(tA => 
-            tokensB.some(tB => this.tokensMatch(tA, tB))
-        );
-        
-        let score = common.length / Math.max(tokensA.length, tokensB.length);
-        
-        // Boost score for Wendy matches
-        if (matchA.source === 'wendy' || matchB.source === 'wendy') {
-            score += 0.1;
-        }
-        
-        if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
-            score += 0.15;
-        }
-
-        // Debug for specific matches
-        if ((matchA.match && matchA.match.includes('Pyramids')) && 
-            (matchB.match && matchB.match.includes('Pyramids'))) {
-            console.log(`   🔍 PYRAMIDS DEBUG: "${matchA.match}" (${matchA.source}) vs "${matchB.match}" (${matchB.source})`);
-            console.log(`      Score: ${score.toFixed(2)}`);
-        }
-        
-        return Math.min(1.0, score);
+   calculateMatchScore(matchA, matchB, sport) {
+    // 🚨 ADD THIS VALIDATION AT THE VERY BEGINNING:
+    if (this.areClearlyDifferent(matchA, matchB)) {
+        return 0; // BLOCK the merge completely
     }
+    
+    // KEEP ALL YOUR EXISTING CODE BELOW:
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+    
+    // ALLOW SAME-SOURCE MERGES FOR WENDY ONLY
+    if (matchA.source === matchB.source && matchA.source !== 'wendy') {
+        return 0;
+    }
+    
+    // Normalize team names for comparison
+    const normalizeTeams = (teams) => {
+        if (this.teamNormalizationCache.has(teams)) {
+            return this.teamNormalizationCache.get(teams);
+        }
+        const normalized = teams.replace(/ vs /g, ' - ').replace(/\s+/g, ' ').trim().toLowerCase();
+        this.teamNormalizationCache.set(teams, normalized);
+        return normalized;
+    };
+    
+    const textA = normalizeTeams(matchA.match) + ' ' + (matchA.tournament || '');
+    const textB = normalizeTeams(matchB.match) + ' ' + (matchB.tournament || '');
+    
+    // Advanced tokenization
+    const tokensA = this.advancedTokenize(textA);
+    const tokensB = this.advancedTokenize(textB);
+    
+    const common = tokensA.filter(tA => 
+        tokensB.some(tB => this.tokensMatch(tA, tB))
+    );
+    
+    let score = common.length / Math.max(tokensA.length, tokensB.length);
+    
+    // Boost score for Wendy matches
+    if (matchA.source === 'wendy' || matchB.source === 'wendy') {
+        score += 0.1;
+    }
+    
+    if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
+        score += 0.15;
+    }
+
+    return Math.min(1.0, score);
+}
 
     advancedTokenize(text) {
         return text
@@ -262,6 +287,31 @@ class Phase2Processor {
     }
 
     mergeCluster(cluster, sport) {
+
+          // 🚨 ADD THIS DEBUG CODE AT THE VERY BEGINNING:
+    console.log(`\n🔍 MERGING CLUSTER (${cluster.length} matches):`);
+    cluster.forEach((match, index) => {
+        console.log(`   ${index + 1}. Source: ${match.source}, Match: "${match.match}"`);
+        if (match.sources && match.sources[match.source]) {
+            console.log(`      Streams: ${match.sources[match.source].length}`);
+            // Show first stream URL to identify the match
+            if (match.sources[match.source][0]) {
+                console.log(`      Sample: ${match.sources[match.source][0]}`);
+            }
+        }
+    });
+    
+    // Check if this is the problematic merge
+    const hasPortugalU17 = cluster.some(m => m.match && m.match.includes('Portugal U17'));
+    const hasWrongTeams = cluster.some(m => m.match && (m.match.includes('Lincoln') || m.match.includes('Port Vale')));
+    
+    if (hasPortugalU17 && hasWrongTeams) {
+        console.log(`   🚨 CRITICAL BUG: Merging Portugal U17 with wrong teams!`);
+        console.log(`   🚨 THIS CLUSTER SHOULD BE SPLIT!`);
+    }
+    // 🚨 END OF DEBUG CODE
+
+        
         const baseMatch = cluster[0];
         
         // Collect all streams from all sources in the cluster
