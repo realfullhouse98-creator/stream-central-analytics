@@ -319,7 +319,7 @@ async function updateAllSuppliers() {
         {
             name: 'wendy',
             urls: [
-                'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/wendy/all'
+                'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
             ],
             processor: (data) => {
                 const matches = Array.isArray(data) ? data : [];
