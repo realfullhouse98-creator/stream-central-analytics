@@ -355,10 +355,15 @@ function cleanupOldBackups() {
 async function fetchWithProfessionalRetry(url, supplierName, maxRetries = 3) {
     let lastError;
     
+    // 🎯 WENDY FIX: No retries for Wendy worker URLs
+    if (supplierName === 'wendy' && url.includes('workers.dev')) {
+        maxRetries = 1; // Wendy worker should work or fail fast
+    }
+    
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), supplierName === 'wendy' ? 15000 : 10000);
             
             console.log(`   🔄 Attempt ${attempt}/${maxRetries}: ${new URL(url).hostname}`);
             
@@ -491,43 +496,61 @@ async function updateAllSuppliers() {
             }
         },
         {
-            name: 'wendy',
-            urls: [
-                'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all',
-                'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/combined-matches'
-            ],
-            processor: (data) => {
-                const matches = Array.isArray(data) ? data : [];
-                const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
-                const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
-                
-                console.log(`🔍 WENDY ALL SPORTS: ${matches.length} total matches, ${matchesWithStreams} with streams`);
-                
-                // Count by sport for debugging
-                const sportCounts = {};
-                matches.forEach(match => {
-                    const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
-                    sportCounts[sport] = (sportCounts[sport] || 0) + 1;
-                });
-                
-                console.log('🏆 Wendy sport breakdown:', sportCounts);
-                
-                return {
-                    matches: matches,
-                    _metadata: {
-                        supplier: 'wendy',
-                        lastUpdated: new Date().toISOString(),
-                        matchCount: matches.length,
-                        matchesWithStreams: matchesWithStreams,
-                        totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
-                        dataHash: checksum,
-                        professional: true,
-                        version: '2.0'
-                    }
-                };
-            }
+    name: 'wendy',
+    urls: [
+        'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
+    ],
+    processor: (data) => {
+        // 🎯 FIX: Handle both direct data and worker response format
+        let matches = [];
+        
+        if (Array.isArray(data)) {
+            matches = data; // Direct array from worker
+        } else if (data && Array.isArray(data.matches)) {
+            matches = data.matches; // Worker wrapped response
+        } else if (data && data.data && Array.isArray(data.data)) {
+            matches = data.data; // Worker enhanced response
         }
-    ];
+        
+        const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
+        const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
+        
+        console.log(`🔍 WENDY PROCESSED: ${matches.length} total matches, ${matchesWithStreams} with streams`);
+        
+        if (matches.length > 0) {
+            // Count by sport for debugging
+            const sportCounts = {};
+            matches.forEach(match => {
+                const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
+                sportCounts[sport] = (sportCounts[sport] || 0) + 1;
+            });
+            console.log('🏆 Wendy sport breakdown:', sportCounts);
+            
+            // Show sample matches
+            console.log('📺 Sample Wendy matches:');
+            matches.slice(0, 3).forEach(match => {
+                console.log(`   ${match.sportCategory || 'unknown'}: ${match.title || match.match || 'unknown'} - ${match.streams ? match.streams.length : 0} streams`);
+            });
+        } else {
+            console.log('❌ WENDY WARNING: No matches found in response');
+            console.log('   Data structure:', Object.keys(data || {}));
+        }
+        
+        return {
+            matches: matches,
+            _metadata: {
+                supplier: 'wendy',
+                lastUpdated: new Date().toISOString(),
+                matchCount: matches.length,
+                matchesWithStreams: matchesWithStreams,
+                totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
+                dataHash: checksum,
+                professional: true,
+                version: '2.0'
+            }
+        };
+    }
+}
 
     const results = {
         startTime: new Date().toISOString(),
