@@ -1,4 +1,4 @@
-// api.js - CORRECTED VERSION
+// api.js - UPDATED WITH WENDY
 const API_CONFIG = {
     // TOM (Working)
     TOM: {
@@ -6,26 +6,28 @@ const API_CONFIG = {
         ENDPOINTS: {
             ALL_MATCHES: '/api.php?format=json'
         }
-    }, // ← MISSING COMMA HERE
+    },
     
-   // CORRECT Sarah API configuration
-SARAH: {
-    BASE_URL: 'https://streamed.pk',  // ← CHANGED FROM embedsports.top!
-    ENDPOINTS: {
-        ALL_MATCHES: '/api/matches/all',
-        SPORT_MATCHES: '/api/matches/{sport}',
-        LIVE_MATCHES: '/api/matches/live',
-        TODAY_MATCHES: '/api/matches/all-today'
-    }
-}, 
-    
-    // FOOTY (NEW)
-    FOOTY: {
-        BASE_URL: 'https://watchfooty.live',
+    // SARAH (Updated)
+    SARAH: {
+        BASE_URL: 'https://streamed.pk',
         ENDPOINTS: {
-            ALL_MATCHES: '/api/v1/matches/football',
+            ALL_MATCHES: '/api/matches/all',
+            SPORT_MATCHES: '/api/matches/{sport}',
+            LIVE_MATCHES: '/api/matches/live',
+            TODAY_MATCHES: '/api/matches/all-today'
+        }
+    },
+    
+    // WENDY (NEW - WatchFooty.st)
+    WENDY: {
+        BASE_URL: 'https://watchfooty.st',
+        PROXY_BASE: 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev',
+        ENDPOINTS: {
+            SPORTS: '/api/v1/sports',
             SPORT_MATCHES: '/api/v1/matches/{sport}',
-            MATCH_DETAILS: '/api/v1/match/{id}'
+            ALL_MATCHES: '/wendy/all',  // Your proxy endpoint
+            ALL_SPORTS: '/wendy/sports' // Get available sports
         }
     }
 };
