@@ -605,7 +605,6 @@ async function updateAllSuppliers() {
             }
         };
     }
-}
 
     const results = {
         startTime: new Date().toISOString(),
