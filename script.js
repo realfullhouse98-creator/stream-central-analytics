@@ -821,45 +821,66 @@ class MatchScheduler {
     }
 
     async loadMatches() {
-        console.log('🔍 Loading from GitHub master file...');
+    console.log('🎯 PRIMARY: Loading from MASTER FILE...');
+    
+    // 🥇 PRIORITY 1: MASTER FILE (TRUTH)
+    try {
+        const masterUrl = 'https://raw.githubusercontent.com/realfullhouse98-creator/stream-central-analytics/main/master-data.json';
+        console.log('🔄 Trying master file:', masterUrl);
         
-        const testUrl = 'https://raw.githubusercontent.com/realfullhouse98-creator/stream-central-analytics/main/master-data.json';
+        const response = await fetch(masterUrl, { 
+            cache: 'no-cache',
+            headers: { 'Accept': 'application/json' }
+        });
         
-        try {
-            const response = await fetch(testUrl);
-            console.log('✅ GitHub master file status:', response.status);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ MASTER FILE SUCCESS! Loaded:', data.matches?.length, 'matches');
             
-            if (response.ok) {
-                const data = await response.json();
-                console.log('✅ SUCCESS! Master file loaded:', data.matches?.length, 'matches');
-                this.convertMasterToAppFormat(data);
-                return true;
-            } else {
-                console.log('❌ GitHub file not OK:', response.status);
-            }
-        } catch (error) {
-            console.log('❌ GitHub master file error:', error);
+            // Convert master data to our app format
+            this.convertMasterToAppFormat(data);
+            return true;
+        } else {
+            console.log('❌ Master file not OK:', response.status);
+            throw new Error(`HTTP ${response.status}`);
         }
-        
-        // Fallback to direct APIs
-        console.log('🔄 Falling back to direct APIs...');
-        
-        const cachedData = this.getCachedData();
-        if (cachedData) {
-            console.log('📦 Using cached data');
-            this.organizeMatches(cachedData);
-            return;
-        }
-        
-        try {
-            const apiData = await this.tryAllProxies();
-            this.organizeMatches(apiData);
-            this.cacheData(apiData);
-        } catch (error) {
-            console.warn('❌ All API attempts failed:', error);
-            this.useFallbackData();
-        }
+    } catch (error) {
+        console.log('❌ Master file failed:', error.message);
     }
+    
+    // 🥈 PRIORITY 2: CLIENT-SIDE CACHE
+    console.log('🔄 Falling back to CACHE...');
+    const cachedData = this.getCachedData();
+    if (cachedData) {
+        console.log('📦 Using cached data');
+        this.organizeMatches(cachedData);
+        return true;
+    }
+    
+    // 🥉 PRIORITY 3: UNIFIED PROXY (Direct APIs)
+    console.log('🔄 Falling back to UNIFIED PROXY...');
+    try {
+        const proxyData = await fetchUnifiedMatches();
+        const processedMatches = processUnifiedData(proxyData);
+        
+        this.allMatches = processedMatches;
+        this.verifiedMatches = processedMatches;
+        
+        console.log('✅ Proxy success:', this.verifiedMatches.length, 'matches');
+        this.cacheData(proxyData); // Save to cache for next time
+        this.updateAnalytics();
+        this.isDataLoaded = true;
+        return true;
+        
+    } catch (error) {
+        console.log('❌ Proxy failed:', error.message);
+    }
+    
+    // 🚨 PRIORITY 4: DEMO CONTENT
+    console.log('🚨 Using DEMO CONTENT');
+    this.useFallbackData();
+    return true;
+}
 
    convertMasterToAppFormat(masterData) {
     console.log('🔄 Converting master data to app format...');
