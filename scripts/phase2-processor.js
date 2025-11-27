@@ -13,10 +13,21 @@ class Phase2Processor {
         };
         this.startTime = Date.now();
         
+        // 🚨 FIX: ADD ALL SPORTS THAT APPEAR IN YOUR DATA
         this.sportConfigs = {
             'Tennis': { mergeThreshold: 0.25, timeWindow: 480 },
             'Football': { mergeThreshold: 0.20, timeWindow: 600 },
-            // ... other sports
+            'Basketball': { mergeThreshold: 0.25, timeWindow: 600 }, // ← ADD THIS
+            'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
+            'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
+            'Baseball': { mergeThreshold: 0.25, timeWindow: 600 },   // ← ADD THIS
+            'Soccer': { mergeThreshold: 0.20, timeWindow: 600 },     // ← ADD THIS
+            'Rugby': { mergeThreshold: 0.25, timeWindow: 600 },      // ← ADD THIS
+            'Cricket': { mergeThreshold: 0.25, timeWindow: 600 },    // ← ADD THIS
+            'Boxing': { mergeThreshold: 0.25, timeWindow: 480 },     // ← ADD THIS
+            'MMA': { mergeThreshold: 0.25, timeWindow: 480 },        // ← ADD THIS
+            'Motorsports': { mergeThreshold: 0.25, timeWindow: 600 }, // ← ADD THIS
+            'default': { mergeThreshold: 0.20, timeWindow: 480 }
         };
 
         // Cache for performance
@@ -116,21 +127,26 @@ class Phase2Processor {
     }
 
     groupBySport(matches) {
-        const sportGroups = {};
-        
-        matches.forEach(match => {
-            const sport = match.sport;
-            if (!sportGroups[sport]) {
-                sportGroups[sport] = [];
-                this.results.sportBreakdown[sport] = 0;
-            }
+    const sportGroups = {};
+    
+    matches.forEach(match => {
+        const sport = match.sport;
+        if (!sportGroups[sport]) {
+            sportGroups[sport] = [];
+            this.results.sportBreakdown[sport] = 0;
             
-            sportGroups[sport].push(match);
-            this.results.sportBreakdown[sport]++;
-        });
+            // 🚨 DEBUG: Check if sport is in config
+            if (!this.sportConfigs[sport]) {
+                console.log(`   ⚠️  WARNING: Sport "${sport}" not in config, using default`);
+            }
+        }
         
-        return sportGroups;
-    }
+        sportGroups[sport].push(match);
+        this.results.sportBreakdown[sport]++;
+    });
+    
+    return sportGroups;
+}
 
     processSport(sport, matches) {
         console.log(`   🔍 Looking for duplicates in ${sport}...`);
