@@ -437,10 +437,54 @@ function atomicWriteFile(filePath, data) {
     }
 }
 
+// 🎯 TEMPORARY DEBUG FUNCTION FOR WENDY
+async function testWendyWorker() {
+    console.log('🧪 TESTING WENDY WORKER DIRECTLY...');
+    try {
+        const response = await fetch('https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all');
+        console.log(`   HTTP Status: ${response.status}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log(`   Data type: ${Array.isArray(data) ? 'Array' : typeof data}`);
+            console.log(`   Data keys: ${Object.keys(data)}`);
+            
+            if (Array.isArray(data)) {
+                console.log(`   Array length: ${data.length}`);
+                if (data.length > 0) {
+                    console.log('   First item keys:', Object.keys(data[0]));
+                    console.log('   First item sample:', {
+                        title: data[0].title,
+                        sport: data[0].sportCategory,
+                        streams: data[0].streams ? data[0].streams.length : 0
+                    });
+                }
+            } else if (data.matches) {
+                console.log(`   Matches length: ${data.matches.length}`);
+                if (data.matches.length > 0) {
+                    console.log('   First match keys:', Object.keys(data.matches[0]));
+                }
+            } else if (data.data) {
+                console.log(`   Data array length: ${data.data.length}`);
+            }
+            
+            // Show full response structure for debugging
+            console.log('   Full response sample:', JSON.stringify(data, null, 2).substring(0, 300) + '...');
+        } else {
+            console.log(`   ❌ Worker returned HTTP ${response.status}`);
+        }
+    } catch (error) {
+        console.log(`   💥 Worker test failed: ${error.message}`);
+    }
+}
 // 🎯 ENHANCED: Main update function with professional features
 async function updateAllSuppliers() {
     console.log('🔒 PROFESSIONAL SUPPLIER UPDATE - STARTING\n');
     console.log('⏰', new Date().toISOString(), '\n');
+
+       // 🎯 TEMPORARY: Test Wendy worker before proceeding
+    await testWendyWorker();
+    console.log('\n'); // Add space after test
     
     const suppliers = [
         {
