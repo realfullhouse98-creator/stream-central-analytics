@@ -316,11 +316,12 @@ async function updateAllSuppliers() {
                 };
             }
         },
-        {
-            name: 'wendy',
-            urls: [
-                'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
-            ],
+      {
+  name: 'wendy',
+  urls: [
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all',
+    'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/combined-matches' // Fallback
+  ],
             processor: (data) => {
                 const matches = Array.isArray(data) ? data : [];
                 const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
