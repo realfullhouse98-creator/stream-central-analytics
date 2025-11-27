@@ -177,8 +177,8 @@ class Phase2Processor {
             return normalized;
         };
         
-        const textA = normalizeTeams(matchA.match) + ' ' + (matchA.tournament || '');
-        const textB = normalizeTeams(matchB.match) + ' ' + (matchB.tournament || '');
+        //const textA = normalizeTeams(matchA.match) + ' ' + (matchA.tournament || '');
+        //const textB = normalizeTeams(matchB.match) + ' ' + (matchB.tournament || '');
         
         const tokensA = this.advancedTokenize(textA);
         const tokensB = this.advancedTokenize(textB);
