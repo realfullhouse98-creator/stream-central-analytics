@@ -591,37 +591,39 @@ async function updateAllSuppliers() {
         const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
         const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
         
-        return {
-            matches: matches,
-            _metadata: {
-                supplier: 'wendy',
-                lastUpdated: new Date().toISOString(),
-                matchCount: matches.length,
-                matchesWithStreams: matchesWithStreams,
-                totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
-                dataHash: checksum,
-                professional: true,
-                version: '2.0'
-            }
-        };
-    }
-
-    const results = {
-        startTime: new Date().toISOString(),
+  return {
+    matches: matches,
+    _metadata: {
+        supplier: 'wendy',
+        lastUpdated: new Date().toISOString(),
+        matchCount: matches.length,
+        matchesWithStreams: matchesWithStreams,
+        totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
+        dataHash: checksum,
         professional: true,
-        version: '2.0',
-        updated: [],
-        failed: [],
-        skipped: [],
-        details: {},
-        circuitBreakers: {},
-        integrity: {
-            totalAttempted: 0,
-            successful: 0,
-            failed: 0,
-            recovered: 0
-        }
-    };
+        version: '2.0'
+    }
+};
+    }
+}  
+]; 
+
+const results = {
+    startTime: new Date().toISOString(),
+    professional: true,
+    version: '2.0',
+    updated: [],
+    failed: [],
+    skipped: [],
+    details: {},
+    circuitBreakers: {},
+    integrity: {
+        totalAttempted: 0,
+        successful: 0,
+        failed: 0,
+        recovered: 0
+    }
+};
 
     // 🎯 ENSURE DIRECTORY STRUCTURE
     if (!fs.existsSync('./suppliers')) {
