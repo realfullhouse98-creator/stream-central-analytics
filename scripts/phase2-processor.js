@@ -15,20 +15,22 @@ class Phase2Processor {
         
         // 🚨 FIX: ADD ALL SPORTS THAT APPEAR IN YOUR DATA
         this.sportConfigs = {
-            'Tennis': { mergeThreshold: 0.25, timeWindow: 480 },
-            'Football': { mergeThreshold: 0.20, timeWindow: 600 },
-            'Basketball': { mergeThreshold: 0.25, timeWindow: 600 }, // ← ADD THIS
-            'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
-            'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
-            'Baseball': { mergeThreshold: 0.25, timeWindow: 600 },   // ← ADD THIS
-            'Soccer': { mergeThreshold: 0.20, timeWindow: 600 },     // ← ADD THIS
-            'Rugby': { mergeThreshold: 0.25, timeWindow: 600 },      // ← ADD THIS
-            'Cricket': { mergeThreshold: 0.25, timeWindow: 600 },    // ← ADD THIS
-            'Boxing': { mergeThreshold: 0.25, timeWindow: 480 },     // ← ADD THIS
-            'MMA': { mergeThreshold: 0.25, timeWindow: 480 },        // ← ADD THIS
-            'Motorsports': { mergeThreshold: 0.25, timeWindow: 600 }, // ← ADD THIS
-            'default': { mergeThreshold: 0.20, timeWindow: 480 }
-        };
+    'Tennis': { mergeThreshold: 0.25, timeWindow: 480 },
+    'Football': { mergeThreshold: 0.20, timeWindow: 600 },
+    'Basketball': { mergeThreshold: 0.25, timeWindow: 600 }, // ← ADDED
+    'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
+    'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
+    'Baseball': { mergeThreshold: 0.25, timeWindow: 600 },   // ← ADDED
+    'Soccer': { mergeThreshold: 0.20, timeWindow: 600 },     // ← ADDED (same as Football)
+    'Rugby': { mergeThreshold: 0.25, timeWindow: 600 },      // ← ADDED
+    'Cricket': { mergeThreshold: 0.25, timeWindow: 600 },    // ← ADDED
+    'Boxing': { mergeThreshold: 0.25, timeWindow: 480 },     // ← ADDED
+    'MMA': { mergeThreshold: 0.25, timeWindow: 480 },        // ← ADDED
+    'Motorsports': { mergeThreshold: 0.25, timeWindow: 600 }, // ← ADDED
+    'Volleyball': { mergeThreshold: 0.25, timeWindow: 600 }, // ← ADDED
+    'Handball': { mergeThreshold: 0.25, timeWindow: 600 },   // ← ADDED
+    'default': { mergeThreshold: 0.20, timeWindow: 480 }
+};
 
         // Cache for performance
         this.teamNormalizationCache = new Map();
@@ -188,40 +190,68 @@ class Phase2Processor {
 
     // === ALL MERGING LOGIC FROM SIMPLE-SPORTS-PROCESSOR ===
     findAndMergeMatches(matches, sport) {
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-        const clusters = [];
-        const processed = new Set();
+    // 🚨 FIX: Use safe config access with fallback
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+    if (!sportConfig) {
+        console.log(`   ❌ ERROR: No config for sport "${sport}" and no default config!`);
+        // Return each match as individual cluster
+        return matches.map(match => [match]);
+    }
+    
+    const clusters = [];
+    const processed = new Set();
+    
+    console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
+    
+    // DEBUG: Find specific matches we're looking for
+    const portugalMatches = matches.filter(m => m.match && m.match.includes('Portugal U17'));
+    if (portugalMatches.length > 0) {
+        console.log(`   🔍 Found ${portugalMatches.length} Portugal U17 matches in ${sport}`);
+        portugalMatches.forEach((m, i) => {
+            console.log(`      ${i+1}. Source: ${m.source}, Match: "${m.match}"`);
+        });
+    }
+    
+    const progress = this.createProgressIndicator(matches.length, 'Finding duplicates');
+    
+    for (let i = 0; i < matches.length; i++) {
+        if (processed.has(i)) continue;
         
-        console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
+        const cluster = [matches[i]];
+        processed.add(i);
         
-        const progress = this.createProgressIndicator(matches.length, 'Finding duplicates');
-        
-        for (let i = 0; i < matches.length; i++) {
-            if (processed.has(i)) continue;
+        for (let j = i + 1; j < matches.length; j++) {
+            if (processed.has(j)) continue;
             
-            const cluster = [matches[i]];
-            processed.add(i);
-            
-            for (let j = i + 1; j < matches.length; j++) {
-                if (processed.has(j)) continue;
+            const score = this.calculateMatchScore(matches[i], matches[j], sport);
+            if (score >= sportConfig.mergeThreshold) {
+                cluster.push(matches[j]);
+                processed.add(j);
                 
-                const score = this.calculateMatchScore(matches[i], matches[j], sport);
-                if (score >= sportConfig.mergeThreshold) {
-                    cluster.push(matches[j]);
-                    processed.add(j);
-                    
-                    if (cluster.length === 2) { // Only log first merge
-                        console.log(`   🔗 ${sport} MERGE: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(2)})`);
-                    }
+                // Log first few merges to show it's working
+                if (cluster.length === 2 && clusters.length < 3) {
+                    console.log(`   🔗 ${sport} MERGE: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(2)})`);
+                }
+                
+                // Special debug for Portugal U17
+                if (matches[i].match && matches[i].match.includes('Portugal U17') && 
+                    matches[j].match && matches[j].match.includes('Portugal U17')) {
+                    console.log(`   🎯 PORTUGAL U17 MERGE FOUND! Score: ${score.toFixed(2)}`);
                 }
             }
-            
-            clusters.push(cluster);
-            progress.increment();
         }
         
-        return clusters;
+        clusters.push(cluster);
+        progress.increment();
     }
+    
+    // Log cluster summary
+    const mergedClusters = clusters.filter(c => c.length > 1).length;
+    const individualClusters = clusters.filter(c => c.length === 1).length;
+    console.log(`   📊 ${sport} clustering: ${mergedClusters} merged, ${individualClusters} individual`);
+    
+    return clusters;
+}
 
    calculateMatchScore(matchA, matchB, sport) {
     // 🚨 ADD THIS VALIDATION AT THE VERY BEGINNING:
