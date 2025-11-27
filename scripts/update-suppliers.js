@@ -545,40 +545,51 @@ async function updateAllSuppliers() {
         'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
     ],
     processor: (data) => {
-        // 🎯 FIX: Handle both direct data and worker response format
+        console.log('🔍 WENDY RAW DATA RECEIVED:', Object.keys(data || {}));
+        
+        // 🎯 HANDLE ALL POSSIBLE WENDY RESPONSE FORMATS
         let matches = [];
         
         if (Array.isArray(data)) {
-            matches = data; // Direct array from worker
+            matches = data; // Direct array
+            console.log('   Format: Direct array');
         } else if (data && Array.isArray(data.matches)) {
-            matches = data.matches; // Worker wrapped response
+            matches = data.matches; // { matches: [] }
+            console.log('   Format: matches array');
         } else if (data && data.data && Array.isArray(data.data)) {
-            matches = data.data; // Worker enhanced response
+            matches = data.data; // { data: [] }
+            console.log('   Format: data array');
+        } else if (data && Array.isArray(data)) {
+            matches = data; // Fallback
+            console.log('   Format: Fallback array');
+        } else {
+            console.log('   ❌ Unknown Wendy format:', typeof data);
+            // Try to extract any array from the data
+            if (data && typeof data === 'object') {
+                Object.values(data).forEach(value => {
+                    if (Array.isArray(value)) {
+                        matches = value;
+                        console.log('   Found array in key:', Object.keys(data).find(key => data[key] === value));
+                    }
+                });
+            }
+        }
+        
+        console.log(`   Extracted ${matches.length} matches`);
+        
+        if (matches.length > 0) {
+            // Show what we actually got
+            console.log('   First match structure:', Object.keys(matches[0]));
+            console.log('   Sample match:', {
+                title: matches[0].title,
+                id: matches[0].id,
+                sport: matches[0].sportCategory || matches[0].sport,
+                streams: matches[0].streams ? matches[0].streams.length : 0
+            });
         }
         
         const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
         const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
-        
-        console.log(`🔍 WENDY PROCESSED: ${matches.length} total matches, ${matchesWithStreams} with streams`);
-        
-        if (matches.length > 0) {
-            // Count by sport for debugging
-            const sportCounts = {};
-            matches.forEach(match => {
-                const sport = match.sportCategory || match.sport || match.wendySport || 'unknown';
-                sportCounts[sport] = (sportCounts[sport] || 0) + 1;
-            });
-            console.log('🏆 Wendy sport breakdown:', sportCounts);
-            
-            // Show sample matches
-            console.log('📺 Sample Wendy matches:');
-            matches.slice(0, 3).forEach(match => {
-                console.log(`   ${match.sportCategory || 'unknown'}: ${match.title || match.match || 'unknown'} - ${match.streams ? match.streams.length : 0} streams`);
-            });
-        } else {
-            console.log('❌ WENDY WARNING: No matches found in response');
-            console.log('   Data structure:', Object.keys(data || {}));
-        }
         
         return {
             matches: matches,
@@ -824,6 +835,7 @@ function getPreviousResults() {
     return { details: {} };
 }
 
+// Run if called directly
 // Run if called directly
 if (require.main === module) {
     updateAllSuppliers().catch(error => {
