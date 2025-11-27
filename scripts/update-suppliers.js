@@ -353,6 +353,15 @@ function cleanupOldBackups() {
 
 // 🎯 ENHANCED: Professional Fetch with Retry Logic
 async function fetchWithProfessionalRetry(url, supplierName, maxRetries = 3) {
+
+    // 🎯 WENDY FIX: No retries needed for worker URLs
+    if (supplierName === 'wendy' && url.includes('workers.dev')) {
+        maxRetries = 1; // Worker either works or doesn't
+        console.log(`   🎯 Wendy worker - single attempt`);
+    }
+
+
+    
     let lastError;
     
     // 🎯 WENDY FIX: No retries for Wendy worker URLs
@@ -483,8 +492,8 @@ async function updateAllSuppliers() {
     console.log('⏰', new Date().toISOString(), '\n');
 
        // 🎯 TEMPORARY: Test Wendy worker before proceeding
-    await testWendyWorker();
-    console.log('\n'); // Add space after test
+   // await testWendyWorker();
+   // console.log('\n'); // Add space after test
     
     const suppliers = [
         {
@@ -539,74 +548,47 @@ async function updateAllSuppliers() {
                 };
             }
         },
-        {
+{
     name: 'wendy',
     urls: [
         'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
     ],
     processor: (data) => {
-        console.log('🔍 WENDY RAW DATA RECEIVED:', Object.keys(data || {}));
+        console.log('🔍 WENDY DATA RECEIVED - Format: Direct Array');
+        console.log(`   Raw data length: ${Array.isArray(data) ? data.length : 'Not array'}`);
         
-        // 🎯 HANDLE ALL POSSIBLE WENDY RESPONSE FORMATS
-        let matches = [];
+        // 🎯 WENDY IS RETURNING DIRECT ARRAY - NO NEED FOR COMPLEX EXTRACTION
+        const matches = Array.isArray(data) ? data : [];
         
-        if (Array.isArray(data)) {
-            matches = data; // Direct array
-            console.log('   Format: Direct array');
-        } else if (data && Array.isArray(data.matches)) {
-            matches = data.matches; // { matches: [] }
-            console.log('   Format: matches array');
-        } else if (data && data.data && Array.isArray(data.data)) {
-            matches = data.data; // { data: [] }
-            console.log('   Format: data array');
-        } else if (data && Array.isArray(data)) {
-            matches = data; // Fallback
-            console.log('   Format: Fallback array');
-        } else {
-            console.log('   ❌ Unknown Wendy format:', typeof data);
-            // Try to extract any array from the data
-            if (data && typeof data === 'object') {
-                Object.values(data).forEach(value => {
-                    if (Array.isArray(value)) {
-                        matches = value;
-                        console.log('   Found array in key:', Object.keys(data).find(key => data[key] === value));
-                    }
-                });
-            }
-        }
-        
-        console.log(`   Extracted ${matches.length} matches`);
+        console.log(`   Processing ${matches.length} matches`);
         
         if (matches.length > 0) {
-            // Show what we actually got
-            console.log('   First match structure:', Object.keys(matches[0]));
-            console.log('   Sample match:', {
+            console.log('   First match sample:', {
                 title: matches[0].title,
-                id: matches[0].id,
-                sport: matches[0].sportCategory || matches[0].sport,
-                streams: matches[0].streams ? matches[0].streams.length : 0
+                sport: matches[0].sport,
+                streams: matches[0].streams ? matches[0].streams.length : 0,
+                date: matches[0].date
             });
         }
         
         const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
         const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
         
-  return {
-    matches: matches,
-    _metadata: {
-        supplier: 'wendy',
-        lastUpdated: new Date().toISOString(),
-        matchCount: matches.length,
-        matchesWithStreams: matchesWithStreams,
-        totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
-        dataHash: checksum,
-        professional: true,
-        version: '2.0'
+        return {
+            matches: matches,
+            _metadata: {
+                supplier: 'wendy',
+                lastUpdated: new Date().toISOString(),
+                matchCount: matches.length,
+                matchesWithStreams: matchesWithStreams,
+                totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
+                dataHash: checksum,
+                professional: true,
+                version: '2.0'
+            }
+        };
     }
-};
-    }
-}  
-]; 
+}
 
 const results = {
     startTime: new Date().toISOString(),
