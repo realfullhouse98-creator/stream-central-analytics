@@ -413,7 +413,8 @@ const suppliers = [
         }
     };
 }
-
+    }
+];
 // 🎯 MAIN UPDATE FUNCTION
 async function updateAllSuppliers() {
     console.log('🔒 PROFESSIONAL SUPPLIER UPDATE - STARTING\n');
