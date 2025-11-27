@@ -257,12 +257,13 @@ class Phase2Processor {
             }
             
             if (match.sources.wendy) {
-                match.sources.wendy.forEach(stream => {
-                    if (stream.includes('spiderembed') && !allSources.wendy.includes(stream)) {
-                        allSources.wendy.push(stream);
-                    }
-                });
-            }
+            match.sources.wendy.forEach(stream => {
+                // 🎯 FIX: Include ALL Wendy streams, not just spiderembed
+                if (!allSources.wendy.includes(stream)) {
+                    allSources.wendy.push(stream);
+                }
+            });
+        }
         });
 
         return {
