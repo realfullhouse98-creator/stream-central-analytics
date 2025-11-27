@@ -83,10 +83,16 @@ function createVerifiedBackup(supplierName) {
         } else if (supplierName === 'sarah' && Array.isArray(parsedData)) {
             matchCount = parsedData.length;
             hasContent = parsedData.length > 0;
-        } else if (supplierName === 'wendy' && parsedData.matches) {
-            matchCount = parsedData.matches.length;
-            hasContent = parsedData.matches.length > 0;
-        }
+        } else if (supplierName === 'wendy') {
+    // 🎯 FIX: Check both array formats
+    if (Array.isArray(parsedData)) {
+        matchCount = parsedData.length;
+        hasContent = parsedData.length > 0;
+    } else if (parsedData.matches) {
+        matchCount = parsedData.matches.length;
+        hasContent = parsedData.matches.length > 0;
+    }
+}
         
         if (!hasContent) {
             console.log(`   ⚠️ Skipping backup - ${supplierName} data appears empty`);
@@ -202,11 +208,12 @@ function validateSupplierData(data, supplier) {
         }
         matchCount = data.length;
     } else if (supplier === 'wendy') {
-        if (!data.matches || !Array.isArray(data.matches)) {
-            errors.push('Invalid Wendy API format - missing matches array');
-        }
-        matchCount = data.matches ? data.matches.length : 0;
+    // 🎯 FIX: Wendy returns DIRECT ARRAY, not {matches: []}
+    if (!Array.isArray(data)) {
+        errors.push('Wendy should return direct array');
     }
+    matchCount = Array.isArray(data) ? data.length : 0;
+}
     
     return {
         valid: errors.length === 0,
@@ -365,21 +372,12 @@ const suppliers = [
         urls: [
             'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
         ],
-        processor: (data) => {
-            console.log('🔍 WENDY DATA RECEIVED - Processing...');
-            
-            // 🎯 SIMPLE WENDY PROCESSOR - HANDLES DIRECT ARRAY
-            let matches = [];
-            if (Array.isArray(data)) {
-                matches = data;
-                console.log('   Format: Direct array');
-            } else if (data && Array.isArray(data.matches)) {
-                matches = data.matches;
-                console.log('   Format: matches array');
-            } else {
-                console.log('   ❌ Unknown format, using empty array');
-            }
-            
+         processor: (data) => {
+    console.log('🔍 WENDY - Processing DIRECT ARRAY');
+    
+    // 🎯 FIX: Wendy ALWAYS returns DIRECT ARRAY
+    const matches = Array.isArray(data) ? data : [];
+    console.log(`   Got ${matches.length} matches directly from array`);
             console.log(`   Processed ${matches.length} matches`);
             
             const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
