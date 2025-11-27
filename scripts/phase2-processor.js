@@ -37,29 +37,49 @@ class Phase2Processor {
     }
 
     // 🚨 ADD THIS NEW METHOD TO BLOCK BAD MERGES:
-    areClearlyDifferent(matchA, matchB) {
-        if (!matchA.match || !matchB.match) return false;
+areClearlyDifferent(matchA, matchB) {
+    if (!matchA.match || !matchB.match) return false;
+    
+    // 🚨 CRITICAL: Only block OBVIOUSLY wrong merges
+    const teamsA = this.extractTeams(matchA.match);
+    const teamsB = this.extractTeams(matchB.match);
+    
+    // If both teams are completely different in both positions, block
+    if (teamsA.team1 && teamsB.team1 && teamsA.team2 && teamsB.team2) {
+        const team1Match = teamsA.team1 === teamsB.team1 || teamsA.team1 === teamsB.team2;
+        const team2Match = teamsA.team2 === teamsB.team1 || teamsA.team2 === teamsB.team2;
         
-        // Block Portugal U17 from merging with Lincoln vs Port Vale
-        if (matchA.match.includes('Portugal U17') && 
-            (matchB.match.includes('Lincoln') || matchB.match.includes('Port Vale'))) {
-            console.log(`   ❌ BLOCKED: Portugal U17 vs Lincoln/Port Vale`);
+        // If NO teams match at all, block the merge
+        if (!team1Match && !team2Match) {
+            console.log(`   ❌ BLOCKED: Completely different teams "${matchA.match}" vs "${matchB.match}"`);
             return true;
         }
-        
-        // Block if teams are completely different
-        const teamsA = this.extractTeams(matchA.match);
-        const teamsB = this.extractTeams(matchB.match);
-        
-        if (teamsA.team1 && teamsB.team1 && 
-            teamsA.team1 !== teamsB.team1 && 
-            teamsA.team2 !== teamsB.team1) {
-            console.log(`   ❌ BLOCKED: Different teams "${teamsA.team1}" vs "${teamsB.team1}"`);
-            return true;
-        }
-        
-        return false;
     }
+    
+    // 🚨 SPECIFIC BLOCKS for known bad merges:
+    // Block Portugal U17 from merging with Lincoln vs Port Vale
+    if ((matchA.match.includes('Portugal U17') && (matchB.match.includes('Lincoln') || matchB.match.includes('Port Vale'))) ||
+        (matchB.match.includes('Portugal U17') && (matchA.match.includes('Lincoln') || matchA.match.includes('Port Vale')))) {
+        console.log(`   ❌ BLOCKED: Portugal U17 vs Lincoln/Port Vale`);
+        return true;
+    }
+    
+    // Block different age groups (U17 vs U23)
+    if ((matchA.match.includes('U17') && matchB.match.includes('U23')) ||
+        (matchA.match.includes('U23') && matchB.match.includes('U17'))) {
+        console.log(`   ❌ BLOCKED: Different age groups U17 vs U23`);
+        return true;
+    }
+    
+    // Block completely different sports patterns
+    if ((matchA.match.includes('NBA') && matchB.match.includes('UEFA')) ||
+        (matchA.match.includes('NFL') && matchB.match.includes('Champions League'))) {
+        console.log(`   ❌ BLOCKED: Different league patterns`);
+        return true;
+    }
+    
+    return false;
+}
 
     extractTeams(matchText) {
         if (!matchText) return { team1: '', team2: '' };
@@ -258,7 +278,17 @@ class Phase2Processor {
     if (this.areClearlyDifferent(matchA, matchB)) {
         return 0; // BLOCK the merge completely
     }
-    
+         // 🎯 ADD PORTUGAL U17 DEBUG RIGHT HERE:
+    if (matchA.match && matchA.match.includes('Portugal U17') && 
+        matchB.match && matchB.match.includes('Portugal U17')) {
+        console.log(`\n🎯 PORTUGAL U17 COMPARISON:`);
+        console.log(`   Match A: "${matchA.match}" (${matchA.source})`);
+        console.log(`   Match B: "${matchB.match}" (${matchB.source})`);
+        console.log(`   Tournament A: "${matchA.tournament}"`);
+        console.log(`   Tournament B: "${matchB.tournament}"`);
+        console.log(`   Time A: ${matchA.unix_timestamp}, Time B: ${matchB.unix_timestamp}`);
+    }
+       
     // KEEP ALL YOUR EXISTING CODE BELOW:
     const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
     
