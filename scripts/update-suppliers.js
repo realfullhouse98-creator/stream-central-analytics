@@ -372,53 +372,47 @@ const suppliers = [
         urls: [
             'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
         ],
-         processor: (data) => {
+       processor: (data) => {
     console.log('🔍 WENDY - Processing DIRECT ARRAY');
     
-    // 🎯 FIX: Wendy ALWAYS returns DIRECT ARRAY
     const matches = Array.isArray(data) ? data : [];
     console.log(`   Got ${matches.length} matches directly from array`);
-
-           // 🎯 ADD DEBUG STREAM COUNTING HERE:
-        let totalStreams = 0;
-        let matchesWithStreams = 0;
-        
-        matches.forEach(match => {
-            if (match.streams && Array.isArray(match.streams)) {
-                totalStreams += match.streams.length;
-                matchesWithStreams++;
-            }
-        });
-        
-        console.log(`   Total streams: ${totalStreams} across ${matchesWithStreams} matches`);
-        
-        if (matches.length > 0) {
-            const sample = matches[0];
-            console.log(`   First match streams: ${sample.streams ? sample.streams.length : 0}`);
+    
+    // 🎯 DEBUG STREAM COUNTING
+    let totalStreams = 0;
+    let matchesThatHaveStreams = 0;  // ← FIXED VARIABLE NAME
+    
+    matches.forEach(match => {
+        if (match.streams && Array.isArray(match.streams)) {
+            totalStreams += match.streams.length;
+            matchesThatHaveStreams++;
         }
-        // 🎯 END DEBUG CODE
-        
-             
-            console.log(`   Processed ${matches.length} matches`);
-            
-            const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
-            const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
-            
-            return {
-                matches: matches,
-                _metadata: {
-                    supplier: 'wendy',
-                    lastUpdated: new Date().toISOString(),
-                    matchCount: matches.length,
-                    matchesWithStreams: matchesWithStreams,
-                    totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
-                    dataHash: checksum,
-                    professional: true
-                }
-            };
-        }
+    });
+    
+    console.log(`   Total streams: ${totalStreams} across ${matchesThatHaveStreams} matches`);
+    
+    if (matches.length > 0) {
+        const sample = matches[0];
+        console.log(`   First match streams: ${sample.streams ? sample.streams.length : 0}`);
     }
-];
+    // 🎯 END DEBUG
+    
+    const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
+    const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
+    
+    return {
+        matches: matches,
+        _metadata: {
+            supplier: 'wendy',
+            lastUpdated: new Date().toISOString(),
+            matchCount: matches.length,
+            matchesWithStreams: matchesWithStreams,
+            totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
+            dataHash: checksum,
+            professional: true
+        }
+    };
+}
 
 // 🎯 MAIN UPDATE FUNCTION
 async function updateAllSuppliers() {
