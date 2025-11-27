@@ -162,43 +162,44 @@ class Phase2Processor {
     }
 
     calculateMatchScore(matchA, matchB, sport) {
-        if (matchA.source === matchB.source && matchA.source !== 'wendy') {
-            return 0;
-        }
-        
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-
-        const normalizeTeams = (teams) => {
-            if (this.teamNormalizationCache.has(teams)) {
-                return this.teamNormalizationCache.get(teams);
-            }
-            const normalized = teams.replace(/ vs /g, ' - ').replace(/\s+/g, ' ').trim().toLowerCase();
-            this.teamNormalizationCache.set(teams, normalized);
-            return normalized;
-        };
-        
-        //const textA = normalizeTeams(matchA.match) + ' ' + (matchA.tournament || '');
-        //const textB = normalizeTeams(matchB.match) + ' ' + (matchB.tournament || '');
-        
-        const tokensA = this.advancedTokenize(textA);
-        const tokensB = this.advancedTokenize(textB);
-        
-        const common = tokensA.filter(tA => 
-            tokensB.some(tB => this.tokensMatch(tA, tB))
-        );
-        
-        let score = common.length / Math.max(tokensA.length, tokensB.length);
-        
-        if (matchA.source === 'wendy' || matchB.source === 'wendy') {
-            score += 0.1;
-        }
-        
-        if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
-            score += 0.15;
-        }
-        
-        return Math.min(1.0, score);
+    if (matchA.source === matchB.source && matchA.source !== 'wendy') {
+        return 0;
     }
+    
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+
+    const normalizeTeams = (teams) => {
+        if (this.teamNormalizationCache.has(teams)) {
+            return this.teamNormalizationCache.get(teams);
+        }
+        const normalized = teams.replace(/ vs /g, ' - ').replace(/\s+/g, ' ').trim().toLowerCase();
+        this.teamNormalizationCache.set(teams, normalized);
+        return normalized;
+    };
+    
+    // 🎯 FIX: KEEP textA and textB VARIABLES!
+    const textA = normalizeTeams(matchA.match);  // REMOVED TOURNAMENT
+    const textB = normalizeTeams(matchB.match);  // REMOVED TOURNAMENT
+    
+    const tokensA = this.advancedTokenize(textA);
+    const tokensB = this.advancedTokenize(textB);
+    
+    const common = tokensA.filter(tA => 
+        tokensB.some(tB => this.tokensMatch(tA, tB))
+    );
+    
+    let score = common.length / Math.max(tokensA.length, tokensB.length);
+    
+    if (matchA.source === 'wendy' || matchB.source === 'wendy') {
+        score += 0.1;
+    }
+    
+    if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
+        score += 0.15;
+    }
+
+    return Math.min(1.0, score);
+}
 
     advancedTokenize(text) {
         return text
