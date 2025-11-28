@@ -25,8 +25,39 @@ class Phase2Processor {
         this.teamNormalizationCache = new Map();
     }
 
+    // 🎯 NEW: Targeted debug method for specific matches
+    debugSpecificMatch(targetMatch = "Elias Ymer vs Mert Alkaya") {
+        console.log(`\n🎯 SPECIFIC DEBUG: "${targetMatch}"`);
+        
+        const standardizedData = this.loadStandardizedData();
+        const targetMatches = standardizedData.matches.filter(m => 
+            m.match && m.match.includes(targetMatch)
+        );
+        
+        console.log(`📦 Found ${targetMatches.length} versions:`);
+        targetMatches.forEach((match, i) => {
+            console.log(`   ${i+1}. ${match.source}: "${match.match}"`);
+            console.log(`      Tournament: "${match.tournament}"`);
+            console.log(`      Time: ${new Date(match.unix_timestamp * 1000).toISOString()}`);
+        });
+        
+        // Check if they would merge
+        if (targetMatches.length >= 2) {
+            console.log(`\n🔍 MERGE ANALYSIS:`);
+            for (let i = 0; i < targetMatches.length; i++) {
+                for (let j = i + 1; j < targetMatches.length; j++) {
+                    const score = this.calculateMatchScore(targetMatches[i], targetMatches[j], 'Tennis');
+                    console.log(`   ${targetMatches[i].source} ↔ ${targetMatches[j].source}: ${score.toFixed(3)}`);
+                }
+            }
+        }
+    }
+
     async processStandardizedData() {
-        console.log('🚀 PHASE 2 - ADVANCED PROCESSING\n');
+        console.log('🚀 PHASE 2 - TARGETED DEBUG\n');
+        
+        // 🎯 CALL DEBUG METHOD FOR SPECIFIC MATCH
+        this.debugSpecificMatch("Elias Ymer vs Mert Alkaya");
         
         try {
             this.results.memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
@@ -162,28 +193,45 @@ class Phase2Processor {
     }
 
     calculateMatchScore(matchA, matchB, sport) {
-         console.log(`\n🔍 DEBUG MERGE CHECK: "${matchA.match}" ↔ "${matchB.match}"`);
-    console.log(`   Sources: ${matchA.source} ↔ ${matchB.source}`);
-    console.log(`   Sport: ${sport}`);
+        // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+        if (matchA.match.includes('Elias Ymer') && matchB.match.includes('Elias Ymer')) {
+            console.log(`\n🎯 ELIAS YMER DEBUG MERGE CHECK:`);
+            console.log(`   "${matchA.match}" ↔ "${matchB.match}"`);
+            console.log(`   Sources: ${matchA.source} ↔ ${matchB.source}`);
+            console.log(`   Sport: ${sport}`);
+        }
+        
         if (matchA.source === matchB.source && matchA.source !== 'wendy') {
             return 0;
         }
         
         const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
 
-        // 🎯 SIMPLIFIED: Focus on player/team names only
         const textA = matchA.match.toLowerCase().trim();
         const textB = matchB.match.toLowerCase().trim();
         
-        console.log(`🔍 COMPARING [${sport}]: "${textA}" ↔ "${textB}"`);
+        // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+        if (matchA.match.includes('Elias Ymer') && matchB.match.includes('Elias Ymer')) {
+            console.log(`🔍 COMPARING [${sport}]: "${textA}" ↔ "${textB}"`);
+        }
         
-        // 🎯 FOR TENNIS: Use exact player matching
         if (sport === 'Tennis') {
             const playersA = this.extractPlayers(textA);
             const playersB = this.extractPlayers(textB);
             
+            // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+            if (matchA.match.includes('Elias Ymer') && matchB.match.includes('Elias Ymer')) {
+                console.log(`   Tennis Players A:`, playersA);
+                console.log(`   Tennis Players B:`, playersB);
+            }
+            
             const playerMatch = playersA.length === playersB.length && 
                                playersA.every((player, idx) => this.playersMatch(player, playersB[idx]));
+            
+            // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+            if (matchA.match.includes('Elias Ymer') && matchB.match.includes('Elias Ymer')) {
+                console.log(`   Tennis Exact Match: ${playerMatch}`);
+            }
             
             if (playerMatch) {
                 console.log(`🎾 TENNIS EXACT MATCH: ${matchA.source} ↔ ${matchB.source} = 1.000`);
@@ -191,7 +239,6 @@ class Phase2Processor {
             }
         }
         
-        // 🎯 USE ADVANCED TOKENIZATION FOR ALL SPORTS
         const tokensA = this.advancedTokenize(textA);
         const tokensB = this.advancedTokenize(textB);
         
@@ -201,54 +248,44 @@ class Phase2Processor {
         
         let score = common.length / Math.max(tokensA.length, tokensB.length);
         
-        // 🎯 TENNIS BONUS: If both matches have tennis player patterns, boost score
         if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
             score += 0.15;
             console.log(`🎾 Tennis pattern bonus applied: +0.15`);
         }
         
-        // 🎯 WENDY BOOST (keep your existing logic)
         if (matchA.source === 'wendy' || matchB.source === 'wendy') {
             score += 0.1;
         }
         
         const finalScore = Math.min(1.0, score);
-        console.log(`   FINAL SCORE: ${finalScore.toFixed(3)}`);
+        
+        // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+        if (matchA.match.includes('Elias Ymer') && matchB.match.includes('Elias Ymer')) {
+            console.log(`   FINAL SCORE: ${finalScore.toFixed(3)}`);
+        }
         
         return finalScore;
     }
 
-    // 🎯 NEW: Extract players for tennis
     extractPlayers(matchText) {
-    console.log(`   extractPlayers input: "${matchText}"`);
-    
-    if (!matchText.includes(' vs ')) {
-        const result = [matchText.split(' ')];
-        console.log(`   extractPlayers output:`, result);
-        return result;
+        if (!matchText.includes(' vs ')) {
+            return [matchText.split(' ')];
+        }
+        return matchText.split(' vs ').map(player => 
+            player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
+        );
     }
-    
-    const result = matchText.split(' vs ').map(player => 
-        player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
-    );
-    
-    console.log(`   extractPlayers output:`, result);
-    return result;
-}
 
-    // 🎯 NEW: Player matching for tennis
     playersMatch(playerA, playerB) {
         if (playerA.length !== playerB.length) return false;
         return playerA.every((token, idx) => this.tokensMatch(token, playerB[idx]));
     }
 
-    // 🎯 4. Tennis Pattern Detection
     hasTennisPlayerPattern(match) {
         const text = match.match || '';
         return /[A-Z]\./.test(text) || /\//.test(text);
     }
 
-    // 🎯 5. Advanced Tokenization for ALL SPORTS
     advancedTokenize(text) {
         return text
             .replace(/[^\w\s-]/g, ' ')
@@ -272,11 +309,6 @@ class Phase2Processor {
         const expandedB = abbreviations[tokenB] || tokenB;
         
         return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
-    }
-
-    hasTennisPlayerPattern(match) {
-        const text = match.match || '';
-        return /[A-Z]\./.test(text) || /\//.test(text);
     }
 
     mergeCluster(cluster, sport) {
@@ -338,7 +370,6 @@ class Phase2Processor {
         };
     }
 
-    // 🎯 NEW: Simple similarity calculation for cluster validation
     calculateSimilarity(matchA, matchB) {
         const textA = matchA.match.toLowerCase();
         const textB = matchB.match.toLowerCase();
@@ -352,12 +383,14 @@ class Phase2Processor {
         return common.length / Math.max(tokensA.length, tokensB.length);
     }
 
-    // 🎯 NEW: Validate Wendy streams belong to this match
     isValidWendyStreamForMatch(streamUrl, matchText) {
         const url = streamUrl.toLowerCase();
         const match = matchText.toLowerCase();
         
-        console.log(`🔍 VALIDATING WENDY STREAM: "${matchText}" ↔ "${streamUrl}"`);
+        // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+        if (matchText.includes('Elias Ymer')) {
+            console.log(`🔍 VALIDATING WENDY STREAM: "${matchText}" ↔ "${streamUrl}"`);
+        }
         
         const players = match.split(' vs ');
         
@@ -365,13 +398,19 @@ class Phase2Processor {
             const nameParts = player.trim().split(' ');
             for (let namePart of nameParts) {
                 if (namePart.length > 3 && url.includes(namePart)) {
-                    console.log(`   ✅ VALID: Found "${namePart}" in URL`);
+                    // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+                    if (matchText.includes('Elias Ymer')) {
+                        console.log(`   ✅ VALID: Found "${namePart}" in URL`);
+                    }
                     return true;
                 }
             }
         }
         
-        console.log(`🚨 INVALID WENDY STREAM: No player names from "${matchText}" found in "${streamUrl}"`);
+        // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+        if (matchText.includes('Elias Ymer')) {
+            console.log(`🚨 INVALID WENDY STREAM: No player names from "${matchText}" found in "${streamUrl}"`);
+        }
         return false;
     }
 
@@ -414,6 +453,15 @@ class Phase2Processor {
             m.sources && m.sources.wendy && m.sources.wendy.length > 0
         );
         console.log(`   Matches with Wendy sources: ${wendySources.length}`);
+
+        // 🎯 SPECIFIC CHECK: Is Elias Ymer merged?
+        const eliasMatches = masterData.matches.filter(m => 
+            m.match && m.match.includes('Elias Ymer') && m.match.includes('Mert Alkaya')
+        );
+        console.log(`   Elias Ymer matches in final: ${eliasMatches.length}`);
+        eliasMatches.forEach(match => {
+            console.log(`     - Sources: ${Object.keys(match.sources).join(', ')} | Merged: ${match.merged}`);
+        });
 
         try {
             const masterDataJson = JSON.stringify(masterData, null, 2);
