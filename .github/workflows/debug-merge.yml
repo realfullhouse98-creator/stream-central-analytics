@@ -1,0 +1,287 @@
+name: 🔍 Debug Sports Data Merging
+on:
+  workflow_dispatch:
+    inputs:
+      target_match:
+        description: 'Specific match to debug (e.g., "Elias Ymer vs Mert Alkaya")'
+        required: false
+        default: 'Elias Ymer vs Mert Alkaya'
+      sport_type:
+        description: 'Sport to analyze'
+        required: false  
+        default: 'Tennis'
+
+jobs:
+  debug-merges:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 🔍 Create Debug Script
+        run: |
+          cat > debug-merge-detailed.js << 'EOF'
+          const fs = require('fs');
+
+          class DetailedMergeDebugger {
+            constructor() {
+              this.loadData();
+            }
+
+            loadData() {
+              try {
+                this.standardized = JSON.parse(fs.readFileSync('./standardization-UNIVERSAL.json', 'utf8'));
+                this.master = JSON.parse(fs.readFileSync('./master-data.json', 'utf8'));
+                console.log('✅ Loaded data files successfully');
+              } catch (error) {
+                console.log('❌ Error loading files:', error.message);
+                process.exit(1);
+              }
+            }
+
+            debugSpecificMatch(matchQuery) {
+              console.log(`\\n🎯 DEBUGGING: "${matchQuery}"`);
+              console.log('=' .repeat(80));
+
+              // Find all versions
+              const versions = this.standardized.matches.filter(m => 
+                m.match.toLowerCase().includes(matchQuery.toLowerCase())
+              );
+
+              if (versions.length === 0) {
+                console.log('❌ No matches found with that query');
+                return;
+              }
+
+              console.log(`\\n📦 FOUND ${versions.length} VERSIONS:`);
+              versions.forEach((match, i) => {
+                console.log(`\\n   --- Version ${i+1} ---`);
+                console.log(`   Source: ${match.source}`);
+                console.log(`   Match: "${match.match}"`);
+                console.log(`   Tournament: "${match.tournament}"`);
+                console.log(`   Time: ${new Date(match.unix_timestamp * 1000).toISOString()}`);
+                console.log(`   Stream URLs: ${Object.values(match.sources).flat().length}`);
+                Object.entries(match.sources).forEach(([source, urls]) => {
+                  if (urls.length > 0) {
+                    console.log(`     ${source}: ${urls.length} streams`);
+                  }
+                });
+              });
+
+              // Check master data
+              const masterMatch = this.master.matches.find(m => 
+                m.match.toLowerCase().includes(matchQuery.toLowerCase())
+              );
+
+              console.log(`\\n🎯 MASTER DATA STATUS:`);
+              if (masterMatch) {
+                console.log(`   ✅ FOUND IN MASTER DATA`);
+                console.log(`   Merged: ${masterMatch.merged ? 'YES' : 'NO'}`);
+                console.log(`   Sources: ${Object.keys(masterMatch.sources).join(', ')}`);
+                console.log(`   Merged Count: ${masterMatch.merged_count || 1}`);
+                console.log(`   Confidence: ${masterMatch.confidence}`);
+              } else {
+                console.log(`   ❌ NOT FOUND IN MASTER DATA - MERGE FAILED`);
+              }
+
+              // Similarity analysis
+              console.log(`\\n🔬 SIMILARITY ANALYSIS BETWEEN VERSIONS:`);
+              for (let i = 0; i < versions.length; i++) {
+                for (let j = i + 1; j < versions.length; j++) {
+                  const score = this.calculateSimilarity(versions[i], versions[j]);
+                  const threshold = this.getSportThreshold(versions[i].sport);
+                  const shouldMerge = score >= threshold;
+                  
+                  console.log(`\\n   ${versions[i].source} ↔ ${versions[j].source}:`);
+                  console.log(`     Similarity Score: ${score.toFixed(3)}`);
+                  console.log(`     Sport Threshold: ${threshold}`);
+                  console.log(`     Merge Recommended: ${shouldMerge ? '✅ YES' : '❌ NO'}`);
+                  
+                  if (!shouldMerge) {
+                    console.log(`     ❌ REASON: Score ${score.toFixed(3)} < Threshold ${threshold}`);
+                  }
+                }
+              }
+
+              // Token-level analysis
+              if (versions.length > 0) {
+                console.log(`\\n🔍 TOKEN-LEVEL ANALYSIS:`);
+                const sample = versions[0];
+                const tokens = this.tokenizeMatch(sample.match);
+                console.log(`   Match: "${sample.match}"`);
+                console.log(`   Tokens: [${tokens.join(', ')}]`);
+              }
+            }
+
+            analyzeSport(sport) {
+              console.log(`\\n🎾 ANALYZING ALL ${sport.toUpperCase()} MATCHES:`);
+              console.log('=' .repeat(80));
+
+              const sportMatches = this.standardized.matches.filter(m => m.sport === sport);
+              const sportMaster = this.master.matches.filter(m => m.sport === sport);
+
+              console.log(`\\n📊 ${sport.toUpperCase()} STATISTICS:`);
+              console.log(`   Standardized: ${sportMatches.length} matches`);
+              console.log(`   Master: ${sportMaster.length} matches`);
+              console.log(`   Merged in Master: ${sportMaster.filter(m => m.merged).length} matches`);
+              console.log(`   Compression: ${((sportMatches.length - sportMaster.length) / sportMatches.length * 100).toFixed(1)}%`);
+
+              // Group by player/team combinations
+              const groups = {};
+              sportMatches.forEach(match => {
+                const key = match.match.toLowerCase().split(' vs ').map(t => t.trim()).sort().join('|');
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(match);
+              });
+
+              const multiVersionGroups = Object.entries(groups).filter(([key, matches]) => matches.length > 1);
+              
+              console.log(`\\n🔍 MULTI-VERSION GROUPS: ${multiVersionGroups.length}`);
+              
+              let failedMerges = 0;
+              multiVersionGroups.forEach(([key, matches]) => {
+                const firstMatch = matches[0];
+                const masterVersion = this.master.matches.find(m => 
+                  m.sport === sport && 
+                  m.match.toLowerCase() === firstMatch.match.toLowerCase()
+                );
+
+                const isMerged = masterVersion && masterVersion.merged && masterVersion.merged_count >= matches.length;
+                
+                if (!isMerged) {
+                  failedMerges++;
+                  console.log(`\\n⚠️  FAILED MERGE: ${firstMatch.match}`);
+                  console.log(`   Sources: ${matches.map(m => m.source).join(', ')}`);
+                  console.log(`   Expected Merge Count: ${matches.length}`);
+                  console.log(`   Actual Merge Count: ${masterVersion ? masterVersion.merged_count : 0}`);
+                  
+                  // Show tournament differences
+                  const tournaments = [...new Set(matches.map(m => m.tournament))];
+                  if (tournaments.length > 1) {
+                    console.log(`   Tournament Variations: ${tournaments.join(' | ')}`);
+                  }
+
+                  // Calculate all similarity scores
+                  matches.forEach((matchA, i) => {
+                    matches.forEach((matchB, j) => {
+                      if (i < j) {
+                        const score = this.calculateSimilarity(matchA, matchB);
+                        const threshold = this.getSportThreshold(sport);
+                        console.log(`   ${matchA.source} ↔ ${matchB.source}: ${score.toFixed(3)} vs threshold ${threshold}`);
+                      }
+                    });
+                  });
+                }
+              });
+
+              console.log(`\\n📈 SUMMARY:`);
+              console.log(`   Total Multi-version Groups: ${multiVersionGroups.length}`);
+              console.log(`   Successfully Merged: ${multiVersionGroups.length - failedMerges}`);
+              console.log(`   Failed Merges: ${failedMerges}`);
+              console.log(`   Merge Success Rate: ${((multiVersionGroups.length - failedMerges) / multiVersionGroups.length * 100).toFixed(1)}%`);
+            }
+
+            calculateSimilarity(matchA, matchB) {
+              const textA = matchA.match.toLowerCase();
+              const textB = matchB.match.toLowerCase();
+              
+              const tokensA = this.advancedTokenize(textA);
+              const tokensB = this.advancedTokenize(textB);
+              
+              const common = tokensA.filter(tA => 
+                tokensB.some(tB => this.tokensMatch(tA, tB))
+              );
+              
+              return common.length / Math.max(tokensA.length, tokensB.length);
+            }
+
+            advancedTokenize(text) {
+              return text
+                .replace(/[^\\w\\s-]/g, ' ')
+                .split(/[\\s\\-]+/)
+                .filter(t => t.length > 2)
+                .map(t => t.toLowerCase());
+            }
+
+            tokensMatch(tokenA, tokenB) {
+              if (tokenA === tokenB) return true;
+              if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
+              
+              const abbreviations = {
+                'fc': 'football club', 'utd': 'united', 'afc': 'association football club'
+              };
+              
+              const expandedA = abbreviations[tokenA] || tokenA;
+              const expandedB = abbreviations[tokenB] || tokenB;
+              
+              return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
+            }
+
+            tokenizeMatch(matchText) {
+              return this.advancedTokenize(matchText);
+            }
+
+            getSportThreshold(sport) {
+              const thresholds = {
+                'Tennis': 0.25,
+                'Football': 0.20,
+                'Basketball': 0.25,
+                'default': 0.20
+              };
+              return thresholds[sport] || thresholds.default;
+            }
+          }
+
+          // Get inputs from GitHub Actions
+          const targetMatch = process.env.TARGET_MATCH || 'Elias Ymer vs Mert Alkaya';
+          const sportType = process.env.SPORT_TYPE || 'Tennis';
+
+          const debugger = new DetailedMergeDebugger();
+          
+          console.log('🚀 SPORTS DATA MERGE DEBUGGER');
+          console.log('=' .repeat(80));
+          
+          // Debug specific match
+          debugger.debugSpecificMatch(targetMatch);
+          
+          // Analyze entire sport
+          debugger.analyzeSport(sportType);
+          
+          console.log('\\n✅ DEBUG COMPLETE');
+          EOF
+
+      - name: 🚀 Run Detailed Debug
+        env:
+          TARGET_MATCH: ${{ github.event.inputs.target_match }}
+          SPORT_TYPE: ${{ github.event.inputs.sport_type }}
+        run: |
+          echo "Starting detailed merge analysis..."
+          node debug-merge-detailed.js
+
+      - name: 📊 Generate Summary Report
+        run: |
+          echo "## 🔍 Merge Debug Report" >> $GITHUB_STEP_SUMMARY
+          echo "### Investigation Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Match:** ${{ github.event.inputs.target_match }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Sport Analyzed:** ${{ github.event.inputs.sport_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Run Time:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Check similarity scores in logs above" >> $GITHUB_STEP_SUMMARY
+          echo "2. Compare against sport thresholds" >> $GITHUB_STEP_SUMMARY
+          echo "3. Adjust thresholds in phase2-processor.js if needed" >> $GITHUB_STEP_SUMMARY
+
+      - name: 💾 Save Debug Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-reports
+          path: |
+            standardization-UNIVERSAL.json
+            master-data.json
+          retention-days: 1
