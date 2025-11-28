@@ -13,14 +13,36 @@ class Phase2Processor {
         };
         this.startTime = Date.now();
         
-     this.sportConfigs = {
+  this.sportConfigs = {
+    // 🎯 STANDARDIZE ALL TO 0.50 FOR CLEAN MERGING
+    'Football': { mergeThreshold: 0.50, timeWindow: 600 },
+    'American Football': { mergeThreshold: 0.50, timeWindow: 600 },
+    'Basketball': { mergeThreshold: 0.50, timeWindow: 600 },
+    'Baseball': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Ice Hockey': { mergeThreshold: 0.50, timeWindow: 600 },
+    'Hockey': { mergeThreshold: 0.50, timeWindow: 600 },
     'Tennis': { mergeThreshold: 0.50, timeWindow: 480 },
-    'Football': { mergeThreshold: 0.20, timeWindow: 600 },
-    'Basketball': { mergeThreshold: 0.25, timeWindow: 600 },
-    'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
-    'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
-    'Volleyball': { mergeThreshold: 0.50, timeWindow: 480 },  // 🆕 ADD THIS LINE
-    'default': { mergeThreshold: 0.20, timeWindow: 480 }
+    'Cricket': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Rugby': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Rugby Union': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Golf': { mergeThreshold: 0.50, timeWindow: 480 },
+    'MMA': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Motosport': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Motor-sports': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Volleyball': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Australian Football': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Aussie Rules': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Darts': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Equestrian': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Handball': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Snooker': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Boxing': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Badminton': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Winter-sports': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Wintersports': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Fighting': { mergeThreshold: 0.50, timeWindow: 480 },
+    'Futsal': { mergeThreshold: 0.50, timeWindow: 480 },
+    'default': { mergeThreshold: 0.50, timeWindow: 480 }  // 🎯 CATCH-ALL
 };
 
         this.teamNormalizationCache = new Map();
