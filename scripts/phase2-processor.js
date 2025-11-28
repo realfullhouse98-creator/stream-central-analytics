@@ -227,6 +227,20 @@ playersMatch(playerA, playerB) {
     return playerA.every((token, idx) => this.tokensMatch(token, playerB[idx]));
 }
 
+    // 🎯 NEW: Simple similarity calculation for cluster validation
+calculateSimilarity(matchA, matchB) {
+    const textA = matchA.match.toLowerCase();
+    const textB = matchB.match.toLowerCase();
+    
+    if (textA === textB) return 1.0;
+    
+    const tokensA = textA.split(/\s+/);
+    const tokensB = textB.split(/\s+/);
+    
+    const common = tokensA.filter(tA => tokensB.includes(tA));
+    return common.length / Math.max(tokensA.length, tokensB.length);
+}
+
     advancedTokenize(text) {
         return text
             .replace(/[^\w\s-]/g, ' ')
@@ -257,53 +271,108 @@ playersMatch(playerA, playerB) {
         return /[A-Z]\./.test(text) || /\//.test(text);
     }
 
-    mergeCluster(cluster, sport) {
-        const baseMatch = cluster[0];
+   mergeCluster(cluster, sport) {
+    const baseMatch = cluster[0];
+    
+    const allSources = {
+        tom: [],
+        sarah: [],
+        wendy: []
+    };
+    
+    // 🚨 CRITICAL FIX: Only add streams from matches that ACTUALLY MATCH
+    cluster.forEach(match => {
+        // 🎯 VERIFY this match actually belongs to the same fixture
+        const isSameFixture = this.calculateSimilarity(baseMatch, match) >= 0.8;
         
-        const allSources = {
-            tom: [],
-            sarah: [],
-            wendy: []
-        };
+        if (!isSameFixture) {
+            console.log(`🚨 SKIPPING WRONG MATCH IN CLUSTER: "${match.match}" vs "${baseMatch.match}"`);
+            return; // Skip this match - it doesn't belong
+        }
         
-        cluster.forEach(match => {
-            if (match.sources.tom) {
-                match.sources.tom.forEach(stream => {
-                    if (stream.includes('topembed.pw') && !allSources.tom.includes(stream)) {
-                        allSources.tom.push(stream);
-                    }
-                });
-            }
-            
-            if (match.sources.sarah) {
-                match.sources.sarah.forEach(stream => {
-                    if (stream.includes('embedsports.top') && !allSources.sarah.includes(stream)) {
-                        allSources.sarah.push(stream);
-                    }
-                });
-            }
-            
-            if (match.sources.wendy) {
+        // Only add streams if it's the same actual match
+        if (match.sources.tom) {
+            match.sources.tom.forEach(stream => {
+                if (stream.includes('topembed.pw') && !allSources.tom.includes(stream)) {
+                    allSources.tom.push(stream);
+                }
+            });
+        }
+        
+        if (match.sources.sarah) {
+            match.sources.sarah.forEach(stream => {
+                if (stream.includes('embedsports.top') && !allSources.sarah.includes(stream)) {
+                    allSources.sarah.push(stream);
+                }
+            });
+        }
+        
+        if (match.sources.wendy) {
             match.sources.wendy.forEach(stream => {
-                // 🎯 FIX: Include ALL Wendy streams, not just spiderembed
-                if (!allSources.wendy.includes(stream)) {
+                // 🎯 ADD WENDY STREAM VALIDATION
+                if (this.isValidWendyStreamForMatch(stream, baseMatch.match) && !allSources.wendy.includes(stream)) {
                     allSources.wendy.push(stream);
                 }
             });
         }
-        });
+    });
 
-        return {
-            unix_timestamp: baseMatch.unix_timestamp,
-            sport: sport,
-            tournament: baseMatch.tournament || '',
-            match: baseMatch.match,
-            sources: allSources,
-            confidence: 0.8,
-            merged: true,
-            merged_count: cluster.length
-        };
+    console.log(`✅ MERGED CLUSTER: "${baseMatch.match}"`);
+    console.log(`   Sources: tom=${allSources.tom.length}, sarah=${allSources.sarah.length}, wendy=${allSources.wendy.length}`);
+
+    return {
+        unix_timestamp: baseMatch.unix_timestamp,
+        sport: sport,
+        tournament: baseMatch.tournament || '',
+        match: baseMatch.match,
+        sources: allSources,
+        confidence: 0.8,
+        merged: true,
+        merged_count: cluster.length
+    };
+}
     }
+
+// 🎯 NEW: Validate Wendy streams belong to this match
+isValidWendyStreamForMatch(streamUrl, matchText) {
+    const url = streamUrl.toLowerCase();
+    const match = matchText.toLowerCase();
+    
+    console.log(`🔍 VALIDATING WENDY STREAM: "${matchText}" ↔ "${streamUrl}"`);
+    
+    // Extract player names from match
+    const players = match.split(' vs ');
+    
+    // Check if ANY player name appears in the URL
+    for (let player of players) {
+        const nameParts = player.trim().split(' ');
+        for (let namePart of nameParts) {
+            if (namePart.length > 3 && url.includes(namePart)) {
+                console.log(`   ✅ VALID: Found "${namePart}" in URL`);
+                return true;
+            }
+        }
+    }
+    
+    console.log(`🚨 INVALID WENDY STREAM: No player names from "${matchText}" found in "${streamUrl}"`);
+    return false;
+}
+
+createFinalMatch(match) {
+
+// 🎯 NEW: Validate Wendy streams belong to this match
+isValidWendyStreamForMatch(streamUrl, matchText) {
+    const normalizedMatch = matchText.toLowerCase().replace(/\s+/g, '-');
+    const players = matchText.toLowerCase().split(' vs ');
+    
+    // Check if stream URL contains any player names from the match
+    return players.some(player => {
+        const playerTokens = player.split(' ');
+        return playerTokens.some(token => 
+            token.length > 3 && streamUrl.includes(token)
+        );
+    });
+}
 
     createFinalMatch(match) {
         return {
