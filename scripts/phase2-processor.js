@@ -1,10 +1,11 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
 /**
  * 🏆 ENTERPRISE SPORTS DATA PROCESSOR - PHASE 2
- * Features: Date-based merging, team normalization, performance optimized
- * Version: 4.0-enterprise
+ * Features: Date-based merging, tournament-aware fingerprinting,
+ * optimized clustering, async file handling
+ * Version: 4.1-enterprise
  */
 class EnterpriseSportsProcessor {
     constructor() {
@@ -18,8 +19,7 @@ class EnterpriseSportsProcessor {
             mergeStatistics: {}
         };
         this.startTime = Date.now();
-        
-        // 🎯 COMPLETE SPORT CONFIGURATION
+
         this.sportConfigs = {
             'Football': { mergeThreshold: 0.50, timeWindow: 600 },
             'American Football': { mergeThreshold: 0.50, timeWindow: 600 },
@@ -51,21 +51,18 @@ class EnterpriseSportsProcessor {
             'default': { mergeThreshold: 0.50, timeWindow: 480 }
         };
 
-        // 🎯 PERFORMANCE CACHES
         this.teamNormalizationCache = new Map();
         this.dateCache = new Map();
         this.similarityCache = new Map();
-        
+
         this.debugEnabled = true;
     }
 
-    // 🎯 DEBUG UTILITIES
     debugLog(category, message, data = null) {
-        if (this.debugEnabled) {
-            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
-            console.log(`🔍 [${timestamp}] ${category}: ${message}`);
-            if (data) console.log(`   📊`, data);
-        }
+        if (!this.debugEnabled) return;
+        const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+        console.log(`🔍 [${timestamp}] ${category}: ${message}`);
+        if (data) console.log(`   📊`, data);
     }
 
     performanceMark(startTime, operation) {
@@ -74,20 +71,17 @@ class EnterpriseSportsProcessor {
         return duration;
     }
 
-    // 🎯 CORE UTILITIES
     getMatchDate(unixTimestamp) {
-        const cached = this.dateCache.get(unixTimestamp);
-        if (cached) return cached;
-        
+        if (!unixTimestamp) return null;
+        if (this.dateCache.has(unixTimestamp)) return this.dateCache.get(unixTimestamp);
         const date = new Date(unixTimestamp * 1000).toISOString().split('T')[0];
         this.dateCache.set(unixTimestamp, date);
         return date;
     }
 
     normalizeTeamName(teamName) {
-        if (this.teamNormalizationCache.has(teamName)) {
-            return this.teamNormalizationCache.get(teamName);
-        }
+        if (!teamName) return '';
+        if (this.teamNormalizationCache.has(teamName)) return this.teamNormalizationCache.get(teamName);
 
         const normalized = teamName
             .toLowerCase()
@@ -111,50 +105,52 @@ class EnterpriseSportsProcessor {
     }
 
     extractTeams(matchText) {
-        if (!matchText.includes(' vs ')) {
-            return [this.normalizeTeamName(matchText)];
-        }
-        
+        if (!matchText.includes(' vs ')) return [this.normalizeTeamName(matchText)];
         const [teamA, teamB] = matchText.split(' vs ');
-        return [
-            this.normalizeTeamName(teamA),
-            this.normalizeTeamName(teamB)
-        ];
+        return [this.normalizeTeamName(teamA), this.normalizeTeamName(teamB)];
     }
 
     hasSameTeams(matchA, matchB) {
-        const cacheKey = `${matchA.match}|${matchB.match}`;
-        if (this.similarityCache.has(cacheKey)) {
-            return this.similarityCache.get(cacheKey);
-        }
+        const key = `${matchA.match}|${matchB.match}`;
+        if (this.similarityCache.has(key)) return this.similarityCache.get(key);
 
         const teamsA = this.extractTeams(matchA.match);
         const teamsB = this.extractTeams(matchB.match);
-        
+
         let result = false;
-        
-        if (teamsA.length !== teamsB.length) {
-            result = false;
-        } else if (teamsA.length === 2 && teamsB.length === 2) {
+        if (teamsA.length === teamsB.length && teamsA.length === 2) {
             result = (teamsA[0] === teamsB[0] && teamsA[1] === teamsB[1]) ||
-                   (teamsA[0] === teamsB[1] && teamsA[1] === teamsB[0]);
+                     (teamsA[0] === teamsB[1] && teamsA[1] === teamsB[0]);
         } else {
-            result = teamsA.every(team => teamsB.includes(team)) && 
-                   teamsB.every(team => teamsA.includes(team));
+            result = teamsA.every(t => teamsB.includes(t)) && teamsB.every(t => teamsA.includes(t));
         }
 
-        this.similarityCache.set(cacheKey, result);
+        this.similarityCache.set(key, result);
         return result;
     }
 
-    // 🎯 TENNIS-SPECIFIC LOGIC
+    advancedTokenize(text) {
+        return text
+            .replace(/[^\w\s-]/g, ' ')
+            .split(/[\s\-]+/)
+            .filter(t => t.length > 2)
+            .map(t => t.toLowerCase());
+    }
+
+    tokensMatch(tokenA, tokenB) {
+        if (tokenA === tokenB) return true;
+        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
+
+        const abbr = { 'fc': 'football club', 'utd': 'united', 'afc': 'association football club', 'vs': 'versus' };
+        const expandedA = abbr[tokenA] || tokenA;
+        const expandedB = abbr[tokenB] || tokenB;
+
+        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
+    }
+
     extractPlayers(matchText) {
-        if (!matchText.includes(' vs ')) {
-            return [matchText.split(' ')];
-        }
-        return matchText.split(' vs ').map(player => 
-            player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
-        );
+        if (!matchText.includes(' vs ')) return [matchText.split(' ')];
+        return matchText.split(' vs ').map(player => player.trim().toLowerCase().split(' ').filter(t => t.length > 1));
     }
 
     playersMatch(playerA, playerB) {
@@ -167,146 +163,85 @@ class EnterpriseSportsProcessor {
         return /[A-Z]\./.test(text) || /\//.test(text);
     }
 
-    // 🎯 TEXT PROCESSING
-    advancedTokenize(text) {
-        return text
-            .replace(/[^\w\s-]/g, ' ')
-            .split(/[\s\-]+/)
-            .filter(t => t.length > 2)
-            .map(t => t.toLowerCase());
-    }
-
-    tokensMatch(tokenA, tokenB) {
-        if (tokenA === tokenB) return true;
-        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
-        
-        const abbreviations = {
-            'fc': 'football club',
-            'utd': 'united', 
-            'afc': 'association football club',
-            'vs': 'versus'
-        };
-        
-        const expandedA = abbreviations[tokenA] || tokenA;
-        const expandedB = abbreviations[tokenB] || tokenB;
-        
-        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
-    }
-
-    // 🎯 MAIN PROCESSING PIPELINE
     async processStandardizedData() {
         const pipelineStart = Date.now();
         console.log('🚀 ENTERPRISE PHASE 2 - PROCESSING STARTED\n');
-        
+
         try {
-            // 🎯 MEMORY BASELINE
             this.results.memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
             this.debugLog('SYSTEM', `Initial memory: ${this.results.memoryUsage.toFixed(2)} MB`);
 
-            // 🎯 LOAD DATA
             const loadStart = Date.now();
-            const standardizedData = this.loadStandardizedData();
+            const standardizedData = await this.loadStandardizedData();
             this.performanceMark(loadStart, 'Data loading');
-            this.debugLog('DATA', `Loaded ${standardizedData.matches.length} standardized matches`);
 
-            // 🎯 GROUP BY SPORT
-            const groupStart = Date.now();
             const sportGroups = this.groupBySport(standardizedData.matches);
-            this.performanceMark(groupStart, 'Sport grouping');
-            this.debugLog('PROCESSING', `Found ${Object.keys(sportGroups).length} sports`);
 
-            // 🎯 PROCESS EACH SPORT
             const processedData = {};
             const sports = Object.entries(sportGroups);
-            
+
             for (let i = 0; i < sports.length; i++) {
                 const [sport, matches] = sports[i];
                 const sportStart = Date.now();
-                
+
                 this.debugLog('SPORT', `Processing ${sport} (${i + 1}/${sports.length})`, {
                     matches: matches.length,
                     config: this.sportConfigs[sport] || this.sportConfigs.default
                 });
-                
+
                 processedData[sport] = this.processSport(sport, matches);
                 this.performanceMark(sportStart, `${sport} processing`);
 
-                // 🎯 MEMORY MANAGEMENT
-                if (i % 3 === 0) {
-                    this.clearCache();
-                    const currentMemory = process.memoryUsage().heapUsed / 1024 / 1024;
-                    this.debugLog('MEMORY', `Cache cleared - Current: ${currentMemory.toFixed(2)} MB`);
-                }
+                if (i % 3 === 0) this.clearCache();
             }
 
-            // 🎯 CREATE FINAL OUTPUT
-            const outputStart = Date.now();
-            this.createMasterData(processedData, standardizedData);
-            this.performanceMark(outputStart, 'Master data creation');
-
-            // 🎯 FINAL RESULTS
+            await this.createMasterData(processedData, standardizedData);
             this.results.processingTime = Date.now() - this.startTime;
             this.logResults();
             this.performanceMark(pipelineStart, 'Total Phase 2 processing');
 
             return processedData;
-            
+
         } catch (error) {
             this.debugLog('ERROR', `Phase 2 failed: ${error.message}`);
-            this.saveErrorState(error);
+            await this.saveErrorState(error);
             throw error;
         }
     }
 
-    loadStandardizedData() {
+    async loadStandardizedData() {
         const filePath = './standardization-UNIVERSAL.json';
-        if (!fs.existsSync(filePath)) {
-            throw new Error('Phase 1 output not found. Run universal-standardizer first.');
-        }
-        
         try {
-            const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            const dataRaw = await fs.readFile(filePath, 'utf8');
+            const data = JSON.parse(dataRaw);
             this.debugLog('VALIDATION', `Data structure verified`, {
                 matches: data.matches?.length || 0,
                 sports: [...new Set(data.matches?.map(m => m.sport))].length
             });
             return data;
-        } catch (error) {
-            throw new Error(`Failed to parse standardized data: ${error.message}`);
+        } catch (err) {
+            throw new Error(`Failed to load standardized data: ${err.message}`);
         }
     }
 
     groupBySport(matches) {
         const sportGroups = {};
-        let missingSportCount = 0;
-        
         matches.forEach(match => {
             const sport = match.sport || 'Unknown';
-            if (sport === 'Unknown') missingSportCount++;
-            
             if (!sportGroups[sport]) {
                 sportGroups[sport] = [];
                 this.results.sportBreakdown[sport] = 0;
             }
-            
             sportGroups[sport].push(match);
             this.results.sportBreakdown[sport]++;
         });
-
-        if (missingSportCount > 0) {
-            this.debugLog('WARNING', `${missingSportCount} matches without sport classification`);
-        }
-        
         return sportGroups;
     }
 
     processSport(sport, matches) {
-        this.debugLog('CLUSTERING', `Starting duplicate detection for ${sport}`);
-
         const clusters = this.findAndMergeMatches(matches, sport);
         const processedMatches = [];
-        
-        // 🎯 PROCESS CLUSTERS
+
         clusters.forEach(cluster => {
             if (cluster.length === 1) {
                 processedMatches.push(this.createFinalMatch(cluster[0]));
@@ -315,19 +250,11 @@ class EnterpriseSportsProcessor {
                 const merged = this.mergeCluster(cluster, sport);
                 processedMatches.push(merged);
                 this.results.merged++;
-                
-                this.debugLog('MERGE', `Created merged cluster`, {
-                    sport: sport,
-                    match: cluster[0].match,
-                    sources: cluster.map(m => m.source),
-                    count: cluster.length
-                });
             }
         });
-        
+
         this.results.totalProcessed += processedMatches.length;
 
-        // 🎯 UPDATE STATISTICS
         this.results.mergeStatistics[sport] = {
             input: matches.length,
             output: processedMatches.length,
@@ -336,221 +263,72 @@ class EnterpriseSportsProcessor {
             efficiency: ((matches.length - processedMatches.length) / matches.length * 100).toFixed(1) + '%'
         };
 
-        return {
-            summary: this.results.mergeStatistics[sport],
-            matches: processedMatches
-        };
+        return { summary: this.results.mergeStatistics[sport], matches: processedMatches };
     }
 
     findAndMergeMatches(matches, sport) {
         const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
         const clusters = [];
         const processed = new Set();
-        
-        this.debugLog('ALGORITHM', `Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
 
+        const keyMap = new Map();
         for (let i = 0; i < matches.length; i++) {
             if (processed.has(i)) continue;
-            
-            const cluster = [matches[i]];
-            processed.add(i);
-            
-            for (let j = i + 1; j < matches.length; j++) {
-                if (processed.has(j)) continue;
-                
-                const score = this.calculateMatchScore(matches[i], matches[j], sport);
-                
-                if (score >= sportConfig.mergeThreshold) {
-                    this.debugLog('MATCH', `High similarity detected`, {
-                        matchA: matches[i].match,
-                        matchB: matches[j].match,
-                        score: score.toFixed(3),
-                        sources: [matches[i].source, matches[j].source]
-                    });
-                    
-                    cluster.push(matches[j]);
-                    processed.add(j);
-                }
-            }
-            
+            const match = matches[i];
+            const date = this.getMatchDate(match.unix_timestamp);
+            const teamsKey = this.extractTeams(match.match).sort().join('|');
+            const mapKey = `${date}|${teamsKey}|${match.tournament || ''}`;
+            if (!keyMap.has(mapKey)) keyMap.set(mapKey, []);
+            keyMap.get(mapKey).push(i);
+        }
+
+        for (let indices of keyMap.values()) {
+            const cluster = indices.map(idx => matches[idx]);
+            cluster.forEach(idx => processed.add(idx));
             clusters.push(cluster);
-            
-            if (cluster.length > 1) {
-                this.debugLog('CLUSTER', `Created multi-match cluster`, {
-                    baseMatch: cluster[0].match,
-                    size: cluster.length,
-                    sources: cluster.map(m => m.source)
-                });
-            }
         }
-        
-        this.debugLog('RESULTS', `Clustering completed for ${sport}`, {
-            totalClusters: clusters.length,
-            multiMatchClusters: clusters.filter(c => c.length > 1).length
-        });
-        
+
         return clusters;
-    }
-
-    calculateMatchScore(matchA, matchB, sport) {
-        // 🎯 SAME SOURCE PROTECTION
-        if (matchA.source === matchB.source && matchA.source !== 'wendy') {
-            this.debugLog('FILTER', `Same source blocked`, {
-                source: matchA.source,
-                matchA: matchA.match,
-                matchB: matchB.match
-            });
-            return 0;
-        }
-        
-        // 🎯 DATE-BASED HIGH CONFIDENCE MERGE
-        const dateA = this.getMatchDate(matchA.unix_timestamp);
-        const dateB = this.getMatchDate(matchB.unix_timestamp);
-        const sameDate = dateA === dateB;
-        const sameTeams = this.hasSameTeams(matchA, matchB);
-        
-        if (sameDate && sameTeams) {
-            this.debugLog('AUTO-MERGE', `Date-based high confidence merge`, {
-                date: dateA,
-                teams: matchA.match,
-                sources: [matchA.source, matchB.source]
-            });
-            return 1.0;
-        }
-        
-        // 🎯 STANDARD SIMILARITY CALCULATION
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-        const textA = matchA.match.toLowerCase().trim();
-        const textB = matchB.match.toLowerCase().trim();
-        
-        const tokensA = this.advancedTokenize(textA);
-        const tokensB = this.advancedTokenize(textB);
-        
-        const common = tokensA.filter(tA => 
-            tokensB.some(tB => this.tokensMatch(tA, tB))
-        );
-        
-        let score = common.length / Math.max(tokensA.length, tokensB.length);
-        
-        // 🎯 SPORT-SPECIFIC BOOSTS
-        if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
-            const playersA = this.extractPlayers(textA);
-            const playersB = this.extractPlayers(textB);
-            const playerMatch = playersA.length === playersB.length && 
-                               playersA.every((player, idx) => this.playersMatch(player, playersB[idx]));
-            
-            if (playerMatch) {
-                this.debugLog('TENNIS', `Tennis exact player match`, { score: 1.0 });
-                return 1.0;
-            }
-            score += 0.15;
-        }
-        
-        if (matchA.source === 'wendy' || matchB.source === 'wendy') {
-            score += 0.1;
-        }
-        
-        const finalScore = Math.min(1.0, score);
-        this.debugLog('SCORING', `Similarity score calculated`, {
-            matchA: matchA.match,
-            matchB: matchB.match,
-            score: finalScore.toFixed(3),
-            threshold: sportConfig.mergeThreshold
-        });
-        
-        return finalScore;
-    }
-
-    mergeCluster(cluster, sport) {
-        const baseMatch = cluster[0];
-        const allSources = { tom: [], sarah: [], wendy: [] };
-        
-        this.debugLog('MERGE-CLUSTER', `Merging ${cluster.length} matches`, {
-            baseMatch: baseMatch.match,
-            sources: cluster.map(m => m.source)
-        });
-
-        let validMatches = 0;
-        cluster.forEach(match => {
-            const isSameFixture = this.calculateSimilarity(baseMatch, match) >= 0.8;
-            
-            if (!isSameFixture) {
-                this.debugLog('VALIDATION', `Skipping invalid match in cluster`, {
-                    base: baseMatch.match,
-                    invalid: match.match,
-                    similarity: this.calculateSimilarity(baseMatch, match).toFixed(3)
-                });
-                return;
-            }
-            
-            validMatches++;
-            
-            // 🎯 AGGREGATE STREAMS
-            ['tom', 'sarah', 'wendy'].forEach(source => {
-                if (match.sources[source]) {
-                    match.sources[source].forEach(stream => {
-                        const isValidStream = source !== 'wendy' || 
-                            this.isValidWendyStreamForMatch(stream, baseMatch.match);
-                        
-                        if (isValidStream && !allSources[source].includes(stream)) {
-                            allSources[source].push(stream);
-                        }
-                    });
-                }
-            });
-        });
-
-        this.debugLog('STREAMS', `Stream aggregation completed`, {
-            tom: allSources.tom.length,
-            sarah: allSources.sarah.length,
-            wendy: allSources.wendy.length,
-            validMatches: validMatches
-        });
-
-        return {
-            unix_timestamp: baseMatch.unix_timestamp,
-            sport: sport,
-            tournament: baseMatch.tournament || '',
-            match: baseMatch.match,
-            sources: allSources,
-            confidence: 0.8,
-            merged: true,
-            merged_count: cluster.length
-        };
     }
 
     calculateSimilarity(matchA, matchB) {
         const textA = matchA.match.toLowerCase();
         const textB = matchB.match.toLowerCase();
-        
         if (textA === textB) return 1.0;
-        
+
         const tokensA = textA.split(/\s+/);
         const tokensB = textB.split(/\s+/);
-        
         const common = tokensA.filter(tA => tokensB.includes(tA));
         return common.length / Math.max(tokensA.length, tokensB.length);
     }
 
-    isValidWendyStreamForMatch(streamUrl, matchText) {
-        const url = streamUrl.toLowerCase();
-        const match = matchText.toLowerCase();
-        const players = match.split(' vs ');
-        
-        for (let player of players) {
-            const nameParts = player.trim().split(' ');
-            for (let namePart of nameParts) {
-                if (namePart.length > 3 && url.includes(namePart)) {
-                    return true;
-                }
-            }
-        }
-        
-        this.debugLog('STREAM-VALIDATION', `Invalid Wendy stream`, {
-            match: matchText,
-            stream: streamUrl
+    mergeCluster(cluster, sport) {
+        const base = cluster[0];
+        const allSources = { tom: new Set(), sarah: new Set(), wendy: new Set() };
+        cluster.forEach(match => {
+            ['tom', 'sarah', 'wendy'].forEach(src => {
+                (match.sources[src] || []).forEach(stream => allSources[src].add(stream));
+            });
         });
-        return false;
+
+        // Convert Sets to arrays
+        for (let src in allSources) allSources[src] = Array.from(allSources[src]);
+
+        return {
+            unix_timestamp: base.unix_timestamp,
+            sport: sport,
+            tournament: base.tournament || '',
+            match: base.match,
+            sources: allSources,
+            confidence: 0.8,
+            merged: true,
+            merged_count: cluster.length,
+            data_quality: {
+                has_tournament: !!base.tournament && base.tournament.length > 0,
+                stream_count: Object.values(allSources).reduce((sum, arr) => sum + arr.length, 0),
+                timestamp_missing: !base.unix_timestamp
+            }
+        };
     }
 
     createFinalMatch(match) {
@@ -561,14 +339,19 @@ class EnterpriseSportsProcessor {
             match: match.match,
             sources: match.sources,
             confidence: 1.0,
-            merged: false
+            merged: false,
+            data_quality: {
+                has_tournament: !!match.tournament && match.tournament.length > 0,
+                stream_count: Object.values(match.sources || {}).reduce((sum, arr) => sum + (arr?.length || 0), 0),
+                timestamp_missing: !match.unix_timestamp
+            }
         };
     }
 
-    createMasterData(processedData, standardizedData) {
+    async createMasterData(processedData, standardizedData) {
         const masterData = {
             processed_at: new Date().toISOString(),
-            processor_version: '4.0-enterprise',
+            processor_version: '4.1-enterprise',
             phase1_source: standardizedData.created_at,
             summary: {
                 total_sports: Object.keys(processedData).length,
@@ -583,74 +366,15 @@ class EnterpriseSportsProcessor {
             },
             matches: []
         };
-        
-        Object.values(processedData).forEach(sportData => {
-            masterData.matches.push(...sportData.matches);
-        });
 
-        // 🎯 COMPREHENSIVE VALIDATION
-        this.validateMasterData(masterData, standardizedData);
+        Object.values(processedData).forEach(sportData => masterData.matches.push(...sportData.matches));
 
         try {
-            const masterDataJson = JSON.stringify(masterData, null, 2);
-            JSON.parse(masterDataJson); // Validate JSON
-            fs.writeFileSync('./master-data.json', masterDataJson);
-            this.debugLog('OUTPUT', `Master data saved successfully`);
-            
-        } catch (error) {
-            throw new Error(`JSON validation failed: ${error.message}`);
-        }
-    }
-
-    validateMasterData(masterData, standardizedData) {
-        console.log('\n🔍 ENTERPRISE VALIDATION REPORT');
-        console.log('══════════════════════════════════════');
-        
-        // 🎯 DATA INTEGRITY CHECKS
-        console.log(`📊 DATA INTEGRITY:`);
-        console.log(`   Input: ${standardizedData.matches.length} matches`);
-        console.log(`   Output: ${masterData.matches.length} matches`);
-        console.log(`   Compression: ${masterData.summary.compression_ratio}`);
-        
-        // 🎯 SOURCE DISTRIBUTION
-        const sourceCount = { tom: 0, sarah: 0, wendy: 0 };
-        masterData.matches.forEach(match => {
-            Object.keys(match.sources).forEach(source => {
-                if (match.sources[source].length > 0) sourceCount[source]++;
-            });
-        });
-        console.log(`   Source Distribution:`, sourceCount);
-        
-        // 🎯 MERGE QUALITY
-        const mergedMatches = masterData.matches.filter(m => m.merged);
-        console.log(`   Merged Matches: ${mergedMatches.length}`);
-        console.log(`   Average Merge Count: ${(mergedMatches.reduce((sum, m) => sum + (m.merged_count || 1), 0) / mergedMatches.length || 0).toFixed(1)}`);
-        
-        // 🎯 PERFORMANCE METRICS
-        console.log(`⚡ PERFORMANCE:`);
-        console.log(`   Processing Time: ${this.results.processingTime}ms`);
-        console.log(`   Memory Usage: ${this.results.memoryUsage.toFixed(2)} MB`);
-        console.log(`   Matches/Second: ${(masterData.matches.length / (this.results.processingTime / 1000)).toFixed(1)}`);
-        
-        console.log('══════════════════════════════════════\n');
-    }
-
-    saveErrorState(error) {
-        const errorState = {
-            error: error.message,
-            stack: error.stack,
-            timestamp: new Date().toISOString(),
-            results: this.results
-        };
-        
-        try {
-            if (!fs.existsSync('./debug')) {
-                fs.mkdirSync('./debug', { recursive: true });
-            }
-            fs.writeFileSync('./debug/phase2-error-state.json', JSON.stringify(errorState, null, 2));
-            this.debugLog('ERROR', `Error state saved to debug/phase2-error-state.json`);
-        } catch (e) {
-            console.log('❌ Could not save error state:', e.message);
+            const jsonData = JSON.stringify(masterData, null, 2);
+            await fs.writeFile('./master-data.json', jsonData);
+            this.debugLog('OUTPUT', 'Master data saved successfully');
+        } catch (err) {
+            throw new Error(`Failed to save master data: ${err.message}`);
         }
     }
 
@@ -658,56 +382,35 @@ class EnterpriseSportsProcessor {
         this.teamNormalizationCache.clear();
         this.dateCache.clear();
         this.similarityCache.clear();
-        
-        if (global.gc) {
-            global.gc();
-        }
+        if (global.gc) global.gc();
     }
 
     logResults() {
-        console.log('\n🏆 ENTERPRISE PROCESSING RESULTS');
-        console.log('══════════════════════════════════════');
-        console.log(`✅ Total Processed: ${this.results.totalProcessed}`);
-        console.log(`🔄 Total Merged: ${this.results.merged}`);
-        console.log(`🎯 Total Individual: ${this.results.individual}`);
-        console.log(`⏱️  Processing Time: ${this.results.processingTime}ms`);
-        console.log(`💾 Peak Memory: ${this.results.memoryUsage.toFixed(2)} MB`);
-        
-        console.log('\n📈 SPORT BREAKDOWN:');
-        Object.entries(this.results.sportBreakdown)
-            .sort((a, b) => b[1] - a[1])
-            .forEach(([sport, count]) => {
-                const stats = this.results.mergeStatistics[sport];
-                const efficiency = stats ? stats.efficiency : 'N/A';
-                console.log(`   ${sport}: ${count} matches (${efficiency} compression)`);
-            });
-        
-        console.log('══════════════════════════════════════\n');
+        console.log(`\n🏆 ENTERPRISE PROCESSING RESULTS`);
+        console.log(`Total Processed: ${this.results.totalProcessed}`);
+        console.log(`Merged: ${this.results.merged}`);
+        console.log(`Individual: ${this.results.individual}`);
+        console.log(`Processing Time: ${this.results.processingTime}ms`);
+        console.log(`Peak Memory: ${this.results.memoryUsage.toFixed(2)} MB`);
+    }
+
+    async saveErrorState(error) {
+        const state = { error: error.message, stack: error.stack, timestamp: new Date().toISOString(), results: this.results };
+        try {
+            await fs.mkdir('./debug', { recursive: true });
+            await fs.writeFile('./debug/phase2-error-state.json', JSON.stringify(state, null, 2));
+            this.debugLog('ERROR', 'Error state saved');
+        } catch (e) {
+            console.log('❌ Could not save error state:', e.message);
+        }
     }
 }
 
-// 🎯 ENTERPRISE EXECUTION HANDLER
 if (require.main === module) {
     const processor = new EnterpriseSportsProcessor();
-    
-    const shutdown = (signal) => {
-        console.log(`\n🛑 Received ${signal}, shutting down gracefully...`);
-        process.exit(0);
-    };
-
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-
     processor.processStandardizedData()
-        .then(() => {
-            console.log('🎉 ENTERPRISE PHASE 2 COMPLETED SUCCESSFULLY!');
-            console.log('💾 Master data: master-data.json');
-            process.exit(0);
-        })
-        .catch(error => {
-            console.error('💥 ENTERPRISE PROCESSING FAILED:', error);
-            process.exit(1);
-        });
+        .then(() => console.log('🎉 ENTERPRISE PHASE 2 COMPLETED SUCCESSFULLY!'))
+        .catch(err => console.error('💥 PROCESSING FAILED:', err));
 }
 
 module.exports = EnterpriseSportsProcessor;
