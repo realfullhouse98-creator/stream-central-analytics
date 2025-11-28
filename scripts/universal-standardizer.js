@@ -1,334 +1,223 @@
 const fs = require('fs');
 const path = require('path');
-const NormalizationMap = require('../modules/normalization-map.js');
-const supplierConfig = require('../suppliers/supplier-config.js');
 
+/**
+ * 🏆 OPTIMIZED UNIVERSAL STANDARDIZER - PHASE 1
+ * Features: Supplier normalization, timestamp verification, tournament-aware, stream validation
+ * Version: 1.0-optimized
+ */
 class OptimizedUniversalStandardizer {
     constructor() {
-        this.normalizationMap = new NormalizationMap();
+        this.suppliers = ['tom', 'sarah', 'wendy'];
         this.results = {
-            startTime: new Date().toISOString(),
-            suppliers: {},
-            optimization: {
-                preFiltered: 0,
-                groupsCreated: 0,
-                fingerprintsGenerated: 0
-            },
-            fieldMappingReport: {}
+            totalMatches: 0,
+            missingTimestamps: 0,
+            missingTournaments: 0,
+            exactDuplicatesRemoved: 0,
+            perSupplierCounts: {},
+            processedTime: 0
         };
+        this.teamNormalizationCache = new Map();
+        this.tournamentNormalizationCache = new Map();
+        this.startTime = Date.now();
+        this.debugEnabled = true;
     }
 
-    async standardizeAllData() {
-        console.log('🚀 OPTIMIZED UNIVERSAL STANDARDIZER - PHASE 1\n');
-        
-        try {
-            const beforeCounts = this.countRawData();
-            this.logBeforeProcessing(beforeCounts);
-            
-            const allMatches = [];
-            const suppliers = Object.keys(supplierConfig);
+    debugLog(category, message, data = null) {
+        if (!this.debugEnabled) return;
+        const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+        console.log(`🔍 [${timestamp}] ${category}: ${message}`);
+        if (data) console.log('   📊', data);
+    }
 
-            for (const supplier of suppliers) {
-                const supplierMatches = await this.processSupplier(supplier);
-                allMatches.push(...supplierMatches);
+    loadSupplierData() {
+        const allMatches = [];
+        for (let supplier of this.suppliers) {
+            const filePath = path.join('./supplier', `${supplier}-data.json`);
+            if (!fs.existsSync(filePath)) {
+                this.debugLog('WARNING', `Supplier file missing: ${filePath}`);
+                this.results.perSupplierCounts[supplier] = 0;
+                continue;
             }
-
-            console.log('\n🔧 RUNNING OPTIMIZATION PIPELINE...');
-            const optimizedData = this.optimizeForPhase2(allMatches);
-
-            const standardizedData = {
-                phase: "1-optimized-standardization",
-                created_at: new Date().toISOString(),
-                summary: {
-                    total_matches: optimizedData.matches.length,
-                    suppliers_processed: suppliers,
-                    supplier_breakdown: this.results.suppliers,
-                    optimization_report: this.results.optimization,
-                    before_processing: beforeCounts,
-                    after_processing: {
-                        total: optimizedData.matches.length,
-                        tom: this.results.suppliers.tom || 0,
-                        sarah: this.results.suppliers.sarah || 0,
-                        wendy: this.results.suppliers.wendy || 0
-                    }
-                },
-                optimization: optimizedData.optimization,
-                matches: optimizedData.matches
-            };
-
-            standardizedData.summary.data_loss = this.calculateDataLoss(beforeCounts, standardizedData.summary.after_processing);
-
-            this.saveStandardizedData(standardizedData);
-            this.logResults(standardizedData);
-            
-            return standardizedData;
-
-        } catch (error) {
-            console.error('💥 Optimized standardizer failed:', error);
-            throw error;
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            this.results.perSupplierCounts[supplier] = data.matches?.length || 0;
+            const enriched = (data.matches || []).map(match => ({
+                ...match,
+                supplier,
+            }));
+            allMatches.push(...enriched);
         }
+        return allMatches;
     }
 
-    optimizeForPhase2(matches) {
-        console.log('   🎯 Starting Phase 2 optimization...');
-        const startCount = matches.length;
+    normalizeTeamName(teamName) {
+        if (!teamName) return '';
+        if (this.teamNormalizationCache.has(teamName)) return this.teamNormalizationCache.get(teamName);
 
-        const filteredMatches = this.safePreFiltering(matches);
-        console.log(`   ✅ Stage 1 - Safe filtering: ${startCount} → ${filteredMatches.length} matches`);
+        const normalized = teamName
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, ' ')
+            .replace(/^fc /, '')
+            .replace(/ united$/, ' utd')
+            .replace(/^man utd$/, 'manchester utd')
+            .replace(/^man city$/, 'manchester city')
+            .replace(/^spurs$/, 'tottenham')
+            .replace(/^korea$/, 'south korea')
+            .replace(/^north korea$/, 'korea dpr')
+            .replace(/^dpr korea$/, 'korea dpr')
+            .replace(/^usa$/, 'united states')
+            .replace(/^u\.s\.a\.$/, 'united states')
+            .replace(/^uk$/, 'united kingdom')
+            .replace(/^u\.k\.$/, 'united kingdom');
 
-        const matchesWithFingerprints = this.generateFingerprints(filteredMatches);
-        console.log(`   ✅ Stage 2 - Fingerprints: ${this.results.optimization.fingerprintsGenerated} generated`);
-
-        const optimizationData = this.createOptimizationGroups(matchesWithFingerprints);
-        console.log(`   ✅ Stage 3 - Optimization: ${this.results.optimization.groupsCreated} groups created`);
-
-        return {
-            matches: matchesWithFingerprints,
-            optimization: optimizationData
-        };
+        this.teamNormalizationCache.set(teamName, normalized);
+        return normalized;
     }
 
-    safePreFiltering(matches) {
-        return matches.filter(match => {
-            if (!match.match || match.match.length < 3) {
-                this.results.optimization.preFiltered++;
-                return false;
-            }
+    normalizeTournament(tournament) {
+        if (!tournament) return '';
+        if (this.tournamentNormalizationCache.has(tournament)) return this.tournamentNormalizationCache.get(tournament);
 
-            if (!match.sport || match.sport.length < 2) {
-                this.results.optimization.preFiltered++;
-                return false;
-            }
+        const normalized = tournament
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, ' ')
+            .replace(/champions league|ucl/, 'uefa champions league')
+            .replace(/premier league|epl/, 'english premier league');
 
-            // 🎯 REMOVED: No fake timestamps
-            match._data_quality = {
-                timestamp_missing: !match.unix_timestamp,
-                timestamp_source: match.unix_timestamp ? 'original' : 'missing',
-                streams_count: Object.values(match.sources || {}).reduce((sum, arr) => sum + (arr?.length || 0), 0),
-                tournament_missing: !match.tournament || match.tournament.length === 0
-            };
-
-            return true;
-        });
+        this.tournamentNormalizationCache.set(tournament, normalized);
+        return normalized;
     }
 
-    generateFingerprints(matches) {
-        return matches.map(match => {
-            const ts = match.unix_timestamp || null;
-            const date = ts ? new Date(ts * 1000).toISOString().split('T')[0] : 'unknown';
-            const normalizedTeams = this.safeNormalizeTeams(match.match);
-            const tournamentSafe = match.tournament ? match.tournament.toLowerCase().trim() : '';
-
-            const fingerprint = {
-                date,
-                sport: match.sport,
-                normalizedTeams,
-                tournament: tournamentSafe,
-                source: match.source,
-                data_quality: {
-                    has_tournament: !!match.tournament && match.tournament.length > 0,
-                    stream_count: Object.values(match.sources || {}).reduce((sum, arr) => sum + (arr?.length || 0), 0),
-                    time_accuracy: ts ? 1.0 : 0.5,
-                    team_completeness: match.match.includes(' vs ') ? 1.0 : 0.7,
-                    timestamp_missing: !ts
-                }
-            };
-
-            match._fingerprint = this.generateFingerprintHash(
-                `${fingerprint.date}|${fingerprint.sport}|${fingerprint.normalizedTeams}|${fingerprint.tournament}`
-            );
-
-            match._optimization = fingerprint;
-            this.results.optimization.fingerprintsGenerated++;
-            return match;
-        });
+    validateTimestamp(unix_timestamp) {
+        if (!unix_timestamp || isNaN(unix_timestamp)) return false;
+        const date = new Date(unix_timestamp * 1000);
+        return !isNaN(date.getTime());
     }
 
-    safeNormalizeTeams(matchText) {
-        if (!matchText.includes(' vs ')) {
-            return [this.safeNormalizeTeamName(matchText)];
-        }
+    extractTeams(matchText) {
+        if (!matchText || typeof matchText !== 'string') return [];
+        if (!matchText.includes(' vs ')) return [this.normalizeTeamName(matchText)];
         const [teamA, teamB] = matchText.split(' vs ');
         return [
-            this.safeNormalizeTeamName(teamA),
-            this.safeNormalizeTeamName(teamB)
-        ].sort().join('|');
+            this.normalizeTeamName(teamA),
+            this.normalizeTeamName(teamB)
+        ];
     }
 
-    safeNormalizeTeamName(teamName) {
-        const safeNormalizations = {
-            'korea': 'south korea',
-            'north korea': 'korea dpr', 
-            'dpr korea': 'korea dpr',
-            'usa': 'united states',
-            'u.s.a.': 'united states',
-            'uk': 'united kingdom',
-            'u.k.': 'united kingdom',
-            'man utd': 'manchester united',
-            'man city': 'manchester city'
-        };
-
-        const normalized = teamName.toLowerCase().trim();
-        return safeNormalizations[normalized] || normalized;
+    extractPlayers(matchText) {
+        if (!matchText.includes(' vs ')) return [matchText.split(' ')];
+        return matchText.split(' vs ').map(player =>
+            player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
+        );
     }
 
-    generateFingerprintHash(keyString) {
-        let hash = 0;
-        for (let i = 0; i < keyString.length; i++) {
-            const char = keyString.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+    validateStreams(match) {
+        const sources = ['tom', 'sarah', 'wendy'];
+        let totalStreams = 0;
+
+        const cleanSources = {};
+        for (let source of sources) {
+            cleanSources[source] = [];
+            if (!match.sources?.[source]) continue;
+            for (let stream of match.sources[source]) {
+                if (typeof stream === 'string' && stream.length > 5) {
+                    cleanSources[source].push(stream);
+                    totalStreams++;
+                }
+            }
         }
-        return hash.toString(36);
+        match.sources = cleanSources;
+        match.stream_count = totalStreams;
     }
 
-    createOptimizationGroups(matches) {
-        const groups = {
-            by_date_sport: {},
-            by_fingerprint: {},
-            high_confidence_merges: [],
-            performance_metrics: {
-                total_matches: matches.length,
-                unique_dates: new Set(),
-                unique_sports: new Set()
+    removeExactDuplicates(matches) {
+        const seen = new Set();
+        const filtered = [];
+        for (let match of matches) {
+            const key = `${match.match}|${match.tournament}|${match.unix_timestamp}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                filtered.push(match);
+            } else {
+                this.results.exactDuplicatesRemoved++;
             }
-        };
-
-        matches.forEach(match => {
-            const date = match._optimization.date;
-            const sport = match._optimization.sport;
-            
-            const dateSportKey = `${date}|${sport}`;
-            if (!groups.by_date_sport[dateSportKey]) {
-                groups.by_date_sport[dateSportKey] = [];
-                this.results.optimization.groupsCreated++;
-            }
-            groups.by_date_sport[dateSportKey].push(match._fingerprint);
-
-            if (!groups.by_fingerprint[match._fingerprint]) {
-                groups.by_fingerprint[match._fingerprint] = [];
-            }
-            groups.by_fingerprint[match._fingerprint].push(match._fingerprint);
-
-            groups.performance_metrics.unique_dates.add(date);
-            groups.performance_metrics.unique_sports.add(sport);
-        });
-
-        Object.entries(groups.by_fingerprint).forEach(([fingerprint, matches]) => {
-            if (matches.length > 1) {
-                groups.high_confidence_merges.push({
-                    fingerprint,
-                    match_count: matches.length,
-                    reason: 'exact_fingerprint_match'
-                });
-            }
-        });
-
-        groups.performance_metrics.unique_dates = Array.from(groups.performance_metrics.unique_dates);
-        groups.performance_metrics.unique_sports = Array.from(groups.performance_metrics.unique_sports);
-
-        return groups;
-    }
-
-    countRawData() {
-        const counts = { tom: 0, sarah: 0, wendy: 0 };
-        try { 
-            const tomData = JSON.parse(fs.readFileSync('./suppliers/tom-data.json', 'utf8'));
-            if (tomData.events) Object.values(tomData.events).forEach(day => { if (Array.isArray(day)) counts.tom += day.length; });
-        } catch (e) { counts.tom = 'ERROR'; }
-        try { 
-            const sarahData = JSON.parse(fs.readFileSync('./suppliers/sarah-data.json', 'utf8'));
-            counts.sarah = Array.isArray(sarahData.matches) ? sarahData.matches.length : Array.isArray(sarahData) ? sarahData.length : 0;
-        } catch (e) { counts.sarah = 'ERROR'; }
-        try {
-            const wendyData = JSON.parse(fs.readFileSync('./suppliers/wendy-data.json', 'utf8'));
-            counts.wendy = Array.isArray(wendyData.matches) ? wendyData.matches.length : 0;
-        } catch (e) { counts.wendy = 'ERROR'; }
-        return counts;
-    }
-
-    async processSupplier(supplierName) {
-        console.log(`\n🔧 PROCESSING ${supplierName.toUpperCase()}...`);
-        try {
-            const config = supplierConfig[supplierName];
-            if (!config || !fs.existsSync(config.file)) return [];
-            const rawData = JSON.parse(fs.readFileSync(config.file, 'utf8'));
-            const matches = [];
-            let rawMatches = [];
-
-            if (supplierName === 'tom' && rawData.events) Object.values(rawData.events).forEach(day => { if (Array.isArray(day)) rawMatches.push(...day); });
-            else if ((supplierName === 'sarah' || supplierName === 'wendy') && rawData.matches) rawMatches = rawData.matches;
-            else if (Array.isArray(rawData)) rawMatches = rawData;
-            else return [];
-
-            rawMatches.forEach((rawMatch, index) => {
-                try {
-                    const standardized = this.normalizationMap.standardizeMatch(rawMatch, supplierName);
-                    matches.push(standardized);
-                } catch {}
-            });
-
-            this.results.suppliers[supplierName] = matches.length;
-            return matches;
-        } catch {
-            return [];
         }
+        return filtered;
     }
 
-    calculateDataLoss(before, after) {
-        return {
-            tom_loss: (before.tom === 'ERROR' || after.tom === 'ERROR') ? 'ERROR' : before.tom - after.tom,
-            sarah_loss: (before.sarah === 'ERROR' || after.sarah === 'ERROR') ? 'ERROR' : before.sarah - after.sarah,
-            wendy_loss: (before.wendy === 'ERROR' || after.wendy === 'ERROR') ? 'ERROR' : before.wendy - after.wendy,
-            total_loss: (
-                (before.tom === 'ERROR' ? 0 : before.tom) + 
-                (before.sarah === 'ERROR' ? 0 : before.sarah) + 
-                (before.wendy === 'ERROR' ? 0 : before.wendy)
-            ) - after.total
+    enrichMatch(match) {
+        // Teams
+        match.teams = this.extractTeams(match.match);
+
+        // Players (tennis/mma)
+        match.players = this.extractPlayers(match.match);
+
+        // Tournament
+        match.tournament = this.normalizeTournament(match.tournament);
+        if (!match.tournament) this.results.missingTournaments++;
+
+        // Timestamp
+        match.timestamp_missing = !this.validateTimestamp(match.unix_timestamp);
+        if (match.timestamp_missing) this.results.missingTimestamps++;
+
+        // Streams
+        this.validateStreams(match);
+
+        // Team normalization applied
+        match.team_normalization_applied = match.teams.length > 0;
+
+        return match;
+    }
+
+    async run() {
+        const pipelineStart = Date.now();
+        let matches = this.loadSupplierData();
+
+        this.debugLog('LOAD', `Loaded total matches: ${matches.length}`);
+
+        // Remove exact duplicates
+        matches = this.removeExactDuplicates(matches);
+
+        this.debugLog('DEDUP', `Matches after deduplication: ${matches.length}`);
+
+        // Enrich all matches
+        matches = matches.map(m => this.enrichMatch(m));
+
+        // Save standardized JSON
+        const output = {
+            created_at: new Date().toISOString(),
+            matches
         };
+        fs.writeFileSync('./standardization-UNIVERSAL.json', JSON.stringify(output, null, 2));
+
+        this.results.totalMatches = matches.length;
+        this.results.processedTime = Date.now() - pipelineStart;
+
+        this.logResults();
+        return output;
     }
 
-    logBeforeProcessing(counts) {
-        console.log('📊 RAW DATA COUNT:');
-        console.log(`📦 Tom: ${counts.tom} matches`);
-        console.log(`📦 Sarah: ${counts.sarah} matches`);
-        console.log(`📦 Wendy: ${counts.wendy} matches`);
-        console.log(`📦 Total: ${
-            (counts.tom === 'ERROR' ? 0 : counts.tom) + 
-            (counts.sarah === 'ERROR' ? 0 : counts.sarah) + 
-            (counts.wendy === 'ERROR' ? 0 : counts.wendy)
-        } matches`);
-    }
-
-    saveStandardizedData(data) {
-        const outputPath = './standardization-UNIVERSAL.json';
-        fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
-        console.log(`💾 Optimized standardized data saved to: ${outputPath}`);
-    }
-
-    logResults(data) {
-        console.log('\n📊 OPTIMIZED STANDARDIZER RESULTS:');
-        console.log(`✅ Total Matches: ${data.summary.after_processing.total}`);
-        console.log(`🔧 Tom: ${data.summary.after_processing.tom}`);
-        console.log(`🔧 Sarah: ${data.summary.after_processing.sarah}`);
-        console.log(`🔧 Wendy: ${data.summary.after_processing.wendy}`);
-        console.log('\n⚡ OPTIMIZATION REPORT:');
-        console.log(`   Pre-filtered: ${data.summary.optimization_report.preFiltered}`);
-        console.log(`   Fingerprints: ${data.summary.optimization_report.fingerprintsGenerated}`);
-        console.log(`   Groups: ${data.summary.optimization_report.groupsCreated}`);
-        console.log('\n📉 DATA LOSS:');
-        console.log(`📦 Tom: ${data.summary.data_loss.tom_loss}`);
-        console.log(`📦 Sarah: ${data.summary.data_loss.sarah_loss}`);
-        console.log(`📦 Wendy: ${data.summary.data_loss.wendy_loss}`);
-        console.log(`📦 Total: ${data.summary.data_loss.total_loss}`);
+    logResults() {
+        console.log('\n🏆 UNIVERSAL STANDARDIZER RESULTS');
+        console.log('══════════════════════════════════════');
+        console.log(`✅ Total Matches Processed: ${this.results.totalMatches}`);
+        console.log(`🔢 Missing Timestamps: ${this.results.missingTimestamps}`);
+        console.log(`🏆 Missing Tournaments: ${this.results.missingTournaments}`);
+        console.log(`🗑 Exact Duplicates Removed: ${this.results.exactDuplicatesRemoved}`);
+        console.log(`⏱ Processing Time: ${this.results.processedTime} ms`);
+        console.log('📊 Supplier Counts:', this.results.perSupplierCounts);
+        console.log('══════════════════════════════════════\n');
     }
 }
 
+// 🎯 EXECUTION HANDLER
 if (require.main === module) {
     const standardizer = new OptimizedUniversalStandardizer();
-    standardizer.standardizeAllData()
-        .then(() => console.log('🎉 OPTIMIZED UNIVERSAL STANDARDIZER COMPLETED!'))
-        .catch(error => console.error('💥 Optimized standardizer failed:', error));
+    standardizer.run()
+        .then(() => console.log('🎉 PHASE 1 COMPLETED - Data ready for Phase 2'))
+        .catch(err => console.error('💥 PHASE 1 FAILED:', err));
 }
 
 module.exports = OptimizedUniversalStandardizer;
