@@ -162,6 +162,9 @@ class Phase2Processor {
     }
 
     calculateMatchScore(matchA, matchB, sport) {
+         console.log(`\n🔍 DEBUG MERGE CHECK: "${matchA.match}" ↔ "${matchB.match}"`);
+    console.log(`   Sources: ${matchA.source} ↔ ${matchB.source}`);
+    console.log(`   Sport: ${sport}`);
         if (matchA.source === matchB.source && matchA.source !== 'wendy') {
             return 0;
         }
@@ -217,13 +220,21 @@ class Phase2Processor {
 
     // 🎯 NEW: Extract players for tennis
     extractPlayers(matchText) {
-        if (!matchText.includes(' vs ')) {
-            return [matchText.split(' ')];
-        }
-        return matchText.split(' vs ').map(player => 
-            player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
-        );
+    console.log(`   extractPlayers input: "${matchText}"`);
+    
+    if (!matchText.includes(' vs ')) {
+        const result = [matchText.split(' ')];
+        console.log(`   extractPlayers output:`, result);
+        return result;
     }
+    
+    const result = matchText.split(' vs ').map(player => 
+        player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
+    );
+    
+    console.log(`   extractPlayers output:`, result);
+    return result;
+}
 
     // 🎯 NEW: Player matching for tennis
     playersMatch(playerA, playerB) {
