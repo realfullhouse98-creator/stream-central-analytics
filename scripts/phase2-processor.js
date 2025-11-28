@@ -14,13 +14,13 @@ class Phase2Processor {
         this.startTime = Date.now();
         
         this.sportConfigs = {
-            'Tennis': { mergeThreshold: 0.10, timeWindow: 480 },
-            'Football': { mergeThreshold: 0.10, timeWindow: 600 },
-            'Basketball': { mergeThreshold: 0.10, timeWindow: 600 },
-            'American Football': { mergeThreshold: 0.10, timeWindow: 600 },
-            'Ice Hockey': { mergeThreshold: 0.10, timeWindow: 600 },
-            'default': { mergeThreshold: 0.10, timeWindow: 480 }
-        };
+    'Tennis': { mergeThreshold: 0.10, timeWindow: 480 }, // 🚨 CHANGED FROM 0.25 to 0.10
+    'Football': { mergeThreshold: 0.20, timeWindow: 600 },
+    'Basketball': { mergeThreshold: 0.25, timeWindow: 600 },
+    'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
+    'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
+    'default': { mergeThreshold: 0.20, timeWindow: 480 }
+};
 
         this.teamNormalizationCache = new Map();
     }
@@ -126,60 +126,72 @@ class Phase2Processor {
     }
 
     findAndMergeMatches(matches, sport) {
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-        const clusters = [];
-        const processed = new Set();
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+    const clusters = [];
+    const processed = new Set();
+    
+    console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
+    
+    for (let i = 0; i < matches.length; i++) {
+        if (processed.has(i)) continue;
         
-        console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
+        const cluster = [matches[i]];
+        processed.add(i);
         
-        const progress = this.createProgressIndicator(matches.length, 'Finding duplicates');
-        
-        for (let i = 0; i < matches.length; i++) {
-            if (processed.has(i)) continue;
+        for (let j = i + 1; j < matches.length; j++) {
+            if (processed.has(j)) continue;
             
-            const cluster = [matches[i]];
-            processed.add(i);
+            const score = this.calculateMatchScore(matches[i], matches[j], sport);
             
-            for (let j = i + 1; j < matches.length; j++) {
-                if (processed.has(j)) continue;
-                
-                const score = this.calculateMatchScore(matches[i], matches[j], sport);
-                if (score >= sportConfig.mergeThreshold) {
-                    cluster.push(matches[j]);
-                    processed.add(j);
-                    
-                    if (cluster.length === 2 && clusters.length < 3) {
-                        console.log(`   🔗 ${sport} MERGE: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(2)})`);
-                    }
-                }
+            // 🎯 DEBUG LOGGING
+            if (score >= sportConfig.mergeThreshold) {
+                console.log(`   🔗 MERGING: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(3)})`);
             }
             
-            clusters.push(cluster);
-            progress.increment();
+            if (score >= sportConfig.mergeThreshold) {
+                cluster.push(matches[j]);
+                processed.add(j);
+            }
         }
         
-        return clusters;
+        clusters.push(cluster);
+        
+        // 🎯 LOG CLUSTER SIZE
+        if (cluster.length > 1) {
+            console.log(`   ✅ CREATED CLUSTER: ${cluster.length} matches for "${matches[i].match}"`);
+        }
     }
-
-    calculateMatchScore(matchA, matchB, sport) {
-    if (matchA.source === matchB.source && matchA.source !== 'wendy') {
+    
+    console.log(`   📊 Created ${clusters.length} clusters for ${sport}`);
+    return clusters;
+}
+calculateMatchScore(matchA, matchB, sport) {
+    // 🚨 CRITICAL FIX: Remove same-source blocking for Tennis
+    if (matchA.source === matchB.source && matchA.source !== 'wendy' && sport !== 'Tennis') {
         return 0;
     }
     
     const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
 
-    const normalizeTeams = (teams) => {
-        if (this.teamNormalizationCache.has(teams)) {
-            return this.teamNormalizationCache.get(teams);
-        }
-        const normalized = teams.replace(/ vs /g, ' - ').replace(/\s+/g, ' ').trim().toLowerCase();
-        this.teamNormalizationCache.set(teams, normalized);
-        return normalized;
-    };
+    // 🎯 SIMPLIFIED: Focus on player/team names only
+    const textA = matchA.match.toLowerCase().trim();
+    const textB = matchB.match.toLowerCase().trim();
     
-    // 🎯 FIX: KEEP textA and textB VARIABLES!
-    const textA = normalizeTeams(matchA.match);  // REMOVED TOURNAMENT
-    const textB = normalizeTeams(matchB.match);  // REMOVED TOURNAMENT
+    console.log(`🔍 COMPARING [${sport}]: "${textA}" ↔ "${textB}"`);
+    
+    // 🎯 FOR TENNIS: Use exact player matching
+    if (sport === 'Tennis') {
+        const playersA = this.extractPlayers(textA);
+        const playersB = this.extractPlayers(textB);
+        
+        const playerMatch = playersA.length === playersB.length && 
+                           playersA.every((player, idx) => this.playersMatch(player, playersB[idx]));
+        
+        if (playerMatch) {
+            console.log(`🎾 TENNIS EXACT MATCH: ${matchA.source} ↔ ${matchB.source} = 1.000`);
+            return 1.0;
+        }
+    }
     
     const tokensA = this.advancedTokenize(textA);
     const tokensB = this.advancedTokenize(textB);
@@ -190,15 +202,29 @@ class Phase2Processor {
     
     let score = common.length / Math.max(tokensA.length, tokensB.length);
     
-    if (matchA.source === 'wendy' || matchB.source === 'wendy') {
-        score += 0.1;
+    // 🎯 BOOST for same players/teams regardless of tournament
+    if (score > 0.7) {
+        score = Math.min(1.0, score + 0.3);
     }
     
-    if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
-        score += 0.15;
-    }
+    console.log(`   Score: ${score.toFixed(3)}`);
+    return score;
+}
 
-    return Math.min(1.0, score);
+    // 🎯 NEW: Extract players for tennis
+extractPlayers(matchText) {
+    if (!matchText.includes(' vs ')) {
+        return [matchText.split(' ')];
+    }
+    return matchText.split(' vs ').map(player => 
+        player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
+    );
+}
+
+// 🎯 NEW: Player matching for tennis
+playersMatch(playerA, playerB) {
+    if (playerA.length !== playerB.length) return false;
+    return playerA.every((token, idx) => this.tokensMatch(token, playerB[idx]));
 }
 
     advancedTokenize(text) {
