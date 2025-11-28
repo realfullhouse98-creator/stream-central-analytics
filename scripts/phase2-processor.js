@@ -14,13 +14,13 @@ class Phase2Processor {
         this.startTime = Date.now();
         
         this.sportConfigs = {
-    'Tennis': { mergeThreshold: 0.10, timeWindow: 480 }, // 🚨 CHANGED FROM 0.25 to 0.10
-    'Football': { mergeThreshold: 0.20, timeWindow: 600 },
-    'Basketball': { mergeThreshold: 0.25, timeWindow: 600 },
-    'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
-    'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
-    'default': { mergeThreshold: 0.20, timeWindow: 480 }
-};
+            'Tennis': { mergeThreshold: 0.10, timeWindow: 480 },
+            'Football': { mergeThreshold: 0.20, timeWindow: 600 },
+            'Basketball': { mergeThreshold: 0.25, timeWindow: 600 },
+            'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
+            'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
+            'default': { mergeThreshold: 0.20, timeWindow: 480 }
+        };
 
         this.teamNormalizationCache = new Map();
     }
@@ -126,120 +126,109 @@ class Phase2Processor {
     }
 
     findAndMergeMatches(matches, sport) {
-    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-    const clusters = [];
-    const processed = new Set();
-    
-    console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
-    
-    for (let i = 0; i < matches.length; i++) {
-        if (processed.has(i)) continue;
+        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+        const clusters = [];
+        const processed = new Set();
         
-        const cluster = [matches[i]];
-        processed.add(i);
+        console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
         
-        for (let j = i + 1; j < matches.length; j++) {
-            if (processed.has(j)) continue;
+        for (let i = 0; i < matches.length; i++) {
+            if (processed.has(i)) continue;
             
-            const score = this.calculateMatchScore(matches[i], matches[j], sport);
+            const cluster = [matches[i]];
+            processed.add(i);
             
-            // 🎯 DEBUG LOGGING
-            if (score >= sportConfig.mergeThreshold) {
-                console.log(`   🔗 MERGING: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(3)})`);
+            for (let j = i + 1; j < matches.length; j++) {
+                if (processed.has(j)) continue;
+                
+                const score = this.calculateMatchScore(matches[i], matches[j], sport);
+                
+                if (score >= sportConfig.mergeThreshold) {
+                    console.log(`   🔗 MERGING: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(3)})`);
+                    cluster.push(matches[j]);
+                    processed.add(j);
+                }
             }
             
-            if (score >= sportConfig.mergeThreshold) {
-                cluster.push(matches[j]);
-                processed.add(j);
+            clusters.push(cluster);
+            
+            if (cluster.length > 1) {
+                console.log(`   ✅ CREATED CLUSTER: ${cluster.length} matches for "${matches[i].match}"`);
             }
         }
         
-        clusters.push(cluster);
-        
-        // 🎯 LOG CLUSTER SIZE
-        if (cluster.length > 1) {
-            console.log(`   ✅ CREATED CLUSTER: ${cluster.length} matches for "${matches[i].match}"`);
+        console.log(`   📊 Created ${clusters.length} clusters for ${sport}`);
+        return clusters;
+    }
+
+    calculateMatchScore(matchA, matchB, sport) {
+        if (matchA.source === matchB.source && matchA.source !== 'wendy' && sport !== 'Tennis') {
+            return 0;
         }
-    }
-    
-    console.log(`   📊 Created ${clusters.length} clusters for ${sport}`);
-    return clusters;
-}
-calculateMatchScore(matchA, matchB, sport) {
-    // 🚨 CRITICAL FIX: Remove same-source blocking for Tennis
-    if (matchA.source === matchB.source && matchA.source !== 'wendy' && sport !== 'Tennis') {
-        return 0;
-    }
-    
-    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+        
+        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
 
-    // 🎯 SIMPLIFIED: Focus on player/team names only
-    const textA = matchA.match.toLowerCase().trim();
-    const textB = matchB.match.toLowerCase().trim();
-    
-    console.log(`🔍 COMPARING [${sport}]: "${textA}" ↔ "${textB}"`);
-    
-    // 🎯 FOR TENNIS: Use exact player matching
-    if (sport === 'Tennis') {
-        const playersA = this.extractPlayers(textA);
-        const playersB = this.extractPlayers(textB);
+        const textA = matchA.match.toLowerCase().trim();
+        const textB = matchB.match.toLowerCase().trim();
         
-        const playerMatch = playersA.length === playersB.length && 
-                           playersA.every((player, idx) => this.playersMatch(player, playersB[idx]));
+        console.log(`🔍 COMPARING [${sport}]: "${textA}" ↔ "${textB}"`);
         
-        if (playerMatch) {
-            console.log(`🎾 TENNIS EXACT MATCH: ${matchA.source} ↔ ${matchB.source} = 1.000`);
-            return 1.0;
+        if (sport === 'Tennis') {
+            const playersA = this.extractPlayers(textA);
+            const playersB = this.extractPlayers(textB);
+            
+            const playerMatch = playersA.length === playersB.length && 
+                               playersA.every((player, idx) => this.playersMatch(player, playersB[idx]));
+            
+            if (playerMatch) {
+                console.log(`🎾 TENNIS EXACT MATCH: ${matchA.source} ↔ ${matchB.source} = 1.000`);
+                return 1.0;
+            }
         }
+        
+        const tokensA = this.advancedTokenize(textA);
+        const tokensB = this.advancedTokenize(textB);
+        
+        const common = tokensA.filter(tA => 
+            tokensB.some(tB => this.tokensMatch(tA, tB))
+        );
+        
+        let score = common.length / Math.max(tokensA.length, tokensB.length);
+        
+        if (score > 0.7) {
+            score = Math.min(1.0, score + 0.3);
+        }
+        
+        console.log(`   Score: ${score.toFixed(3)}`);
+        return score;
     }
-    
-    const tokensA = this.advancedTokenize(textA);
-    const tokensB = this.advancedTokenize(textB);
-    
-    const common = tokensA.filter(tA => 
-        tokensB.some(tB => this.tokensMatch(tA, tB))
-    );
-    
-    let score = common.length / Math.max(tokensA.length, tokensB.length);
-    
-    // 🎯 BOOST for same players/teams regardless of tournament
-    if (score > 0.7) {
-        score = Math.min(1.0, score + 0.3);
+
+    extractPlayers(matchText) {
+        if (!matchText.includes(' vs ')) {
+            return [matchText.split(' ')];
+        }
+        return matchText.split(' vs ').map(player => 
+            player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
+        );
     }
-    
-    console.log(`   Score: ${score.toFixed(3)}`);
-    return score;
-}
 
-    // 🎯 NEW: Extract players for tennis
-extractPlayers(matchText) {
-    if (!matchText.includes(' vs ')) {
-        return [matchText.split(' ')];
+    playersMatch(playerA, playerB) {
+        if (playerA.length !== playerB.length) return false;
+        return playerA.every((token, idx) => this.tokensMatch(token, playerB[idx]));
     }
-    return matchText.split(' vs ').map(player => 
-        player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
-    );
-}
 
-// 🎯 NEW: Player matching for tennis
-playersMatch(playerA, playerB) {
-    if (playerA.length !== playerB.length) return false;
-    return playerA.every((token, idx) => this.tokensMatch(token, playerB[idx]));
-}
-
-    // 🎯 NEW: Simple similarity calculation for cluster validation
-calculateSimilarity(matchA, matchB) {
-    const textA = matchA.match.toLowerCase();
-    const textB = matchB.match.toLowerCase();
-    
-    if (textA === textB) return 1.0;
-    
-    const tokensA = textA.split(/\s+/);
-    const tokensB = textB.split(/\s+/);
-    
-    const common = tokensA.filter(tA => tokensB.includes(tA));
-    return common.length / Math.max(tokensA.length, tokensB.length);
-}
+    calculateSimilarity(matchA, matchB) {
+        const textA = matchA.match.toLowerCase();
+        const textB = matchB.match.toLowerCase();
+        
+        if (textA === textB) return 1.0;
+        
+        const tokensA = textA.split(/\s+/);
+        const tokensB = textB.split(/\s+/);
+        
+        const common = tokensA.filter(tA => tokensB.includes(tA));
+        return common.length / Math.max(tokensA.length, tokensB.length);
+    }
 
     advancedTokenize(text) {
         return text
@@ -271,108 +260,86 @@ calculateSimilarity(matchA, matchB) {
         return /[A-Z]\./.test(text) || /\//.test(text);
     }
 
-   mergeCluster(cluster, sport) {
-    const baseMatch = cluster[0];
-    
-    const allSources = {
-        tom: [],
-        sarah: [],
-        wendy: []
-    };
-    
-    // 🚨 CRITICAL FIX: Only add streams from matches that ACTUALLY MATCH
-    cluster.forEach(match => {
-        // 🎯 VERIFY this match actually belongs to the same fixture
-        const isSameFixture = this.calculateSimilarity(baseMatch, match) >= 0.8;
+    mergeCluster(cluster, sport) {
+        const baseMatch = cluster[0];
         
-        if (!isSameFixture) {
-            console.log(`🚨 SKIPPING WRONG MATCH IN CLUSTER: "${match.match}" vs "${baseMatch.match}"`);
-            return; // Skip this match - it doesn't belong
-        }
+        const allSources = {
+            tom: [],
+            sarah: [],
+            wendy: []
+        };
         
-        // Only add streams if it's the same actual match
-        if (match.sources.tom) {
-            match.sources.tom.forEach(stream => {
-                if (stream.includes('topembed.pw') && !allSources.tom.includes(stream)) {
-                    allSources.tom.push(stream);
-                }
-            });
-        }
+        console.log(`🔍 MERGING CLUSTER: "${baseMatch.match}" with ${cluster.length} matches`);
         
-        if (match.sources.sarah) {
-            match.sources.sarah.forEach(stream => {
-                if (stream.includes('embedsports.top') && !allSources.sarah.includes(stream)) {
-                    allSources.sarah.push(stream);
-                }
-            });
-        }
-        
-        if (match.sources.wendy) {
-            match.sources.wendy.forEach(stream => {
-                // 🎯 ADD WENDY STREAM VALIDATION
-                if (this.isValidWendyStreamForMatch(stream, baseMatch.match) && !allSources.wendy.includes(stream)) {
-                    allSources.wendy.push(stream);
-                }
-            });
-        }
-    });
+        cluster.forEach(match => {
+            const isSameFixture = this.calculateSimilarity(baseMatch, match) >= 0.8;
+            
+            if (!isSameFixture) {
+                console.log(`🚨 SKIPPING WRONG MATCH IN CLUSTER: "${match.match}" vs "${baseMatch.match}"`);
+                return;
+            }
+            
+            if (match.sources.tom) {
+                match.sources.tom.forEach(stream => {
+                    if (stream.includes('topembed.pw') && !allSources.tom.includes(stream)) {
+                        allSources.tom.push(stream);
+                    }
+                });
+            }
+            
+            if (match.sources.sarah) {
+                match.sources.sarah.forEach(stream => {
+                    if (stream.includes('embedsports.top') && !allSources.sarah.includes(stream)) {
+                        allSources.sarah.push(stream);
+                    }
+                });
+            }
+            
+            if (match.sources.wendy) {
+                match.sources.wendy.forEach(stream => {
+                    if (this.isValidWendyStreamForMatch(stream, baseMatch.match) && !allSources.wendy.includes(stream)) {
+                        allSources.wendy.push(stream);
+                    }
+                });
+            }
+        });
 
-    console.log(`✅ MERGED CLUSTER: "${baseMatch.match}"`);
-    console.log(`   Sources: tom=${allSources.tom.length}, sarah=${allSources.sarah.length}, wendy=${allSources.wendy.length}`);
+        console.log(`✅ MERGED CLUSTER: "${baseMatch.match}"`);
+        console.log(`   Sources: tom=${allSources.tom.length}, sarah=${allSources.sarah.length}, wendy=${allSources.wendy.length}`);
 
-    return {
-        unix_timestamp: baseMatch.unix_timestamp,
-        sport: sport,
-        tournament: baseMatch.tournament || '',
-        match: baseMatch.match,
-        sources: allSources,
-        confidence: 0.8,
-        merged: true,
-        merged_count: cluster.length
-    };
-}
-    
+        return {
+            unix_timestamp: baseMatch.unix_timestamp,
+            sport: sport,
+            tournament: baseMatch.tournament || '',
+            match: baseMatch.match,
+            sources: allSources,
+            confidence: 0.8,
+            merged: true,
+            merged_count: cluster.length
+        };
+    }
 
-// 🎯 NEW: Validate Wendy streams belong to this match
-isValidWendyStreamForMatch(streamUrl, matchText) {
-    const url = streamUrl.toLowerCase();
-    const match = matchText.toLowerCase();
-    
-    console.log(`🔍 VALIDATING WENDY STREAM: "${matchText}" ↔ "${streamUrl}"`);
-    
-    // Extract player names from match
-    const players = match.split(' vs ');
-    
-    // Check if ANY player name appears in the URL
-    for (let player of players) {
-        const nameParts = player.trim().split(' ');
-        for (let namePart of nameParts) {
-            if (namePart.length > 3 && url.includes(namePart)) {
-                console.log(`   ✅ VALID: Found "${namePart}" in URL`);
-                return true;
+    isValidWendyStreamForMatch(streamUrl, matchText) {
+        const url = streamUrl.toLowerCase();
+        const match = matchText.toLowerCase();
+        
+        console.log(`🔍 VALIDATING WENDY STREAM: "${matchText}" ↔ "${streamUrl}"`);
+        
+        const players = match.split(' vs ');
+        
+        for (let player of players) {
+            const nameParts = player.trim().split(' ');
+            for (let namePart of nameParts) {
+                if (namePart.length > 3 && url.includes(namePart)) {
+                    console.log(`   ✅ VALID: Found "${namePart}" in URL`);
+                    return true;
+                }
             }
         }
+        
+        console.log(`🚨 INVALID WENDY STREAM: No player names from "${matchText}" found in "${streamUrl}"`);
+        return false;
     }
-    
-    console.log(`🚨 INVALID WENDY STREAM: No player names from "${matchText}" found in "${streamUrl}"`);
-    return false;
-}
-
-createFinalMatch(match) {
-
-// 🎯 NEW: Validate Wendy streams belong to this match
-isValidWendyStreamForMatch(streamUrl, matchText) {
-    const normalizedMatch = matchText.toLowerCase().replace(/\s+/g, '-');
-    const players = matchText.toLowerCase().split(' vs ');
-    
-    // Check if stream URL contains any player names from the match
-    return players.some(player => {
-        const playerTokens = player.split(' ');
-        return playerTokens.some(token => 
-            token.length > 3 && streamUrl.includes(token)
-        );
-    });
-}
 
     createFinalMatch(match) {
         return {
@@ -466,7 +433,6 @@ isValidWendyStreamForMatch(streamUrl, matchText) {
     }
 }
 
-// Main execution
 if (require.main === module) {
     const processor = new Phase2Processor();
     processor.processStandardizedData()
