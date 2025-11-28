@@ -18,11 +18,10 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: ⎔ Setup Node.js (No package.json needed)
+      - name: ⎔ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          # REMOVE cache line since no package.json exists
 
       - name: 🔍 Create Debug Script
         run: |
@@ -47,7 +46,7 @@ jobs:
 
             debugSpecificMatch(matchQuery) {
               console.log(`\\n🎯 DEBUGGING: "${matchQuery}"`);
-              console.log('=' .repeat(80));
+              console.log('='.repeat(80));
 
               // Find all versions
               const versions = this.standardized.matches.filter(m => 
@@ -112,7 +111,7 @@ jobs:
 
             analyzeSport(sport) {
               console.log(`\\n🎾 ANALYZING ALL ${sport.toUpperCase()} MATCHES:`);
-              console.log('=' .repeat(80));
+              console.log('='.repeat(80));
 
               const sportMatches = this.standardized.matches.filter(m => m.sport === sport);
               const sportMaster = this.master.matches.filter(m => m.sport === sport);
@@ -229,16 +228,17 @@ jobs:
           const targetMatch = process.env.TARGET_MATCH || 'Elias Ymer vs Mert Alkaya';
           const sportType = process.env.SPORT_TYPE || 'Tennis';
 
-          const debugger = new DetailedMergeDebugger();
+          // FIX: Use different variable name (debugger is reserved keyword)
+          const mergeDebugger = new DetailedMergeDebugger();
           
           console.log('🚀 SPORTS DATA MERGE DEBUGGER');
-          console.log('=' .repeat(80));
+          console.log('='.repeat(80));
           
           // Debug specific match
-          debugger.debugSpecificMatch(targetMatch);
+          mergeDebugger.debugSpecificMatch(targetMatch);
           
           // Analyze entire sport
-          debugger.analyzeSport(sportType);
+          mergeDebugger.analyzeSport(sportType);
           
           console.log('\\n✅ DEBUG COMPLETE');
           EOF
