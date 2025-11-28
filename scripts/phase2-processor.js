@@ -15,7 +15,7 @@ class Phase2Processor {
         
         this.sportConfigs = {
             'Tennis': { mergeThreshold: 0.10, timeWindow: 480 },
-            'Football': { mergeThreshold: 0.20, timeWindow: 600 },
+            'Football': { mergeThreshold: 0.10, timeWindow: 600 },
             'Basketball': { mergeThreshold: 0.10, timeWindow: 600 },
             'American Football': { mergeThreshold: 0.10, timeWindow: 600 },
             'Ice Hockey': { mergeThreshold: 0.10, timeWindow: 600 },
