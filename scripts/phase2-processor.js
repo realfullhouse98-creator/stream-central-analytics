@@ -21,27 +21,41 @@ class Phase2Processor {
             'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
             'default': { mergeThreshold: 0.20, timeWindow: 480 }
         };
+
+        this.teamNormalizationCache = new Map();
     }
 
     async processStandardizedData() {
-        console.log('🚀 PHASE 2 - SIMPLE PROCESSING\n');
+        console.log('🚀 PHASE 2 - ADVANCED PROCESSING\n');
         
         try {
+            this.results.memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
+            console.log(`💾 Memory usage: ${this.results.memoryUsage.toFixed(2)} MB`);
+
             const standardizedData = this.loadStandardizedData();
             console.log(`📥 Loaded ${standardizedData.matches.length} standardized matches`);
             
             const sportGroups = this.groupBySport(standardizedData.matches);
-            console.log(`🏆 Found ${Object.keys(sportGroups).length} sports`);
+            console.log(`🏆 Found ${Object.keys(sportGroups).length} sports to process`);
 
             const processedData = {};
+            const sports = Object.entries(sportGroups);
             
-            for (const [sport, matches] of Object.entries(sportGroups)) {
-                console.log(`\n🔧 Processing ${sport}: ${matches.length} matches`);
-                processedData[sport] = this.processSportSimple(sport, matches);
+            for (let i = 0; i < sports.length; i++) {
+                const [sport, matches] = sports[i];
+                console.log(`\n🔧 Processing ${sport} (${i + 1}/${sports.length}): ${matches.length} matches`);
+                
+                processedData[sport] = this.processSport(sport, matches);
+                
+                if (i % 5 === 0) {
+                    this.clearCache();
+                }
             }
 
             this.createMasterData(processedData, standardizedData);
             this.logResults();
+            
+            this.results.processingTime = Date.now() - this.startTime;
             
             return processedData;
             
@@ -51,31 +65,35 @@ class Phase2Processor {
         }
     }
 
-    processSportSimple(sport, matches) {
-        const clusters = [];
-        const processed = new Set();
+    loadStandardizedData() {
+        const filePath = './standardization-UNIVERSAL.json';
+        if (!fs.existsSync(filePath)) {
+            throw new Error('Phase 1 output not found. Run universal-standardizer first.');
+        }
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    }
+
+    groupBySport(matches) {
+        const sportGroups = {};
         
-        console.log(`   Finding duplicates with threshold: ${this.sportConfigs[sport]?.mergeThreshold || 0.20}`);
-        
-        // Simple clustering - match exact same match names
-        for (let i = 0; i < matches.length; i++) {
-            if (processed.has(i)) continue;
-            
-            const cluster = [matches[i]];
-            processed.add(i);
-            
-            for (let j = i + 1; j < matches.length; j++) {
-                if (processed.has(j)) continue;
-                
-                if (this.isSameMatch(matches[i], matches[j], sport)) {
-                    cluster.push(matches[j]);
-                    processed.add(j);
-                }
+        matches.forEach(match => {
+            const sport = match.sport;
+            if (!sportGroups[sport]) {
+                sportGroups[sport] = [];
+                this.results.sportBreakdown[sport] = 0;
             }
             
-            clusters.push(cluster);
-        }
+            sportGroups[sport].push(match);
+            this.results.sportBreakdown[sport]++;
+        });
+        
+        return sportGroups;
+    }
 
+    processSport(sport, matches) {
+        console.log(`   🔍 Looking for duplicates in ${sport}...`);
+        
+        const clusters = this.findAndMergeMatches(matches, sport);
         const processedMatches = [];
         
         clusters.forEach(cluster => {
@@ -83,10 +101,13 @@ class Phase2Processor {
                 processedMatches.push(this.createFinalMatch(cluster[0]));
                 this.results.individual++;
             } else {
-                const merged = this.mergeClusterSimple(cluster, sport);
+                const merged = this.mergeCluster(cluster, sport);
                 processedMatches.push(merged);
                 this.results.merged++;
-                console.log(`   ✅ MERGED ${cluster.length} matches: "${cluster[0].match}"`);
+                
+                if (this.results.merged <= 3) {
+                    console.log(`   ✅ MERGED ${cluster.length} ${sport} matches`);
+                }
             }
         });
         
@@ -96,65 +117,203 @@ class Phase2Processor {
             summary: {
                 input_matches: matches.length,
                 output_matches: processedMatches.length,
-                merged_clusters: clusters.filter(c => c.length > 1).length
+                merged_clusters: clusters.filter(c => c.length > 1).length,
+                individual_matches: clusters.filter(c => c.length === 1).length,
+                merge_efficiency: ((matches.length - processedMatches.length) / matches.length * 100).toFixed(1) + '%'
             },
             matches: processedMatches
         };
     }
 
-    isSameMatch(matchA, matchB, sport) {
-        // SIMPLE: Exact match name comparison
-        if (matchA.match === matchB.match) {
-            return true;
+    findAndMergeMatches(matches, sport) {
+        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+        const clusters = [];
+        const processed = new Set();
+        
+        console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
+        
+        for (let i = 0; i < matches.length; i++) {
+            if (processed.has(i)) continue;
+            
+            const cluster = [matches[i]];
+            processed.add(i);
+            
+            for (let j = i + 1; j < matches.length; j++) {
+                if (processed.has(j)) continue;
+                
+                const score = this.calculateMatchScore(matches[i], matches[j], sport);
+                
+                if (score >= sportConfig.mergeThreshold) {
+                    console.log(`   🔗 MERGING: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(3)})`);
+                    cluster.push(matches[j]);
+                    processed.add(j);
+                }
+            }
+            
+            clusters.push(cluster);
+            
+            if (cluster.length > 1) {
+                console.log(`   ✅ CREATED CLUSTER: ${cluster.length} matches for "${matches[i].match}"`);
+            }
         }
         
-        // SIMPLE: Case-insensitive comparison
-        if (matchA.match.toLowerCase() === matchB.match.toLowerCase()) {
-            return true;
-        }
-        
-        // SIMPLE: For tennis, check if it's the same players
-        if (sport === 'Tennis') {
-            const playersA = matchA.match.toLowerCase().split(' vs ').sort().join(' vs ');
-            const playersB = matchB.match.toLowerCase().split(' vs ').sort().join(' vs ');
-            return playersA === playersB;
-        }
-        
-        return false;
+        console.log(`   📊 Created ${clusters.length} clusters for ${sport}`);
+        return clusters;
     }
 
-    mergeClusterSimple(cluster, sport) {
+    calculateMatchScore(matchA, matchB, sport) {
+        if (matchA.source === matchB.source && matchA.source !== 'wendy') {
+            return 0;
+        }
+        
+        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+
+        // 🎯 SIMPLIFIED: Focus on player/team names only
+        const textA = matchA.match.toLowerCase().trim();
+        const textB = matchB.match.toLowerCase().trim();
+        
+        console.log(`🔍 COMPARING [${sport}]: "${textA}" ↔ "${textB}"`);
+        
+        // 🎯 FOR TENNIS: Use exact player matching
+        if (sport === 'Tennis') {
+            const playersA = this.extractPlayers(textA);
+            const playersB = this.extractPlayers(textB);
+            
+            const playerMatch = playersA.length === playersB.length && 
+                               playersA.every((player, idx) => this.playersMatch(player, playersB[idx]));
+            
+            if (playerMatch) {
+                console.log(`🎾 TENNIS EXACT MATCH: ${matchA.source} ↔ ${matchB.source} = 1.000`);
+                return 1.0;
+            }
+        }
+        
+        // 🎯 USE ADVANCED TOKENIZATION FOR ALL SPORTS
+        const tokensA = this.advancedTokenize(textA);
+        const tokensB = this.advancedTokenize(textB);
+        
+        const common = tokensA.filter(tA => 
+            tokensB.some(tB => this.tokensMatch(tA, tB))
+        );
+        
+        let score = common.length / Math.max(tokensA.length, tokensB.length);
+        
+        // 🎯 TENNIS BONUS: If both matches have tennis player patterns, boost score
+        if (sport === 'Tennis' && this.hasTennisPlayerPattern(matchA) && this.hasTennisPlayerPattern(matchB)) {
+            score += 0.15;
+            console.log(`🎾 Tennis pattern bonus applied: +0.15`);
+        }
+        
+        // 🎯 WENDY BOOST (keep your existing logic)
+        if (matchA.source === 'wendy' || matchB.source === 'wendy') {
+            score += 0.1;
+        }
+        
+        const finalScore = Math.min(1.0, score);
+        console.log(`   FINAL SCORE: ${finalScore.toFixed(3)}`);
+        
+        return finalScore;
+    }
+
+    // 🎯 NEW: Extract players for tennis
+    extractPlayers(matchText) {
+        if (!matchText.includes(' vs ')) {
+            return [matchText.split(' ')];
+        }
+        return matchText.split(' vs ').map(player => 
+            player.trim().toLowerCase().split(' ').filter(t => t.length > 1)
+        );
+    }
+
+    // 🎯 NEW: Player matching for tennis
+    playersMatch(playerA, playerB) {
+        if (playerA.length !== playerB.length) return false;
+        return playerA.every((token, idx) => this.tokensMatch(token, playerB[idx]));
+    }
+
+    // 🎯 4. Tennis Pattern Detection
+    hasTennisPlayerPattern(match) {
+        const text = match.match || '';
+        return /[A-Z]\./.test(text) || /\//.test(text);
+    }
+
+    // 🎯 5. Advanced Tokenization for ALL SPORTS
+    advancedTokenize(text) {
+        return text
+            .replace(/[^\w\s-]/g, ' ')
+            .split(/[\s\-]+/)
+            .filter(t => t.length > 2)
+            .map(t => t.toLowerCase());
+    }
+
+    tokensMatch(tokenA, tokenB) {
+        if (tokenA === tokenB) return true;
+        if (tokenA.includes(tokenB) || tokenB.includes(tokenA)) return true;
+        
+        const abbreviations = {
+            'fc': 'football club',
+            'utd': 'united', 
+            'afc': 'association football club',
+            'vs': 'versus'
+        };
+        
+        const expandedA = abbreviations[tokenA] || tokenA;
+        const expandedB = abbreviations[tokenB] || tokenB;
+        
+        return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
+    }
+
+    hasTennisPlayerPattern(match) {
+        const text = match.match || '';
+        return /[A-Z]\./.test(text) || /\//.test(text);
+    }
+
+    mergeCluster(cluster, sport) {
         const baseMatch = cluster[0];
+        
         const allSources = {
             tom: [],
             sarah: [],
             wendy: []
         };
         
-        // SIMPLE: Collect all unique streams
+        console.log(`🔍 MERGING CLUSTER: "${baseMatch.match}" with ${cluster.length} matches`);
+        
         cluster.forEach(match => {
+            const isSameFixture = this.calculateSimilarity(baseMatch, match) >= 0.8;
+            
+            if (!isSameFixture) {
+                console.log(`🚨 SKIPPING WRONG MATCH IN CLUSTER: "${match.match}" vs "${baseMatch.match}"`);
+                return;
+            }
+            
             if (match.sources.tom) {
                 match.sources.tom.forEach(stream => {
-                    if (!allSources.tom.includes(stream)) {
+                    if (stream.includes('topembed.pw') && !allSources.tom.includes(stream)) {
                         allSources.tom.push(stream);
                     }
                 });
             }
+            
             if (match.sources.sarah) {
                 match.sources.sarah.forEach(stream => {
-                    if (!allSources.sarah.includes(stream)) {
+                    if (stream.includes('embedsports.top') && !allSources.sarah.includes(stream)) {
                         allSources.sarah.push(stream);
                     }
                 });
             }
+            
             if (match.sources.wendy) {
                 match.sources.wendy.forEach(stream => {
-                    if (!allSources.wendy.includes(stream)) {
+                    if (this.isValidWendyStreamForMatch(stream, baseMatch.match) && !allSources.wendy.includes(stream)) {
                         allSources.wendy.push(stream);
                     }
                 });
             }
         });
+
+        console.log(`✅ MERGED CLUSTER: "${baseMatch.match}"`);
+        console.log(`   Sources: tom=${allSources.tom.length}, sarah=${allSources.sarah.length}, wendy=${allSources.wendy.length}`);
 
         return {
             unix_timestamp: baseMatch.unix_timestamp,
@@ -168,24 +327,41 @@ class Phase2Processor {
         };
     }
 
-    // KEEP ALL THESE ORIGINAL METHODS - THEY WORK
-    loadStandardizedData() {
-        const filePath = './standardization-UNIVERSAL.json';
-        if (!fs.existsSync(filePath)) {
-            throw new Error('Phase 1 output not found. Run universal-standardizer first.');
-        }
-        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    // 🎯 NEW: Simple similarity calculation for cluster validation
+    calculateSimilarity(matchA, matchB) {
+        const textA = matchA.match.toLowerCase();
+        const textB = matchB.match.toLowerCase();
+        
+        if (textA === textB) return 1.0;
+        
+        const tokensA = textA.split(/\s+/);
+        const tokensB = textB.split(/\s+/);
+        
+        const common = tokensA.filter(tA => tokensB.includes(tA));
+        return common.length / Math.max(tokensA.length, tokensB.length);
     }
 
-    groupBySport(matches) {
-        const sportGroups = {};
-        matches.forEach(match => {
-            const sport = match.sport;
-            if (!sportGroups[sport]) sportGroups[sport] = [];
-            sportGroups[sport].push(match);
-            this.results.sportBreakdown[sport] = (this.results.sportBreakdown[sport] || 0) + 1;
-        });
-        return sportGroups;
+    // 🎯 NEW: Validate Wendy streams belong to this match
+    isValidWendyStreamForMatch(streamUrl, matchText) {
+        const url = streamUrl.toLowerCase();
+        const match = matchText.toLowerCase();
+        
+        console.log(`🔍 VALIDATING WENDY STREAM: "${matchText}" ↔ "${streamUrl}"`);
+        
+        const players = match.split(' vs ');
+        
+        for (let player of players) {
+            const nameParts = player.trim().split(' ');
+            for (let namePart of nameParts) {
+                if (namePart.length > 3 && url.includes(namePart)) {
+                    console.log(`   ✅ VALID: Found "${namePart}" in URL`);
+                    return true;
+                }
+            }
+        }
+        
+        console.log(`🚨 INVALID WENDY STREAM: No player names from "${matchText}" found in "${streamUrl}"`);
+        return false;
     }
 
     createFinalMatch(match) {
@@ -203,13 +379,15 @@ class Phase2Processor {
     createMasterData(processedData, standardizedData) {
         const masterData = {
             processed_at: new Date().toISOString(),
-            processor_version: '2.1-simple',
+            processor_version: '2.0',
             phase1_source: standardizedData.created_at,
             summary: {
                 total_sports: Object.keys(processedData).length,
                 total_matches: this.results.totalProcessed,
                 merged_matches: this.results.merged,
                 individual_matches: this.results.individual,
+                processing_time_ms: this.results.processingTime,
+                memory_usage_mb: this.results.memoryUsage,
                 original_matches: standardizedData.matches.length,
                 compression_ratio: ((standardizedData.matches.length - this.results.totalProcessed) / standardizedData.matches.length * 100).toFixed(1) + '%'
             },
@@ -220,29 +398,46 @@ class Phase2Processor {
             masterData.matches.push(...sportData.matches);
         });
 
-        // VALIDATION
-        console.log('\n🔍 VALIDATION:');
-        console.log(`   Input: ${standardizedData.matches.length} matches`);
-        console.log(`   Output: ${masterData.matches.length} matches`);
-        console.log(`   Merged: ${this.results.merged} clusters`);
-        
-        const missingCount = standardizedData.matches.length - this.results.totalProcessed;
-        if (missingCount > 0) {
-            console.log(`   ⚠️  ${missingCount} matches may be missing - checking...`);
-        }
+        console.log('\n🔍 FINAL VALIDATION:');
+        const wendySources = masterData.matches.filter(m => 
+            m.sources && m.sources.wendy && m.sources.wendy.length > 0
+        );
+        console.log(`   Matches with Wendy sources: ${wendySources.length}`);
 
-        fs.writeFileSync('./master-data.json', JSON.stringify(masterData, null, 2));
-        console.log('✅ Master data saved');
-        
-        return masterData;
+        try {
+            const masterDataJson = JSON.stringify(masterData, null, 2);
+            JSON.parse(masterDataJson);
+            fs.writeFileSync('./master-data.json', masterDataJson);
+            console.log('✅ Master data saved successfully');
+            
+        } catch (error) {
+            console.error('❌ JSON validation failed:', error.message);
+            throw error;
+        }
+    }
+
+    clearCache() {
+        this.teamNormalizationCache.clear();
+        if (global.gc) {
+            global.gc();
+        }
     }
 
     logResults() {
-        console.log('\n📊 RESULTS:');
+        console.log('\n📊 PHASE 2 RESULTS:');
         console.log('══════════════════════════════════════');
-        console.log(`✅ Total: ${this.results.totalProcessed} matches`);
-        console.log(`🔄 Merged: ${this.results.merged} clusters`);
-        console.log(`🎯 Individual: ${this.results.individual} matches`);
+        console.log(`✅ Total Processed: ${this.results.totalProcessed}`);
+        console.log(`🔄 Total Merged: ${this.results.merged}`);
+        console.log(`🎯 Total Individual: ${this.results.individual}`);
+        console.log(`⏱️  Processing Time: ${this.results.processingTime}ms`);
+        console.log(`💾 Peak Memory: ${this.results.memoryUsage.toFixed(2)} MB`);
+        
+        console.log('\n🏆 Sport Breakdown:');
+        Object.entries(this.results.sportBreakdown)
+            .sort((a, b) => b[1] - a[1])
+            .forEach(([sport, count]) => {
+                console.log(`   ${sport}: ${count} matches`);
+            });
         console.log('══════════════════════════════════════\n');
     }
 }
@@ -253,10 +448,11 @@ if (require.main === module) {
     processor.processStandardizedData()
         .then(() => {
             console.log('🎉 PHASE 2 COMPLETED!');
+            console.log('💾 Master data: master-data.json');
             process.exit(0);
         })
         .catch(error => {
-            console.error('💥 Failed:', error);
+            console.error('💥 Phase 2 failed:', error);
             process.exit(1);
         });
 }
