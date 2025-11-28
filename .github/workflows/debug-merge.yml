@@ -18,11 +18,11 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: ⎔ Setup Node.js
+      - name: ⎔ Setup Node.js (No package.json needed)
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          # REMOVE cache line since no package.json exists
 
       - name: 🔍 Create Debug Script
         run: |
@@ -107,15 +107,6 @@ jobs:
                     console.log(`     ❌ REASON: Score ${score.toFixed(3)} < Threshold ${threshold}`);
                   }
                 }
-              }
-
-              // Token-level analysis
-              if (versions.length > 0) {
-                console.log(`\\n🔍 TOKEN-LEVEL ANALYSIS:`);
-                const sample = versions[0];
-                const tokens = this.tokenizeMatch(sample.match);
-                console.log(`   Match: "${sample.match}"`);
-                console.log(`   Tokens: [${tokens.join(', ')}]`);
               }
             }
 
@@ -223,10 +214,6 @@ jobs:
               return expandedA === expandedB || expandedA.includes(expandedB) || expandedB.includes(expandedA);
             }
 
-            tokenizeMatch(matchText) {
-              return this.advancedTokenize(matchText);
-            }
-
             getSportThreshold(sport) {
               const thresholds = {
                 'Tennis': 0.25,
@@ -262,26 +249,60 @@ jobs:
           SPORT_TYPE: ${{ github.event.inputs.sport_type }}
         run: |
           echo "Starting detailed merge analysis..."
+          echo "Target Match: $TARGET_MATCH"
+          echo "Sport Type: $SPORT_TYPE"
+          echo ""
+          
+          # Check if files exist first
+          if [ ! -f "standardization-UNIVERSAL.json" ]; then
+            echo "❌ standardization-UNIVERSAL.json not found - run pipeline first"
+            exit 1
+          fi
+          
+          if [ ! -f "master-data.json" ]; then
+            echo "❌ master-data.json not found - run pipeline first"
+            exit 1
+          fi
+          
           node debug-merge-detailed.js
 
       - name: 📊 Generate Summary Report
+        if: success()
         run: |
           echo "## 🔍 Merge Debug Report" >> $GITHUB_STEP_SUMMARY
           echo "### Investigation Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Target Match:** ${{ github.event.inputs.target_match }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Sport Analyzed:** ${{ github.event.inputs.sport_type }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Run Time:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Run Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
-          echo "1. Check similarity scores in logs above" >> $GITHUB_STEP_SUMMARY
-          echo "2. Compare against sport thresholds" >> $GITHUB_STEP_SUMMARY
+          echo "### 📁 Files Checked" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ standardization-UNIVERSAL.json" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ master-data.json" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Check similarity scores in workflow logs" >> $GITHUB_STEP_SUMMARY
+          echo "2. Compare scores against sport thresholds" >> $GITHUB_STEP_SUMMARY
           echo "3. Adjust thresholds in phase2-processor.js if needed" >> $GITHUB_STEP_SUMMARY
+          echo "4. Check for tournament name variations blocking merges" >> $GITHUB_STEP_SUMMARY
 
       - name: 💾 Save Debug Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: debug-reports
+          name: debug-reports-${{ github.run_id }}
           path: |
             standardization-UNIVERSAL.json
             master-data.json
           retention-days: 1
+
+      - name: ❌ Handle Missing Files
+        if: failure()
+        run: |
+          echo "## ❌ Debug Failed" >> $GITHUB_STEP_SUMMARY
+          echo "Required data files not found." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Solution:** Run the main pipeline first to generate data files:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Go to Actions → 'Universal Data Pipeline'" >> $GITHUB_STEP_SUMMARY
+          echo "2. Click 'Run workflow'" >> $GITHUB_STEP_SUMMARY
+          echo "3. Wait for completion" >> $GITHUB_STEP_SUMMARY
+          echo "4. Re-run this debug workflow" >> $GITHUB_STEP_SUMMARY
