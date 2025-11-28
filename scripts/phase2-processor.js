@@ -331,7 +331,7 @@ calculateSimilarity(matchA, matchB) {
         merged_count: cluster.length
     };
 }
-    }
+    
 
 // 🎯 NEW: Validate Wendy streams belong to this match
 isValidWendyStreamForMatch(streamUrl, matchText) {
