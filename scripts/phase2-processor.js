@@ -157,40 +157,64 @@ class Phase2Processor {
     }
 
     findAndMergeMatches(matches, sport) {
-        const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
-        const clusters = [];
-        const processed = new Set();
+    // 🎯 TARGETED DEBUG: Check if Elias Ymer is in this group
+    const eliasMatches = matches.filter(m => m.match.includes('Elias Ymer'));
+    if (eliasMatches.length > 0) {
+        console.log(`🎯 ELIAS YMER IN ${sport}: ${eliasMatches.length} versions found`);
+    }
+    
+    const sportConfig = this.sportConfigs[sport] || this.sportConfigs.default;
+    const clusters = [];
+    const processed = new Set();
+    
+    console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
+    
+    for (let i = 0; i < matches.length; i++) {
+        if (processed.has(i)) continue;
         
-        console.log(`   🎯 Using merge threshold: ${sportConfig.mergeThreshold} for ${sport}`);
+        const cluster = [matches[i]];
+        processed.add(i);
         
-        for (let i = 0; i < matches.length; i++) {
-            if (processed.has(i)) continue;
+        for (let j = i + 1; j < matches.length; j++) {
+            if (processed.has(j)) continue;
             
-            const cluster = [matches[i]];
-            processed.add(i);
+            const score = this.calculateMatchScore(matches[i], matches[j], sport);
             
-            for (let j = i + 1; j < matches.length; j++) {
-                if (processed.has(j)) continue;
-                
-                const score = this.calculateMatchScore(matches[i], matches[j], sport);
-                
-                if (score >= sportConfig.mergeThreshold) {
-                    console.log(`   🔗 MERGING: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(3)})`);
-                    cluster.push(matches[j]);
-                    processed.add(j);
-                }
+            // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+            if (matches[i].match.includes('Elias Ymer') && matches[j].match.includes('Elias Ymer')) {
+                console.log(`🎯 ELIAS CLUSTER CHECK: Score = ${score.toFixed(3)}, Threshold = ${sportConfig.mergeThreshold}`);
             }
             
-            clusters.push(cluster);
-            
-            if (cluster.length > 1) {
-                console.log(`   ✅ CREATED CLUSTER: ${cluster.length} matches for "${matches[i].match}"`);
+            if (score >= sportConfig.mergeThreshold) {
+                // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
+                if (matches[i].match.includes('Elias Ymer') && matches[j].match.includes('Elias Ymer')) {
+                    console.log(`🎯 ELIAS ADDING TO CLUSTER: "${matches[j].source}" to "${matches[i].source}"`);
+                }
+                
+                console.log(`   🔗 MERGING: "${matches[i].match}" ↔ "${matches[j].match}" (${score.toFixed(3)})`);
+                cluster.push(matches[j]);
+                processed.add(j);
             }
         }
         
-        console.log(`   📊 Created ${clusters.length} clusters for ${sport}`);
-        return clusters;
+        // 🎯 TARGETED DEBUG: Show cluster info for Elias Ymer
+        if (cluster[0].match.includes('Elias Ymer')) {
+            console.log(`🎯 ELIAS FINAL CLUSTER: ${cluster.length} matches`);
+            cluster.forEach((match, idx) => {
+                console.log(`   ${idx + 1}. ${match.source}: "${match.match}"`);
+            });
+        }
+        
+        clusters.push(cluster);
+        
+        if (cluster.length > 1) {
+            console.log(`   ✅ CREATED CLUSTER: ${cluster.length} matches for "${matches[i].match}"`);
+        }
     }
+    
+    console.log(`   📊 Created ${clusters.length} clusters for ${sport}`);
+    return clusters;
+}
 
     calculateMatchScore(matchA, matchB, sport) {
         // 🎯 TARGETED DEBUG: Only show for Elias Ymer matches
@@ -452,15 +476,16 @@ class Phase2Processor {
         const wendySources = masterData.matches.filter(m => 
             m.sources && m.sources.wendy && m.sources.wendy.length > 0
         );
-        console.log(`   Matches with Wendy sources: ${wendySources.length}`);
+                console.log(`   Matches with Wendy sources: ${wendySources.length}`);
 
         // 🎯 SPECIFIC CHECK: Is Elias Ymer merged?
         const eliasMatches = masterData.matches.filter(m => 
             m.match && m.match.includes('Elias Ymer') && m.match.includes('Mert Alkaya')
         );
-        console.log(`   Elias Ymer matches in final: ${eliasMatches.length}`);
+        console.log(`\n🎯 ELIAS YMER FINAL STATUS:`);
+        console.log(`   Total matches: ${eliasMatches.length}`);
         eliasMatches.forEach(match => {
-            console.log(`     - Sources: ${Object.keys(match.sources).join(', ')} | Merged: ${match.merged}`);
+            console.log(`   - Sources: ${Object.keys(match.sources).join(', ')} | Merged: ${match.merged} | Count: ${match.merged_count || 1}`);
         });
 
         try {
