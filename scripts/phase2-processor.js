@@ -13,13 +13,14 @@ class Phase2Processor {
         };
         this.startTime = Date.now();
         
-        this.sportConfigs = {
+     this.sportConfigs = {
     'Tennis': { mergeThreshold: 0.50, timeWindow: 480 },
-    'Football': { mergeThreshold: 0.50, timeWindow: 600 },      // 🆕 Changed from 0.20
-    'Basketball': { mergeThreshold: 0.50, timeWindow: 600 },    // 🆕 Changed from 0.25
-    'American Football': { mergeThreshold: 0.50, timeWindow: 600 }, // 🆕 Changed from 0.25
-    'Ice Hockey': { mergeThreshold: 0.50, timeWindow: 600 },    // 🆕 Changed from 0.25
-    'default': { mergeThreshold: 0.50, timeWindow: 480 }        // 🆕 Changed from 0.20
+    'Football': { mergeThreshold: 0.20, timeWindow: 600 },
+    'Basketball': { mergeThreshold: 0.25, timeWindow: 600 },
+    'American Football': { mergeThreshold: 0.25, timeWindow: 600 },
+    'Ice Hockey': { mergeThreshold: 0.25, timeWindow: 600 },
+    'Volleyball': { mergeThreshold: 0.50, timeWindow: 480 },  // 🆕 ADD THIS LINE
+    'default': { mergeThreshold: 0.20, timeWindow: 480 }
 };
 
         this.teamNormalizationCache = new Map();
