@@ -1,34 +1,39 @@
 {
-  "startTime": "2025-11-30T19:09:06.363Z",
+  "startTime": "2025-11-30T20:13:14.646Z",
   "professional": true,
   "updated": [
     "sarah",
-    "tom",
+    "tom"
+  ],
+  "failed": [
     "wendy"
   ],
-  "failed": [],
   "skipped": [],
   "details": {
     "sarah": {
       "success": true,
-      "matchCount": 385,
+      "matchCount": 389,
       "source": "corsproxy.io",
-      "dataHash": "f92c61c021e17f01000db2a7d9f9a902",
+      "dataHash": "56f3fa472b2f227456f85a81fc6f57f7",
       "backup": null
     },
     "tom": {
       "success": true,
-      "matchCount": 1169,
+      "matchCount": 1185,
       "source": "corsproxy.io",
-      "dataHash": "0a850c19c5e1f063eb42897252b7b256",
-      "backup": "tom-data-1764529746368.json"
+      "dataHash": "0f9489e49195528320cdaba06d27d8b9",
+      "backup": "tom-data-1764533594651.json"
     },
     "wendy": {
-      "success": true,
-      "matchCount": 898,
-      "source": "9kilos-proxy.mandiyandiyakhonyana.workers.dev",
-      "dataHash": "464f5edcc6d48c75fdcf54abcd52f328",
-      "backup": "wendy-data-1764529746445.json"
+      "success": false,
+      "error": "This operation was aborted",
+      "restored": false,
+      "recoveryDetails": null,
+      "circuitBreaker": {
+        "state": "CLOSED",
+        "failures": 1,
+        "lastFailure": "2025-11-30T20:13:24.746Z"
+      }
     }
   },
   "circuitBreakers": {
@@ -50,10 +55,10 @@
   },
   "integrity": {
     "totalAttempted": 3,
-    "successful": 3,
-    "failed": 0,
+    "successful": 2,
+    "failed": 1,
     "recovered": 0
   },
-  "endTime": "2025-11-30T19:09:08.748Z",
-  "duration": 2385
+  "endTime": "2025-11-30T20:13:24.947Z",
+  "duration": 10301
 }
