@@ -165,3 +165,19 @@ Clean: Minimal, well-structured output
 Fast: Complete pipeline in under 10 seconds
 Maintainable: Clear separation of concerns
 🚀 The universal sports data pipeline is production-ready and scaling beautifully!
+
+
+
+Raw Data
+   ↓ Phase 1 (Lightweight Normalization)
+   - Normalize easy sports & teams
+   - Standardize separators & sources
+   - Tag “simple” vs “complex”
+   - Hash/cache trivial matches
+   ↓
+Phase 2 (Full Normalization & Validation)
+   - Process only complex or flagged matches
+   - Full team list, multi-word names
+   - Multi-source merging & validation
+   - Sport-specific rules (tennis, MMA, etc.)
+
