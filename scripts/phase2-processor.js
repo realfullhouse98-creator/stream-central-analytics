@@ -420,7 +420,7 @@ class EnterpriseSportsProcessorNoTournament {
     getEnhancedSportConfigs() {
         return {
             'Football': { 
-                mergeThreshold: 0.70,
+                mergeThreshold: 0.50,
                 timeWindow: 7200,
                 teamSimilarityWeight: 0.6,
                 timeWeight: 0.3,
@@ -428,7 +428,7 @@ class EnterpriseSportsProcessorNoTournament {
                 requireExactTeamOrder: true
             },
             'Basketball': {
-                mergeThreshold: 0.65,
+                mergeThreshold: 0.50,
                 timeWindow: 3600,
                 teamSimilarityWeight: 0.6,
                 timeWeight: 0.3,
@@ -436,7 +436,7 @@ class EnterpriseSportsProcessorNoTournament {
                 handleCollegePrefixes: true
             },
             'Tennis': {
-                mergeThreshold: 0.60,
+                mergeThreshold: 0.50,
                 timeWindow: 3600,
                 teamSimilarityWeight: 0.5,
                 timeWeight: 0.4,
@@ -444,7 +444,7 @@ class EnterpriseSportsProcessorNoTournament {
                 allowPlayerOrderSwap: true
             },
             'American Football': {
-                mergeThreshold: 0.75,
+                mergeThreshold: 0.50,
                 timeWindow: 86400,
                 teamSimilarityWeight: 0.7,
                 timeWeight: 0.2,
@@ -452,14 +452,14 @@ class EnterpriseSportsProcessorNoTournament {
                 handleNFLTeams: true
             },
             'Ice Hockey': {
-                mergeThreshold: 0.65,
+                mergeThreshold: 0.50,
                 timeWindow: 3600,
                 teamSimilarityWeight: 0.6,
                 timeWeight: 0.3,
                 sourceWeight: 0.1
             },
             'default': {
-                mergeThreshold: 0.60,
+                mergeThreshold: 0.50,
                 timeWindow: 3600,
                 teamSimilarityWeight: 0.6,
                 timeWeight: 0.3,
