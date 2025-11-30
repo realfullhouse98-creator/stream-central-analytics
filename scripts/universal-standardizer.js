@@ -4,7 +4,7 @@ const path = require('path');
 /**
  * 🏆 OPTIMIZED UNIVERSAL STANDARDIZER - PHASE 1
  * Purpose: Standardize supplier data (Tom, Sarah, Wendy) into a unified format
- * Version: 2.0-optimized
+ * Version: 2.1-optimized
  */
 class OptimizedUniversalStandardizer {
     constructor() {
@@ -14,11 +14,9 @@ class OptimizedUniversalStandardizer {
             invalidMatches: 0,
             sourceDistribution: { tom: 0, sarah: 0, wendy: 0 }
         };
-
         this.startTime = Date.now();
         this.debugEnabled = true;
 
-        // 🎯 PERFORMANCE CACHES
         this.teamNormalizationCache = new Map();
         this.dateCache = new Map();
     }
@@ -56,38 +54,43 @@ class OptimizedUniversalStandardizer {
     }
 
     extractTeams(matchText) {
-        if (!matchText.includes(' vs ')) return [this.normalizeTeamName(matchText)];
-        const [teamA, teamB] = matchText.split(' vs ');
+        if (!matchText.includes(' vs ') && !matchText.includes(' - ')) {
+            return [this.normalizeTeamName(matchText)];
+        }
+        const separator = matchText.includes(' vs ') ? ' vs ' : ' - ';
+        const [teamA, teamB] = matchText.split(separator);
         return [this.normalizeTeamName(teamA), this.normalizeTeamName(teamB)];
     }
 
-    standardizeMatch(rawMatch) {
-        if (!rawMatch || !rawMatch.match) {
+    standardizeMatch(rawMatch, supplier) {
+        if (!rawMatch || (!rawMatch.match && !rawMatch.title)) {
             this.results.invalidMatches++;
             return null;
         }
 
-        // 🎯 Normalize match text
-        const matchText = rawMatch.match.trim();
+        let matchText = rawMatch.match || rawMatch.title;
+        matchText = matchText.trim();
+
         const teams = this.extractTeams(matchText);
 
-        // 🎯 Validate timestamp
-        let timestamp = rawMatch.unix_timestamp;
-        if (!timestamp) this.results.missingTimestamps++;
+        // Handle timestamp
+        let unixTimestamp = rawMatch.unix_timestamp || Math.floor((rawMatch.date || 0) / 1000);
+        if (!unixTimestamp) this.results.missingTimestamps++;
 
-        // 🎯 Aggregate sources
+        // Aggregate sources
         const sources = { tom: [], sarah: [], wendy: [] };
-        if (rawMatch.source && rawMatch.streams) {
-            if (sources[rawMatch.source]) {
-                sources[rawMatch.source] = rawMatch.streams.filter(Boolean);
-                this.results.sourceDistribution[rawMatch.source] += sources[rawMatch.source].length;
-            }
-        }
+        if (supplier === 'tom') sources.tom = rawMatch.channels || [];
+        if (supplier === 'sarah') sources.sarah = (rawMatch.sources || []).map(s => s.id);
+        if (supplier === 'wendy') sources.wendy = (rawMatch.sources || []).map(s => s.id) || rawMatch.channels || [];
+
+        // Detect tournament
+        const tournament = rawMatch.tournament || rawMatch.category || null;
 
         return {
             match: matchText,
-            sport: rawMatch.sport || 'Unknown',
-            unix_timestamp: timestamp || null,
+            sport: rawMatch.sport || rawMatch.category || 'Unknown',
+            tournament: tournament,
+            unix_timestamp: unixTimestamp || null,
             sources,
             confidence: 1.0
         };
@@ -105,13 +108,27 @@ class OptimizedUniversalStandardizer {
                 return;
             }
             try {
-                const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                if (Array.isArray(data.matches)) {
-                    allMatches.push(...data.matches.map(m => ({
-                        ...m,
-                        source: file.split('-')[0]
-                    })));
+                const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                let mappedMatches = [];
+
+                if (file.startsWith('tom') && raw.events) {
+                    Object.values(raw.events).forEach(events => {
+                        events.forEach(ev => {
+                            mappedMatches.push(this.standardizeMatch(ev, 'tom'));
+                        });
+                    });
+                } else if (file.startsWith('sarah') && Array.isArray(raw.matches)) {
+                    raw.matches.forEach(ev => {
+                        mappedMatches.push(this.standardizeMatch(ev, 'sarah'));
+                    });
+                } else if (file.startsWith('wendy') && Array.isArray(raw.matches)) {
+                    raw.matches.forEach(ev => {
+                        mappedMatches.push(this.standardizeMatch(ev, 'wendy'));
+                    });
                 }
+
+                allMatches.push(...mappedMatches.filter(Boolean));
+
             } catch (err) {
                 this.debugLog('ERROR', `Failed to parse ${file}`, err.message);
             }
@@ -125,21 +142,16 @@ class OptimizedUniversalStandardizer {
         const start = Date.now();
         const rawMatches = this.loadSupplierData();
 
-        const standardizedMatches = rawMatches
-            .map(m => this.standardizeMatch(m))
-            .filter(Boolean);
+        this.results.totalProcessed = rawMatches.length;
 
-        this.results.totalProcessed = standardizedMatches.length;
-
-        // 🎯 Save standardized data
         const output = {
             created_at: new Date().toISOString(),
-            matches: standardizedMatches
+            matches: rawMatches
         };
 
         try {
             fs.writeFileSync('./standardization-UNIVERSAL.json', JSON.stringify(output, null, 2));
-            this.debugLog('OUTPUT', `Standardized data saved`, { total: standardizedMatches.length });
+            this.debugLog('OUTPUT', `Standardized data saved`, { total: rawMatches.length });
         } catch (err) {
             console.error('❌ Failed to save standardized data:', err.message);
         }
@@ -153,7 +165,7 @@ class OptimizedUniversalStandardizer {
     }
 }
 
-// 🎯 EXECUTION HANDLER
+// 🎯 EXECUTION
 if (require.main === module) {
     const processor = new OptimizedUniversalStandardizer();
     processor.processAll();
