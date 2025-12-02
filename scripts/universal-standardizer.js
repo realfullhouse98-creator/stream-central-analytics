@@ -112,17 +112,35 @@ class EnhancedFieldMapperNoTournament {
   }
 
   extractStreams(rawMatch, possibleFields, supplier) {
-    for (const field of possibleFields) {
-      if (rawMatch[field]) {
-        if (Array.isArray(rawMatch[field])) {
-          return rawMatch[field].filter(stream => stream && typeof stream === 'string');
-        } else if (typeof rawMatch[field] === 'string') {
-          return [rawMatch[field]];
+  for (const field of possibleFields) {
+    if (rawMatch[field]) {
+      if (Array.isArray(rawMatch[field])) {
+        // SARAH SPECIAL HANDLING
+        if (supplier === 'sarah') {
+          const sources = rawMatch[field];
+          return sources
+            .filter(source => source && source.source && source.id)
+            .map(source => `https://embedsports.top/embed/${source.source}/${source.id}/1`);
         }
+        
+        // WENDY SPECIAL HANDLING
+        if (supplier === 'wendy') {
+          const streams = rawMatch[field];
+          return streams
+            .filter(stream => stream && stream.url)
+            .map(stream => stream.url);
+        }
+        
+        // TOM & GENERAL HANDLING
+        return rawMatch[field].filter(stream => stream && typeof stream === 'string');
+        
+      } else if (typeof rawMatch[field] === 'string') {
+        return [rawMatch[field]];
       }
     }
-    return [];
   }
+  return [];
+}
 
   generateMatchId(rawMatch) {
     const hash = crypto.createHash('sha1');
@@ -135,6 +153,11 @@ class EnhancedFieldMapperNoTournament {
 class EnhancedDataQualityScoringNoTournament {
   calculateDataQualityScore(match) {
     let score = 100;
+
+     const ownSourceStreams = match.sources[match.source] || [];
+  if (ownSourceStreams.length === 0) {
+    score -= 15; // Penalty for no streams from own source
+  }
     
     // Required field penalties
     if (!match.match || match.match === 'Unknown Match') score -= 40;
@@ -211,10 +234,11 @@ class EnhancedSportClassifierNoTournament {
   }
 
   classifySportFromMatch(matchName, originalSport) {
-    // If original sport is already good, use it
-    if (this.isValidSport(originalSport)) {
-      return originalSport;
-    }
+  // Case-insensitive check first
+  if (this.isValidSport(originalSport)) {
+    return this.normalizeSportName(originalSport); // Returns properly capitalized
+  }
+  
     
     // Classify from match name
     const matchLower = matchName.toLowerCase();
@@ -271,9 +295,36 @@ class EnhancedSportClassifierNoTournament {
     );
   }
 
-  isValidSport(sport) {
-    return sport && sport !== 'Unknown' && Object.keys(this.sportKeywords).includes(sport);
-  }
+ isValidSport(sport) {
+  if (!sport || sport === 'Unknown') return false;
+  
+  const sportLower = sport.toLowerCase().trim();
+  const validSports = Object.keys(this.sportKeywords).map(s => s.toLowerCase());
+  
+  return validSports.includes(sportLower);
+}
+// ALSO ADD THIS NEW METHOD:
+normalizeSportName(sport) {
+  if (!sport || sport === 'Other') return 'Other';
+  const sportLower = sport.toLowerCase().trim();
+  
+  // Enhanced sport mapping with case handling
+  const sportMap = {
+    'football': 'Football',
+    'soccer': 'Football',
+    'basketball': 'Basketball',
+    'tennis': 'Tennis',
+    'american football': 'American Football',
+    'ice hockey': 'Ice Hockey',
+    'hockey': 'Ice Hockey',
+    'baseball': 'Baseball',
+    'rugby': 'Rugby',
+    'cricket': 'Cricket',
+    'volleyball': 'Volleyball'
+  };
+  
+  return sportMap[sportLower] || 
+         sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
 }
 
 // 4. Enhanced Error Recovery (No Tournament) - IMPROVED VERSION
@@ -314,29 +365,31 @@ class EnhancedErrorRecoveryNoTournament {
     };
   }
 
-  cleanMatchName(matchName) {
-    if (!matchName) return matchName;
+cleanMatchName(matchName) {
+  if (!matchName) return matchName;
+  
+  // Convert dash to vs FIRST (before removing anything)
+  let cleaned = matchName
+    .replace(/\s+-\s+/g, ' vs ')
+    .replace(/\s+-/g, ' vs ')
+    .replace(/-\s+/g, ' vs ')
+    .replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2');
+  
+  // Remove tournament phrases but PRESERVE "W" for women's teams
+  // Don't remove "Friendly Match" or "Women's International Friendly" completely
+  cleaned = cleaned
+    .replace(/\b(premier league|la liga|serie a|bundesliga)\b/gi, '')
+    .replace(/\b(champions league|europa league|world cup|olympics)\b/gi, '')
+    .replace(/\b(round of 16|quarter final|semi final|final)\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s+vs\.?\s+/gi, ' vs ')
+    .trim();
     
-    // First convert any dash format to "vs"
-    let cleaned = matchName
-      .replace(/\s+-\s+/g, ' vs ')
-      .replace(/\s+-/g, ' vs ')
-      .replace(/-\s+/g, ' vs ')
-      .replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2');
-    
-    // Then remove common tournament/league phrases
-    cleaned = cleaned
-      .replace(/\b(premier league|la liga|serie a|bundesliga|nba|nfl|mlb|nhl)\b/gi, '')
-      .replace(/\b(champions league|europa league|world cup|olympics|euro)\b/gi, '')
-      .replace(/\b(round of 16|quarter final|semi final|final)\b/gi, '')
-      .replace(/\b(college basketball|women's basketball|men's basketball)\b/gi, '')
-      .replace(/\b(khl|nhl|nba|mlb|nfl|mls|epl)\b/gi, '')
-      .replace(/\s+/g, ' ')
-      .replace(/\s+vs\.?\s+/gi, ' vs ')  // Ensure consistent " vs " format
-      .trim();
-      
-    return cleaned;
-  }
+  // Ensure "W" suffix has space before it if missing
+  cleaned = cleaned.replace(/(Japan|Canada)([^W\s]|$)/gi, '$1 W$2');
+  
+  return cleaned;
+}
 
   recoverTimestamp(match, supplier) {
     // Fallback to current time with future prediction
@@ -417,20 +470,24 @@ class SimplifiedTransformationPipeline {
   }
 
   cleanMatchName(matchName) {
-    if (!matchName) return matchName;
+  if (!matchName) return matchName;
+  
+  // Convert any dash to "vs" format
+  let cleaned = matchName
+    .replace(/\s+-\s+/g, ' vs ')
+    .replace(/\s+-/g, ' vs ')
+    .replace(/-\s+/g, ' vs ')
+    .replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2')
+    .replace(/vs\./gi, ' vs ')
+    .replace(/\s+/g, ' ')
+    .trim();
     
-    // Convert any dash to "vs" format
-    let cleaned = matchName
-      .replace(/\s+-\s+/g, ' vs ')
-      .replace(/\s+-/g, ' vs ')
-      .replace(/-\s+/g, ' vs ')
-      .replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2')
-      .replace(/vs\./gi, ' vs ')
-      .replace(/\s+/g, ' ')
-      .trim();
-    
-    return cleaned;
+  // Ensure "W" suffix for women's teams
+  if (cleaned.includes('Japan') || cleaned.includes('Canada')) {
+    cleaned = cleaned.replace(/(Japan|Canada)(?![ W])/gi, '$1 W');
   }
+  
+  return cleaned;
 }
 
 // Main UniversalStandardizer Class - UPDATED WITH BETTER LOGGING
@@ -452,6 +509,48 @@ class UniversalStandardizer {
     // Debug logging
     this.debug = true;
   }
+
+  // Add to UniversalStandardizer class
+debugJapanMatch() {
+  console.log('\n🔍 DEBUG: Japan W vs Canada W Processing');
+  
+  const testData = {
+    tom: {
+      unix_timestamp: 1764651600,
+      sport: "Football",
+      tournament: "Friendly Match",
+      match: "Japan W - Canada W",
+      channels: ["https://topembed.pw/channel/exjapandaw"]
+    },
+    sarah: {
+      id: "japan-w-vs-canada-w",
+      title: "Japan W vs Canada W",
+      category: "football",
+      date: 1764648000000,
+      sources: [
+        { source: "alpha", id: "japan-w-vs-canada-w" },
+        { source: "bravo", id: "1764651600000-japan-w-canada-w" }
+      ]
+    },
+    wendy: {
+      matchId: "755867",
+      title: "Japan vs Canada",
+      sport: "football",
+      streams: [
+        { url: "https://spiderembed.top/embed/755867/watchfooty-elite-1-japan-canada/elite/1" }
+      ]
+    }
+  };
+  
+  // Test each supplier
+  ['tom', 'sarah', 'wendy'].forEach(supplier => {
+    const standardized = this.fieldMapper.standardizeMatch(testData[supplier], supplier);
+    console.log(`\n${supplier.toUpperCase()}:`);
+    console.log(`  Match: "${standardized.match}"`);
+    console.log(`  Sport: ${standardized.sport}`);
+    console.log(`  Sources: ${standardized.sources[supplier].length} streams`);
+  });
+}
 
   logDebug(message, data = null) {
     if (this.debug) {
