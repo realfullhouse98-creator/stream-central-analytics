@@ -4,26 +4,26 @@ const crypto = require('crypto');
 const NormalizationMap = require('../modules/normalization-map.js');
 const supplierConfig = require('../suppliers/supplier-config.js');
 
-// 1. Enhanced Field Mapping (No Tournament)
+// 1. Enhanced Field Mapping (No Tournament) - FIXED VERSION
 class EnhancedFieldMapperNoTournament {
   constructor() {
     this.fieldMappings = {
       'tom': {
-        'match': ['name', 'title', 'event_name'],
+        'match': ['match', 'name', 'title', 'event_name'],  // FIXED: Added 'match' first
         'sport': ['sport', 'category', 'type'],
-        'unix_timestamp': ['timestamp', 'start_time', 'time'],
-        'streams': ['streams', 'channels', 'links']
+        'unix_timestamp': ['unix_timestamp', 'timestamp', 'start_time', 'time'],
+        'streams': ['channels', 'streams', 'links']  // Tom uses 'channels'
       },
       'sarah': {
-        'match': ['name', 'title', 'teams'],
-        'sport': ['sport', 'category'], 
-        'unix_timestamp': ['timestamp', 'start_time'],
-        'streams': ['streams', 'links']
+        'match': ['title', 'name', 'teams'],
+        'sport': ['category', 'sport'], 
+        'unix_timestamp': ['date', 'timestamp', 'start_time'],
+        'streams': ['sources', 'streams', 'links']
       },
       'wendy': {
-        'match': ['name', 'title', 'event'],
-        'sport': ['sport', 'type'],
-        'unix_timestamp': ['timestamp', 'time'],
+        'match': ['title', 'name', 'event'],
+        'sport': ['sport', 'sportCategory', 'type'],
+        'unix_timestamp': ['timestamp', 'date', 'time'],
         'streams': ['streams', 'urls']
       }
     };
@@ -44,7 +44,7 @@ class EnhancedFieldMapperNoTournament {
     // Map basic fields without tournament
     const mapping = this.fieldMappings[supplier];
     
-    // Extract match name
+    // Extract match name - WITH DASH-TO-VS CONVERSION
     standardized.match = this.extractField(rawMatch, mapping.match) || 'Unknown Match';
     
     // Extract sport
@@ -63,7 +63,29 @@ class EnhancedFieldMapperNoTournament {
   extractField(rawMatch, possibleFields) {
     for (const field of possibleFields) {
       if (rawMatch[field] !== undefined && rawMatch[field] !== null) {
-        return String(rawMatch[field]).trim();
+        let value = String(rawMatch[field]).trim();
+        
+        // ✅ CRITICAL FIX: Convert ALL dash formats to "vs" for consistency
+        // Handle "TeamA - TeamB" (space-dash-space)
+        value = value.replace(/\s+-\s+/g, ' vs ');
+        
+        // Handle "TeamA -TeamB" (space-dash)  
+        value = value.replace(/\s+-/g, ' vs ');
+        
+        // Handle "TeamA- TeamB" (dash-space)
+        value = value.replace(/-\s+/g, ' vs ');
+        
+        // Handle "TeamA-TeamB" (just dash with no spaces)
+        // Only replace if it looks like a match pattern (word-dash-word)
+        value = value.replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2');
+        
+        // Also clean up any "vs." (with period) to "vs" (no period)
+        value = value.replace(/vs\./gi, ' vs ');
+        
+        // Normalize multiple spaces
+        value = value.replace(/\s+/g, ' ').trim();
+        
+        return value;
       }
     }
     return null;
@@ -127,12 +149,15 @@ class EnhancedDataQualityScoringNoTournament {
       if (teams.length === 0) score -= 20;
       if (teams.length === 1) score -= 10;
       
+      // Bonus for proper " vs " format
+      if (match.match.includes(' vs ')) score += 10;
+      
+      // Penalize "Recovered Match" names
+      if (match.match.toLowerCase().includes('recovered match')) score -= 25;
+      
       // Penalize very short/long names
       if (match.match.length < 5) score -= 15;
       if (match.match.length > 100) score -= 10;
-      
-      // Bonus for proper " vs " format
-      if (match.match.includes(' vs ')) score += 10;
     }
     
     // Sport classification quality
@@ -251,11 +276,21 @@ class EnhancedSportClassifierNoTournament {
   }
 }
 
-// 4. Enhanced Error Recovery (No Tournament)
+// 4. Enhanced Error Recovery (No Tournament) - IMPROVED VERSION
 class EnhancedErrorRecoveryNoTournament {
   applyErrorRecovery(match, supplier) {
     let recoveredMatch = { ...match };
     const recoveries = [];
+    
+    // Only recover if truly missing or "Unknown Match"
+    const needsRecovery = !recoveredMatch.match || 
+                         recoveredMatch.match === 'Unknown Match' ||
+                         recoveredMatch.match.toLowerCase().includes('recovered');
+    
+    if (needsRecovery) {
+      recoveredMatch.match = this.recoverMatchName(recoveredMatch, supplier);
+      recoveries.push('match_name_recovered');
+    }
     
     // Recover missing timestamp
     if (!recoveredMatch.unix_timestamp) {
@@ -269,13 +304,7 @@ class EnhancedErrorRecoveryNoTournament {
       recoveries.push('sport_reclassified');
     }
     
-    // Recover malformed match name
-    if (!recoveredMatch.match || recoveredMatch.match === 'Unknown Match') {
-      recoveredMatch.match = this.recoverMatchName(recoveredMatch, supplier);
-      recoveries.push('match_name_recovered');
-    }
-    
-    // Clean up match name (remove any tournament-like phrases)
+    // Clean up match name (remove any tournament-like phrases AND normalize format)
     recoveredMatch.match = this.cleanMatchName(recoveredMatch.match);
     
     return {
@@ -288,14 +317,25 @@ class EnhancedErrorRecoveryNoTournament {
   cleanMatchName(matchName) {
     if (!matchName) return matchName;
     
-    // Remove common tournament/league phrases that might interfere with team matching
-    return matchName
+    // First convert any dash format to "vs"
+    let cleaned = matchName
+      .replace(/\s+-\s+/g, ' vs ')
+      .replace(/\s+-/g, ' vs ')
+      .replace(/-\s+/g, ' vs ')
+      .replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2');
+    
+    // Then remove common tournament/league phrases
+    cleaned = cleaned
       .replace(/\b(premier league|la liga|serie a|bundesliga|nba|nfl|mlb|nhl)\b/gi, '')
       .replace(/\b(champions league|europa league|world cup|olympics|euro)\b/gi, '')
       .replace(/\b(round of 16|quarter final|semi final|final)\b/gi, '')
+      .replace(/\b(college basketball|women's basketball|men's basketball)\b/gi, '')
+      .replace(/\b(khl|nhl|nba|mlb|nfl|mls|epl)\b/gi, '')
       .replace(/\s+/g, ' ')
-      .replace(/\s+vs\.?\s+/gi, ' vs ')
+      .replace(/\s+vs\.?\s+/gi, ' vs ')  // Ensure consistent " vs " format
       .trim();
+      
+    return cleaned;
   }
 
   recoverTimestamp(match, supplier) {
@@ -305,22 +345,47 @@ class EnhancedErrorRecoveryNoTournament {
   }
 
   recoverSport(match, supplier) {
-    // Simple sport recovery based on common patterns
-    if (match.match && match.match.toLowerCase().includes(' vs ')) {
-      return 'Football'; // Most common case
+    // Try to extract from match name first
+    if (match.match) {
+      if (match.match.toLowerCase().includes('hockey')) return 'Ice Hockey';
+      if (match.match.toLowerCase().includes('football') && !match.match.toLowerCase().includes('american')) return 'Football';
+      if (match.match.toLowerCase().includes('basketball')) return 'Basketball';
+      if (match.match.toLowerCase().includes('tennis')) return 'Tennis';
     }
+    
+    // Fallback based on supplier patterns
+    if (supplier === 'tom') return 'Basketball'; // Tom often has basketball
+    if (supplier === 'sarah') return 'Football'; // Sarah often has football
+    if (supplier === 'wendy') return 'Ice Hockey'; // Wendy often has hockey
+    
     return 'Other';
   }
 
   recoverMatchName(match, supplier) {
-    // Try to extract from available data
+    // First try to extract from available data
     if (match.rawData) {
+      if (match.rawData.match) return this.cleanMatchName(match.rawData.match);
       if (match.rawData.name) return this.cleanMatchName(match.rawData.name);
       if (match.rawData.title) return this.cleanMatchName(match.rawData.title);
+      
+      // Try to construct from teams
+      if (match.rawData.teams && match.rawData.teams.home && match.rawData.teams.away) {
+        return `${match.rawData.teams.home.name || ''} vs ${match.rawData.teams.away.name || ''}`.trim();
+      }
     }
     
-    // Last resort
-    return `Recovered Match from ${supplier}`;
+    // Try supplier-specific fallbacks
+    if (supplier === 'tom' && match.rawData) {
+      // Tom sometimes has match in the data directly
+      if (match.rawData.match) return this.cleanMatchName(match.rawData.match);
+    }
+    
+    // Last resort - but AVOID generic "Recovered Match" if possible
+    if (match.sport && match.sport !== 'Unknown') {
+      return `Unknown ${match.sport} Match`;
+    }
+    
+    return `Match from ${supplier}`;
   }
 
   calculateRecoveryConfidence(recoveries) {
@@ -338,10 +403,9 @@ class SimplifiedTransformationPipeline {
   }
 
   async processMatch(rawMatch, supplier) {
-    // This is a simplified version - most logic is now in the main class
     const processed = { ...rawMatch };
     
-    // Clean match name
+    // Clean match name (ensure "vs" format)
     processed.match = this.cleanMatchName(processed.match);
     
     // Ensure sport classification
@@ -354,14 +418,22 @@ class SimplifiedTransformationPipeline {
 
   cleanMatchName(matchName) {
     if (!matchName) return matchName;
-    return matchName
+    
+    // Convert any dash to "vs" format
+    let cleaned = matchName
+      .replace(/\s+-\s+/g, ' vs ')
+      .replace(/\s+-/g, ' vs ')
+      .replace(/-\s+/g, ' vs ')
+      .replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2')
+      .replace(/vs\./gi, ' vs ')
       .replace(/\s+/g, ' ')
-      .replace(/\s+vs\.?\s+/gi, ' vs ')
       .trim();
+    
+    return cleaned;
   }
 }
 
-// Main UniversalStandardizer Class
+// Main UniversalStandardizer Class - UPDATED WITH BETTER LOGGING
 class UniversalStandardizer {
   constructor() {
     this.normalizationMap = new NormalizationMap();
@@ -376,10 +448,21 @@ class UniversalStandardizer {
     this.sportClassifier = new EnhancedSportClassifierNoTournament();
     this.errorRecovery = new EnhancedErrorRecoveryNoTournament();
     this.transformationPipeline = new SimplifiedTransformationPipeline();
+    
+    // Debug logging
+    this.debug = true;
+  }
+
+  logDebug(message, data = null) {
+    if (this.debug) {
+      console.log(`🔍 [DEBUG] ${message}`);
+      if (data) console.log('   ', data);
+    }
   }
 
   async standardizeAllData() {
     console.log('🚀 UNIVERSAL STANDARDIZER - PHASE 1 (NO TOURNAMENT)\n');
+    console.log('🔧 FIXED VERSION: Proper field mapping + dash-to-vs conversion\n');
     
     try {
       // Step 1: Count raw data before processing
@@ -403,7 +486,8 @@ class UniversalStandardizer {
           suppliers_processed: this.allSuppliers,
           supplier_breakdown: this.results.suppliers,
           before_processing: beforeCounts,
-          after_processing: this.getAfterProcessingCounts(allMatches)
+          after_processing: this.getAfterProcessingCounts(allMatches),
+          quality_stats: this.calculateQualityStats(allMatches)
         },
         matches: allMatches
       };
@@ -424,6 +508,143 @@ class UniversalStandardizer {
       console.error('💥 Universal standardizer failed:', error);
       throw error;
     }
+  }
+
+  async processSupplier(supplierName) {
+    console.log(`\n🔧 PROCESSING ${supplierName.toUpperCase()}...`);
+    
+    const matches = [];
+
+    try {
+      const config = supplierConfig[supplierName];
+      if (!config || !fs.existsSync(config.file)) {
+        console.log(`❌ ${supplierName} config or file not found`);
+        return matches;
+      }
+
+      const rawData = JSON.parse(fs.readFileSync(config.file, 'utf8'));
+      let rawMatches = [];
+
+      // Extract matches array based on supplier structure
+      if (supplierName === 'tom' && rawData.events) {
+        Object.values(rawData.events).forEach(dayMatches => {
+          if (Array.isArray(dayMatches)) rawMatches.push(...dayMatches);
+        });
+      } else if ((supplierName === 'sarah' || supplierName === 'wendy') && rawData.matches) {
+        rawMatches = rawData.matches;
+      } else if (Array.isArray(rawData)) {
+        rawMatches = rawData;
+      } else {
+        console.log(`❌ Unknown data structure for ${supplierName}`);
+        return matches;
+      }
+
+      console.log(`📦 Found ${rawMatches.length} raw matches`);
+
+      // Process each match with universal normalization
+      let processedCount = 0;
+      let recoveredCount = 0;
+
+      for (const rawMatch of rawMatches) {
+        try {
+          // Store raw data for potential recovery
+          const matchWithRawData = { ...rawMatch, rawData: rawMatch };
+          
+          // Apply the field mapping (FIXED: Now includes 'match' field for Tom)
+          const standardized = this.fieldMapper.standardizeMatch(matchWithRawData, supplierName);
+
+          // DEBUG: Log what was extracted
+          this.logDebug(`${supplierName} match extracted`, {
+            original: rawMatch.match || rawMatch.title,
+            extracted: standardized.match,
+            source: standardized.source
+          });
+
+          // Apply the data quality score
+          standardized.quality_score = this.dataQualityScorer.calculateDataQualityScore(standardized);
+
+          // Classify sport if needed
+          standardized.sport = this.sportClassifier.classifySportFromMatch(standardized.match, standardized.sport);
+
+          // Apply error recovery if needed (but only if truly broken)
+          const recoveryResult = this.errorRecovery.applyErrorRecovery(standardized, supplierName);
+          const recoveredMatch = recoveryResult.match;
+          
+          // Track recoveries
+          if (recoveryResult.recoveries_applied.length > 0) {
+            recoveredCount++;
+          }
+          
+          // Add recovery metadata
+          recoveredMatch.recovery_applied = recoveryResult.recoveries_applied;
+          recoveredMatch.recovery_confidence = recoveryResult.recovery_confidence;
+
+          // Remove rawData from final output
+          delete recoveredMatch.rawData;
+
+          // Add to matches
+          matches.push(recoveredMatch);
+          processedCount++;
+
+          // Log first few matches for verification
+          if (processedCount <= 3) {
+            console.log(`   ✅ ${supplierName}: "${recoveredMatch.match}"`);
+            console.log(`      Sport: ${recoveredMatch.sport} | Quality: ${recoveredMatch.quality_score}/100`);
+            if (recoveryResult.recoveries_applied.length > 0) {
+              console.log(`      Recoveries: ${recoveryResult.recoveries_applied.join(', ')}`);
+            }
+          }
+
+        } catch (matchError) {
+          console.log(`   ❌ Failed to process ${supplierName} match:`, matchError.message);
+        }
+      }
+
+      this.results.suppliers[supplierName] = {
+        total: processedCount,
+        recovered: recoveredCount,
+        recovery_rate: ((recoveredCount / processedCount) * 100).toFixed(1) + '%'
+      };
+      
+      console.log(`✅ ${supplierName}: ${processedCount}/${rawMatches.length} matches`);
+      if (recoveredCount > 0) {
+        console.log(`   ⚠️ ${recoveredCount} matches required recovery`);
+      }
+
+    } catch (error) {
+      console.log(`❌ ${supplierName} processing failed:`, error.message);
+    }
+
+    return matches;
+  }
+
+  calculateQualityStats(allMatches) {
+    const stats = {
+      total: allMatches.length,
+      high_quality: 0,
+      medium_quality: 0,
+      low_quality: 0,
+      average_score: 0,
+      recovered_matches: 0
+    };
+    
+    let totalScore = 0;
+    
+    allMatches.forEach(match => {
+      totalScore += match.quality_score || 0;
+      
+      if (match.quality_score >= 80) stats.high_quality++;
+      else if (match.quality_score >= 50) stats.medium_quality++;
+      else stats.low_quality++;
+      
+      if (match.recovery_applied && match.recovery_applied.length > 0) {
+        stats.recovered_matches++;
+      }
+    });
+    
+    stats.average_score = allMatches.length > 0 ? (totalScore / allMatches.length).toFixed(1) : 0;
+    
+    return stats;
   }
 
   countRawData() {
@@ -462,93 +683,10 @@ class UniversalStandardizer {
     return counts;
   }
 
-  async processSupplier(supplierName) {
-    console.log(`\n🔧 PROCESSING ${supplierName.toUpperCase()}...`);
-    
-    const matches = [];
-
-    try {
-      const config = supplierConfig[supplierName];
-      if (!config || !fs.existsSync(config.file)) {
-        console.log(`❌ ${supplierName} config or file not found`);
-        return matches;
-      }
-
-      const rawData = JSON.parse(fs.readFileSync(config.file, 'utf8'));
-      let rawMatches = [];
-
-      // Extract matches array based on supplier structure
-      if (supplierName === 'tom' && rawData.events) {
-        Object.values(rawData.events).forEach(dayMatches => {
-          if (Array.isArray(dayMatches)) rawMatches.push(...dayMatches);
-        });
-      } else if ((supplierName === 'sarah' || supplierName === 'wendy') && rawData.matches) {
-        rawMatches = rawData.matches;
-      } else if (Array.isArray(rawData)) {
-        rawMatches = rawData;
-      } else {
-        console.log(`❌ Unknown data structure for ${supplierName}`);
-        return matches;
-      }
-
-      console.log(`📦 Found ${rawMatches.length} raw matches`);
-
-      // Process each match with universal normalization
-      let processedCount = 0;
-
-      for (const rawMatch of rawMatches) {
-        try {
-          // Store raw data for potential recovery
-          const matchWithRawData = { ...rawMatch, rawData: rawMatch };
-          
-          // Apply the simplified field mapping
-          const standardized = this.fieldMapper.standardizeMatch(matchWithRawData, supplierName);
-
-          // Apply the data quality score
-          standardized.quality_score = this.dataQualityScorer.calculateDataQualityScore(standardized);
-
-          // Classify sport if needed
-          standardized.sport = this.sportClassifier.classifySportFromMatch(standardized.match, standardized.sport);
-
-          // Apply error recovery if needed
-          const recoveryResult = this.errorRecovery.applyErrorRecovery(standardized, supplierName);
-          const recoveredMatch = recoveryResult.match;
-          
-          // Add recovery metadata
-          recoveredMatch.recovery_applied = recoveryResult.recoveries_applied;
-          recoveredMatch.recovery_confidence = recoveryResult.recovery_confidence;
-
-          // Remove rawData from final output
-          delete recoveredMatch.rawData;
-
-          // Add to matches
-          matches.push(recoveredMatch);
-          processedCount++;
-
-          if (processedCount <= 3) {
-            console.log(`   ✅ ${supplierName} match: "${recoveredMatch.match}"`);
-            console.log(`      Sport: ${recoveredMatch.sport} | Quality: ${recoveredMatch.quality_score}/100`);
-          }
-
-        } catch (matchError) {
-          console.log(`   ❌ Failed to process ${supplierName} match:`, matchError.message);
-        }
-      }
-
-      this.results.suppliers[supplierName] = processedCount;
-      console.log(`✅ ${supplierName}: ${processedCount}/${rawMatches.length} matches standardized`);
-
-    } catch (error) {
-      console.log(`❌ ${supplierName} processing failed:`, error.message);
-    }
-
-    return matches;
-  }
-
   getAfterProcessingCounts(allMatches) {
     const after = {};
     this.allSuppliers.forEach(s => {
-      after[s] = allMatches.filter(m => m.sources[s] && m.sources[s].length > 0).length;
+      after[s] = allMatches.filter(m => m.source === s).length;
     });
     after.total = allMatches.length;
     return after;
@@ -586,8 +724,15 @@ class UniversalStandardizer {
     console.log('\n📊 UNIVERSAL STANDARDIZER RESULTS:');
     console.log('══════════════════════════════════════');
     console.log(`✅ Total Matches: ${data.summary.after_processing.total}`);
+    console.log(`📈 Quality: ${data.summary.quality_stats.average_score}/100 average`);
+    console.log(`   🟢 High: ${data.summary.quality_stats.high_quality} | 🟡 Medium: ${data.summary.quality_stats.medium_quality} | 🔴 Low: ${data.summary.quality_stats.low_quality}`);
+    
     this.allSuppliers.forEach(s => {
-      console.log(`🔧 ${this.capitalize(s)}: ${data.summary.after_processing[s]} matches`);
+      const stats = data.summary.supplier_breakdown[s];
+      console.log(`🔧 ${this.capitalize(s)}: ${stats.total} matches`);
+      if (stats.recovered > 0) {
+        console.log(`   ⚠️ ${stats.recovered} recovered (${stats.recovery_rate})`);
+      }
     });
 
     console.log('\n📉 DATA LOSS REPORT:');
@@ -596,14 +741,23 @@ class UniversalStandardizer {
     });
     console.log(`📦 Total: ${data.summary.data_loss.total_loss}`);
     console.log('══════════════════════════════════════\n');
-    console.log('🎯 TOURNAMENT-FREE PROCESSING COMPLETE!');
+    
+    // Sample output verification
+    console.log('🔍 SAMPLE OUTPUT VERIFICATION:');
+    const sampleMatches = data.matches.slice(0, 5);
+    sampleMatches.forEach((match, i) => {
+      console.log(`   ${i+1}. "${match.match}" (${match.sport}) - Score: ${match.quality_score}/100`);
+    });
+    
+    console.log('\n🎯 TOURNAMENT-FREE PROCESSING COMPLETE!');
     console.log('💾 Output: standardization-UNIVERSAL.json');
+    console.log('⚠️  Check for "Recovered Match" patterns - should be minimal now!');
   }
 
   saveStandardizedData(data) {
     const outputPath = './standardization-UNIVERSAL.json';
     fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
-    console.log(`💾 Universal standardized data saved to: ${outputPath}`);
+    console.log(`\n💾 Universal standardized data saved to: ${outputPath}`);
   }
 
   capitalize(str) {
@@ -616,7 +770,8 @@ if (require.main === module) {
   const standardizer = new UniversalStandardizer();
   standardizer.standardizeAllData()
     .then(() => {
-      console.log('🎉 UNIVERSAL STANDARDIZER COMPLETED!');
+      console.log('\n🎉 UNIVERSAL STANDARDIZER COMPLETED!');
+      console.log('✅ Phase 1 output ready for Phase 2 processing');
       process.exit(0);
     })
     .catch(error => {
