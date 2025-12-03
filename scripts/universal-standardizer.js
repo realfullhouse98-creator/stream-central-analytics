@@ -524,38 +524,34 @@ class UniversalStandardizer {
   }
 
   // DEBUG METHOD FOR JAPAN MATCH
-    debugJapanMatch() {
-    console.log('\n🔍 DEBUG: Japan W vs Canada W Processing');
-    
-    const testData = {
-      tom: {
-        unix_timestamp: 1764651600,
-        sport: "Football",
-        tournament: "Friendly Match",
-        match: "Japan W - Canada W",
-        channels: ["https://topembed.pw/channel/exjapandaw"]
-      },
-      sarah: {
-        id: "japan-w-vs-canada-w",
-        title: "Japan W vs Canada W", 
-        category: "football",
-        date: 1764648000000,
-        sources: [
-          { source: "alpha", id: "japan-w-vs-canada-w" },
-          { source: "bravo", id: "1764651600000-japan-w-canada-w" },
-          { source: "charlie", id: "japan-w-vs-canada-w-1469892" }
-        ]
-      },
-      wendy: {
-        matchId: "755867",
-        title: "Japan vs Canada",
-        sport: "football",
-        streams: [
-          { url: "https://spiderembed.top/embed/755867/watchfooty-elite-1-japan-canada/elite/1" },
-          { url: "https://spiderembed.top/embed/755867/watchfooty-tv-1-japan-canada/tv/1" }
-        ]
-      }
-    };
+    debugCurrentMatches() {
+  console.log('\n🔍 DEBUG: CURRENT MATCHES PROCESSING');
+  
+  // Test with matches that ACTUALLY EXIST in today's data
+  const testData = {
+    tom: {
+      unix_timestamp: 1764838800, // Future timestamp
+      sport: "Football",
+      tournament: "World Cup Qualifiers",
+      match: "Argentina - Bolivia", // ACTUAL MATCH IN DATA
+      channels: ["https://topembed.pw/channel/exargbol"]
+    },
+    sarah: {
+      title: "New Zealand Breakers vs Sydney Kings", // ACTUAL MATCH
+      category: "basketball",
+      date: 1764835200000,
+      sources: [
+        { source: "alpha", id: "nz-breakers-vs-sydney-kings" }
+      ]
+    },
+    wendy: {
+      title: "Bravos de Margarita vs Águilas del Zulia", // ACTUAL MATCH
+      sport: "baseball",
+      streams: [
+        { url: "https://spiderembed.top/embed/123456/some-stream" }
+      ]
+    }
+  };
     
     // Test each supplier
     ['tom', 'sarah', 'wendy'].forEach(supplier => {
