@@ -1,34 +1,39 @@
 {
-  "startTime": "2025-12-03T06:20:17.261Z",
+  "startTime": "2025-12-03T07:15:06.050Z",
   "professional": true,
   "updated": [
-    "tom",
     "sarah",
+    "tom"
+  ],
+  "failed": [
     "wendy"
   ],
-  "failed": [],
   "skipped": [],
   "details": {
-    "tom": {
-      "success": true,
-      "matchCount": 911,
-      "source": "corsproxy.io",
-      "dataHash": "ebf754cc1036530fd5920b78ac7ab472",
-      "backup": "tom-data-1764742817265.json"
-    },
     "sarah": {
       "success": true,
-      "matchCount": 331,
+      "matchCount": 330,
       "source": "corsproxy.io",
-      "dataHash": "2b0a23cc3c23ffca597e16c2895db327",
+      "dataHash": "19dbe6eff7388d5475cc5b8ee289be4c",
       "backup": null
     },
     "wendy": {
+      "success": false,
+      "error": "HTTP 500",
+      "restored": false,
+      "recoveryDetails": null,
+      "circuitBreaker": {
+        "state": "CLOSED",
+        "failures": 1,
+        "lastFailure": "2025-12-03T07:15:07.355Z"
+      }
+    },
+    "tom": {
       "success": true,
-      "matchCount": 497,
-      "source": "9kilos-proxy.mandiyandiyakhonyana.workers.dev",
-      "dataHash": "bc5600b6eaa81ac64804dd06b157a56c",
-      "backup": "wendy-data-1764742817332.json"
+      "matchCount": 917,
+      "source": "corsproxy.io",
+      "dataHash": "4a79205b958a4529d9b41e2475b6ef90",
+      "backup": "tom-data-1764746106054.json"
     }
   },
   "circuitBreakers": {
@@ -50,10 +55,10 @@
   },
   "integrity": {
     "totalAttempted": 3,
-    "successful": 3,
-    "failed": 0,
+    "successful": 2,
+    "failed": 1,
     "recovered": 0
   },
-  "endTime": "2025-12-03T06:20:19.093Z",
-  "duration": 1832
+  "endTime": "2025-12-03T07:15:07.544Z",
+  "duration": 1494
 }
