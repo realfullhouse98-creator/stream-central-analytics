@@ -616,12 +616,10 @@ class UniversalStandardizer {
   }
 
   async standardizeAllData() {
-    console.log('🚀 UNIVERSAL STANDARDIZER - PHASE 1 (NO TOURNAMENT)\n');
-    console.log('🔧 FIXED VERSION: Proper sport classification + source extraction\n');
-    
-    try {
-      // Run debug first to verify fixes
-      this.debugJapanMatch();
+  console.log('🚀 UNIVERSAL STANDARDIZER - PHASE 1 (NO TOURNAMENT)\n');
+  console.log('✅ FIXED: Sport normalization, source extraction, match cleaning\n');
+  
+  try {
       
       // Step 1: Count raw data before processing
       const beforeCounts = this.countRawData();
@@ -953,9 +951,10 @@ class UniversalStandardizer {
 if (require.main === module) {
   const standardizer = new UniversalStandardizer();
   
-  // Check for debug flag
+  // Remove debug flag or update it
   if (process.argv.includes('--debug-only')) {
-    standardizer.debugJapanMatch();
+    console.log('⚠️ Debug mode not available - debugJapanMatch() removed');
+    console.log('Run full processing instead');
     process.exit(0);
   }
   
