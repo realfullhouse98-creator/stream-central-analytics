@@ -975,4 +975,11 @@ if (require.main === module) {
     });
 }
 
-module.exports = UniversalStandardizer;
+module.exports = {
+  UniversalStandardizer,
+  EnhancedFieldMapperNoTournament,
+  EnhancedSportClassifierNoTournament,
+  EnhancedDataQualityScoringNoTournament,
+  EnhancedErrorRecoveryNoTournament,
+  SimplifiedTransformationPipeline
+};
