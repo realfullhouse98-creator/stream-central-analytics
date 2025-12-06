@@ -1,27 +1,20 @@
 {
-  "startTime": "2025-12-06T21:10:13.737Z",
+  "startTime": "2025-12-06T22:11:10.890Z",
   "professional": true,
   "updated": [
-    "tom",
     "sarah"
   ],
   "failed": [
-    "wendy"
+    "wendy",
+    "tom"
   ],
   "skipped": [],
   "details": {
-    "tom": {
-      "success": true,
-      "matchCount": 1343,
-      "source": "corsproxy.io",
-      "dataHash": "4d591b5ce99123d99e413fe7f66a9edd",
-      "backup": "tom-data-1765055413743.json"
-    },
     "sarah": {
       "success": true,
-      "matchCount": 709,
+      "matchCount": 694,
       "source": "corsproxy.io",
-      "dataHash": "2d3d72aa4aad1c7fe10b03eea10fb0b2",
+      "dataHash": "cf5c3d20f8475d281f567b0895f1cde3",
       "backup": null
     },
     "wendy": {
@@ -32,7 +25,22 @@
       "circuitBreaker": {
         "state": "CLOSED",
         "failures": 1,
-        "lastFailure": "2025-12-06T21:10:14.959Z"
+        "lastFailure": "2025-12-06T22:11:12.360Z"
+      }
+    },
+    "tom": {
+      "success": false,
+      "error": "HTTP 500",
+      "restored": true,
+      "recoveryDetails": {
+        "recovered": true,
+        "backupFile": "tom-data-1765059070895.json",
+        "timestamp": "2025-12-06T22:12:06.932Z"
+      },
+      "circuitBreaker": {
+        "state": "CLOSED",
+        "failures": 1,
+        "lastFailure": "2025-12-06T22:12:06.925Z"
       }
     }
   },
@@ -55,10 +63,10 @@
   },
   "integrity": {
     "totalAttempted": 3,
-    "successful": 2,
+    "successful": 1,
     "failed": 1,
-    "recovered": 0
+    "recovered": 1
   },
-  "endTime": "2025-12-06T21:10:15.466Z",
-  "duration": 1729
+  "endTime": "2025-12-06T22:12:06.932Z",
+  "duration": 56042
 }
