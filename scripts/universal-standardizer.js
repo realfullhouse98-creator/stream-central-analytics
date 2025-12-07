@@ -660,7 +660,7 @@ class UniversalStandardizer {
           Object.values(rawData.events).forEach(dayMatches => {
             if (Array.isArray(dayMatches)) rawMatches.push(...dayMatches);
           });
-        } else if ((supplier === 'sarah' || supplierName === 'wendy') && rawData.matches) {
+       } else if ((supplier === 'sarah' || supplier === 'wendy') && rawData.matches) {
           rawMatches = rawData.matches;
         } else if (Array.isArray(rawData)) {
           rawMatches = rawData;
