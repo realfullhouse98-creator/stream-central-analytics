@@ -83,16 +83,10 @@ function createVerifiedBackup(supplierName) {
         } else if (supplierName === 'sarah' && Array.isArray(parsedData)) {
             matchCount = parsedData.length;
             hasContent = parsedData.length > 0;
-        } else if (supplierName === 'wendy') {
-    // 🎯 FIX: Check both array formats
-    if (Array.isArray(parsedData)) {
-        matchCount = parsedData.length;
-        hasContent = parsedData.length > 0;
-    } else if (parsedData.matches) {
-        matchCount = parsedData.matches.length;
-        hasContent = parsedData.matches.length > 0;
-    }
-}
+        } else if (supplierName === 'wendy' && parsedData.matches) {
+            matchCount = parsedData.matches.length;
+            hasContent = parsedData.matches.length > 0;
+        }
         
         if (!hasContent) {
             console.log(`   ⚠️ Skipping backup - ${supplierName} data appears empty`);
@@ -208,12 +202,12 @@ function validateSupplierData(data, supplier) {
         }
         matchCount = data.length;
     } else if (supplier === 'wendy') {
-    // 🎯 FIX: Wendy returns DIRECT ARRAY, not {matches: []}
-    if (!Array.isArray(data)) {
-        errors.push('Wendy should return direct array');
+        // Wendy returns array of matches directly
+        if (!Array.isArray(data)) {
+            errors.push('Wendy should return direct array of matches');
+        }
+        matchCount = Array.isArray(data) ? data.length : 0;
     }
-    matchCount = Array.isArray(data) ? data.length : 0;
-}
     
     return {
         valid: errors.length === 0,
@@ -224,8 +218,8 @@ function validateSupplierData(data, supplier) {
 
 // 🎯 PROFESSIONAL FETCH WITH RETRY
 async function fetchWithProfessionalRetry(url, supplierName, maxRetries = 3) {
-    if (supplierName === 'wendy' && url.includes('workers.dev')) {
-        maxRetries = 1;
+    if (supplierName === 'wendy') {
+        maxRetries = 2; // Wendy is less reliable, fewer retries
     }
     
     let lastError;
@@ -233,20 +227,14 @@ async function fetchWithProfessionalRetry(url, supplierName, maxRetries = 3) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const timeoutId = setTimeout(() => controller.abort(), supplierName === 'wendy' ? 15000 : 10000);
             
             console.log(`   🔄 Attempt ${attempt}/${maxRetries}: ${new URL(url).hostname}`);
             
-            // 🎯 FIXED HEADERS FOR WENDY WORKER
             const headers = {
                 'Accept': 'application/json',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             };
-            
-            if (supplierName === 'wendy' && url.includes('workers.dev')) {
-                headers['Origin'] = 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev';
-                headers['Referer'] = 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/';
-            }
             
             const response = await fetch(url, {
                 signal: controller.signal,
@@ -278,49 +266,107 @@ async function fetchWithProfessionalRetry(url, supplierName, maxRetries = 3) {
     throw lastError;
 }
 
-// 🎯 CLEANUP OLD BACKUPS
-function cleanupOldBackups() {
-    const backupDir = './suppliers/backups';
-    if (!fs.existsSync(backupDir)) return;
-    
-    const files = fs.readdirSync(backupDir)
-        .filter(file => file.endsWith('.json'))
-        .map(file => ({
-            name: file,
-            path: path.join(backupDir, file),
-            time: fs.statSync(path.join(backupDir, file)).mtimeMs
-        }))
-        .sort((a, b) => b.time - a.time);
-    
-    const now = Date.now();
-    const twentyFourHours = 24 * 60 * 60 * 1000;
-    
-    const backupsToKeep = new Set();
-    files.slice(0, 3).forEach(backup => backupsToKeep.add(backup.name));
-    files.forEach(backup => {
-        if (now - backup.time < (6 * 60 * 60 * 1000)) {
-            backupsToKeep.add(backup.name);
+// 🎯 WENDY HELPER FUNCTIONS
+async function fetchWendySports() {
+    try {
+        const url = 'https://api.watchfooty.st/api/v1/sports';
+        console.log(`   🔄 Fetching Wendy sports list from: ${new URL(url).hostname}`);
+        
+        const response = await fetch(url, {
+            headers: { 'Accept': 'application/json' },
+            signal: AbortSignal.timeout(8000)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
         }
-    });
-    
-    let deletedCount = 0;
-    files.forEach(backup => {
-        if (!backupsToKeep.has(backup.name)) {
-            try {
-                fs.unlinkSync(backup.path);
-                deletedCount++;
-            } catch (error) {
-                console.log(`   ❌ Could not delete ${backup.name}: ${error.message}`);
-            }
-        }
-    });
-    
-    if (deletedCount > 0) {
-        console.log(`🗑️ Cleanup complete: ${deletedCount} old backups deleted`);
+        
+        const sports = await response.json();
+        
+        // Filter to popular sports only
+        const popularSports = ['football', 'basketball', 'tennis', 'hockey', 'baseball', 'rugby'];
+        return sports.filter(sport => 
+            popularSports.includes(sport.name) || 
+            sport.displayName?.toLowerCase().includes('football')
+        ).slice(0, 3); // Limit to 3 sports
+        
+    } catch (error) {
+        console.log(`   ❌ Failed to fetch Wendy sports: ${error.message}`);
+        
+        // Return minimal fallback sports
+        return [
+            { name: 'football', displayName: 'Football' },
+            { name: 'basketball', displayName: 'Basketball' }
+        ];
     }
 }
 
-// 🎯 SUPPLIER CONFIGURATION
+async function fetchWendyMatchesForSport(sport) {
+    try {
+        const url = `https://api.watchfooty.st/api/v1/matches/${sport}`;
+        console.log(`   🔄 Fetching Wendy ${sport} matches`);
+        
+        const response = await fetch(url, {
+            headers: { 'Accept': 'application/json' },
+            signal: AbortSignal.timeout(10000)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const matches = await response.json();
+        
+        if (!Array.isArray(matches)) {
+            return [];
+        }
+        
+        // Enhance matches with source info
+        return matches.map(match => ({
+            ...match,
+            source: 'wendy',
+            sportCategory: sport
+        }));
+        
+    } catch (error) {
+        console.log(`   ❌ Failed to fetch Wendy ${sport} matches: ${error.message}`);
+        return [];
+    }
+}
+
+async function fetchWendyAllMatches() {
+    try {
+        // Get sports list
+        const sports = await fetchWendySports();
+        
+        if (sports.length === 0) {
+            throw new Error('No sports available from Wendy');
+        }
+        
+        console.log(`   Found ${sports.length} sports: ${sports.map(s => s.displayName).join(', ')}`);
+        
+        // Fetch matches for each sport in parallel
+        const matchPromises = sports.map(sport => 
+            fetchWendyMatchesForSport(sport.name)
+        );
+        
+        const results = await Promise.allSettled(matchPromises);
+        
+        // Combine all matches
+        const allMatches = results
+            .filter(result => result.status === 'fulfilled')
+            .flatMap(result => result.value);
+        
+        console.log(`   ✅ Total Wendy matches: ${allMatches.length}`);
+        return allMatches;
+        
+    } catch (error) {
+        console.log(`   ❌ Wendy all matches failed: ${error.message}`);
+        throw error;
+    }
+}
+
+// 🎯 SUPPLIER CONFIGURATION - UPDATED FOR NEW WENDY API
 const suppliers = [
     {
         name: 'tom',
@@ -368,43 +414,126 @@ const suppliers = [
         }
     },
     {
-  name: 'wendy',
-  urls: [
-    // Try these endpoints (one should work):
-    'https://watchfooty.st/api/v1/all-matches',
-    'https://watchfooty.st/matches',
-    'https://watchfooty.st/api/matches/all',
-    // With CORS proxies as fallback:
-    'https://corsproxy.io/?https://watchfooty.st/api/v1/all-matches',
-    'https://api.allorigins.win/raw?url=https://watchfooty.st/api/v1/all-matches'
-  ],
-  processor: (data) => {
-    console.log('🔍 WENDY - Processing data');
-    
-    // Wendy might return direct array or {matches: []}
-    const matches = Array.isArray(data) ? data : 
-                   (data && data.matches ? data.matches : []);
-    
-    console.log(`   Got ${matches.length} Wendy matches`);
-    
-    // If matches are empty but data has another structure, check
-    if (matches.length === 0 && data) {
-      console.log('   Data structure:', Object.keys(data));
+        name: 'wendy',
+        urls: [
+            // Direct Wendy API endpoints
+            'https://api.watchfooty.st/api/v1/sports',
+            'https://corsproxy.io/?https://api.watchfooty.st/api/v1/sports'
+        ],
+        processor: async (data) => {
+            try {
+                // Wendy returns sports list, we need to fetch matches for each sport
+                let sports = data;
+                
+                if (!Array.isArray(sports) || sports.length === 0) {
+                    // If no sports returned, use fallback
+                    sports = [
+                        { name: 'football', displayName: 'Football' },
+                        { name: 'basketball', displayName: 'Basketball' }
+                    ];
+                }
+                
+                // Limit to 3 sports for performance
+                const sportsToFetch = sports.slice(0, 3);
+                
+                const allMatches = [];
+                
+                for (const sport of sportsToFetch) {
+                    try {
+                        const matchesUrl = `https://api.watchfooty.st/api/v1/matches/${sport.name}`;
+                        const response = await fetch(matchesUrl, {
+                            signal: AbortSignal.timeout(8000)
+                        });
+                        
+                        if (response.ok) {
+                            const matches = await response.json();
+                            
+                            if (Array.isArray(matches)) {
+                                matches.forEach(match => {
+                                    match.sportCategory = sport.name;
+                                    match.source = 'wendy';
+                                });
+                                allMatches.push(...matches);
+                                console.log(`   ✅ Wendy ${sport.displayName}: ${matches.length} matches`);
+                            }
+                        }
+                    } catch (sportError) {
+                        console.log(`   ❌ Wendy ${sport.displayName}: ${sportError.message}`);
+                    }
+                }
+                
+                const checksum = crypto.createHash('md5').update(JSON.stringify(allMatches)).digest('hex');
+                
+                return {
+                    matches: allMatches,
+                    _metadata: {
+                        supplier: 'wendy',
+                        lastUpdated: new Date().toISOString(),
+                        matchCount: allMatches.length,
+                        sportsFetched: sportsToFetch.length,
+                        dataHash: checksum,
+                        professional: true
+                    }
+                };
+                
+            } catch (error) {
+                console.log(`   ❌ Wendy processor error: ${error.message}`);
+                return {
+                    matches: [],
+                    _metadata: {
+                        supplier: 'wendy',
+                        lastUpdated: new Date().toISOString(),
+                        matchCount: 0,
+                        error: error.message,
+                        emergency: true
+                    }
+                };
+            }
+        }
     }
-    
-    return {
-      matches: matches,
-      _metadata: {
-        supplier: 'wendy',
-        lastUpdated: new Date().toISOString(),
-        matchCount: matches.length,
-        dataHash: require('crypto').createHash('md5').update(JSON.stringify(matches)).digest('hex'),
-        professional: true
-      }
-    };
-  }
-}
 ];
+
+// 🎯 CLEANUP OLD BACKUPS
+function cleanupOldBackups() {
+    const backupDir = './suppliers/backups';
+    if (!fs.existsSync(backupDir)) return;
+    
+    const files = fs.readdirSync(backupDir)
+        .filter(file => file.endsWith('.json'))
+        .map(file => ({
+            name: file,
+            path: path.join(backupDir, file),
+            time: fs.statSync(path.join(backupDir, file)).mtimeMs
+        }))
+        .sort((a, b) => b.time - a.time);
+    
+    const now = Date.now();
+    
+    const backupsToKeep = new Set();
+    files.slice(0, 3).forEach(backup => backupsToKeep.add(backup.name));
+    files.forEach(backup => {
+        if (now - backup.time < (6 * 60 * 60 * 1000)) {
+            backupsToKeep.add(backup.name);
+        }
+    });
+    
+    let deletedCount = 0;
+    files.forEach(backup => {
+        if (!backupsToKeep.has(backup.name)) {
+            try {
+                fs.unlinkSync(backup.path);
+                deletedCount++;
+            } catch (error) {
+                console.log(`   ❌ Could not delete ${backup.name}: ${error.message}`);
+            }
+        }
+    });
+    
+    if (deletedCount > 0) {
+        console.log(`🗑️ Cleanup complete: ${deletedCount} old backups deleted`);
+    }
+}
+
 // 🎯 MAIN UPDATE FUNCTION
 async function updateAllSuppliers() {
     console.log('🔒 PROFESSIONAL SUPPLIER UPDATE - STARTING\n');
@@ -443,8 +572,8 @@ async function updateAllSuppliers() {
     });
     console.log('');
 
-    // 🎯 PROCESS SUPPLIERS
-    await Promise.all(suppliers.map(async (supplier) => {
+    // 🎯 PROCESS SUPPLIERS SEQUENTIALLY (better error handling)
+    for (const supplier of suppliers) {
         results.integrity.totalAttempted++;
         
         try {
@@ -461,7 +590,7 @@ async function updateAllSuppliers() {
                     error: 'Circuit breaker open',
                     skipped: true
                 };
-                return;
+                continue;
             }
 
             // 🎯 CREATE BACKUP BEFORE UPDATE
@@ -476,13 +605,25 @@ async function updateAllSuppliers() {
                 try {
                     const rawData = await fetchWithProfessionalRetry(url, supplier.name);
                     
+                    // 🎯 PROCESS DATA (special handling for Wendy async processor)
+                    let processedData;
+                    if (supplier.name === 'wendy' && typeof supplier.processor === 'function') {
+                        // Wendy processor is async
+                        processedData = await supplier.processor(rawData);
+                    } else {
+                        // Tom and Sarah have sync processors
+                        processedData = supplier.processor(rawData);
+                    }
+                    
                     // 🎯 VALIDATE DATA
-                    const validation = validateSupplierData(rawData, supplier.name);
+                    const validation = validateSupplierData(
+                        supplier.name === 'wendy' ? processedData.matches : processedData, 
+                        supplier.name
+                    );
+                    
                     if (!validation.valid) {
                         throw new Error(`Data validation failed: ${validation.errors.join(', ')}`);
                     }
-                    
-                    const processedData = supplier.processor(rawData);
                     
                     // 🎯 ATOMIC WRITE
                     const tempPath = `./suppliers/${supplier.name}-data.json.tmp`;
@@ -491,14 +632,14 @@ async function updateAllSuppliers() {
                     fs.writeFileSync(tempPath, JSON.stringify(processedData, null, 2));
                     fs.renameSync(tempPath, finalPath);
                     
-                    console.log(`   ✅ ${supplier.name}: ${processedData._metadata.matchCount} matches`);
+                    console.log(`   ✅ ${supplier.name}: ${validation.matchCount} matches`);
                     
                     results.updated.push(supplier.name);
                     results.details[supplier.name] = {
                         success: true,
-                        matchCount: processedData._metadata.matchCount,
+                        matchCount: validation.matchCount,
                         source: new URL(url).hostname,
-                        dataHash: processedData._metadata.dataHash,
+                        dataHash: processedData._metadata?.dataHash || 'N/A',
                         backup: backupResult ? path.basename(backupResult.path) : null
                     };
                     
@@ -548,7 +689,10 @@ async function updateAllSuppliers() {
                 error: `Unexpected error: ${supplierError.message}`
             };
         }
-    }));
+        
+        // Small delay between suppliers to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 
     // 🎯 GENERATE SUMMARY
     results.endTime = new Date().toISOString();
@@ -561,7 +705,8 @@ async function updateAllSuppliers() {
     console.log(`❌ Failed: ${results.failed.length > 0 ? results.failed.join(', ') : 'None'}`);
     console.log(`🔄 Recovered: ${results.integrity.recovered}`);
     console.log(`⏱️  Duration: ${results.duration}ms`);
-    console.log(`📈 Success Rate: ${((results.integrity.successful / results.integrity.totalAttempted) * 100).toFixed(1)}%`);
+    console.log(`📈 Success Rate: ${results.integrity.totalAttempted > 0 ? 
+        ((results.integrity.successful / results.integrity.totalAttempted) * 100).toFixed(1) : 0}%`);
     
     console.log('\n🔍 DETAILS:');
     Object.entries(results.details).forEach(([supplier, detail]) => {
@@ -593,4 +738,9 @@ if (require.main === module) {
     });
 }
 
-module.exports = { updateAllSuppliers, ProfessionalCircuitBreaker };
+module.exports = { 
+    updateAllSuppliers, 
+    ProfessionalCircuitBreaker,
+    fetchWendyAllMatches,
+    fetchWendySports
+};
