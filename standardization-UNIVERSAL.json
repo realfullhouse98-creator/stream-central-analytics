@@ -1,8 +1,8 @@
 {
-  "phase": "1-universal-standardization-no-tournament",
-  "created_at": "2025-12-07T07:12:36.151Z",
+  "phase": "1-universal-standardization-fixed",
+  "created_at": "2025-12-07T07:45:38.233Z",
   "summary": {
-    "total_matches": 2089,
+    "total_matches": 2084,
     "suppliers_processed": [
       "tom",
       "sarah",
@@ -13,45 +13,88 @@
         "total": 1343,
         "recovered": 0,
         "recovery_rate": "0.0%",
-        "japan_matches": 1
+        "classification": {
+          "success": 1343,
+          "fallback": 0,
+          "unknown": 0
+        }
       },
       "sarah": {
-        "total": 249,
+        "total": 244,
         "recovered": 0,
         "recovery_rate": "0.0%",
-        "japan_matches": 0
+        "classification": {
+          "success": 231,
+          "fallback": 0,
+          "unknown": 13
+        }
       },
       "wendy": {
         "total": 497,
         "recovered": 0,
         "recovery_rate": "0.0%",
-        "japan_matches": 0
+        "classification": {
+          "success": 497,
+          "fallback": 0,
+          "unknown": 0
+        }
       }
     },
     "before_processing": {
       "tom": 1343,
-      "sarah": 249,
-      "wendy": 497
+      "sarah": 244,
+      "wendy": "ERROR"
     },
     "after_processing": {
       "tom": 1343,
-      "sarah": 249,
+      "sarah": 244,
       "wendy": 497,
-      "total": 2089
+      "total": 2084
     },
     "quality_stats": {
-      "total": 2089,
-      "high_quality": 2035,
-      "medium_quality": 53,
+      "total": 2084,
+      "high_quality": 2031,
+      "medium_quality": 52,
       "low_quality": 1,
       "average_score": "96.0",
       "recovered_matches": 0,
-      "matches_with_sources": 1670
+      "matches_with_sources": 1665,
+      "sport_distribution": {
+        "Volleyball": 90,
+        "Tennis": 180,
+        "Ice Hockey": 308,
+        "Basketball": 433,
+        "Football": 744,
+        "Boxing": 6,
+        "American Football": 52,
+        "MMA": 25,
+        "Golf": 10,
+        "Cricket": 36,
+        "Badminton": 4,
+        "Rugby": 31,
+        "Handball": 59,
+        "Motorsport": 3,
+        "Snooker": 3,
+        "Futsal": 3,
+        "Track & field": 2,
+        "Equestrian": 7,
+        "Fighting": 2,
+        "Fight": 18,
+        "Other": 13,
+        "Motor vs sports": 6,
+        "Baseball": 21,
+        "Darts": 28
+      }
+    },
+    "classification_stats": {
+      "success": 2071,
+      "fallback": 0,
+      "unknown": 13
     },
     "data_loss": {
       "tom_loss": 0,
       "sarah_loss": 0,
-      "wendy_loss": 0,
+      "wendy_loss": "ERROR",
       "total_loss": 0
     }
   },
@@ -280,7 +323,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764979200,
-      "sport": "Football",
+      "sport": "Boxing",
       "match": "Boxing BKFC 85 : Trout vs Palomino",
       "match_id": "d97f4a22da95f754",
       "quality_score": 100,
@@ -299,7 +342,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764979200,
-      "sport": "Other",
+      "sport": "Boxing",
       "match": "Boxing : Nazareno Morel vs Nicolas Jara",
       "match_id": "01383a701bdead4f",
       "quality_score": 100,
@@ -556,7 +599,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764979200,
-      "sport": "Basketball",
+      "sport": "American Football",
       "match": "Jacksonville State vs Kennesaw State",
       "match_id": "64af10c17e5c2505",
       "quality_score": 100,
@@ -573,7 +616,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764979200,
-      "sport": "Basketball",
+      "sport": "American Football",
       "match": "James Madison vs Troy",
       "match_id": "71271f5ba30a4b10",
       "quality_score": 100,
@@ -1277,7 +1320,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764982800,
-      "sport": "Basketball",
+      "sport": "American Football",
       "match": "Boise State vs UNLV Rebels",
       "match_id": "3321690a1bba94a4",
       "quality_score": 100,
@@ -1437,7 +1480,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764982800,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "MMA ONE Fight Night 38",
       "match_id": "090fb840f418c8f4",
       "quality_score": 80,
@@ -1539,7 +1582,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764982800,
-      "sport": "Basketball",
+      "sport": "American Football",
       "match": "Tulane vs North Texas",
       "match_id": "ed007f3085e8f3ba",
       "quality_score": 100,
@@ -1614,7 +1657,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764986400,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Fabricio AndradeWonder Boy vs Enkh vs Orgil Baatarkhuu",
       "match_id": "a1cb863ee77486a6",
       "quality_score": 100,
@@ -1669,7 +1712,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764988200,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "Crown Australian Open",
       "match_id": "25a08dc5cd28bbad",
       "quality_score": 80,
@@ -1878,7 +1921,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764991800,
-      "sport": "Other",
+      "sport": "Boxing",
       "match": "Boxing : Jai Opetaia vs Huseyin Cinkara",
       "match_id": "9f77c2dc3b1930a7",
       "quality_score": 100,
@@ -2376,7 +2419,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765006200,
-      "sport": "Other",
+      "sport": "Badminton",
       "match": "Ashmita Chaliha vs Ciou vs Tong Tung",
       "match_id": "9d2537f42cfd5b3a",
       "quality_score": 100,
@@ -2452,7 +2495,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765007400,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Japan 7s W vs Canada 7s W",
       "match_id": "46ace32a49cd911f",
       "quality_score": 100,
@@ -2624,7 +2667,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765009200,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Australia 7s vs Argentina 7s",
       "match_id": "c7b12e4dab762716",
       "quality_score": 100,
@@ -2642,7 +2685,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765009200,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Australia 7s W vs France 7s W",
       "match_id": "419cbe5646148026",
       "quality_score": 100,
@@ -2730,7 +2773,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765010520,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Fiji 7s W vs USA 7s W",
       "match_id": "666d12abca54ddaa",
       "quality_score": 100,
@@ -2832,7 +2875,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765011600,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "Nedbank Golf Challenge",
       "match_id": "397aa2835989f2d9",
       "quality_score": 80,
@@ -2900,7 +2943,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765011600,
-      "sport": "Other",
+      "sport": "Badminton",
       "match": "Tanvi Sharma vs Hina Akechi",
       "match_id": "5966655b75e9abc1",
       "quality_score": 100,
@@ -3070,7 +3113,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765013400,
-      "sport": "Other",
+      "sport": "Badminton",
       "match": "Tushar Suveer vs Mithun Manjunath",
       "match_id": "097b6abb11fe448f",
       "quality_score": 100,
@@ -3088,7 +3131,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765013760,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "France 7s vs Spain 7s",
       "match_id": "cc59f20fc3bfd011",
       "quality_score": 100,
@@ -3174,7 +3217,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765015080,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Australia 7s vs Argentina 7s",
       "match_id": "552c833a7edbf11f",
       "quality_score": 100,
@@ -3208,7 +3251,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765015200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Croatia (F) vs Uruguay (F)",
       "match_id": "3d44cb1917897534",
       "quality_score": 100,
@@ -3225,7 +3268,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765015200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Croatia W vs Uruguay W",
       "match_id": "c0bd719706dcc65c",
       "quality_score": 100,
@@ -3293,7 +3336,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765015800,
-      "sport": "Other",
+      "sport": "Badminton",
       "match": "Tanvi Sharma vs Hina Akechi",
       "match_id": "d23254e4527e0d7b",
       "quality_score": 100,
@@ -3396,7 +3439,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765016400,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "New Zealand 7s vs Great Britain 7s",
       "match_id": "ff34deeda1da4c8c",
       "quality_score": 100,
@@ -3466,7 +3509,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765017720,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Fiji 7s vs South Africa 7s",
       "match_id": "c46c0095dfe917de",
       "quality_score": 100,
@@ -3914,7 +3957,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765019640,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Japan 7s W vs France 7s W",
       "match_id": "d554fd60e2360bbe",
       "quality_score": 100,
@@ -4337,7 +4380,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765020960,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Australia 7s W vs Canada 7s W",
       "match_id": "0758816d9b5d534d",
       "quality_score": 100,
@@ -4391,7 +4434,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765022400,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Arsenal W vs Liverpool W",
       "match_id": "5de243a52712ada1",
       "quality_score": 100,
@@ -4719,7 +4762,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765023300,
-      "sport": "Other",
+      "sport": "Motorsport",
       "match": "Abu Dhabi Grand Prix",
       "match_id": "b4969f0c9ff82711",
       "quality_score": 80,
@@ -4737,7 +4780,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765023300,
-      "sport": "Other",
+      "sport": "Motorsport",
       "match": "Abu Dhabi Grand Prix",
       "match_id": "1fb50c2d72069325",
       "quality_score": 80,
@@ -4755,7 +4798,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765023600,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "New Zealand 7s W vs USA 7s W",
       "match_id": "5e443d3a495058f2",
       "quality_score": 100,
@@ -4944,7 +4987,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765024200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Iran (F) vs Paraguay (F)",
       "match_id": "00d1cd07ed7a187c",
       "quality_score": 100,
@@ -4961,7 +5004,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765024200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Iran W vs Paraguay W",
       "match_id": "b0cb5b2558df10d6",
       "quality_score": 100,
@@ -5186,7 +5229,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765025520,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "France 7s vs Argentina 7s",
       "match_id": "5de12293b4743618",
       "quality_score": 100,
@@ -5225,7 +5268,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765026000,
-      "sport": "Other",
+      "sport": "Snooker",
       "match": "2025 Victorian Plumbing UK Championship vs York Barbican World Snooker",
       "match_id": "55ee2db7212643d9",
       "quality_score": 100,
@@ -5517,7 +5560,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765026000,
-      "sport": "Other",
+      "sport": "Snooker",
       "match": "Judd Trump vs Neil Robertson UK Championship",
       "match_id": "17128b9087d8e588",
       "quality_score": 100,
@@ -6026,7 +6069,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765026840,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Australia 7s vs Spain 7s",
       "match_id": "9ad6565a32aca0da",
       "quality_score": 100,
@@ -6403,7 +6446,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765028160,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Fiji 7s vs Great Britain 7s",
       "match_id": "d372c8418f123c1b",
       "quality_score": 100,
@@ -6438,7 +6481,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765029480,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "New Zealand 7s vs South Africa 7s",
       "match_id": "47fc815f83a405a5",
       "quality_score": 100,
@@ -7034,7 +7077,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765031400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Austria (F) vs Tunisia (F)",
       "match_id": "1a1e4a1f6df2d30f",
       "quality_score": 100,
@@ -7155,7 +7198,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765031400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Montenegro W vs Serbia W",
       "match_id": "88dfd51e1942e073",
       "quality_score": 100,
@@ -7172,7 +7215,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765031400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Montenegro (F) vs Serbia (F)",
       "match_id": "0268d5ef8b87fc31",
       "quality_score": 100,
@@ -7235,7 +7278,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765031400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "VfB Stuttgart vs Bayern Munich",
       "match_id": "de72b15f9ded6cb0",
       "quality_score": 100,
@@ -7287,7 +7330,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765032000,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Canada 7s W vs France 7s W",
       "match_id": "034616182548573e",
       "quality_score": 100,
@@ -7576,7 +7619,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765033200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Egypt (F) vs Cuba (F)",
       "match_id": "93899937a7d94411",
       "quality_score": 100,
@@ -7720,7 +7763,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765033200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Kielce vs MKS Kalisz",
       "match_id": "a820303a14f6663e",
       "quality_score": 100,
@@ -8398,7 +8441,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765033320,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Australia 7s W vs Japan 7s W",
       "match_id": "d15e7b1d7812c68b",
       "quality_score": 100,
@@ -8432,7 +8475,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765033800,
-      "sport": "Basketball",
+      "sport": "Rugby",
       "match": "Bulls vs Bordeaux Begles",
       "match_id": "baf41a76a871fd1a",
       "quality_score": 100,
@@ -8581,7 +8624,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765034640,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "USA 7s W vs Great Britain 7s W",
       "match_id": "cd069bedb7ea14e8",
       "quality_score": 100,
@@ -8842,7 +8885,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765036800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Barcelona vs Cuenca",
       "match_id": "fedf0768d64c6864",
       "quality_score": 100,
@@ -8980,7 +9023,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765036800,
-      "sport": "Other",
+      "sport": "Futsal",
       "match": "Electrico vs Quinta dos Lombos",
       "match_id": "041b150de1158585",
       "quality_score": 100,
@@ -9448,7 +9491,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765036800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Spain W vs Germany W",
       "match_id": "1c8304a521a952d5",
       "quality_score": 100,
@@ -9839,7 +9882,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765038600,
-      "sport": "Other",
+      "sport": "Track & field",
       "match": "Penn Opener",
       "match_id": "061a674418f3f9b3",
       "quality_score": 80,
@@ -9908,7 +9951,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765038600,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Spain 7s vs Argentina 7s",
       "match_id": "c4fbcedced801de3",
       "quality_score": 100,
@@ -10045,7 +10088,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040100,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Australia 7s vs France 7s",
       "match_id": "f35d337832a25b6a",
       "quality_score": 100,
@@ -10097,7 +10140,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Argentina (F) vs French (F)",
       "match_id": "675167cde2c86d55",
       "quality_score": 100,
@@ -10340,7 +10383,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Elbflorenz Dresden vs Huttenberg",
       "match_id": "f7e321eef4b77ba1",
       "quality_score": 100,
@@ -10391,7 +10434,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "Hero World Challenge",
       "match_id": "33db994d156865c6",
       "quality_score": 80,
@@ -10605,7 +10648,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Football",
+      "sport": "American Football",
       "match": "Lehigh vs Villanova",
       "match_id": "1bd76827b1885d8a",
       "quality_score": 100,
@@ -10622,7 +10665,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Lubbecke vs Eintracht Hagen",
       "match_id": "9f0c68d9a946974e",
       "quality_score": 100,
@@ -10639,7 +10682,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Lubeck Schwartau vs Grosswallstadt",
       "match_id": "03cbe83cee90eda1",
       "quality_score": 100,
@@ -10707,7 +10750,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Football",
+      "sport": "American Football",
       "match": "Mercer vs South Dakota",
       "match_id": "85235163289b9923",
       "quality_score": 100,
@@ -10793,7 +10836,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "MMTS Kwidzyn vs Piotrkow Trybunalski",
       "match_id": "907a4132842877d0",
       "quality_score": 100,
@@ -10810,7 +10853,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Morrazo Cangas vs Granollers",
       "match_id": "4896009d3baf604f",
       "quality_score": 100,
@@ -10827,7 +10870,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Football",
+      "sport": "American Football",
       "match": "Mount Union vs John Carroll",
       "match_id": "85783f048e75a589",
       "quality_score": 100,
@@ -11137,7 +11180,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Spain (F) vs Germany (F)",
       "match_id": "db455b86c51fcdd9",
       "quality_score": 100,
@@ -11189,7 +11232,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Football",
+      "sport": "American Football",
       "match": "TBD vs TBD",
       "match_id": "a0fd8f0299930f4f",
       "quality_score": 100,
@@ -11206,7 +11249,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Basketball",
+      "sport": "American Football",
       "match": "Texas Tech vs Brigham Young",
       "match_id": "5a406956d15fe6da",
       "quality_score": 100,
@@ -11292,7 +11335,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040400,
-      "sport": "Basketball",
+      "sport": "American Football",
       "match": "Western Michigan vs Miami",
       "match_id": "55ed8c4b62fd20b7",
       "quality_score": 100,
@@ -11309,7 +11352,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765040700,
-      "sport": "Other",
+      "sport": "Track & field",
       "match": "Harvard Classic",
       "match_id": "b6ca786acdda5c32",
       "quality_score": 80,
@@ -11428,7 +11471,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765041420,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "New Zealand 7s vs Fiji 7s",
       "match_id": "3a107b5cb4e59ec9",
       "quality_score": 100,
@@ -11479,7 +11522,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765042200,
-      "sport": "Other",
+      "sport": "Futsal",
       "match": "AD Fundao vs Leoes Porto Salvo",
       "match_id": "2a163be382e805fa",
       "quality_score": 100,
@@ -11496,7 +11539,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765042200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Angers vs Saran",
       "match_id": "1bc0884e5eae3dd0",
       "quality_score": 100,
@@ -11593,7 +11636,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765042200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "China (F) vs Kazakhstan (F)",
       "match_id": "b0599ead99308c2f",
       "quality_score": 100,
@@ -11708,7 +11751,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765042200,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Leinster vs Harlequins F.C.",
       "match_id": "e8b58ced09e0c109",
       "quality_score": 100,
@@ -11927,7 +11970,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765042740,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "South Africa 7s vs Great Britain 7s",
       "match_id": "c73f26d263ce684b",
       "quality_score": 100,
@@ -12378,7 +12421,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765044000,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Rhein vs Neckar vs Erlangen",
       "match_id": "1395261157e275c7",
       "quality_score": 100,
@@ -12395,7 +12438,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765044000,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Rhein Neckar Lowen vs Erlangen",
       "match_id": "d021b2e185e7a516",
       "quality_score": 100,
@@ -12517,7 +12560,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765044900,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Villa de Aranda vs Bidasoa Irun",
       "match_id": "bac20900a7714b53",
       "quality_score": 100,
@@ -12671,7 +12714,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765045800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Potsdam vs Ludwigshafen vs Friesenheim",
       "match_id": "cd44625a5d7653e2",
       "quality_score": 100,
@@ -12688,7 +12731,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765045800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Saint Raphael vs Dunkerque",
       "match_id": "caee92d34b0e2032",
       "quality_score": 100,
@@ -12876,7 +12919,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765047600,
-      "sport": "Other",
+      "sport": "Equestrian",
       "match": "America's Day at the Races",
       "match_id": "7f66c27853e95bcb",
       "quality_score": 80,
@@ -12893,7 +12936,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765047600,
-      "sport": "Other",
+      "sport": "Equestrian",
       "match": "America's Day at the Races",
       "match_id": "7f66c27853e95bcb",
       "quality_score": 80,
@@ -13451,7 +13494,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765047600,
-      "sport": "Other",
+      "sport": "Snooker",
       "match": "Mark Selby vs Shaun Murphy UK Championship",
       "match_id": "b1bd7e5e66ca4ad2",
       "quality_score": 100,
@@ -13883,7 +13926,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Faroe Islands W vs Iceland W",
       "match_id": "d6ca21a6c936303b",
       "quality_score": 100,
@@ -13951,7 +13994,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Faroe Islands (F) vs Iceland (F)",
       "match_id": "82797d63f27e2950",
       "quality_score": 100,
@@ -14004,7 +14047,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "La Rioja vs Ademar Leon",
       "match_id": "eba75b8550bc5b2a",
       "quality_score": 100,
@@ -14040,7 +14083,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Poland W vs Netherlands W",
       "match_id": "e34ed1936282d646",
       "quality_score": 100,
@@ -14057,7 +14100,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Poland (F) vs Netherlands (F)",
       "match_id": "8f2ae822f1b25181",
       "quality_score": 100,
@@ -14074,7 +14117,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Boxing",
       "match": "Rafael Acosta vs Frank Urquiaga",
       "match_id": "7daf82be319be4d4",
       "quality_score": 100,
@@ -14109,7 +14152,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Sarrebourg vs Valence",
       "match_id": "a662d68b5840c773",
       "quality_score": 100,
@@ -14161,7 +14204,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765049400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Tremblay vs PSG",
       "match_id": "d7d8ac9ce7af9e3a",
       "quality_score": 100,
@@ -14331,7 +14374,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765051200,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Bath vs Munster",
       "match_id": "8397b1ff8aa2a79c",
       "quality_score": 100,
@@ -14434,7 +14477,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765051200,
-      "sport": "Other",
+      "sport": "Futsal",
       "match": "Ferreira Zezere vs Rio Ave",
       "match_id": "3221f6ceb83d227f",
       "quality_score": 100,
@@ -15058,7 +15101,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765058400,
-      "sport": "Other",
+      "sport": "Boxing",
       "match": "Boxing BKB 49",
       "match_id": "3c31fa426eb427d1",
       "quality_score": 80,
@@ -15892,7 +15935,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765062000,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Merab Dvalishvili vs Petr Yan",
       "match_id": "a1173053efda9282",
       "quality_score": 100,
@@ -15910,7 +15953,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765062000,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Muhammadjon Naimov vs Mairon Santos",
       "match_id": "aa98ba9c1b6ec0c4",
       "quality_score": 100,
@@ -16030,7 +16073,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765063200,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Mansur Abdul vs Malik vs Antonio Trocoli",
       "match_id": "57b0d48f0c465333",
       "quality_score": 100,
@@ -16065,7 +16108,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765064400,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Iwo Baraniewski vs Ibo Aslan",
       "match_id": "8fd50b6718bfe322",
       "quality_score": 100,
@@ -16309,7 +16352,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Edson Barboza vs Jalin Turner",
       "match_id": "6f87689789cee83a",
       "quality_score": 100,
@@ -16759,7 +16802,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765067400,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Marvin Vettori vs Brunno Ferreira",
       "match_id": "c75007aa29344af7",
       "quality_score": 100,
@@ -16871,7 +16914,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Nazim Sadykhov vs Fares Ziam",
       "match_id": "62b4dce66b2ec9ea",
       "quality_score": 100,
@@ -16894,7 +16937,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Grant DawsonKGD vs Manuel TorresEl Loco",
       "match_id": "78765ecec50b5f2b",
       "quality_score": 100,
@@ -16911,7 +16954,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200,
-      "sport": "Other",
+      "sport": "Boxing",
       "match": "Isaac Cruz Gonzalez vs Lamont Roach",
       "match_id": "7acf38b54c9e4de8",
       "quality_score": 100,
@@ -17124,7 +17167,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765070400,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Terrance Mckinney vs Christopher Duncan",
       "match_id": "77cc4c97d197eeb1",
       "quality_score": 100,
@@ -17161,7 +17204,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765071000,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Maycee Barber vs Karine Silva",
       "match_id": "ab8d589a233b37f8",
       "quality_score": 100,
@@ -17184,7 +17227,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765071000,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Maycee BarberThe Future vs Karine SilvaKiller",
       "match_id": "706b6b5851bcb47f",
       "quality_score": 100,
@@ -17309,7 +17352,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765072800,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Terrance McKinney vs Chris Duncan",
       "match_id": "34d00f957a703824",
       "quality_score": 100,
@@ -17332,7 +17375,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765072800,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Terrance McKinneyT.Wrecks vs Chris DuncanThe Problem",
       "match_id": "cf5e4e5c9ad362bc",
       "quality_score": 100,
@@ -17368,7 +17411,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765074600,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Grant Dawson vs Manuel Torres",
       "match_id": "04232be10d1ea513",
       "quality_score": 100,
@@ -17391,7 +17434,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765074600,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Grant DawsonKGD vs Manuel TorresEl Loco",
       "match_id": "601b969cc7edca5a",
       "quality_score": 100,
@@ -17455,7 +17498,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765076400,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Jan Blachowicz vs Bogdan Guskov",
       "match_id": "db8abe40e9bda7e6",
       "quality_score": 100,
@@ -17510,7 +17553,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765076400,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Merab DvalishviliThe Machine vs Petr YanNo Mercy",
       "match_id": "fb3dd0ea3801fd5a",
       "quality_score": 100,
@@ -17647,7 +17690,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765078200,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Henry Cejudo vs Payton Talbott",
       "match_id": "e2c36f9e9874babe",
       "quality_score": 100,
@@ -17671,7 +17714,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765080000,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Brandon Moreno vs Tatsuro Taira",
       "match_id": "9a24afed8e9c7c22",
       "quality_score": 100,
@@ -17705,7 +17748,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765081800,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Alexandre Pantoja vs Joshua Van",
       "match_id": "439f566bf6534791",
       "quality_score": 100,
@@ -17728,7 +17771,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765081800,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Alexandre PantojaThe Cannibal vs Joshua VanThe Fearless",
       "match_id": "0027e2c7ba7e26b9",
       "quality_score": 100,
@@ -17796,7 +17839,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765081800,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Merab Dvalishvili vs Petr Yan",
       "match_id": "38545845e7676bc3",
       "quality_score": 100,
@@ -17813,7 +17856,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765083600,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "Crown Australian Open",
       "match_id": "deb16558512c175f",
       "quality_score": 80,
@@ -17853,7 +17896,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765083600,
-      "sport": "Other",
+      "sport": "MMA",
       "match": "Merab DvalishviliThe Machine vs Petr YanNo Mercy",
       "match_id": "95f4b354e8096da9",
       "quality_score": 100,
@@ -17955,7 +17998,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765098000,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "Nedbank Golf Challenge",
       "match_id": "7ba0e60474c0da28",
       "quality_score": 80,
@@ -17972,7 +18015,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765098900,
-      "sport": "Other",
+      "sport": "Motorsport",
       "match": "Abu Dhabi Grand Prix",
       "match_id": "490615ab4bda3044",
       "quality_score": 80,
@@ -18146,7 +18189,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765107000,
-      "sport": "Football",
+      "sport": "Handball",
       "match": "Atletico Valladolid vs Caserio Ciudad Real",
       "match_id": "b4668b1e9818172f",
       "quality_score": 100,
@@ -18223,7 +18266,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765108500,
-      "sport": "Football",
+      "sport": "Rugby",
       "match": "Manchester United W vs West Ham W",
       "match_id": "24a2ddab0c55a850",
       "quality_score": 100,
@@ -18785,7 +18828,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765116000,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Hannover Burgdorf vs Fuchse Berlin",
       "match_id": "f49d7df16bafc60a",
       "quality_score": 100,
@@ -18802,7 +18845,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765116000,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Hannover vs Burgdorf vs Fuchse Berlin",
       "match_id": "6c019eb15e61977d",
       "quality_score": 100,
@@ -18870,7 +18913,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765116000,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "World Champions Cup",
       "match_id": "b9a14e5006275933",
       "quality_score": 80,
@@ -18889,7 +18932,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765116900,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Chelsea W vs Everton W",
       "match_id": "e3d74eee683063bd",
       "quality_score": 100,
@@ -18925,7 +18968,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765117800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "South Korea (F) vs Czech (F)",
       "match_id": "c2944c80cf1f7b25",
       "quality_score": 100,
@@ -18960,7 +19003,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765117800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Senegal (F) vs Japan (F)",
       "match_id": "63a0c0b4fa1dc77b",
       "quality_score": 100,
@@ -18978,7 +19021,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765117800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Senegal W vs Japan W",
       "match_id": "1801bf38eb965ba8",
       "quality_score": 100,
@@ -18995,7 +19038,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765117800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "South Korea W vs Czech Republic W",
       "match_id": "578a5b31b83d9579",
       "quality_score": 100,
@@ -19321,7 +19364,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765120500,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Ospreys vs Connacht",
       "match_id": "3d0d33521d28f9e6",
       "quality_score": 100,
@@ -19338,7 +19381,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765120500,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Stade Toulousain vs Sharks",
       "match_id": "92cf3f6544ab787d",
       "quality_score": 100,
@@ -19434,7 +19477,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765121400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Guadalajara vs Huesca",
       "match_id": "03123d0b4f5f715c",
       "quality_score": 100,
@@ -19451,7 +19494,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765121400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Hamburg vs Eisenach",
       "match_id": "13e6ec8115891cf8",
       "quality_score": 100,
@@ -19485,7 +19528,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765121400,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Melsungen vs Wetzlar",
       "match_id": "20aee1a7cfb0027a",
       "quality_score": 100,
@@ -19622,7 +19665,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765123200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Coburg vs Essen",
       "match_id": "6274585e7c62e9ca",
       "quality_score": 100,
@@ -19639,7 +19682,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765123200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Dessau vs Rosslauer vs Dormagen",
       "match_id": "eb101db10d642f1c",
       "quality_score": 100,
@@ -19805,7 +19848,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765125000,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "Hero World Challenge",
       "match_id": "99f0ba0e09253289",
       "quality_score": 80,
@@ -19822,7 +19865,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765125000,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "Hero World Challenge",
       "match_id": "99f0ba0e09253289",
       "quality_score": 80,
@@ -19966,7 +20009,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765126800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Angola (F) vs Sweden (F)",
       "match_id": "82cfef376e2aadca",
       "quality_score": 100,
@@ -20034,7 +20077,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765126800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Swiss (F) vs Romania (F)",
       "match_id": "6b40ac1eae46e88a",
       "quality_score": 100,
@@ -20075,7 +20118,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765126800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Magdeburg vs Goppingen",
       "match_id": "88c9ebcf6c0386d6",
       "quality_score": 100,
@@ -20144,7 +20187,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765126800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Stuttgart vs Leipzig",
       "match_id": "d4d796a1c3acdcc4",
       "quality_score": 100,
@@ -20161,7 +20204,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765126800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Switzerland W vs Romania W",
       "match_id": "9a150bc63732fea7",
       "quality_score": 100,
@@ -20178,7 +20221,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765126800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Torrelavega vs Nava",
       "match_id": "1e06d4d31b581232",
       "quality_score": 100,
@@ -20230,7 +20273,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765128600,
-      "sport": "Other",
+      "sport": "Rugby",
       "match": "Edinburgh vs Toulon",
       "match_id": "b86be81b5ba3c015",
       "quality_score": 100,
@@ -20343,7 +20386,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400,
-      "sport": "Other",
+      "sport": "Equestrian",
       "match": "America's Day at the Races",
       "match_id": "936bdbbe05508a41",
       "quality_score": 80,
@@ -20360,7 +20403,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400,
-      "sport": "Other",
+      "sport": "Equestrian",
       "match": "America's Day at the Races",
       "match_id": "936bdbbe05508a41",
       "quality_score": 80,
@@ -20845,7 +20888,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765135800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Hungary W vs Denmark W",
       "match_id": "abb18ffba22b1197",
       "quality_score": 100,
@@ -20862,7 +20905,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765135800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Norway (F) vs Brazil (F)",
       "match_id": "3365e34e7922ee2a",
       "quality_score": 100,
@@ -20879,7 +20922,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765135800,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Hungary (F) vs Denmark (F)",
       "match_id": "5232269c32c41786",
       "quality_score": 100,
@@ -21541,7 +21584,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765188000,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Paraguay W vs Croatia W",
       "match_id": "8f3d2f68624f789a",
       "quality_score": 100,
@@ -21575,7 +21618,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765197000,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Iran W vs Uruguay W",
       "match_id": "3327b1fe6ca608e6",
       "quality_score": 100,
@@ -21650,7 +21693,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765204200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Tunisia W vs Argentina W",
       "match_id": "f9cfb6aa916e821d",
       "quality_score": 100,
@@ -21789,7 +21832,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765213200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "Poland W vs Austria W",
       "match_id": "fa049cd1075a32af",
       "quality_score": 100,
@@ -21984,7 +22027,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765222200,
-      "sport": "Other",
+      "sport": "Handball",
       "match": "France W vs Netherlands W",
       "match_id": "a76bc3643f02f9bb",
       "quality_score": 100,
@@ -22875,7 +22918,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765542600,
-      "sport": "Other",
+      "sport": "Fighting",
       "match": "One Friday Fights",
       "match_id": "988150c0d6017712",
       "quality_score": 80,
@@ -22892,7 +22935,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765542600,
-      "sport": "Other",
+      "sport": "Fighting",
       "match": "One Friday Fights",
       "match_id": "988150c0d6017712",
       "quality_score": 80,
@@ -22927,7 +22970,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765562400,
-      "sport": "Other",
+      "sport": "Equestrian",
       "match": "America's Day at the Races",
       "match_id": "236d1ac359da081d",
       "quality_score": 80,
@@ -23319,7 +23362,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765648800,
-      "sport": "Other",
+      "sport": "Equestrian",
       "match": "America's Day at the Races",
       "match_id": "84388c66619caa03",
       "quality_score": 80,
@@ -23438,7 +23481,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765656000,
-      "sport": "Football",
+      "sport": "American Football",
       "match": "Navy vs Army",
       "match_id": "e9ab125f6504d746",
       "quality_score": 100,
@@ -23693,10 +23736,10 @@
         "wendy": []
       },
       "unix_timestamp": 1765697400,
-      "sport": "Other",
+      "sport": "Equestrian",
       "match": "Hong Kong Cup",
       "match_id": "f9f0f8f138ac5fe3",
-      "quality_score": 60,
+      "quality_score": 80,
       "recovery_applied": [],
       "recovery_confidence": 1
     },
@@ -23900,7 +23943,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765080000000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Highest In The Room 4",
       "match_id": "ad724b42f3ba615a",
       "quality_score": 60,
@@ -23935,7 +23978,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765076400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Vancouver Canucks vs Minnesota Wild",
       "match_id": "00c90f928fa29970",
       "quality_score": 100,
@@ -23952,7 +23995,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765076400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Edmonton Oilers vs Winnipeg Jets",
       "match_id": "6e63e2f842b5e05e",
       "quality_score": 100,
@@ -23969,7 +24012,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765076400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Seattle Kraken vs Detroit Red Wings",
       "match_id": "4613099c7bd690f1",
       "quality_score": 100,
@@ -24003,7 +24046,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765072800000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Los Angeles Kings vs Chicago Blackhawks",
       "match_id": "87fc78b6c064a38d",
       "quality_score": 100,
@@ -24037,10 +24080,27 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Virginia Cavaliers vs Duke Blue Devils",
       "match_id": "a3ad110845ed7e7a",
       "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/ppv-event-02-prelims-ufc-323-ppv-02/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1765069200000,
+      "sport": "Other",
+      "match": "Prelims UFC 323 🔥",
+      "match_id": "4be154ce5c7f0136",
+      "quality_score": 60,
       "recovery_applied": [],
       "recovery_confidence": 1
     },
@@ -24072,7 +24132,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "All Elite Wrestling AEW : Collision",
       "match_id": "ce6f714367fcce51",
       "quality_score": 60,
@@ -24089,7 +24149,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Pitbull vs Lamont Roach Jr.",
       "match_id": "172b0ebc031da5d2",
       "quality_score": 90,
@@ -24140,7 +24200,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Virginia vs Duke",
       "match_id": "b17ecf6fa20ab3b9",
       "quality_score": 90,
@@ -24157,7 +24217,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765069200000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Ohio State vs Indiana",
       "match_id": "9606afd2c7940ddf",
       "quality_score": 90,
@@ -24208,7 +24268,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Calgary Flames vs Utah Mammoth",
       "match_id": "6cc7394875b193ce",
       "quality_score": 100,
@@ -24225,7 +24285,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Carolina Hurricanes vs Nashville Predators",
       "match_id": "12362df2cde5a7f6",
       "quality_score": 100,
@@ -24242,7 +24302,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600000,
-      "sport": "Football",
+      "sport": "Ice Hockey",
       "match": "Toronto Maple Leafs vs Montreal Canadiens",
       "match_id": "095b64ece78c1f02",
       "quality_score": 100,
@@ -24259,7 +24319,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Tampa Bay Lightning vs New York Islanders",
       "match_id": "41697bcc52c35d84",
       "quality_score": 100,
@@ -24276,7 +24336,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Ottawa Senators vs St. Louis Blues",
       "match_id": "af9a4b88f607911e",
       "quality_score": 100,
@@ -24293,7 +24353,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Boston Bruins vs New Jersey Devils",
       "match_id": "72eba32f7b563911",
       "quality_score": 100,
@@ -24310,7 +24370,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765065600000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "NXT Deadline",
       "match_id": "83a40ad115ddee3f",
       "quality_score": 60,
@@ -24339,29 +24399,12 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/echo/ppv-event-01-early-prelims-ufc-323-ppv-001/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765063800000,
-      "sport": "Other",
-      "match": "Early Prelims UFC 323 🔥⭐💥",
-      "match_id": "b9c1957105a140e7",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/delta/live-event_formula-1-2025-united-arab-emirates-gp-live-stream/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1764942300000,
-      "sport": "Football",
+      "sport": "Motor vs sports",
       "match": "Formula 1 2025 vs United Arab Emirates GP",
       "match_id": "a14fa50000685842",
       "quality_score": 90,
@@ -24378,7 +24421,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764941400000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "2025 PFL MENA 4: Finals",
       "match_id": "19ccbb4c87008303",
       "quality_score": 60,
@@ -24395,7 +24438,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764144240000,
-      "sport": "Other",
+      "sport": "Motor vs sports",
       "match": "World Rally Championship 2025 vs Rally Saudi Arabia",
       "match_id": "0f40c39713fa48ca",
       "quality_score": 90,
@@ -24411,7 +24454,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1765091556,
+      "unix_timestamp": 1765093538,
       "sport": "Basketball",
       "match": "NFL Streams Schedule",
       "match_id": "8f5b2f4425cba66e",
@@ -24429,7 +24472,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765094400000,
-      "sport": "Rugby",
+      "sport": "American Football",
       "match": "World Rugby Sevens Series: Cape Town Day 2: Session 1",
       "match_id": "73ec7eb532e1de07",
       "quality_score": 60,
@@ -24481,7 +24524,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765098900000,
-      "sport": "Other",
+      "sport": "Motor vs sports",
       "match": "Abu Dhabi Feature Race",
       "match_id": "5514faebc91971aa",
       "quality_score": 60,
@@ -24632,24 +24675,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/charlie/tottenham-hotspur-w-vs-aston-villa-w-1417254/1",
-          "https://embedsports.top/embed/echo/tottenham-hotspur-w-vs-aston-villa-w-football-1417254/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765108800000,
-      "sport": "Football",
-      "match": "FA WSL: Tottenham Hotspur W vs Aston Villa W",
-      "match_id": "6b0fb999f95659fd",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/charlie/leicester-city-wfc-vs-manchester-city-w-1417255/1",
           "https://embedsports.top/embed/echo/leicester-city-wfc-vs-manchester-city-w-football-1417255/1"
         ],
@@ -24677,6 +24702,24 @@
       "sport": "Football",
       "match": "FA WSL: London City Lionesses vs Brighton W",
       "match_id": "242f2ee4c0631718",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/charlie/tottenham-hotspur-w-vs-aston-villa-w-1417254/1",
+          "https://embedsports.top/embed/echo/tottenham-hotspur-w-vs-aston-villa-w-football-1417254/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1765108800000,
+      "sport": "Football",
+      "match": "FA WSL: Tottenham Hotspur W vs Aston Villa W",
+      "match_id": "6b0fb999f95659fd",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1
@@ -24847,7 +24890,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765112400000,
-      "sport": "Other",
+      "sport": "Motor vs sports",
       "match": "Race | Yas Marina Circuit | 306.2 Kms",
       "match_id": "b916f6f880ae3959",
       "quality_score": 60,
@@ -24864,7 +24907,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765112400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Nurnberg Ice Tigers vs Grizzly Wolfsburg",
       "match_id": "ad835b38fb8e6cc4",
       "quality_score": 100,
@@ -24910,23 +24953,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/charlie/rwanda-vs-zambia-1629471730/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765112400000,
-      "sport": "Cricket",
-      "match": "West Africa T20I Trophy: Rwanda vs Zambia",
-      "match_id": "fe399e22d2a38b45",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/charlie/south-africa-w-vs-ireland-w-1629471729/1"
         ],
         "wendy": []
@@ -24949,7 +24975,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765112400000,
-      "sport": "Other",
+      "sport": "Motor vs sports",
       "match": "FIA F1 World Championship: FORMULA 1 ETIHAD AIRWAYS ABU DHABI GRAND PRIX 2025: Race",
       "match_id": "a5ec31f7a7fa2030",
       "quality_score": 60,
@@ -25021,7 +25047,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765112400000,
-      "sport": "Other",
+      "sport": "Motor vs sports",
       "match": "Abu Dhabi Grand Prix",
       "match_id": "1a270e6966c2321a",
       "quality_score": 60,
@@ -25038,7 +25064,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765112400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Iserlohn Roosters vs Straubing Tigers",
       "match_id": "0363bcbe1f63790b",
       "quality_score": 100,
@@ -25055,7 +25081,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765112400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Eisbären Berlin vs Dresdner Eislowen",
       "match_id": "82a5f14c5f5372fb",
       "quality_score": 100,
@@ -25143,7 +25169,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765116000000,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "PGA Tour Champions: World Champions Cup (Day Three)",
       "match_id": "51fb38664e43cbff",
       "quality_score": 60,
@@ -25254,7 +25280,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765117800000,
-      "sport": "Tennis",
+      "sport": "Other",
       "match": "Ultimate Tennis Showdown",
       "match_id": "a300e8375feb557c",
       "quality_score": 60,
@@ -25416,7 +25442,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765121400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Frankfurt Lowen vs Munchen",
       "match_id": "dd1ddb3378fc49f2",
       "quality_score": 100,
@@ -25571,7 +25597,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765121400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Adler Mannheim vs Augsburger Panther",
       "match_id": "4dd3e4bccf414d50",
       "quality_score": 100,
@@ -25588,7 +25614,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765121400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "ERC Ingolstadt vs Schwenninger Wild Wings",
       "match_id": "44164694f90cc94c",
       "quality_score": 100,
@@ -26084,7 +26110,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Bremerhaven vs Kolner",
       "match_id": "ea44d75e7d8910f1",
       "quality_score": 100,
@@ -26140,7 +26166,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Philadelphia Flyers vs Colorado Avalanche",
       "match_id": "819c7dfce7105d8e",
       "quality_score": 100,
@@ -26161,7 +26187,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Minnesota Vikings vs Washington Commanders",
       "match_id": "70cb244f4bb649ef",
       "quality_score": 100,
@@ -26182,7 +26208,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Atlanta Falcons vs Seattle Seahawks",
       "match_id": "08ad7f9a34060c1e",
       "quality_score": 100,
@@ -26224,7 +26250,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Cleveland Browns vs Tennessee Titans",
       "match_id": "17c881febec3f2cc",
       "quality_score": 100,
@@ -26245,7 +26271,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Jacksonville Jaguars vs Indianapolis Colts",
       "match_id": "0707ebe550f4ef08",
       "quality_score": 100,
@@ -26266,7 +26292,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "New York Jets vs Miami Dolphins",
       "match_id": "9e9b46c3f6848164",
       "quality_score": 100,
@@ -26287,7 +26313,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Tampa Bay Buccaneers vs New Orleans Saints",
       "match_id": "f3239ef97de28213",
       "quality_score": 100,
@@ -26308,7 +26334,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765130400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Buffalo Bills vs Cincinnati Bengals",
       "match_id": "b1c6c823e3b145df",
       "quality_score": 100,
@@ -26337,6 +26363,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/charlie/sampdoria-vs-carrarese-1419736/1",
           "https://embedsports.top/embed/echo/sampdoria-vs-carrarese-football-1419736/1"
         ],
         "wendy": []
@@ -26344,7 +26371,7 @@
       "unix_timestamp": 1765132200000,
       "sport": "Football",
       "match": "Sampdoria vs Carrarese",
-      "match_id": "9be1a4f5a58f2053",
+      "match_id": "5bccee21ebc3f0f3",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1
@@ -26542,6 +26569,7 @@
         "tom": [],
         "sarah": [
           "https://embedsports.top/embed/admin/ppv-napoli-vs-juventus/1",
+          "https://embedsports.top/embed/charlie/napoli-vs-juventus-1377998/1",
           "https://embedsports.top/embed/delta/live_serie-a_napoli-juventus-live-streaming-439827840/1",
           "https://embedsports.top/embed/echo/napoli-vs-juventus-football-1377998/1"
         ],
@@ -26550,7 +26578,7 @@
       "unix_timestamp": 1765136700000,
       "sport": "Football",
       "match": "Napoli vs Juventus",
-      "match_id": "2f4d1360b9dee34d",
+      "match_id": "7599c62ae3966671",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1
@@ -26643,7 +26671,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765141500000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Las Vegas Raiders vs Denver Broncos",
       "match_id": "b9a45ee7cf2fd435",
       "quality_score": 100,
@@ -26664,7 +26692,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765142700000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Arizona Cardinals vs Los Angeles Rams",
       "match_id": "8a84a276bb994deb",
       "quality_score": 100,
@@ -26723,7 +26751,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765144800000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Carolina Hurricanes vs San Jose Sharks",
       "match_id": "7a6706ab72fea2c3",
       "quality_score": 100,
@@ -26744,7 +26772,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765144800000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Florida Panthers vs New York Islanders",
       "match_id": "83b2cb6ad5c4706f",
       "quality_score": 100,
@@ -26761,7 +26789,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765146600000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "MMA: FURY FC 112",
       "match_id": "51decdb6704656c7",
       "quality_score": 60,
@@ -26782,7 +26810,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765148400000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Dallas Stars vs Pittsburgh Penguins",
       "match_id": "0872e4c28e30e09b",
       "quality_score": 100,
@@ -26841,7 +26869,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765152000000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "MMA: BJJ CLUBES",
       "match_id": "7c7682fa64174861",
       "quality_score": 60,
@@ -26862,7 +26890,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765152000000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Washington Capitals vs Columbus Blue Jackets",
       "match_id": "4e3773b0293813c0",
       "quality_score": 100,
@@ -26883,7 +26911,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765152000000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "New York Rangers vs Vegas Golden Knights",
       "match_id": "d1205e92aa69352f",
       "quality_score": 100,
@@ -26904,7 +26932,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765152000000,
-      "sport": "Football",
+      "sport": "Ice Hockey",
       "match": "Montreal Canadiens vs St. Louis Blues",
       "match_id": "6e0108422dd52868",
       "quality_score": 100,
@@ -26984,7 +27012,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765155600000,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Anaheim Ducks vs Chicago Blackhawks",
       "match_id": "f25a3637b6ddcc4a",
       "quality_score": 100,
@@ -27026,26 +27054,9 @@
         "wendy": []
       },
       "unix_timestamp": 1765156800000,
-      "sport": "Football",
+      "sport": "American Football",
       "match": "Kansas City Chiefs vs Houston Texans",
       "match_id": "6c852764ad7c482a",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/charlie/australia-vs-england-1629471772/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765166400000,
-      "sport": "Cricket",
-      "match": "England tour of Australia: Australia vs England",
-      "match_id": "b5e89775c8284006",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1
@@ -27072,6 +27083,23 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/charlie/australia-vs-england-1629471772/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1765166400000,
+      "sport": "Cricket",
+      "match": "England tour of Australia: Australia vs England",
+      "match_id": "b5e89775c8284006",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
           "https://embedsports.top/embed/charlie/strings-vs-eisa-1629471773/1"
         ],
         "wendy": []
@@ -27089,23 +27117,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/charlie/sierra-leone-vs-rwanda-1629471774/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765184400000,
-      "sport": "Cricket",
-      "match": "West Africa T20I Trophy: Sierra Leone vs Rwanda",
-      "match_id": "02293f96e136b81e",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/echo/modena-vs-catanzaro-football-1419735/1"
         ],
         "wendy": []
@@ -27114,23 +27125,6 @@
       "sport": "Football",
       "match": "Modena vs Catanzaro",
       "match_id": "91846aa0a70a805b",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/charlie/nigeria-vs-zambia-1629471775/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765198800000,
-      "sport": "Cricket",
-      "match": "West Africa T20I Trophy: Nigeria vs Zambia",
-      "match_id": "381b7fab7b785e9e",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1
@@ -27511,7 +27505,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765242900000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Philadelphia Eagles vs Los Angeles Chargers",
       "match_id": "2ec86b611c30ac6d",
       "quality_score": 90,
@@ -27602,40 +27596,6 @@
       "sport": "Cricket",
       "match": "WBBL: TBA vs TBA",
       "match_id": "7c669e8211c55ae3",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/charlie/rwanda-vs-nigeria-1629471791/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765270800000,
-      "sport": "Cricket",
-      "match": "West Africa T20I Trophy: Rwanda vs Nigeria",
-      "match_id": "6cc45d553d6a1ab3",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/charlie/sierra-leone-vs-zambia-1629471792/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1765285200000,
-      "sport": "Cricket",
-      "match": "West Africa T20I Trophy: Sierra Leone vs Zambia",
-      "match_id": "3d2f7d185eb5fc30",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1
@@ -28058,7 +28018,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765494000000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Alexandre Gaumont vs Ramadan Hiseni",
       "match_id": "cb199574a6ce6dc3",
       "quality_score": 90,
@@ -28075,7 +28035,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765540800000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Kubrat Pulev vs Murat Gassiev",
       "match_id": "824b0de20a3bc297",
       "quality_score": 90,
@@ -28092,7 +28052,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765638000000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "PFL Lyon: Nemkov vs Ferreira",
       "match_id": "22dd9afcc9c3ab31",
       "quality_score": 90,
@@ -28109,7 +28069,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765645200000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Edwin De Los Santos vs Eliot Chavez",
       "match_id": "af533b80df277f94",
       "quality_score": 90,
@@ -28126,7 +28086,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765652400000,
-      "sport": "Other",
+      "sport": "American Football",
       "match": "Navy Midshipmen vs Army Knights",
       "match_id": "f0bd91bf4bcfc2fd",
       "quality_score": 90,
@@ -28143,7 +28103,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765661400000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Kevin Hayler Brown vs Cletus Seldin",
       "match_id": "01b6d712f051691c",
       "quality_score": 90,
@@ -28160,7 +28120,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765663200000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Jose Salas Reyes vs Landi Ngxeke",
       "match_id": "4cda252e5419dec4",
       "quality_score": 90,
@@ -28177,7 +28137,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765670400000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Diego Pacheco vs Kevin Lele Sadjo",
       "match_id": "15d1d86a636a052f",
       "quality_score": 90,
@@ -28194,7 +28154,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765674000000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Badou Jack vs Noel ‘Gevor’ Mikaelian",
       "match_id": "8f36e27bcf19ef28",
       "quality_score": 90,
@@ -28212,7 +28172,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765681200000,
-      "sport": "Football",
+      "sport": "Fight",
       "match": "UFC Fight Night: Royval vs Kape",
       "match_id": "d3fde077fa0e15c4",
       "quality_score": 90,
@@ -28229,7 +28189,7 @@
         "wendy": []
       },
       "unix_timestamp": 1765951200000,
-      "sport": "Other",
+      "sport": "Fight",
       "match": "Tim Tszyu vs Anthony Velazquez",
       "match_id": "b25d2518b407d6eb",
       "quality_score": 90,
@@ -28246,7 +28206,7 @@
         "wendy": []
       },
       "unix_timestamp": 1769306400000,
-      "sport": "Football",
+      "sport": "Fight",
       "match": "UFC 324: Gaethje vs Pimblett",
       "match_id": "21e5ddbd23baae3a",
       "quality_score": 90,
@@ -28552,7 +28512,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Los Angeles Kings vs Washington Capitals",
       "match_id": "9837b342aeec17c0",
       "quality_score": 100,
@@ -28567,7 +28527,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Sibir Novosibirsk vs Spartak Moscow",
       "match_id": "dcb34ccdb2f6b748",
       "quality_score": 85,
@@ -28582,7 +28542,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Gornyak Uchaly vs Yuzhnyi Ural Orsk",
       "match_id": "77ef6922beb172aa",
       "quality_score": 85,
@@ -28597,7 +28557,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Avtomobilist Yekaterinburg vs Metallurg Magnitogorsk",
       "match_id": "c244dd7d960d6b42",
       "quality_score": 85,
@@ -28612,7 +28572,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Toross Neftekamsk vs Torpedo vs Gorkiy",
       "match_id": "bbb909af5dbf41a1",
       "quality_score": 85,
@@ -28627,7 +28587,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Izhstal Izhevsk vs Khimik Voskresensk",
       "match_id": "54f3f0b98b538531",
       "quality_score": 85,
@@ -28642,7 +28602,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Brampton Steelheads vs Guelph Storm",
       "match_id": "40481bd643633169",
       "quality_score": 85,
@@ -28657,7 +28617,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Olympia vs Zvezda Chekhov",
       "match_id": "972b681c568982e3",
       "quality_score": 85,
@@ -28672,7 +28632,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Dyzel Penza vs Hc Omskie Krylya",
       "match_id": "280775190b293db8",
       "quality_score": 85,
@@ -28687,7 +28647,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Akm vs Rubin Tyumen",
       "match_id": "b687148df83a7cf4",
       "quality_score": 85,
@@ -28702,7 +28662,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Severstal Cherepovets vs Dynamo Moscow",
       "match_id": "4a4434befc8f40d7",
       "quality_score": 85,
@@ -28717,7 +28677,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "AK Bars vs Traktor Chelyabinsk",
       "match_id": "755226762d7956d8",
       "quality_score": 85,
@@ -28732,7 +28692,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Třinec vs HC Mountfield Hradec Kralove",
       "match_id": "f45bc865c58e7ad7",
       "quality_score": 85,
@@ -28747,7 +28707,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Tappara vs Jyvaskyla",
       "match_id": "78ba672b08180ca8",
       "quality_score": 85,
@@ -28762,7 +28722,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Pelicans vs KooKoo",
       "match_id": "1864e3ab9d39b2f6",
       "quality_score": 85,
@@ -28777,7 +28737,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "HIFK vs Assat",
       "match_id": "ac517231c3f8d21d",
       "quality_score": 85,
@@ -28792,7 +28752,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "TPS vs Kiekko vs Espoo",
       "match_id": "8933a4fb429993e6",
       "quality_score": 85,
@@ -28807,7 +28767,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Vítkovice vs HC Olomouc",
       "match_id": "19807355e86606b0",
       "quality_score": 85,
@@ -28822,7 +28782,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Lukko vs EV Zug",
       "match_id": "a1ddac1f06c7f479",
       "quality_score": 85,
@@ -28837,7 +28797,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Shanghai Dragons vs Salavat Yulayev Ufa",
       "match_id": "d2d47c30ffcb03ba",
       "quality_score": 85,
@@ -28852,7 +28812,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "CSKA Moscow vs Torpedo Nizhny Novgorod",
       "match_id": "dbd86b8261f9cf76",
       "quality_score": 85,
@@ -28867,7 +28827,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "HK Zemgale/Jlss vs HS Riga",
       "match_id": "86c9112390953c83",
       "quality_score": 85,
@@ -28882,7 +28842,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Kyiv Capitals vs HC Panter",
       "match_id": "489e64c9dcac8e3c",
       "quality_score": 85,
@@ -28897,7 +28857,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Graz 99ers vs Vienna Capitals",
       "match_id": "f855db577acc30c3",
       "quality_score": 85,
@@ -28912,7 +28872,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Nybro vs Sodertalje",
       "match_id": "f519f4020edcc324",
       "quality_score": 85,
@@ -28927,7 +28887,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "AIK IF vs Mora",
       "match_id": "3018a338485aa900",
       "quality_score": 85,
@@ -28942,7 +28902,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Kalmar vs Ostersund",
       "match_id": "8a899e5e35e630b5",
       "quality_score": 85,
@@ -28966,7 +28926,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Colorado Avalanche vs Vancouver Canucks",
       "match_id": "822b975b682c570e",
       "quality_score": 100,
@@ -28991,7 +28951,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Edmonton Oilers vs Minnesota Wild",
       "match_id": "e75c9aeaf76ea3d5",
       "quality_score": 100,
@@ -29015,7 +28975,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Nashville Predators vs Calgary Flames",
       "match_id": "fa85607ec72fa068",
       "quality_score": 100,
@@ -29030,7 +28990,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "IK Oskarshamn vs Almtuna IS",
       "match_id": "1871d907deec0ced",
       "quality_score": 85,
@@ -29045,7 +29005,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Amiens vs Cergy vs Pontoise",
       "match_id": "26bb4d412756bdc5",
       "quality_score": 85,
@@ -29062,7 +29022,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Kitchener Rangers vs Erie Otters",
       "match_id": "a1a72c2bf8a155d7",
       "quality_score": 100,
@@ -29098,7 +29058,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Vegas Golden Knights vs Chicago Blackhawks",
       "match_id": "1b2bd0589cf6b696",
       "quality_score": 100,
@@ -29120,7 +29080,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "New York Islanders vs Tampa Bay Lightning",
       "match_id": "a652b6feb345270e",
       "quality_score": 100,
@@ -29141,7 +29101,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Florida Panthers vs Toronto Maple Leafs",
       "match_id": "66c4fd423b404804",
       "quality_score": 100,
@@ -29156,7 +29116,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Anglet vs Marseille",
       "match_id": "6a70787539e70408",
       "quality_score": 85,
@@ -29182,7 +29142,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Detroit Red Wings vs Boston Bruins",
       "match_id": "190d10936160b8bb",
       "quality_score": 100,
@@ -29205,7 +29165,7 @@
         ]
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Football",
+      "sport": "Ice Hockey",
       "match": "Montreal Canadiens vs Ottawa Senators",
       "match_id": "2d8c4cdcf29087f6",
       "quality_score": 100,
@@ -29220,7 +29180,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "EHC Chur vs Thurgau",
       "match_id": "ee2c4df446659654",
       "quality_score": 85,
@@ -29235,7 +29195,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Brynas IF vs Kalpa",
       "match_id": "c87f8f08159260b0",
       "quality_score": 85,
@@ -29250,7 +29210,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Odense Bulldogs vs Rungsted Cobras",
       "match_id": "28e1681b609dff90",
       "quality_score": 85,
@@ -29265,7 +29225,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Briancon vs Angers",
       "match_id": "ae535668dd765048",
       "quality_score": 85,
@@ -29280,7 +29240,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "HK Mogo vs Liepajas Metalurgs",
       "match_id": "bdbe76b70201529b",
       "quality_score": 85,
@@ -29295,7 +29255,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Björklöven vs Västerås",
       "match_id": "d039f0b7b7e37341",
       "quality_score": 85,
@@ -29310,7 +29270,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "BIK Karlskoga vs Vimmerby Hc",
       "match_id": "14d55bc6267915c2",
       "quality_score": 85,
@@ -29325,7 +29285,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Ryazan vs Zauralye Kurhan",
       "match_id": "7c0dc93d87d2363a",
       "quality_score": 85,
@@ -29340,7 +29300,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Chamonix Mont vs Blanc vs Nice",
       "match_id": "408cde9f76617aaa",
       "quality_score": 85,
@@ -29355,7 +29315,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "GAP vs Rouen",
       "match_id": "77dc24ded330fe08",
       "quality_score": 85,
@@ -29370,7 +29330,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Chaux vs de vs Fonds vs EHC Arosa",
       "match_id": "ef16bfd0aa0a7c9e",
       "quality_score": 85,
@@ -29385,7 +29345,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "GCK Lions vs EHC Winterthur",
       "match_id": "8b92870681eaf1e1",
       "quality_score": 85,
@@ -29400,7 +29360,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "ERC Ingolstadt vs Frölunda HC",
       "match_id": "c7fba949038e8059",
       "quality_score": 85,
@@ -29415,7 +29375,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Herning Blue Fox vs Aalborg Pirates",
       "match_id": "5e4a5957731a4ae5",
       "quality_score": 85,
@@ -29430,7 +29390,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Basel vs Olten",
       "match_id": "37b2d42aa71addcf",
       "quality_score": 85,
@@ -29445,7 +29405,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818306,
-      "sport": "Other",
+      "sport": "Ice Hockey",
       "match": "Bellinzona Snakes vs Hc Sierre",
       "match_id": "97f84b856a373500",
       "quality_score": 85,
@@ -34694,7 +34654,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818724,
-      "sport": "Other",
+      "sport": "Golf",
       "match": "PGTI: Jaipur Open (India)",
       "match_id": "ccd86c22437481d0",
       "quality_score": 45,
@@ -34709,7 +34669,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "De Buck S. vs Ham R.",
       "match_id": "2d9b2b7166d4ffb6",
       "quality_score": 75,
@@ -34724,7 +34684,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Mould A. vs Turner S.",
       "match_id": "91870eb091220565",
       "quality_score": 75,
@@ -34739,7 +34699,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Wachiuri P. vs Weening B.",
       "match_id": "53d4be31cc125be4",
       "quality_score": 75,
@@ -34754,7 +34714,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Johnson vs Hale P. vs De Buck S.",
       "match_id": "11ed29a6c9223f33",
       "quality_score": 75,
@@ -34769,7 +34729,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Weening B. vs Mould A.",
       "match_id": "cdac9fac2dbaa56e",
       "quality_score": 75,
@@ -34784,7 +34744,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Turner S. vs Ham R.",
       "match_id": "97300a7bc52feb41",
       "quality_score": 75,
@@ -34799,7 +34759,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Wachiuri P. vs De Buck S.",
       "match_id": "c352c8d3ab2ac2ec",
       "quality_score": 75,
@@ -34814,7 +34774,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Johnson vs Hale P. vs Turner S.",
       "match_id": "f58fcde57d299d4e",
       "quality_score": 75,
@@ -34829,7 +34789,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Ham R. vs Weening B.",
       "match_id": "208aad6f0d8db059",
       "quality_score": 75,
@@ -34844,7 +34804,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Mould A. vs Johnson vs Hale P.",
       "match_id": "3f4a146fcaae3272",
       "quality_score": 75,
@@ -34859,7 +34819,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "De Buck S. vs Turner S.",
       "match_id": "839f997210cb7986",
       "quality_score": 75,
@@ -34874,7 +34834,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Ham R. vs Wachiuri P.",
       "match_id": "38037b9f9e04b542",
       "quality_score": 75,
@@ -34889,7 +34849,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Weening B. vs De Buck S.",
       "match_id": "09ad6402222c346e",
       "quality_score": 75,
@@ -34904,7 +34864,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Johnson vs Hale P. vs Wachiuri P.",
       "match_id": "0acffc21228d29cf",
       "quality_score": 75,
@@ -34919,7 +34879,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Mould A. vs Ham R.",
       "match_id": "1918f37eff9d27b5",
       "quality_score": 75,
@@ -34934,7 +34894,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Wachiuri P. vs Mould A.",
       "match_id": "f9432714465d3406",
       "quality_score": 75,
@@ -34949,7 +34909,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Ham R. vs Johnson vs Hale P.",
       "match_id": "5b0392b3ad40ff92",
       "quality_score": 75,
@@ -34964,7 +34924,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "De Buck S. vs Mould A.",
       "match_id": "bbd24a1d56c6746d",
       "quality_score": 75,
@@ -34979,7 +34939,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Turner S. vs Wachiuri P.",
       "match_id": "a555b444d74ce78c",
       "quality_score": 75,
@@ -34994,7 +34954,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Weening B. vs Johnson vs Hale P.",
       "match_id": "e6006563b6ac4e2d",
       "quality_score": 75,
@@ -35009,7 +34969,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Hyde L. vs Dursun E.",
       "match_id": "f43e87daa1d3db74",
       "quality_score": 75,
@@ -35024,7 +34984,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Feiertag T. vs Steenbergen P.",
       "match_id": "1e2e0fc5d295daa9",
       "quality_score": 75,
@@ -35039,7 +34999,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Pratnemer B. vs Bauerdick D.",
       "match_id": "eea9c11ec3bd46d0",
       "quality_score": 75,
@@ -35054,7 +35014,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Schweyen F. vs Sparidaans J.",
       "match_id": "bdf3d1538c88fb76",
       "quality_score": 75,
@@ -35069,7 +35029,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Junghans T. vs Rosney S.",
       "match_id": "ab264f00a09897d3",
       "quality_score": 75,
@@ -35084,7 +35044,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Maier M. vs Gijbels S.",
       "match_id": "d999df62eebd66e2",
       "quality_score": 75,
@@ -35099,7 +35059,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Turner S. vs Weening B.",
       "match_id": "cb3942b47bcc6a3e",
       "quality_score": 75,
@@ -35114,7 +35074,7 @@
         "wendy": []
       },
       "unix_timestamp": 1764742818729,
-      "sport": "Other",
+      "sport": "Darts",
       "match": "Clark M. vs Muramatsu H.",
       "match_id": "44e2a340783e24cc",
       "quality_score": 75,
