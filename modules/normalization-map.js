@@ -50,6 +50,15 @@ class NormalizationMap {
             'swimming': 'Swimming',
             'water polo': 'Water Polo',
             'wrestling': 'Wrestling',
+            'track & field': 'Athletics',
+            'track and field': 'Athletics',
+            'motor vs sports': 'Motorsport',
+            'motorsport': 'Motorsport',
+            'fight': 'Fighting',
+            'fighting': 'Fighting',
+            'feature race': 'Racing',
+            'golf challenge': 'Golf',
+            'dp world tour': 'Golf',
             'wwe': 'Wrestling'
         };
         
