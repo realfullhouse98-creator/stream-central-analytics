@@ -1,6 +1,8 @@
-// api.js - PROXY-FIRST WITH DIRECT API FALLBACK
+// api.js - ENHANCED UNIFIED SPORTS DATA API
+// Version: 2.0 - Optimized for GitHub Actions Pipeline
+
 const API_CONFIG = {
-    // 🎯 UNIFIED PROXY (Primary)
+    // 🎯 PRIMARY PROXY (If working)
     UNIFIED_PROXY: {
         BASE_URL: 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev',
         ENDPOINTS: {
@@ -8,400 +10,561 @@ const API_CONFIG = {
             TOM_ALL: '/api/tom/all',
             SARAH_ALL: '/api/sarah/all', 
             WENDY_ALL: '/api/wendy/all'
-        }
+        },
+        TIMEOUT: 10000 // 10 seconds
     },
     
-    // 🛡️ DIRECT APIS (Fallback - No CORS issues through proxy, but backup)
+    // 🛡️ DIRECT APIS (Primary fallback)
     DIRECT_APIS: {
         TOM: {
             BASE_URL: 'https://topembed.pw',
             ENDPOINTS: {
                 ALL_MATCHES: '/api.php?format=json'
-            }
+            },
+            TIMEOUT: 8000,
+            CORS_PROXIES: [
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-anywhere.herokuapp.com/'
+            ]
         },
         SARAH: {
             BASE_URL: 'https://streamed.pk',
             ENDPOINTS: {
                 ALL_MATCHES: '/api/matches/all'
-            }
+            },
+            TIMEOUT: 8000,
+            CORS_PROXIES: [
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-anywhere.herokuapp.com/'
+            ]
         },
         WENDY: {
             BASE_URL: 'https://watchfooty.st',
             ENDPOINTS: {
+                // Based on your raw Wendy data structure
+                ALL_MATCHES: '/api/v1/all-matches',  // Try this first
+                MATCHES_DIRECT: '/matches',           // Alternative
                 SPORTS: '/api/v1/sports',
                 SPORT_MATCHES: '/api/v1/matches/{sport}'
-            }
+            },
+            TIMEOUT: 15000, // Wendy needs more time
+            CORS_PROXIES: [
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                ''
+            ],
+            MAX_SPORTS: 3 // Limit for performance
         }
+    },
+    
+    // 🔄 FALLBACK STRATEGY
+    RETRY_STRATEGY: {
+        MAX_RETRIES: 2,
+        RETRY_DELAY: 1000,
+        TIMEOUT_BACKOFF: true
     }
 };
 
-// 🎯 PROXY-FIRSTR STRATEGY
-async function fetchUnifiedMatches() {
-    console.log('🚀 PRIMARY: Trying Unified Proxy...');
+// 🎯 SMART FETCH WITH RETRY
+async function smartFetch(url, options = {}, maxRetries = 2) {
+    let lastError;
     
-    try {
-        const url = API_CONFIG.UNIFIED_PROXY.BASE_URL + API_CONFIG.UNIFIED_PROXY.ENDPOINTS.COMBINED_MATCHES;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), options.timeout || 10000);
+            
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    ...options.headers
+                }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                return await response.json();
+            } else {
+                lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
+                console.log(`   ⚠️ Attempt ${attempt} failed: ${lastError.message}`);
+            }
+        } catch (error) {
+            lastError = error;
+            console.log(`   ⚠️ Attempt ${attempt} error: ${error.message}`);
+        }
         
-        const response = await fetch(url, {
-            signal: AbortSignal.timeout(8000), // 8 second timeout
-            headers: { 'Accept': 'application/json' }
-        });
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const data = await response.json();
-        
-        console.log('✅ PROXY SUCCESS!', {
-            totalMatches: data.totalMatches,
-            successfulAPIs: data.success,
-            failedAPIs: data.failed
-        });
-        
-        return data;
-        
-    } catch (error) {
-        console.warn('❌ Proxy failed, falling back to direct APIs:', error.message);
-        return await fetchDirectAPIsFallback();
-    }
-}
-
-// 🛡️ DIRECT API FALLBACK (When proxy fails)
-async function fetchDirectAPIsFallback() {
-    console.log('🔄 FALLBACK: Trying direct APIs...');
-    
-    const results = await Promise.allSettled([
-        fetchTomDirect().catch(e => ({ error: e.message, source: 'tom' })),
-        fetchSarahDirect().catch(e => ({ error: e.message, source: 'sarah' })),
-        fetchWendyDirect().catch(e => ({ error: e.message, source: 'wendy' }))
-    ]);
-
-    const successful = results.filter(r => r.status === 'fulfilled' && !r.value.error);
-    const failed = results.filter(r => r.status === 'rejected' || r.value.error);
-    
-    console.log(`🛡️ Direct APIs: ${successful.length} successful, ${failed.length} failed`);
-    
-    if (successful.length === 0) {
-        console.log('🚨 All direct APIs failed, using emergency data');
-        return getEmergencyFallbackData();
+        if (attempt < maxRetries) {
+            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
     }
     
-    // Combine successful direct API data
-    return combineDirectAPIData(successful.map(r => r.value));
+    throw lastError;
 }
 
-// 🔧 DIRECT API FETCHERS (Using CORS proxies)
-async function fetchTomDirect() {
-    try {
-        const url = API_CONFIG.DIRECT_APIS.TOM.BASE_URL + API_CONFIG.DIRECT_APIS.TOM.ENDPOINTS.ALL_MATCHES;
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        
-        const response = await fetch(proxyUrl, {
-            signal: AbortSignal.timeout(5000)
-        });
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const data = await response.json();
-        return { source: 'tom', data: data, count: data?.events ? Object.values(data.events).flat().length : 0 };
-        
-    } catch (error) {
-        throw new Error(`Tom direct failed: ${error.message}`);
-    }
-}
-
-async function fetchSarahDirect() {
-    try {
-        const url = API_CONFIG.DIRECT_APIS.SARAH.BASE_URL + API_CONFIG.DIRECT_APIS.SARAH.ENDPOINTS.ALL_MATCHES;
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        
-        const response = await fetch(proxyUrl, {
-            signal: AbortSignal.timeout(5000)
-        });
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const data = await response.json();
-        return { source: 'sarah', data: data, count: Array.isArray(data) ? data.length : 0 };
-        
-    } catch (error) {
-        throw new Error(`Sarah direct failed: ${error.message}`);
-    }
-}
-
-async function fetchWendyDirect() {
-    try {
-        // Get sports first, then matches for each sport
-        const sportsUrl = API_CONFIG.DIRECT_APIS.WENDY.BASE_URL + API_CONFIG.DIRECT_APIS.WENDY.ENDPOINTS.SPORTS;
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(sportsUrl)}`;
-        
-        const sportsResponse = await fetch(proxyUrl, { signal: AbortSignal.timeout(5000) });
-        if (!sportsResponse.ok) throw new Error('Failed to fetch sports');
-        
-        const sports = await sportsResponse.json();
-        const allMatches = [];
-        
-        // Fetch first 3 sports only (for performance)
-        const limitedSports = sports.slice(0, 3);
-        
-        for (const sport of limitedSports) {
-            try {
-                const matchesUrl = API_CONFIG.DIRECT_APIS.WENDY.BASE_URL + 
-                    API_CONFIG.DIRECT_APIS.WENDY.ENDPOINTS.SPORT_MATCHES.replace('{sport}', sport.name);
-                const matchesProxyUrl = `https://corsproxy.io/?${encodeURIComponent(matchesUrl)}`;
+// 🎯 FETCH TOM DATA
+async function fetchTomData() {
+    console.log('🔍 Fetching Tom data...');
+    
+    const config = API_CONFIG.DIRECT_APIS.TOM;
+    const directUrl = config.BASE_URL + config.ENDPOINTS.ALL_MATCHES;
+    
+    // Try each CORS proxy
+    for (const proxy of config.CORS_PROXIES) {
+        try {
+            const url = proxy + (proxy ? encodeURIComponent(directUrl) : directUrl);
+            console.log(`   Trying: ${new URL(url).hostname}`);
+            
+            const data = await smartFetch(url, { timeout: config.TIMEOUT });
+            
+            if (data && (data.events || Array.isArray(data))) {
+                const matchCount = data.events ? 
+                    Object.values(data.events).reduce((sum, matches) => sum + (Array.isArray(matches) ? matches.length : 0), 0) :
+                    (Array.isArray(data) ? data.length : 0);
                 
-                const matchesResponse = await fetch(matchesProxyUrl, { signal: AbortSignal.timeout(3000) });
-                if (matchesResponse.ok) {
-                    const matches = await matchesResponse.json();
+                console.log(`   ✅ Tom: ${matchCount} matches via ${new URL(url).hostname}`);
+                return {
+                    source: 'tom',
+                    data: data,
+                    matchCount: matchCount,
+                    success: true,
+                    endpoint: new URL(url).hostname
+                };
+            }
+        } catch (error) {
+            console.log(`   ❌ Tom via ${proxy ? 'proxy' : 'direct'}: ${error.message}`);
+        }
+    }
+    
+    throw new Error('All Tom endpoints failed');
+}
+
+// 🎯 FETCH SARAH DATA
+async function fetchSarahData() {
+    console.log('🔍 Fetching Sarah data...');
+    
+    const config = API_CONFIG.DIRECT_APIS.SARAH;
+    const directUrl = config.BASE_URL + config.ENDPOINTS.ALL_MATCHES;
+    
+    for (const proxy of config.CORS_PROXIES) {
+        try {
+            const url = proxy + (proxy ? encodeURIComponent(directUrl) : directUrl);
+            console.log(`   Trying: ${new URL(url).hostname}`);
+            
+            const data = await smartFetch(url, { timeout: config.TIMEOUT });
+            
+            if (data && (Array.isArray(data) || data.matches)) {
+                const matches = Array.isArray(data) ? data : data.matches;
+                console.log(`   ✅ Sarah: ${matches.length} matches via ${new URL(url).hostname}`);
+                
+                return {
+                    source: 'sarah',
+                    data: matches,
+                    matchCount: matches.length,
+                    success: true,
+                    endpoint: new URL(url).hostname
+                };
+            }
+        } catch (error) {
+            console.log(`   ❌ Sarah via ${proxy ? 'proxy' : 'direct'}: ${error.message}`);
+        }
+    }
+    
+    throw new Error('All Sarah endpoints failed');
+}
+
+// 🎯 FETCH WENDY DATA - MULTIPLE STRATEGIES
+async function fetchWendyData() {
+    console.log('🔍 Fetching Wendy data...');
+    
+    const config = API_CONFIG.DIRECT_APIS.WENDY;
+    
+    // Strategy 1: Try direct all-matches endpoint
+    try {
+        const allMatchesUrl = config.BASE_URL + config.ENDPOINTS.ALL_MATCHES;
+        console.log(`   Strategy 1: Direct all-matches endpoint`);
+        
+        const data = await smartFetch(allMatchesUrl, { 
+            timeout: config.TIMEOUT,
+            headers: {
+                'Origin': config.BASE_URL,
+                'Referer': config.BASE_URL + '/'
+            }
+        });
+        
+        if (data && (Array.isArray(data) || data.matches)) {
+            const matches = Array.isArray(data) ? data : data.matches;
+            console.log(`   ✅ Wendy Strategy 1: ${matches.length} matches`);
+            
+            return {
+                source: 'wendy',
+                data: matches,
+                matchCount: matches.length,
+                success: true,
+                strategy: 'direct-all-matches'
+            };
+        }
+    } catch (error) {
+        console.log(`   ❌ Wendy Strategy 1 failed: ${error.message}`);
+    }
+    
+    // Strategy 2: Try sports → matches approach
+    try {
+        console.log(`   Strategy 2: Sports → matches approach`);
+        const sportsUrl = config.BASE_URL + config.ENDPOINTS.SPORTS;
+        
+        const sports = await smartFetch(sportsUrl, { 
+            timeout: 5000,
+            headers: {
+                'Origin': config.BASE_URL,
+                'Referer': config.BASE_URL + '/'
+            }
+        });
+        
+        if (!Array.isArray(sports) || sports.length === 0) {
+            throw new Error('No sports returned');
+        }
+        
+        const allMatches = [];
+        const sportsToFetch = sports.slice(0, config.MAX_SPORTS);
+        
+        console.log(`   Found ${sports.length} sports, fetching ${sportsToFetch.length}`);
+        
+        for (const sport of sportsToFetch) {
+            try {
+                const sportName = sport.name || sport;
+                const matchesUrl = config.BASE_URL + 
+                    config.ENDPOINTS.SPORT_MATCHES.replace('{sport}', encodeURIComponent(sportName));
+                
+                const matches = await smartFetch(matchesUrl, { timeout: 5000 });
+                
+                if (Array.isArray(matches)) {
                     matches.forEach(match => {
-                        match.sportCategory = sport.name;
+                        match.sportCategory = sportName;
                         match.source = 'wendy';
                     });
                     allMatches.push(...matches);
+                    console.log(`   ✅ ${sportName}: ${matches.length} matches`);
                 }
-            } catch (e) {
-                console.warn(`Wendy ${sport.name} failed:`, e.message);
+            } catch (error) {
+                console.log(`   ⚠️ ${sport.name || sport}: ${error.message}`);
             }
         }
         
-        return { source: 'wendy', data: allMatches, count: allMatches.length };
-        
-    } catch (error) {
-        throw new Error(`Wendy direct failed: ${error.message}`);
-    }
-}
-
-// 🎯 COMBINE DIRECT API DATA
-function combineDirectAPIData(apiResults) {
-    const successful = apiResults.filter(r => !r.error);
-    const failed = apiResults.filter(r => r.error).map(r => r.source);
-    
-    const combinedData = {
-        success: successful.map(r => r.source),
-        failed: failed,
-        totals: {},
-        matches: [],
-        source: 'direct-fallback' // Mark as direct API fallback
-    };
-
-    successful.forEach(result => {
-        const { source, data, count } = result;
-        combinedData.totals[source] = count;
-        
-        const normalized = normalizeDirectAPIData(data, source);
-        combinedData.matches.push(...normalized);
-    });
-
-    combinedData.totalMatches = combinedData.matches.length;
-    console.log(`🛡️ Direct Fallback: ${combinedData.totalMatches} matches from ${successful.length} APIs`);
-    
-    return combinedData;
-}
-
-// 🔄 NORMALIZE DIRECT API DATA
-function normalizeDirectAPIData(data, source) {
-    if (!data) return [];
-    
-    try {
-        switch(source) {
-            case 'tom':
-                return Object.values(data.events || {}).flat().map(match => ({
-                    ...match,
-                    source: 'tom',
-                    normalized: true,
-                    id: match.id || `tom-${Math.random().toString(36).substr(2, 9)}`
-                }));
-                
-            case 'sarah':
-                return (Array.isArray(data) ? data : []).map(match => ({
-                    ...match,
-                    source: 'sarah', 
-                    normalized: true,
-                    id: match.id || `sarah-${Math.random().toString(36).substr(2, 9)}`
-                }));
-                
-            case 'wendy':
-                return (Array.isArray(data) ? data : []).map(match => ({
-                    ...match,
-                    source: 'wendy',
-                    normalized: true,
-                    id: match.id || `wendy-${Math.random().toString(36).substr(2, 9)}`,
-                    match: match.title || `${match.homeTeam} - ${match.awayTeam}`,
-                    tournament: match.league || 'Sports'
-                }));
-                
-            default:
-                return [];
+        if (allMatches.length > 0) {
+            console.log(`   ✅ Wendy Strategy 2: ${allMatches.length} total matches`);
+            return {
+                source: 'wendy',
+                data: allMatches,
+                matchCount: allMatches.length,
+                success: true,
+                strategy: 'sports-approach',
+                sportsFetched: sportsToFetch.length
+            };
         }
     } catch (error) {
-        console.error(`❌ Failed to normalize ${source} direct data:`, error);
-        return [];
+        console.log(`   ❌ Wendy Strategy 2 failed: ${error.message}`);
+    }
+    
+    // Strategy 3: Try with CORS proxies
+    console.log(`   Strategy 3: Trying CORS proxies`);
+    for (const proxy of config.CORS_PROXIES) {
+        try {
+            const testUrl = config.BASE_URL + '/api/v1/sports';
+            const url = proxy + (proxy ? encodeURIComponent(testUrl) : testUrl);
+            
+            const data = await smartFetch(url, { timeout: 8000 });
+            
+            if (Array.isArray(data) && data.length > 0) {
+                console.log(`   ✅ Wendy via ${proxy ? 'proxy' : 'direct'}: Found ${data.length} sports`);
+                // Just return the sports list as proof of connectivity
+                return {
+                    source: 'wendy',
+                    data: { sports: data },
+                    matchCount: 0,
+                    success: true,
+                    strategy: 'proxy-test',
+                    endpoint: proxy ? 'cors-proxy' : 'direct'
+                };
+            }
+        } catch (error) {
+            console.log(`   ❌ Wendy proxy ${proxy || 'direct'}: ${error.message}`);
+        }
+    }
+    
+    throw new Error('All Wendy strategies failed');
+}
+
+// 🎯 UNIFIED DATA FETCHER (For Pipeline)
+async function fetchAllSuppliersForPipeline() {
+    console.log('🚀 FETCHING ALL SUPPLIERS FOR PIPELINE');
+    console.log('=' .repeat(50));
+    
+    const startTime = Date.now();
+    const results = {
+        tom: null,
+        sarah: null,
+        wendy: null,
+        errors: [],
+        summary: {
+            totalMatches: 0,
+            successfulSuppliers: 0,
+            failedSuppliers: 0,
+            duration: 0
+        }
+    };
+    
+    try {
+        // Fetch all suppliers in parallel with timeout
+        const fetchPromises = [
+            fetchTomData().then(r => results.tom = r).catch(e => results.errors.push({ supplier: 'tom', error: e.message })),
+            fetchSarahData().then(r => results.sarah = r).catch(e => results.errors.push({ supplier: 'sarah', error: e.message })),
+            fetchWendyData().then(r => results.wendy = r).catch(e => results.errors.push({ supplier: 'wendy', error: e.message }))
+        ];
+        
+        await Promise.allSettled(fetchPromises);
+        
+        // Calculate summary
+        results.summary.duration = Date.now() - startTime;
+        results.summary.successfulSuppliers = [results.tom, results.sarah, results.wendy].filter(r => r && r.success).length;
+        results.summary.failedSuppliers = 3 - results.summary.successfulSuppliers;
+        
+        let totalMatches = 0;
+        if (results.tom && results.tom.success) totalMatches += results.tom.matchCount;
+        if (results.sarah && results.sarah.success) totalMatches += results.sarah.matchCount;
+        if (results.wendy && results.wendy.success) totalMatches += results.wendy.matchCount;
+        results.summary.totalMatches = totalMatches;
+        
+        // Log results
+        console.log('\n📊 FETCH RESULTS:');
+        console.log('=' .repeat(50));
+        console.log(`✅ Successful: ${results.summary.successfulSuppliers}/3 suppliers`);
+        console.log(`📦 Total matches: ${totalMatches}`);
+        console.log(`⏱️  Duration: ${results.summary.duration}ms`);
+        
+        if (results.tom && results.tom.success) {
+            console.log(`   Tom: ${results.tom.matchCount} matches via ${results.tom.endpoint}`);
+        }
+        if (results.sarah && results.sarah.success) {
+            console.log(`   Sarah: ${results.sarah.matchCount} matches via ${results.sarah.endpoint}`);
+        }
+        if (results.wendy && results.wendy.success) {
+            console.log(`   Wendy: ${results.wendy.matchCount} matches via ${results.wendy.strategy}`);
+        }
+        
+        if (results.errors.length > 0) {
+            console.log('\n❌ Errors:');
+            results.errors.forEach(err => {
+                console.log(`   ${err.supplier}: ${err.error}`);
+            });
+        }
+        
+        return results;
+        
+    } catch (error) {
+        console.log(`💥 Unified fetch failed: ${error.message}`);
+        throw error;
     }
 }
 
-// 🆘 EMERGENCY FALLBACK
-function getEmergencyFallbackData() {
-    console.log('🚨 Using emergency fallback data');
+// 🎯 FORMAT FOR PIPELINE CONSUMPTION
+function formatForPipeline(results) {
+    const formatted = {
+        tom: { matches: [], _metadata: { supplier: 'tom', error: 'Failed' } },
+        sarah: { matches: [], _metadata: { supplier: 'sarah', error: 'Failed' } },
+        wendy: { matches: [], _metadata: { supplier: 'wendy', error: 'Failed' } },
+        pipeline_metadata: {
+            fetched_at: new Date().toISOString(),
+            api_version: '2.0',
+            success_rate: results.summary.successfulSuppliers / 3
+        }
+    };
+    
+    // Format Tom data
+    if (results.tom && results.tom.success) {
+        formatted.tom = {
+            matches: results.tom.data.matches || results.tom.data,
+            _metadata: {
+                supplier: 'tom',
+                lastUpdated: new Date().toISOString(),
+                matchCount: results.tom.matchCount,
+                endpoint: results.tom.endpoint,
+                dataHash: require('crypto').createHash('md5').update(JSON.stringify(results.tom.data)).digest('hex'),
+                professional: true
+            }
+        };
+    }
+    
+    // Format Sarah data
+    if (results.sarah && results.sarah.success) {
+        formatted.sarah = {
+            matches: results.sarah.data,
+            _metadata: {
+                supplier: 'sarah',
+                lastUpdated: new Date().toISOString(),
+                matchCount: results.sarah.matchCount,
+                endpoint: results.sarah.endpoint,
+                dataHash: require('crypto').createHash('md5').update(JSON.stringify(results.sarah.data)).digest('hex'),
+                professional: true
+            }
+        };
+    }
+    
+    // Format Wendy data
+    if (results.wendy && results.wendy.success) {
+        formatted.wendy = {
+            matches: Array.isArray(results.wendy.data) ? results.wendy.data : results.wendy.data.matches || [],
+            _metadata: {
+                supplier: 'wendy',
+                lastUpdated: new Date().toISOString(),
+                matchCount: results.wendy.matchCount,
+                strategy: results.wendy.strategy,
+                dataHash: require('crypto').createHash('md5').update(JSON.stringify(results.wendy.data)).digest('hex'),
+                professional: true
+            }
+        };
+    }
+    
+    return formatted;
+}
+
+// 🎯 EMERGENCY DATA (When all else fails)
+function getEmergencyData() {
+    console.log('🚨 PROVIDING EMERGENCY DATA');
+    
     const now = Math.floor(Date.now() / 1000);
+    const emergencyMatches = [
+        {
+            match: 'Demo Match 1 - Demo Match 2',
+            sport: 'Football',
+            unix_timestamp: now + 3600,
+            tournament: 'Emergency League',
+            channels: []
+        },
+        {
+            match: 'Test Team A - Test Team B',
+            sport: 'Basketball',
+            unix_timestamp: now + 7200,
+            tournament: 'Backup Tournament',
+            channels: []
+        }
+    ];
     
     return {
-        success: ['emergency'],
-        failed: ['proxy', 'tom', 'sarah', 'wendy'],
-        totals: { emergency: 3 },
-        totalMatches: 3,
-        source: 'emergency',
-        matches: [
-            {
-                id: 'emergency-1',
-                match: 'Research Team A - Research Team B',
-                tournament: '9kilos Demo League',
-                sport: 'Football',
-                unix_timestamp: now + 3600,
-                channels: [],
-                source: 'emergency',
-                normalized: true,
-                time: '19:00',
-                date: new Date().toISOString().split('T')[0]
-            },
-            {
-                id: 'emergency-2', 
-                match: 'Demo United - Test City FC',
-                tournament: 'Research Championship',
-                sport: 'Football',
-                unix_timestamp: now - 1800,
-                channels: [],
-                source: 'emergency',
-                normalized: true,
-                time: '15:00',
-                date: new Date().toISOString().split('T')[0],
-                isLive: true
-            },
-            {
-                id: 'emergency-3',
-                match: 'Backup Sports - Emergency Stream',
-                tournament: 'Fallback Tournament',
-                sport: 'Basketball', 
-                unix_timestamp: now + 7200,
-                channels: [],
-                source: 'emergency',
-                normalized: true,
-                time: '21:00',
-                date: new Date().toISOString().split('T')[0]
-            }
-        ]
+        tom: { matches: emergencyMatches, _metadata: { supplier: 'tom', emergency: true } },
+        sarah: { matches: emergencyMatches, _metadata: { supplier: 'sarah', emergency: true } },
+        wendy: { matches: emergencyMatches, _metadata: { supplier: 'wendy', emergency: true } }
     };
 }
 
-// 🎯 ENHANCED DATA PROCESSING
-function processUnifiedData(proxyData) {
-    if (!proxyData || !proxyData.matches) {
-        console.warn('❌ No matches in data, using emergency');
-        return getEmergencyFallbackData().matches;
-    }
-    
-    console.log('🔄 Processing', proxyData.matches.length, 'matches from:', proxyData.source || 'proxy');
-    
-    return proxyData.matches.map(match => {
-        return {
-            id: match.id || `processed-${Math.random().toString(36).substr(2, 9)}`,
-            date: match.date || new Date().toISOString().split('T')[0],
-            time: match.time || 'TBD',
-            teams: match.match || match.title || `${match.homeTeam} - ${match.awayTeam}`,
-            league: match.tournament || match.league || 'Sports',
-            isLive: match.status === 'live' || match.isLive === true,
-            sport: match.sport || 'Football',
-            unixTimestamp: match.unix_timestamp || Math.floor(Date.now() / 1000),
-            
-            // Stream data
-            channels: match.channels || [],
-            stream_sources: match.stream_sources || {},
-            streamUrl: match.streamUrl || (match.channels && match.channels[0]) || null,
-            
-            // Source tracking
-            source: match.source || 'unknown',
-            normalized: match.normalized || false,
-            dataSource: proxyData.source || 'proxy' // Track where data came from
-        };
-    });
-}
-
-// 🎯 SMART STREAM SOURCES (Unchanged - works with any data source)
-async function getAllSourcesForMatch(match) {
-    const sources = [];
-    let sourceCounters = { tom: 0, sarah: 0, wendy: 0 };
-
-    if (match.stream_sources) {
-        ['tom', 'sarah', 'wendy'].forEach(source => {
-            if (match.stream_sources[source]) {
-                match.stream_sources[source].forEach((url, index) => {
-                    sources.push({
-                        value: `${source}-${index}`,
-                        label: `<span class="source-option"><span class="circle-icon ${source}-icon"></span> ${source} ${index + 1}</span>`,
-                        url: url,
-                        source: source
-                    });
-                    sourceCounters[source]++;
-                });
-            }
-        });
-    } else if (match.channels && match.channels.length > 0) {
-        const uniqueChannels = [...new Set(match.channels)];
-        
-        uniqueChannels.forEach(channel => {
-            let source = null;
-            
-            if (channel.includes('embedsports.top') || channel.includes('streamed.pk')) source = 'sarah';
-            else if (channel.includes('topembed.pw')) source = 'tom';
-            else if (channel.includes('watchfooty.st')) source = 'wendy';
-            
-            if (source) {
-                sources.push({
-                    value: `${source}-${sourceCounters[source]}`,
-                    label: `<span class="source-option"><span class="circle-icon ${source}-icon"></span> ${source} ${sourceCounters[source] + 1}</span>`,
-                    url: channel,
-                    source: source
-                });
-                sourceCounters[source]++;
-            }
-        });
-    }
-
-    console.log('📊 Sources found:', sourceCounters);
-    return sources;
-}
-
-// 🎯 DEBUG UTILITIES
-async function debugDataSources() {
-    console.log('🔍 9kilos Data Source Debug:');
-    
-    // Test proxy
+// 🎯 MAIN EXPORT FOR PIPELINE
+async function fetchDataForPipeline() {
     try {
-        const proxyTest = await fetch(API_CONFIG.UNIFIED_PROXY.BASE_URL + '/api/tom/all', { signal: AbortSignal.timeout(3000) });
-        console.log('✅ Proxy Status:', proxyTest.status, proxyTest.ok ? 'OK' : 'FAILED');
-    } catch (e) {
-        console.log('❌ Proxy Test Failed:', e.message);
+        console.log('=' .repeat(60));
+        console.log('SPORTS DATA PIPELINE API FETCHER');
+        console.log('=' .repeat(60));
+        
+        const results = await fetchAllSuppliersForPipeline();
+        
+        if (results.summary.successfulSuppliers === 0) {
+            console.log('⚠️ No suppliers successful, using emergency data');
+            return getEmergencyData();
+        }
+        
+        return formatForPipeline(results);
+        
+    } catch (error) {
+        console.log(`💥 Pipeline fetch failed: ${error.message}`);
+        return getEmergencyData();
     }
-    
-    // Test direct APIs
-    const directResults = await Promise.allSettled([
-        fetchTomDirect().then(r => `✅ Tom: ${r.count} matches`).catch(e => `❌ Tom: ${e.message}`),
-        fetchSarahDirect().then(r => `✅ Sarah: ${r.count} matches`).catch(e => `❌ Sarah: ${e.message}`),
-        fetchWendyDirect().then(r => `✅ Wendy: ${r.count} matches`).catch(e => `❌ Wendy: ${e.message}`)
-    ]);
-    
-    directResults.forEach((result, index) => {
-        const sources = ['Tom', 'Sarah', 'Wendy'];
-        console.log(`🛡️ ${sources[index]} Direct:`, result.status === 'fulfilled' ? result.value : result.reason);
-    });
 }
 
-// 🚀 EXPORT FOR GLOBAL USE
-window.UnifiedAPI = {
-    fetchUnifiedMatches,
-    processUnifiedData,
-    getAllSourcesForMatch,
-    debugDataSources,
-    config: API_CONFIG
-};
+// 🎯 DIAGNOSTICS
+async function runDiagnostics() {
+    console.log('🔍 RUNNING API DIAGNOSTICS');
+    console.log('=' .repeat(50));
+    
+    const diagnostics = {
+        timestamp: new Date().toISOString(),
+        suppliers: {},
+        recommendations: []
+    };
+    
+    // Test each supplier
+    const suppliers = [
+        { name: 'tom', fetcher: fetchTomData },
+        { name: 'sarah', fetcher: fetchSarahData },
+        { name: 'wendy', fetcher: fetchWendyData }
+    ];
+    
+    for (const supplier of suppliers) {
+        console.log(`\nTesting ${supplier.name.toUpperCase()}...`);
+        try {
+            const result = await supplier.fetcher();
+            diagnostics.suppliers[supplier.name] = {
+                status: 'SUCCESS',
+                matchCount: result.matchCount,
+                endpoint: result.endpoint || result.strategy,
+                details: result
+            };
+            console.log(`   ✅ ${supplier.name}: ${result.matchCount} matches`);
+        } catch (error) {
+            diagnostics.suppliers[supplier.name] = {
+                status: 'FAILED',
+                error: error.message
+            };
+            console.log(`   ❌ ${supplier.name}: ${error.message}`);
+            
+            // Add recommendation
+            if (supplier.name === 'wendy') {
+                diagnostics.recommendations.push({
+                    supplier: 'wendy',
+                    issue: 'API connectivity',
+                    suggestion: 'Check if watchfooty.st/api/v1/all-matches exists'
+                });
+            }
+        }
+    }
+    
+    console.log('\n📋 DIAGNOSTIC SUMMARY:');
+    console.log('=' .repeat(50));
+    Object.entries(diagnostics.suppliers).forEach(([name, data]) => {
+        console.log(`   ${name.toUpperCase()}: ${data.status} ${data.matchCount ? `(${data.matchCount} matches)` : ''}`);
+    });
+    
+    return diagnostics;
+}
 
-console.log('🚀 9kilos Enhanced API Loaded!');
-console.log('🎯 Strategy: Proxy-First → Direct API Fallback → Emergency Data');
+// 🚀 EXPORT FOR USE IN PIPELINE
+if (typeof module !== 'undefined' && module.exports) {
+    // Node.js/CommonJS export
+    module.exports = {
+        fetchDataForPipeline,
+        fetchTomData,
+        fetchSarahData,
+        fetchWendyData,
+        runDiagnostics,
+        API_CONFIG,
+        getEmergencyData
+    };
+} else {
+    // Browser export
+    window.SportsDataAPI = {
+        fetchDataForPipeline,
+        fetchTomData,
+        fetchSarahData,
+        fetchWendyData,
+        runDiagnostics,
+        API_CONFIG
+    };
+    console.log('🚀 Sports Data API loaded for browser use');
+}
+
+console.log('✅ Enhanced API Module Loaded');
+console.log('🎯 Ready for pipeline integration');
