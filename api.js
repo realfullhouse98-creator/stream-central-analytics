@@ -1,20 +1,7 @@
 // api.js - ENHANCED UNIFIED SPORTS DATA API
-// Version: 2.0 - Optimized for GitHub Actions Pipeline
-
+// Version: 3.0 - Updated Wendy API Integration
 const API_CONFIG = {
-    // 🎯 PRIMARY PROXY (If working)
-    UNIFIED_PROXY: {
-        BASE_URL: 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev',
-        ENDPOINTS: {
-            COMBINED_MATCHES: '/api/combined-matches',
-            TOM_ALL: '/api/tom/all',
-            SARAH_ALL: '/api/sarah/all', 
-            WENDY_ALL: '/api/wendy/all'
-        },
-        TIMEOUT: 10000 // 10 seconds
-    },
-    
-    // 🛡️ DIRECT APIS (Primary fallback)
+    // 🎯 DIRECT APIS (Primary sources)
     DIRECT_APIS: {
         TOM: {
             BASE_URL: 'https://topembed.pw',
@@ -41,21 +28,18 @@ const API_CONFIG = {
             ]
         },
         WENDY: {
-            BASE_URL: 'https://watchfooty.st',
+            BASE_URL: 'https://api.watchfooty.st',  // UPDATED: Now uses "api." prefix
             ENDPOINTS: {
-                // Based on your raw Wendy data structure
-                ALL_MATCHES: '/api/v1/all-matches',  // Try this first
-                MATCHES_DIRECT: '/matches',           // Alternative
                 SPORTS: '/api/v1/sports',
-                SPORT_MATCHES: '/api/v1/matches/{sport}'
+                MATCHES_BY_SPORT: '/api/v1/matches/{sport}'
             },
-            TIMEOUT: 15000, // Wendy needs more time
+            TIMEOUT: 10000,
             CORS_PROXIES: [
                 'https://corsproxy.io/?',
                 'https://api.allorigins.win/raw?url=',
-                ''
+                ''  // Direct as fallback
             ],
-            MAX_SPORTS: 3 // Limit for performance
+            MAX_SPORTS: 5  // Limit for performance
         }
     },
     
@@ -179,126 +163,170 @@ async function fetchSarahData() {
     throw new Error('All Sarah endpoints failed');
 }
 
-// 🎯 FETCH WENDY DATA - MULTIPLE STRATEGIES
+// 🎯 FETCH WENDY DATA - UPDATED FOR NEW API STRUCTURE
 async function fetchWendyData() {
-    console.log('🔍 Fetching Wendy data...');
+    console.log('🔍 Fetching Wendy data via updated API...');
     
     const config = API_CONFIG.DIRECT_APIS.WENDY;
     
-    // Strategy 1: Try direct all-matches endpoint
+    // Strategy: Get sports list, then fetch matches for each sport
     try {
-        const allMatchesUrl = config.BASE_URL + config.ENDPOINTS.ALL_MATCHES;
-        console.log(`   Strategy 1: Direct all-matches endpoint`);
-        
-        const data = await smartFetch(allMatchesUrl, { 
-            timeout: config.TIMEOUT,
-            headers: {
-                'Origin': config.BASE_URL,
-                'Referer': config.BASE_URL + '/'
-            }
-        });
-        
-        if (data && (Array.isArray(data) || data.matches)) {
-            const matches = Array.isArray(data) ? data : data.matches;
-            console.log(`   ✅ Wendy Strategy 1: ${matches.length} matches`);
-            
-            return {
-                source: 'wendy',
-                data: matches,
-                matchCount: matches.length,
-                success: true,
-                strategy: 'direct-all-matches'
-            };
-        }
-    } catch (error) {
-        console.log(`   ❌ Wendy Strategy 1 failed: ${error.message}`);
-    }
-    
-    // Strategy 2: Try sports → matches approach
-    try {
-        console.log(`   Strategy 2: Sports → matches approach`);
-        const sportsUrl = config.BASE_URL + config.ENDPOINTS.SPORTS;
-        
-        const sports = await smartFetch(sportsUrl, { 
-            timeout: 5000,
-            headers: {
-                'Origin': config.BASE_URL,
-                'Referer': config.BASE_URL + '/'
-            }
-        });
-        
+        // Step 1: Get available sports
+        const sports = await fetchWendySports(config);
         if (!Array.isArray(sports) || sports.length === 0) {
-            throw new Error('No sports returned');
+            throw new Error('No sports returned from Wendy API');
         }
         
-        const allMatches = [];
-        const sportsToFetch = sports.slice(0, config.MAX_SPORTS);
+        console.log(`   Found ${sports.length} sports: ${sports.map(s => s.displayName || s.name).join(', ')}`);
         
-        console.log(`   Found ${sports.length} sports, fetching ${sportsToFetch.length}`);
-        
-        for (const sport of sportsToFetch) {
+        // Step 2: Fetch matches for each sport (parallel, limited)
+        const sportPromises = sports.slice(0, config.MAX_SPORTS).map(async (sport) => {
             try {
-                const sportName = sport.name || sport;
-                const matchesUrl = config.BASE_URL + 
-                    config.ENDPOINTS.SPORT_MATCHES.replace('{sport}', encodeURIComponent(sportName));
+                const matches = await fetchWendySportMatches(sport.name, config);
+                console.log(`   ✅ ${sport.displayName}: ${matches.length} matches`);
                 
-                const matches = await smartFetch(matchesUrl, { timeout: 5000 });
+                // Add sport category to each match
+                matches.forEach(match => {
+                    match.sportCategory = sport.name;
+                    match.source = 'wendy';
+                });
                 
-                if (Array.isArray(matches)) {
-                    matches.forEach(match => {
-                        match.sportCategory = sportName;
-                        match.source = 'wendy';
-                    });
-                    allMatches.push(...matches);
-                    console.log(`   ✅ ${sportName}: ${matches.length} matches`);
-                }
+                return matches;
             } catch (error) {
-                console.log(`   ⚠️ ${sport.name || sport}: ${error.message}`);
+                console.log(`   ❌ ${sport.displayName || sport.name}: ${error.message}`);
+                return [];
             }
-        }
+        });
         
-        if (allMatches.length > 0) {
-            console.log(`   ✅ Wendy Strategy 2: ${allMatches.length} total matches`);
-            return {
-                source: 'wendy',
-                data: allMatches,
-                matchCount: allMatches.length,
-                success: true,
-                strategy: 'sports-approach',
-                sportsFetched: sportsToFetch.length
-            };
-        }
+        const results = await Promise.allSettled(sportPromises);
+        
+        // Step 3: Combine all matches
+        const allMatches = results
+            .filter(result => result.status === 'fulfilled')
+            .flatMap(result => result.value);
+        
+        console.log(`✅ Wendy: ${allMatches.length} total matches from ${sports.length} sports`);
+        
+        return {
+            source: 'wendy',
+            data: allMatches,
+            matchCount: allMatches.length,
+            success: true,
+            strategy: 'sports-approach',
+            sportsFetched: sports.slice(0, config.MAX_SPORTS).length
+        };
+        
     } catch (error) {
-        console.log(`   ❌ Wendy Strategy 2 failed: ${error.message}`);
-    }
-    
-    // Strategy 3: Try with CORS proxies
-    console.log(`   Strategy 3: Trying CORS proxies`);
-    for (const proxy of config.CORS_PROXIES) {
+        console.log(`❌ Wendy API failed: ${error.message}`);
+        
+        // Emergency fallback: Try direct football matches
         try {
-            const testUrl = config.BASE_URL + '/api/v1/sports';
-            const url = proxy + (proxy ? encodeURIComponent(testUrl) : testUrl);
+            console.log('   🔄 Attempting emergency fallback (football only)...');
+            const footballMatches = await fetchWendySportMatches('football', config);
             
-            const data = await smartFetch(url, { timeout: 8000 });
-            
-            if (Array.isArray(data) && data.length > 0) {
-                console.log(`   ✅ Wendy via ${proxy ? 'proxy' : 'direct'}: Found ${data.length} sports`);
-                // Just return the sports list as proof of connectivity
+            if (footballMatches.length > 0) {
+                footballMatches.forEach(match => {
+                    match.sportCategory = 'football';
+                    match.source = 'wendy';
+                });
+                
+                console.log(`   ✅ Emergency fallback: ${footballMatches.length} football matches`);
+                
                 return {
                     source: 'wendy',
-                    data: { sports: data },
-                    matchCount: 0,
+                    data: footballMatches,
+                    matchCount: footballMatches.length,
                     success: true,
-                    strategy: 'proxy-test',
-                    endpoint: proxy ? 'cors-proxy' : 'direct'
+                    strategy: 'emergency-football-only'
                 };
             }
+        } catch (fallbackError) {
+            console.log(`   ❌ Emergency fallback also failed: ${fallbackError.message}`);
+        }
+        
+        throw error;
+    }
+}
+
+// 🎯 WENDY HELPER FUNCTIONS
+async function fetchWendySports(config) {
+    for (const proxy of config.CORS_PROXIES) {
+        try {
+            const sportsUrl = config.BASE_URL + config.ENDPOINTS.SPORTS;
+            const url = proxy + (proxy ? encodeURIComponent(sportsUrl) : sportsUrl);
+            
+            console.log(`   Trying Wendy sports: ${new URL(url).hostname}`);
+            
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: AbortSignal.timeout(5000)
+            });
+            
+            if (response.ok) {
+                const sports = await response.json();
+                
+                // Filter to only include sports with matches likely available
+                const popularSports = ['football', 'basketball', 'tennis', 'hockey', 'baseball', 'rugby', 'american-football'];
+                return sports.filter(sport => 
+                    popularSports.includes(sport.name) || 
+                    sport.displayName?.toLowerCase().includes('football')
+                );
+            }
         } catch (error) {
-            console.log(`   ❌ Wendy proxy ${proxy || 'direct'}: ${error.message}`);
+            console.log(`   ⚠️ Wendy sports via ${proxy ? 'proxy' : 'direct'}: ${error.message}`);
         }
     }
     
-    throw new Error('All Wendy strategies failed');
+    // Fallback sports list if API fails
+    return [
+        { name: 'football', displayName: 'Football' },
+        { name: 'basketball', displayName: 'Basketball' },
+        { name: 'tennis', displayName: 'Tennis' }
+    ];
+}
+
+async function fetchWendySportMatches(sport, config) {
+    for (const proxy of config.CORS_PROXIES) {
+        try {
+            const matchesUrl = config.BASE_URL + config.ENDPOINTS.MATCHES_BY_SPORT.replace('{sport}', sport);
+            const url = proxy + (proxy ? encodeURIComponent(matchesUrl) : matchesUrl);
+            
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: AbortSignal.timeout(8000)
+            });
+            
+            if (response.ok) {
+                const matches = await response.json();
+                
+                if (!Array.isArray(matches)) {
+                    return [];
+                }
+                
+                // Ensure each match has required fields
+                return matches.map(match => ({
+                    matchId: match.matchId || `wendy-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`,
+                    title: match.title || `${match.teams?.home?.name || 'Team A'} vs ${match.teams?.away?.name || 'Team B'}`,
+                    poster: match.poster || '',
+                    teams: match.teams || { home: { name: '' }, away: { name: '' } },
+                    scores: match.scores || { home: 0, away: 0 },
+                    status: match.status || 'scheduled',
+                    currentMinute: match.currentMinute || '',
+                    currentMinuteNumber: match.currentMinuteNumber || 0,
+                    isEvent: match.isEvent || false,
+                    date: match.date || new Date().toISOString(),
+                    timestamp: match.timestamp || Math.floor(Date.now() / 1000),
+                    league: match.league || 'Unknown League',
+                    sport: match.sport || sport,
+                    streams: Array.isArray(match.streams) ? match.streams : []
+                }));
+            }
+        } catch (error) {
+            console.log(`   ⚠️ Wendy ${sport} via ${proxy ? 'proxy' : 'direct'}: ${error.message}`);
+        }
+    }
+    
+    return []; // Return empty if all proxies fail
 }
 
 // 🎯 UNIFIED DATA FETCHER (For Pipeline)
@@ -321,7 +349,7 @@ async function fetchAllSuppliersForPipeline() {
     };
     
     try {
-        // Fetch all suppliers in parallel with timeout
+        // Fetch all suppliers in parallel
         const fetchPromises = [
             fetchTomData().then(r => results.tom = r).catch(e => results.errors.push({ supplier: 'tom', error: e.message })),
             fetchSarahData().then(r => results.sarah = r).catch(e => results.errors.push({ supplier: 'sarah', error: e.message })),
@@ -355,7 +383,7 @@ async function fetchAllSuppliersForPipeline() {
             console.log(`   Sarah: ${results.sarah.matchCount} matches via ${results.sarah.endpoint}`);
         }
         if (results.wendy && results.wendy.success) {
-            console.log(`   Wendy: ${results.wendy.matchCount} matches via ${results.wendy.strategy}`);
+            console.log(`   Wendy: ${results.wendy.matchCount} matches via ${results.wendy.strategy} (${results.wendy.sportsFetched || 0} sports)`);
         }
         
         if (results.errors.length > 0) {
@@ -381,7 +409,7 @@ function formatForPipeline(results) {
         wendy: { matches: [], _metadata: { supplier: 'wendy', error: 'Failed' } },
         pipeline_metadata: {
             fetched_at: new Date().toISOString(),
-            api_version: '2.0',
+            api_version: '3.0',
             success_rate: results.summary.successfulSuppliers / 3
         }
     };
@@ -419,12 +447,13 @@ function formatForPipeline(results) {
     // Format Wendy data
     if (results.wendy && results.wendy.success) {
         formatted.wendy = {
-            matches: Array.isArray(results.wendy.data) ? results.wendy.data : results.wendy.data.matches || [],
+            matches: results.wendy.data,
             _metadata: {
                 supplier: 'wendy',
                 lastUpdated: new Date().toISOString(),
                 matchCount: results.wendy.matchCount,
                 strategy: results.wendy.strategy,
+                sportsFetched: results.wendy.sportsFetched || 0,
                 dataHash: require('crypto').createHash('md5').update(JSON.stringify(results.wendy.data)).digest('hex'),
                 professional: true
             }
@@ -441,18 +470,13 @@ function getEmergencyData() {
     const now = Math.floor(Date.now() / 1000);
     const emergencyMatches = [
         {
-            match: 'Demo Match 1 - Demo Match 2',
+            matchId: 'emergency-1',
+            title: 'Demo Match 1 vs Demo Match 2',
             sport: 'Football',
-            unix_timestamp: now + 3600,
-            tournament: 'Emergency League',
-            channels: []
-        },
-        {
-            match: 'Test Team A - Test Team B',
-            sport: 'Basketball',
-            unix_timestamp: now + 7200,
-            tournament: 'Backup Tournament',
-            channels: []
+            timestamp: now + 3600,
+            league: 'Emergency League',
+            teams: { home: { name: 'Demo Match 1' }, away: { name: 'Demo Match 2' } },
+            streams: []
         }
     ];
     
@@ -520,15 +544,6 @@ async function runDiagnostics() {
                 error: error.message
             };
             console.log(`   ❌ ${supplier.name}: ${error.message}`);
-            
-            // Add recommendation
-            if (supplier.name === 'wendy') {
-                diagnostics.recommendations.push({
-                    supplier: 'wendy',
-                    issue: 'API connectivity',
-                    suggestion: 'Check if watchfooty.st/api/v1/all-matches exists'
-                });
-            }
         }
     }
     
@@ -542,29 +557,15 @@ async function runDiagnostics() {
 }
 
 // 🚀 EXPORT FOR USE IN PIPELINE
-if (typeof module !== 'undefined' && module.exports) {
-    // Node.js/CommonJS export
-    module.exports = {
-        fetchDataForPipeline,
-        fetchTomData,
-        fetchSarahData,
-        fetchWendyData,
-        runDiagnostics,
-        API_CONFIG,
-        getEmergencyData
-    };
-} else {
-    // Browser export
-    window.SportsDataAPI = {
-        fetchDataForPipeline,
-        fetchTomData,
-        fetchSarahData,
-        fetchWendyData,
-        runDiagnostics,
-        API_CONFIG
-    };
-    console.log('🚀 Sports Data API loaded for browser use');
-}
+module.exports = {
+    fetchDataForPipeline,
+    fetchTomData,
+    fetchSarahData,
+    fetchWendyData,
+    runDiagnostics,
+    API_CONFIG,
+    getEmergencyData
+};
 
-console.log('✅ Enhanced API Module Loaded');
+console.log('✅ Enhanced API Module Loaded (Wendy API Updated)');
 console.log('🎯 Ready for pipeline integration');
