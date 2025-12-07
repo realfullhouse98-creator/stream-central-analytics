@@ -368,52 +368,42 @@ const suppliers = [
         }
     },
     {
-        name: 'wendy',
-        urls: [
-            'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/wendy/all'
-        ],
-       processor: (data) => {
-    console.log('🔍 WENDY - Processing DIRECT ARRAY');
+  name: 'wendy',
+  urls: [
+    // Try these endpoints (one should work):
+    'https://watchfooty.st/api/v1/all-matches',
+    'https://watchfooty.st/matches',
+    'https://watchfooty.st/api/matches/all',
+    // With CORS proxies as fallback:
+    'https://corsproxy.io/?https://watchfooty.st/api/v1/all-matches',
+    'https://api.allorigins.win/raw?url=https://watchfooty.st/api/v1/all-matches'
+  ],
+  processor: (data) => {
+    console.log('🔍 WENDY - Processing data');
     
-    const matches = Array.isArray(data) ? data : [];
-    console.log(`   Got ${matches.length} matches directly from array`);
+    // Wendy might return direct array or {matches: []}
+    const matches = Array.isArray(data) ? data : 
+                   (data && data.matches ? data.matches : []);
     
-    // 🎯 DEBUG STREAM COUNTING
-    let totalStreams = 0;
-    let matchesThatHaveStreams = 0;  // ← FIXED VARIABLE NAME
+    console.log(`   Got ${matches.length} Wendy matches`);
     
-    matches.forEach(match => {
-        if (match.streams && Array.isArray(match.streams)) {
-            totalStreams += match.streams.length;
-            matchesThatHaveStreams++;
-        }
-    });
-    
-    console.log(`   Total streams: ${totalStreams} across ${matchesThatHaveStreams} matches`);
-    
-    if (matches.length > 0) {
-        const sample = matches[0];
-        console.log(`   First match streams: ${sample.streams ? sample.streams.length : 0}`);
+    // If matches are empty but data has another structure, check
+    if (matches.length === 0 && data) {
+      console.log('   Data structure:', Object.keys(data));
     }
-    // 🎯 END DEBUG
-    
-    const matchesWithStreams = matches.filter(m => m.streams && m.streams.length > 0).length;
-    const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
     
     return {
-        matches: matches,
-        _metadata: {
-            supplier: 'wendy',
-            lastUpdated: new Date().toISOString(),
-            matchCount: matches.length,
-            matchesWithStreams: matchesWithStreams,
-            totalStreams: matches.reduce((sum, m) => sum + (m.streams ? m.streams.length : 0), 0),
-            dataHash: checksum,
-            professional: true
-        }
+      matches: matches,
+      _metadata: {
+        supplier: 'wendy',
+        lastUpdated: new Date().toISOString(),
+        matchCount: matches.length,
+        dataHash: require('crypto').createHash('md5').update(JSON.stringify(matches)).digest('hex'),
+        professional: true
+      }
     };
+  }
 }
-    }
 ];
 // 🎯 MAIN UPDATE FUNCTION
 async function updateAllSuppliers() {
