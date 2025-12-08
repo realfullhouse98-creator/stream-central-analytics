@@ -389,63 +389,115 @@ const suppliers = [
             };
         }
     },
-    {
-        name: 'wendy',
-        workerEndpoint: '/api/wendy/all',
-        directUrls: [
-            'https://api.watchfooty.st/api/v1/sports',
-            'https://corsproxy.io/?https://api.watchfooty.st/api/v1/sports'
-        ],
-        processor: async (result) => {
-            try {
-                const wendyData = result.data || [];
-                const metadata = result.metadata || {};
+   // In update-suppliers.js, update the Wendy supplier config:
+{
+    name: 'wendy',
+    workerEndpoint: '/api/wendy/all',
+    directUrls: [
+        'https://api.watchfooty.st/api/v1/sports',
+        'https://corsproxy.io/?https://api.watchfooty.st/api/v1/sports',
+        'https://api.allorigins.win/raw?url=https://api.watchfooty.st/api/v1/sports'
+    ],
+    processor: async (result) => {
+        try {
+            console.log('   🏀 Processing Wendy data...');
+            
+            let allWendyMatches = [];
+            
+            // If data comes from worker
+            if (result.source === 'worker' && result.data) {
+                allWendyMatches = Array.isArray(result.data) ? result.data : [];
+            } 
+            // If data comes from direct API (sports list)
+            else if (Array.isArray(result.data)) {
+                // result.data is sports list, need to fetch matches
+                const sports = result.data.slice(0, 5); // Limit to 5 sports
                 
-                let matches = [];
-                let matchCount = metadata.matchCount || 0;
+                console.log(`   🔍 Fetching matches for ${sports.length} sports...`);
                 
-                if (Array.isArray(wendyData)) {
-                    matches = wendyData;
-                    matchCount = wendyData.length;
-                } else if (wendyData.matches) {
-                    matches = wendyData.matches;
-                    matchCount = wendyData.matches.length;
+                for (const sport of sports) {
+                    try {
+                        const sportName = sport.name || sport;
+                        const matchesUrl = `https://api.watchfooty.st/api/v1/matches/${encodeURIComponent(sportName)}`;
+                        
+                        // Try with CORS proxy first
+                        const proxyUrls = [
+                            matchesUrl,
+                            `https://corsproxy.io/?${encodeURIComponent(matchesUrl)}`,
+                            `https://api.allorigins.win/raw?url=${encodeURIComponent(matchesUrl)}`
+                        ];
+                        
+                        let sportMatches = [];
+                        
+                        for (const url of proxyUrls) {
+                            try {
+                                const response = await fetch(url, { timeout: 8000 });
+                                if (response.ok) {
+                                    const matches = await response.json();
+                                    if (Array.isArray(matches)) {
+                                        // Add source and sport info
+                                        matches.forEach(match => {
+                                            match.source = 'wendy';
+                                            match.sportCategory = sportName;
+                                        });
+                                        sportMatches = matches;
+                                        console.log(`   ✅ ${sportName}: ${matches.length} matches`);
+                                        break;
+                                    }
+                                }
+                            } catch (error) {
+                                // Try next URL
+                            }
+                        }
+                        
+                        allWendyMatches.push(...sportMatches);
+                        
+                    } catch (error) {
+                        console.log(`   ❌ ${sport.name || sport}: ${error.message}`);
+                    }
                 }
-                
-                // Add source to each match if not present
-                matches.forEach(match => {
-                    if (!match.source) {
-                        match.source = 'wendy';
-                    }
-                });
-                
-                return {
-                    matches: matches,
-                    _metadata: {
-                        supplier: 'wendy',
-                        lastUpdated: new Date().toISOString(),
-                        matchCount: matchCount,
-                        dataHash: crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex').substring(0, 12),
-                        source: result.source || 'direct',
-                        success: metadata.success || true
-                    }
-                };
-                
-            } catch (error) {
-                console.log(`   ❌ Wendy processor error: ${error.message}`);
-                return {
-                    matches: [],
-                    _metadata: {
-                        supplier: 'wendy',
-                        lastUpdated: new Date().toISOString(),
-                        matchCount: 0,
-                        error: error.message,
-                        emergency: true
-                    }
-                };
             }
+            
+            console.log(`   📊 Total Wendy matches: ${allWendyMatches.length}`);
+            
+            // Ensure each match has required fields
+            const processedMatches = allWendyMatches.map(match => ({
+                ...match,
+                source: match.source || 'wendy',
+                match: match.match || match.title || '',
+                sport: match.sport || match.sportCategory || 'Unknown',
+                unix_timestamp: match.unix_timestamp || match.timestamp || Date.now() / 1000,
+                streams: match.streams || match.channels || []
+            }));
+            
+            return {
+                matches: processedMatches,
+                _metadata: {
+                    supplier: 'wendy',
+                    lastUpdated: new Date().toISOString(),
+                    matchCount: processedMatches.length,
+                    dataHash: 'wendy-fixed',
+                    source: result.source || 'direct',
+                    success: true,
+                    sportsFetched: result.data?.length || 0
+                }
+            };
+            
+        } catch (error) {
+            console.log(`   💥 Wendy processor error: ${error.message}`);
+            return {
+                matches: [],
+                _metadata: {
+                    supplier: 'wendy',
+                    lastUpdated: new Date().toISOString(),
+                    matchCount: 0,
+                    error: error.message,
+                    emergency: true
+                }
+            };
         }
     }
+}
 ];
 
 // 🎯 CLEANUP OLD BACKUPS
