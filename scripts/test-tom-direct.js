@@ -1,105 +1,123 @@
-// test-tom-direct.js - DIRECT TOM API TEST
-const fs = require('fs');
-const fetch = require('node-fetch');
-const crypto = require('crypto');
+name: 🔍 Test Tom API Raw
 
-async function testTomDirect() {
-  console.log('🔍 DIRECT TOM API TEST - NO WORKER\n');
-  
-  try {
-    // 1. Fetch directly from Tom API
-    console.log('📡 Fetching from Tom API directly...');
-    const response = await fetch('https://topembed.pw/api.php?format=json', {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'SportsPipeline-Direct-Test/1.0'
-      },
-      signal: AbortSignal.timeout(15000)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    
-    const rawData = await response.json();
-    
-    // 2. Analyze the raw data
-    console.log('\n📊 RAW DATA ANALYSIS:');
-    console.log('====================');
-    console.log('Event keys:', Object.keys(rawData.events || {}));
-    
-    let totalMatches = 0;
-    if (rawData.events) {
-      Object.entries(rawData.events).forEach(([date, matches]) => {
-        const count = Array.isArray(matches) ? matches.length : 'not_array';
-        console.log(`📅 ${date}: ${count} matches`);
-        totalMatches += Array.isArray(matches) ? matches.length : 0;
-      });
-    }
-    
-    console.log(`\n📈 Total matches in raw API: ${totalMatches}`);
-    
-    // 3. Save raw data
-    const rawDataFile = './suppliers/tom-raw-data.json';
-    fs.writeFileSync(rawDataFile, JSON.stringify(rawData, null, 2));
-    console.log(`💾 Raw data saved: ${rawDataFile}`);
-    
-    // 4. Process like update-suppliers.js would
-    console.log('\n🔧 PROCESSING LIKE UPDATE-SUPPLIERS.JS:');
-    console.log('=====================================');
-    
-    const processedData = {
-      events: rawData.events || {},
-      matches: Object.values(rawData.events || {}).flat(),
-      _metadata: {
-        supplier: 'tom',
-        lastUpdated: new Date().toISOString(),
-        matchCount: totalMatches,
-        dataHash: crypto.createHash('md5').update(JSON.stringify(rawData.events)).digest('hex').substring(0, 12),
-        source: 'direct-test',
-        success: true
-      }
-    };
-    
-    const processedFile = './suppliers/tom-data-test.json';
-    fs.writeFileSync(processedFile, JSON.stringify(processedData, null, 2));
-    console.log(`💾 Processed data saved: ${processedFile}`);
-    console.log(`📊 Event keys in processed:`, Object.keys(processedData.events));
-    
-    // 5. Compare with current tom-data.json
-    console.log('\n🔍 COMPARISON WITH CURRENT DATA:');
-    console.log('================================');
-    
-    if (fs.existsSync('./suppliers/tom-data.json')) {
-      const currentData = JSON.parse(fs.readFileSync('./suppliers/tom-data.json', 'utf8'));
-      console.log('Current tom-data.json event keys:', Object.keys(currentData.events || {}));
-      console.log('Current match count:', currentData._metadata?.matchCount || 0);
-    }
-    
-    // 6. Test universal-standardizer.js on this data
-    console.log('\n🚀 TESTING UNIVERSAL-STANDARDIZER:');
-    console.log('=================================');
-    
-    // Create a test match for the standardizer
-    if (processedData.matches.length > 0) {
-      const testMatch = processedData.matches[0];
-      console.log('Sample match:', {
-        match: testMatch.match,
-        sport: testMatch.sport,
-        date: Object.keys(processedData.events)[0],
-        channels: testMatch.channels?.length || 0
-      });
-    }
-    
-    console.log('\n✅ DIRECT TEST COMPLETE!');
-    console.log('📁 Files created:');
-    console.log('   - suppliers/tom-raw-data.json (raw API response)');
-    console.log('   - suppliers/tom-data-test.json (processed data)');
-    
-  } catch (error) {
-    console.error('❌ Direct test failed:', error.message);
-  }
-}
+on:
+  workflow_dispatch:  # Manual trigger only
 
-// Run the test
-testTomDirect();
+jobs:
+  test-tom-raw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v3
+      
+    - name: 🧪 Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
+      
+    - name: 🚀 FETCH TOM API - COMPLETELY FRESH
+      run: |
+        echo "=== FRESH TOM API FETCH ==="
+        echo "Using: https://topembed.pw/api.php?format=json"
+        echo "NO worker, NO existing code"
+        echo ""
+        
+        # 1. Fetch with curl - fresh
+        echo "1️⃣ Fetching with curl..."
+        curl -s "https://topembed.pw/api.php?format=json" > tom-fresh.json
+        
+        # 2. Check file
+        echo "   File size: $(wc -c < tom-fresh.json) bytes"
+        
+        # 3. Basic JSON check
+        echo ""
+        echo "2️⃣ Basic JSON validation..."
+        if jq empty tom-fresh.json 2>/dev/null; then
+          echo "   ✅ Valid JSON"
+        else
+          echo "   ❌ Invalid JSON!"
+          exit 1
+        fi
+        
+        # 4. RAW analysis - NO processing
+        echo ""
+        echo "3️⃣ RAW DATA ANALYSIS (NO PROCESSING):"
+        echo "   =" .repeat(40)
+        
+        # Get event keys directly
+        EVENT_KEYS=$(jq -r '.events | keys[]' tom-fresh.json 2>/dev/null || echo "ERROR")
+        
+        echo "   Event keys found: $EVENT_KEYS"
+        echo "   Number of keys: $(echo "$EVENT_KEYS" | wc -w)"
+        
+        # Check for "today"
+        echo ""
+        echo "4️⃣ CHECKING FOR 'today':"
+        if echo "$EVENT_KEYS" | grep -q "today"; then
+          echo "   ❌ Found 'today' in raw API!"
+        else
+          echo "   ✅ No 'today' in raw API"
+        fi
+        
+        # Check for date strings
+        echo ""
+        echo "5️⃣ CHECKING FOR DATE STRINGS (YYYY-MM-DD):"
+        DATE_COUNT=$(echo "$EVENT_KEYS" | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' | wc -l)
+        echo "   Date strings found: $DATE_COUNT"
+        
+        # Show each date with match count
+        echo ""
+        echo "6️⃣ MATCHES PER DATE:"
+        jq -r '.events | to_entries[] | "   \(.key): \(.value | length) matches"' tom-fresh.json 2>/dev/null || echo "   Could not parse"
+        
+        # Total matches
+        echo ""
+        echo "7️⃣ TOTAL MATCHES:"
+        TOTAL=$(jq '[.events[] | length] | add' tom-fresh.json 2>/dev/null || echo "0")
+        echo "   Total: $TOTAL"
+        
+        # 5. Save results
+        echo ""
+        echo "8️⃣ SAVING RESULTS..."
+        echo "$EVENT_KEYS" > event-keys.txt
+        echo "TOTAL: $TOTAL" >> event-keys.txt
+        
+        # Create simple report
+        cat > report.txt << EOF
+        TOM API RAW FETCH REPORT
+        =========================
+        Timestamp: $(date)
+        API URL: https://topembed.pw/api.php?format=json
+        
+        EVENT KEYS:
+        $(echo "$EVENT_KEYS" | sed 's/^/  /')
+        
+        MATCH COUNTS:
+        $(jq -r '.events | to_entries[] | "  \(.key): \(.value | length) matches"' tom-fresh.json 2>/dev/null || echo "  Could not parse")
+        
+        TOTAL MATCHES: $TOTAL
+        
+        CONCLUSION:
+        $(if echo "$EVENT_KEYS" | grep -q "today"; then echo "  ❌ API returns 'today' (API changed)"; else echo "  ✅ API returns date strings (API unchanged)"; fi)
+        EOF
+        
+        echo "✅ Report saved: report.txt"
+        
+        # 6. Compare with existing test-tom-data.json if it exists
+        echo ""
+        echo "9️⃣ COMPARING WITH EXISTING TEST DATA..."
+        if [ -f "test-tom-data.json" ]; then
+          echo "   Found test-tom-data.json"
+          EXISTING_KEYS=$(jq -r '.events | keys[]' test-tom-data.json 2>/dev/null || echo "NONE")
+          echo "   Existing keys: $EXISTING_KEYS"
+          
+          if [ "$EVENT_KEYS" = "$EXISTING_KEYS" ]; then
+            echo "   ✅ Keys match!"
+          else
+            echo "   ❌ Keys don't match!"
+            echo "   Fresh: $EVENT_KEYS"
+            echo "   Existing: $EXISTING_KEYS"
+          fi
+        else
+          echo "   No test-tom-data.json found"
+        fi
