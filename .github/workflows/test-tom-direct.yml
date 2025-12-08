@@ -1,115 +1,72 @@
-name: 🔍 Simple Tom API Test
+name: 🔍 Simple Tom Test
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:  # Manual trigger only
 
 jobs:
-  simple-test:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 2
     
     steps:
-    - name: 📥 Checkout
-      uses: actions/checkout@v3
-      
-    - name: 🐛 SIMPLE TOM TEST
+    - name: 🐛 Run Simple Test
       run: |
-        echo "=== SIMPLE TOM API TEST ==="
-        echo "Goal: Fetch → Save → Count → Compare"
+        echo "=== SUPER SIMPLE TOM API TEST ==="
+        echo "Goal: Compare Direct API vs Your Worker"
         echo ""
         
-        # 1. FETCH DIRECT FROM TOM API
-        echo "1️⃣ FETCHING DIRECT FROM TOM API..."
-        curl -s "https://topembed.pw/api.php?format=json" > tom-direct.json
+        # 1. Get direct API data
+        echo "1️⃣ FETCHING DIRECT FROM TOM..."
+        DIRECT_RESPONSE=$(curl -s -m 10 "https://topembed.pw/api.php?format=json")
         
-        echo "   File created: tom-direct.json"
-        echo "   Size: $(wc -c < tom-direct.json) bytes"
+        # Extract dates and count
+        DIRECT_DATES=$(echo "$DIRECT_RESPONSE" | jq -r '.events | keys | join(", ")' 2>/dev/null || echo "ERROR")
+        DIRECT_COUNT=$(echo "$DIRECT_RESPONSE" | jq '[.events[] | length] | add' 2>/dev/null || echo "0")
         
-        # 2. COUNT MATCHES
+        echo "   📅 Dates: $DIRECT_DATES"
+        echo "   📊 Matches: $DIRECT_COUNT"
+        
+        # 2. Get worker data
         echo ""
-        echo "2️⃣ COUNTING MATCHES..."
-        DIRECT_KEYS=$(jq -r '.events | keys[]' tom-direct.json 2>/dev/null || echo "ERROR")
-        DIRECT_COUNT=$(jq '[.events[] | length] | add' tom-direct.json 2>/dev/null || echo "0")
+        echo "2️⃣ FETCHING FROM YOUR WORKER..."
+        WORKER_RESPONSE=$(curl -s -m 10 "https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/tom/all")
         
-        echo "   Dates in direct API: $DIRECT_KEYS"
-        echo "   Total matches in direct API: $DIRECT_COUNT"
-        
-        # 3. FETCH FROM YOUR WORKER
-        echo ""
-        echo "3️⃣ FETCHING FROM YOUR WORKER..."
-        curl -s "https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/tom/all" > tom-worker.json
-        
-        echo "   File created: tom-worker.json"
-        echo "   Size: $(wc -c < tom-worker.json) bytes"
-        
-        # 4. COUNT FROM WORKER
-        echo ""
-        echo "4️⃣ COUNTING FROM WORKER..."
-        WORKER_DATA=$(jq -r '.data' tom-worker.json 2>/dev/null || echo "{}")
-        echo "$WORKER_DATA" > tom-worker-data.json
-        
-        WORKER_KEYS=$(echo "$WORKER_DATA" | jq -r '.events | keys[]' 2>/dev/null || echo "ERROR")
+        # Extract data from worker response
+        WORKER_DATA=$(echo "$WORKER_RESPONSE" | jq '.data' 2>/dev/null || echo "{}")
+        WORKER_DATES=$(echo "$WORKER_DATA" | jq -r '.events | keys | join(", ")' 2>/dev/null || echo "ERROR")
         WORKER_COUNT=$(echo "$WORKER_DATA" | jq '[.events[] | length] | add' 2>/dev/null || echo "0")
         
-        echo "   Dates from worker: $WORKER_KEYS"
-        echo "   Total matches from worker: $WORKER_COUNT"
+        echo "   📅 Dates: $WORKER_DATES"
+        echo "   📊 Matches: $WORKER_COUNT"
         
-        # 5. COMPARE
+        # 3. Compare
         echo ""
-        echo "5️⃣ COMPARISON:"
-        echo "   ==========================="
-        echo "   | Source  | Dates        | Matches |"
-        echo "   |---------|--------------|---------|"
-        echo "   | Direct  | $DIRECT_KEYS | $DIRECT_COUNT  |"
-        echo "   | Worker  | $WORKER_KEYS | $WORKER_COUNT  |"
-        echo "   ==========================="
+        echo "3️⃣ COMPARISON RESULT:"
+        echo "   ======================================="
+        echo "   | Source        | Dates              |"
+        echo "   |---------------|--------------------|"
+        printf "   | Direct API   | %-18s |\n" "$DIRECT_DATES"
+        printf "   | Your Worker  | %-18s |\n" "$WORKER_DATES"
+        echo "   ======================================="
         
-        # 6. CHECK IF SAME
+        # 4. Show sample data
         echo ""
-        echo "6️⃣ RESULT:"
-        if [ "$DIRECT_KEYS" = "$WORKER_KEYS" ] && [ "$DIRECT_COUNT" = "$WORKER_COUNT" ]; then
-          echo "   ✅ SAME DATA! Worker is working correctly."
+        echo "4️⃣ SAMPLE DATA (First match from each):"
+        echo ""
+        echo "   Direct API sample:"
+        echo "$DIRECT_RESPONSE" | jq '.events | to_entries[0].value[0] | {match: .match, sport: .sport}' 2>/dev/null || echo "   No sample"
+        
+        echo ""
+        echo "   Worker sample:"
+        echo "$WORKER_DATA" | jq '.events | to_entries[0].value[0] | {match: .match, sport: .sport}' 2>/dev/null || echo "   No sample"
+        
+        # 5. Conclusion
+        echo ""
+        echo "5️⃣ CONCLUSION:"
+        if [ "$DIRECT_DATES" = "$WORKER_DATES" ]; then
+          echo "   ✅ DATES MATCH! Worker is correct."
         else
-          echo "   ❌ DIFFERENT DATA! Worker is changing something."
-          echo "   Differences:"
-          echo "   - Dates: Direct='$DIRECT_KEYS' vs Worker='$WORKER_KEYS'"
-          echo "   - Count: Direct=$DIRECT_COUNT vs Worker=$WORKER_COUNT"
+          echo "   ❌ DATES DON'T MATCH!"
+          echo "   Worker is changing '$DIRECT_DATES' → '$WORKER_DATES'"
+          echo "   This is the bug we need to fix!"
         fi
-        
-        # 7. SAVE FILES FOR DOWNLOAD
-        echo ""
-        echo "7️⃣ SAVING FILES..."
-        mkdir -p test-results
-        cp tom-direct.json test-results/
-        cp tom-worker.json test-results/
-        cp tom-worker-data.json test-results/
-        
-        # Create simple report
-        cat > test-results/report.txt << EOF
-        Tom API Test - $(date)
-        ======================
-        
-        DIRECT API (https://topembed.pw/api.php?format=json):
-        - Dates: $DIRECT_KEYS
-        - Total matches: $DIRECT_COUNT
-        
-        YOUR WORKER (https://9kilos-proxy.mandiyandiyakhonyana.workers.dev/api/tom/all):
-        - Dates: $WORKER_KEYS  
-        - Total matches: $WORKER_COUNT
-        
-        RESULT: $(if [ "$DIRECT_KEYS" = "$WORKER_KEYS" ] && [ "$DIRECT_COUNT" = "$WORKER_COUNT" ]; then echo "✅ SAME"; else echo "❌ DIFFERENT"; fi)
-        
-        Files:
-        - tom-direct.json: Direct API response
-        - tom-worker.json: Full worker response  
-        - tom-worker-data.json: Just the data part from worker
-        EOF
-        
-        echo "   ✅ Files saved to test-results/"
-        
-    - name: 📤 Upload Results
-      uses: actions/upload-artifact@v3
-      with:
-        name: simple-tom-test
-        path: test-results/
-        retention-days: 7
