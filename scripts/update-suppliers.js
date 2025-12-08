@@ -1,9 +1,9 @@
-// update-suppliers.js - COMPLETE WORKER-PRIMARY VERSION
+// update-suppliers.js - COMPLETE FIXED VERSION
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-// 🎯 PROFESSIONAL CIRCUIT BREAKER (Keep this for direct API fallbacks)
+// 🎯 PROFESSIONAL CIRCUIT BREAKER
 class ProfessionalCircuitBreaker {
     constructor(supplierName, failureThreshold = 3, resetTimeout = 300000) {
         this.supplierName = supplierName;
@@ -145,7 +145,6 @@ function restoreFromBackup(supplierName) {
                 const backupContent = fs.readFileSync(backup.path, 'utf8');
                 const backupData = JSON.parse(backupContent);
                 
-                // Simple validation
                 let isValid = false;
                 if (supplierName === 'tom' && backupData.events) {
                     isValid = Object.values(backupData.events).flat().length > 0;
@@ -276,26 +275,21 @@ async function fetchWithProfessionalRetry(url, supplierName, maxRetries = 3) {
     throw lastError;
 }
 
-// 🎯 WORKER API FETCHER (PRIMARY)
+// 🎯 WORKER API FETCHER (PRIMARY) - UPDATED FOR SEPARATED ENDPOINTS
 async function fetchFromWorker(endpoint) {
     const WORKER_URL = 'https://9kilos-proxy.mandiyandiyakhonyana.workers.dev';
     const url = `${WORKER_URL}${endpoint}`;
     
     try {
-        console.log(`   🚀 PRIMARY: Fetching from Worker: ${endpoint}`);
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        console.log(`   🚀 PRIMARY: Fetching from Worker: ${url}`);
         
         const response = await fetch(url, {
-            signal: controller.signal,
+            signal: AbortSignal.timeout(15000),
             headers: {
                 'Accept': 'application/json',
                 'User-Agent': 'SportsPipeline-Worker/1.0'
             }
         });
-        
-        clearTimeout(timeoutId);
         
         if (!response.ok) {
             throw new Error(`Worker HTTP ${response.status}`);
@@ -303,7 +297,14 @@ async function fetchFromWorker(endpoint) {
         
         const data = await response.json();
         console.log(`   ✅ Worker success for ${endpoint}`);
-        return { source: 'worker', data: data, success: true };
+        
+        // Return the data with metadata
+        return { 
+            source: 'worker', 
+            data: data.data || data,
+            metadata: data.metadata || { success: true },
+            success: true 
+        };
         
     } catch (error) {
         console.log(`   ❌ Worker failed: ${error.message}`);
@@ -311,7 +312,7 @@ async function fetchFromWorker(endpoint) {
     }
 }
 
-// 🎯 SUPPLIER CONFIGURATION - UPDATED FOR WORKER-PRIMARY
+// 🎯 SUPPLIER CONFIGURATION - UPDATED FOR SEPARATED ENDPOINTS
 const suppliers = [
     {
         name: 'tom',
@@ -320,23 +321,34 @@ const suppliers = [
             'https://topembed.pw/api.php?format=json',
             'https://corsproxy.io/?https://topembed.pw/api.php?format=json'
         ],
-        processor: (data) => {
-            // Worker returns {data: ..., metadata: ...}, direct API returns raw
-            const events = data.data?.events || data.events || {};
-            const matchCount = data.data?.events ? 
-                Object.values(data.data.events).flat().length :
-                Object.values(events).flat().length;
+        processor: (result) => {
+            // Worker returns {data: {...}, metadata: {...}}, direct API returns raw
+            const tomData = result.data || {};
+            const metadata = result.metadata || {};
             
-            const checksum = crypto.createHash('md5').update(JSON.stringify(events)).digest('hex');
+            // Calculate match count
+            let matchCount = 0;
+            if (tomData.events) {
+                matchCount = Object.values(tomData.events).reduce((sum, dayMatches) => {
+                    return sum + (Array.isArray(dayMatches) ? dayMatches.length : 0);
+                }, 0);
+            }
+            
+            // For direct API fallback
+            if (matchCount === 0 && tomData.matches) {
+                matchCount = tomData.matches.length;
+            }
             
             return {
-                events: events,
+                events: tomData.events || {},
+                matches: tomData.matches || Object.values(tomData.events || {}).flat(),
                 _metadata: {
                     supplier: 'tom',
                     lastUpdated: new Date().toISOString(),
                     matchCount: matchCount,
-                    dataHash: checksum,
-                    source: data.source || 'direct'
+                    dataHash: crypto.createHash('md5').update(JSON.stringify(tomData)).digest('hex').substring(0, 12),
+                    source: result.source || 'direct',
+                    success: metadata.success || true
                 }
             };
         }
@@ -348,20 +360,31 @@ const suppliers = [
             'https://streamed.pk/api/matches/all',
             'https://corsproxy.io/?https://streamed.pk/api/matches/all'
         ],
-        processor: (data) => {
-            // Worker returns {data: ..., metadata: ...}
-            const rawData = data.data || data;
-            const matches = Array.isArray(rawData) ? rawData : (rawData.matches || []);
-            const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
+        processor: (result) => {
+            const sarahData = result.data || [];
+            const metadata = result.metadata || {};
+            
+            // Handle both array and object formats
+            let matches = [];
+            let matchCount = metadata.matchCount || 0;
+            
+            if (Array.isArray(sarahData)) {
+                matches = sarahData;
+                matchCount = sarahData.length;
+            } else if (sarahData.matches) {
+                matches = sarahData.matches;
+                matchCount = sarahData.matches.length;
+            }
             
             return {
                 matches: matches,
                 _metadata: {
                     supplier: 'sarah',
                     lastUpdated: new Date().toISOString(),
-                    matchCount: matches.length,
-                    dataHash: checksum,
-                    source: data.source || 'direct'
+                    matchCount: matchCount,
+                    dataHash: crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex').substring(0, 12),
+                    source: result.source || 'direct',
+                    success: metadata.success || true
                 }
             };
         }
@@ -373,51 +396,38 @@ const suppliers = [
             'https://api.watchfooty.st/api/v1/sports',
             'https://corsproxy.io/?https://api.watchfooty.st/api/v1/sports'
         ],
-        processor: async (data) => {
+        processor: async (result) => {
             try {
-                // Worker returns array of matches directly
-                let matches = data.data || data;
+                const wendyData = result.data || [];
+                const metadata = result.metadata || {};
                 
-                if (!Array.isArray(matches)) {
-                    // Direct API returns sports list, need to fetch matches
-                    const sports = Array.isArray(matches) ? matches : [];
-                    const sportsToFetch = sports.slice(0, 3);
-                    
-                    matches = [];
-                    
-                    for (const sport of sportsToFetch) {
-                        try {
-                            const matchesUrl = `https://api.watchfooty.st/api/v1/matches/${sport.name}`;
-                            const response = await fetch(matchesUrl, { 
-                                signal: AbortSignal.timeout(8000) 
-                            });
-                            
-                            if (response.ok) {
-                                const sportMatches = await response.json();
-                                if (Array.isArray(sportMatches)) {
-                                    sportMatches.forEach(match => {
-                                        match.sportCategory = sport.name;
-                                        match.source = 'wendy';
-                                    });
-                                    matches.push(...sportMatches);
-                                }
-                            }
-                        } catch (error) {
-                            console.log(`   ⚠️ Wendy ${sport.name}: ${error.message}`);
-                        }
-                    }
+                let matches = [];
+                let matchCount = metadata.matchCount || 0;
+                
+                if (Array.isArray(wendyData)) {
+                    matches = wendyData;
+                    matchCount = wendyData.length;
+                } else if (wendyData.matches) {
+                    matches = wendyData.matches;
+                    matchCount = wendyData.matches.length;
                 }
                 
-                const checksum = crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex');
+                // Add source to each match if not present
+                matches.forEach(match => {
+                    if (!match.source) {
+                        match.source = 'wendy';
+                    }
+                });
                 
                 return {
                     matches: matches,
                     _metadata: {
                         supplier: 'wendy',
                         lastUpdated: new Date().toISOString(),
-                        matchCount: matches.length,
-                        dataHash: checksum,
-                        source: data.source || 'direct'
+                        matchCount: matchCount,
+                        dataHash: crypto.createHash('md5').update(JSON.stringify(matches)).digest('hex').substring(0, 12),
+                        source: result.source || 'direct',
+                        success: metadata.success || true
                     }
                 };
                 
@@ -489,10 +499,13 @@ async function fetchCombinedFromWorker() {
         if (result.success && result.data) {
             console.log(`✅ Combined from Worker: ${result.data.totalMatches || result.data.matches?.length || 0} matches`);
             
-            // Save individual supplier files from combined data
+            // Extract and save supplier data from combined
             if (result.data.totals?.tom) {
+                const tomMatches = result.data.matches?.filter(m => m.source === 'tom') || [];
                 const tomData = {
-                    events: {},
+                    events: {
+                        'today': tomMatches // Simplified structure
+                    },
                     _metadata: {
                         supplier: 'tom',
                         lastUpdated: new Date().toISOString(),
@@ -504,8 +517,9 @@ async function fetchCombinedFromWorker() {
             }
             
             if (result.data.totals?.sarah) {
+                const sarahMatches = result.data.matches?.filter(m => m.source === 'sarah') || [];
                 const sarahData = {
-                    matches: [],
+                    matches: sarahMatches,
                     _metadata: {
                         supplier: 'sarah',
                         lastUpdated: new Date().toISOString(),
@@ -517,8 +531,9 @@ async function fetchCombinedFromWorker() {
             }
             
             if (result.data.totals?.wendy) {
+                const wendyMatches = result.data.matches?.filter(m => m.source === 'wendy') || [];
                 const wendyData = {
-                    matches: [],
+                    matches: wendyMatches,
                     _metadata: {
                         supplier: 'wendy',
                         lastUpdated: new Date().toISOString(),
@@ -539,12 +554,12 @@ async function fetchCombinedFromWorker() {
 
 // 🎯 MAIN UPDATE FUNCTION
 async function updateAllSuppliers() {
-    console.log('🔒 PROFESSIONAL SUPPLIER UPDATE - WORKER-PRIMARY STRATEGY\n');
+    console.log('🔒 PROFESSIONAL SUPPLIER UPDATE - SEPARATED ENDPOINTS\n');
     console.log('⏰', new Date().toISOString(), '\n');
     
     const results = {
         startTime: new Date().toISOString(),
-        strategy: 'worker-primary',
+        strategy: 'separated-endpoints',
         updated: [],
         failed: [],
         skipped: [],
@@ -575,12 +590,12 @@ async function updateAllSuppliers() {
     });
     console.log('');
 
-    // 🎯 FIRST TRY: COMBINED DATA FROM WORKER
-    console.log('🎯 STRATEGY 1: Combined data from Worker');
+    // 🎯 TRY COMBINED FIRST (Simpler approach)
+    console.log('🎯 OPTION 1: Combined data from Worker');
     const combinedSuccess = await fetchCombinedFromWorker();
     
     if (combinedSuccess) {
-        console.log('✅ Successfully updated all suppliers from Worker combined endpoint');
+        console.log('✅ Successfully updated all suppliers from combined endpoint');
         
         // Verify the data
         let totalMatches = 0;
@@ -593,6 +608,11 @@ async function updateAllSuppliers() {
                     console.log(`   ${supplier}: ${matchCount} matches`);
                     totalMatches += matchCount;
                     results.updated.push(supplier);
+                    results.details[supplier] = {
+                        success: true,
+                        matchCount: matchCount,
+                        source: 'worker-combined'
+                    };
                 } catch (error) {
                     console.log(`   ${supplier}: Error reading file`);
                 }
@@ -600,7 +620,7 @@ async function updateAllSuppliers() {
         });
         
         if (totalMatches > 100) {
-            console.log(`\n🎯 Combined Worker strategy successful: ${totalMatches} matches`);
+            console.log(`\n🎯 Combined strategy successful: ${totalMatches} matches`);
             
             results.endTime = new Date().toISOString();
             results.duration = new Date(results.endTime) - new Date(results.startTime);
@@ -622,9 +642,9 @@ async function updateAllSuppliers() {
         }
     }
     
-    console.log('\n🔄 Combined Worker failed, trying individual suppliers...\n');
+    console.log('\n🔄 Combined failed or insufficient data, trying individual suppliers...\n');
 
-    // 🎯 STRATEGY 2: INDIVIDUAL SUPPLIERS (Worker-first, then direct fallback)
+    // 🎯 INDIVIDUAL SUPPLIER UPDATES
     for (const supplier of suppliers) {
         results.integrity.totalAttempted++;
         
@@ -652,33 +672,42 @@ async function updateAllSuppliers() {
             let restored = false;
             let lastError = null;
             let sourceUsed = 'none';
+            let processedData = null;
+            let matchCount = 0;
 
-            // 🎯 STRATEGY 2A: PRIMARY - WORKER ENDPOINT
+            // 🎯 PRIMARY: WORKER ENDPOINT
             try {
                 console.log(`   🚀 PRIMARY: Trying Worker endpoint`);
                 const workerResult = await fetchFromWorker(supplier.workerEndpoint);
                 
                 if (workerResult.success) {
-                    const processedData = supplier.processor(workerResult);
+                    // Process with supplier-specific processor
+                    if (supplier.name === 'wendy' && typeof supplier.processor === 'function') {
+                        processedData = await supplier.processor(workerResult);
+                    } else {
+                        processedData = supplier.processor(workerResult);
+                    }
+                    
+                    // Validate
                     const validation = validateSupplierData(processedData, supplier.name);
                     
                     if (validation.valid && validation.matchCount > 0) {
-                        // 🎯 ATOMIC WRITE
+                        // ATOMIC WRITE
                         const tempPath = `./suppliers/${supplier.name}-data.json.tmp`;
                         const finalPath = `./suppliers/${supplier.name}-data.json`;
                         
                         fs.writeFileSync(tempPath, JSON.stringify(processedData, null, 2));
                         fs.renameSync(tempPath, finalPath);
                         
-                        console.log(`   ✅ ${supplier.name} via Worker: ${validation.matchCount} matches`);
+                        matchCount = validation.matchCount;
+                        console.log(`   ✅ ${supplier.name} via Worker: ${matchCount} matches`);
                         
                         results.updated.push(supplier.name);
                         results.details[supplier.name] = {
                             success: true,
-                            matchCount: validation.matchCount,
+                            matchCount: matchCount,
                             source: 'worker',
-                            dataHash: processedData._metadata?.dataHash || 'N/A',
-                            backup: backupResult ? path.basename(backupResult.path) : null
+                            dataHash: processedData._metadata?.dataHash || 'N/A'
                         };
                         
                         circuitBreaker.recordSuccess();
@@ -692,7 +721,7 @@ async function updateAllSuppliers() {
                 lastError = workerError;
             }
 
-            // 🎯 STRATEGY 2B: SECONDARY - DIRECT API FALLBACK
+            // 🎯 SECONDARY: DIRECT API FALLBACK
             if (!success) {
                 console.log(`   🔄 SECONDARY: Trying direct APIs...`);
                 
@@ -700,15 +729,15 @@ async function updateAllSuppliers() {
                     try {
                         const rawData = await fetchWithProfessionalRetry(url, supplier.name);
                         
-                        // Process data (special handling for Wendy async processor)
-                        let processedData;
+                        // Process data
+                        let directResult = { data: rawData, source: 'direct' };
                         if (supplier.name === 'wendy' && typeof supplier.processor === 'function') {
-                            processedData = await supplier.processor(rawData);
+                            processedData = await supplier.processor(directResult);
                         } else {
-                            processedData = supplier.processor({ data: rawData, source: 'direct' });
+                            processedData = supplier.processor(directResult);
                         }
                         
-                        // Validate data
+                        // Validate
                         const validation = validateSupplierData(processedData, supplier.name);
                         
                         if (validation.valid && validation.matchCount > 0) {
@@ -719,16 +748,16 @@ async function updateAllSuppliers() {
                             fs.writeFileSync(tempPath, JSON.stringify(processedData, null, 2));
                             fs.renameSync(tempPath, finalPath);
                             
-                            console.log(`   ✅ ${supplier.name} via Direct API: ${validation.matchCount} matches`);
+                            matchCount = validation.matchCount;
+                            console.log(`   ✅ ${supplier.name} via Direct API: ${matchCount} matches`);
                             
                             results.updated.push(supplier.name);
                             results.details[supplier.name] = {
                                 success: true,
-                                matchCount: validation.matchCount,
+                                matchCount: matchCount,
                                 source: 'direct',
                                 endpoint: new URL(url).hostname,
-                                dataHash: processedData._metadata?.dataHash || 'N/A',
-                                backup: backupResult ? path.basename(backupResult.path) : null
+                                dataHash: processedData._metadata?.dataHash || 'N/A'
                             };
                             
                             circuitBreaker.recordSuccess();
@@ -744,7 +773,7 @@ async function updateAllSuppliers() {
                 }
             }
 
-            // 🎯 STRATEGY 2C: TERTIARY - RESTORE FROM BACKUP
+            // 🎯 TERTIARY: RESTORE FROM BACKUP
             if (!success) {
                 console.log(`   🚨 All sources failed for ${supplier.name}`);
                 circuitBreaker.recordFailure();
@@ -775,6 +804,11 @@ async function updateAllSuppliers() {
                 }
             }
             
+            // Log backup info if we have it
+            if (backupResult && success && sourceUsed !== 'backup') {
+                console.log(`   💾 Previous backup: ${path.basename(backupResult.path)}`);
+            }
+            
         } catch (supplierError) {
             console.log(`💥 UNEXPECTED ERROR: ${supplier.name} - ${supplierError.message}`);
             results.failed.push(supplier.name);
@@ -795,7 +829,7 @@ async function updateAllSuppliers() {
     
     console.log('\n📊 UPDATE SUMMARY:');
     console.log('══════════════════════════════════════');
-    console.log(`✅ Strategy: Worker-primary with fallback`);
+    console.log(`✅ Strategy: Worker separated endpoints`);
     console.log(`✅ Updated: ${results.updated.length > 0 ? results.updated.join(', ') : 'None'}`);
     console.log(`⚡ Skipped: ${results.skipped.length > 0 ? results.skipped.join(', ') : 'None'}`);
     console.log(`❌ Failed: ${results.failed.length > 0 ? results.failed.join(', ') : 'None'}`);
@@ -810,16 +844,34 @@ async function updateAllSuppliers() {
             if (detail.restored) {
                 console.log(`   ${supplier}: RECOVERED from backup`);
             } else {
-                console.log(`   ${supplier}: ${detail.matchCount} matches via ${detail.source}`);
+                console.log(`   ${supplier}: ${detail.matchCount || 0} matches via ${detail.source || 'unknown'}`);
             }
         } else if (detail.skipped) {
             console.log(`   ${supplier}: SKIPPED (circuit breaker)`);
         } else {
-            console.log(`   ${supplier}: FAILED - ${detail.error}`);
+            console.log(`   ${supplier}: FAILED - ${detail.error?.substring(0, 50)}...`);
         }
     });
     
     console.log('══════════════════════════════════════\n');
+    
+    // 🎯 FINAL CHECK: Ensure files exist even if empty
+    ['tom', 'sarah', 'wendy'].forEach(supplier => {
+        const filePath = `./suppliers/${supplier}-data.json`;
+        if (!fs.existsSync(filePath)) {
+            const emptyData = {
+                matches: [],
+                _metadata: {
+                    supplier: supplier,
+                    lastUpdated: new Date().toISOString(),
+                    matchCount: 0,
+                    emergency: true
+                }
+            };
+            fs.writeFileSync(filePath, JSON.stringify(emptyData, null, 2));
+            console.log(`⚠️ Created empty ${supplier} file as fallback`);
+        }
+    });
     
     // 🎯 WRITE RESULTS AND CLEANUP
     fs.writeFileSync('./suppliers/update-results.json', JSON.stringify(results, null, 2));
