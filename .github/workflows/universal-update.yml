@@ -1,112 +1,76 @@
-name: Universal Sports Pipeline
+name: 🔄 Universal Data Pipeline
 
 on:
   schedule:
-    - cron: '*/90 * * * *'  # Every 90 minutes
-  workflow_dispatch:  # Manual trigger
+    - cron: '*/60 * * * *'  # Every 60 minutes
+  workflow_dispatch:        # Manual trigger
+
+permissions:
+  contents: write
 
 jobs:
-  process:
+  universal-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     steps:
-    - name: Checkout code
+    - name: 📥 Checkout repository
       uses: actions/checkout@v3
-      
-    - name: Setup Node.js
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+        
+    - name: 📋 Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
         
-    - name: Install dependencies
+    - name: 🐛 Debug Data Flow
       run: |
-        npm init -y
-        npm install
+        echo "=== FILE STRUCTURE ==="
+        find . -name "*.json" -path "*/suppliers/*" -o -name "master-data.json" | head -20
+        echo "=== SUPPLIER FILE SIZES ==="
+        ls -la suppliers/*.json
+        echo "=== CHECK SUPPLIER DATA ==="
+        echo "Tom records:" $(jq '.events | flatten | length' suppliers/tom-data.json 2>/dev/null || echo "FAILED")
+        echo "Sarah records:" $(jq '.matches | length' suppliers/sarah-data.json 2>/dev/null || echo "FAILED")
+        echo "Wendy records:" $(jq '.matches | length' suppliers/wendy-data.json 2>/dev/null || echo "FAILED")
         
-    - name: Create required directories
-      run: |
-        mkdir -p suppliers/backups
-        
-    - name: Update suppliers
+    - name: 🔄 Update All Suppliers
       run: node scripts/update-suppliers.js
       
-    - name: Verify supplier data
-      run: |
-        echo "=== SUPPLIER FILE SIZES ==="
-        ls -lh suppliers/*.json 2>/dev/null || echo "No supplier files found"
-        echo "=== CHECK SUPPLIER DATA ==="
-        node -e "
-          const fs = require('fs');
-          try {
-            // Check Tom
-            if (fs.existsSync('./suppliers/tom-data.json')) {
-              const tom = JSON.parse(fs.readFileSync('./suppliers/tom-data.json', 'utf8'));
-              const tomCount = tom.matches ? tom.matches.length : 
-                              (tom.events ? Object.values(tom.events).flat().length : 0);
-              console.log('Tom records:', tomCount);
-            } else {
-              console.log('Tom records: FILE NOT FOUND');
-            }
-            
-            // Check Sarah
-            if (fs.existsSync('./suppliers/sarah-data.json')) {
-              const sarah = JSON.parse(fs.readFileSync('./suppliers/sarah-data.json', 'utf8'));
-              const sarahCount = sarah.matches ? sarah.matches.length : 0;
-              console.log('Sarah records:', sarahCount);
-            } else {
-              console.log('Sarah records: FILE NOT FOUND');
-            }
-            
-            // Check Wendy
-            if (fs.existsSync('./suppliers/wendy-data.json')) {
-              const wendy = JSON.parse(fs.readFileSync('./suppliers/wendy-data.json', 'utf8'));
-              const wendyCount = wendy.matches ? wendy.matches.length : 0;
-              console.log('Wendy records:', wendyCount);
-            } else {
-              console.log('Wendy records: FILE NOT FOUND');
-            }
-            
-          } catch(e) {
-            console.error('Verification failed:', e.message);
-          }
-        "
-        
-    - name: Phase 1 - Universal Standardization
+    - name: 🚀 PHASE 1 Universal Standardization
       run: node scripts/universal-standardizer.js
       
-    - name: Phase 2 - Advanced Processing
+    - name: 🚀 PHASE 2 Advanced Processing
       run: node scripts/phase2-processor.js
       
-    - name: Final verification
+    - name: ✅ Verify Final Output
       run: |
         echo "=== FINAL VERIFICATION ==="
-        if [ -f "./master-data.json" ]; then
-          echo "Master file exists: YES"
-          echo "File size: \$(stat -f%z ./master-data.json 2>/dev/null || stat -c%s ./master-data.json)"
-          node -e "
-            const fs = require('fs');
-            try {
-              const data = JSON.parse(fs.readFileSync('./master-data.json', 'utf8'));
-              console.log('Total matches:', data.matches?.length || 0);
-              
-              const wendyStreams = data.matches?.filter(m => 
-                m.sources?.wendy?.length > 0
-              ).length || 0;
-              console.log('Wendy streams found:', wendyStreams);
-            } catch(e) {
-              console.error('Error reading master-data:', e.message);
-            }
-          "
-        else
-          echo "Master file exists: NO"
-          echo "Looking for files..."
-          ls -la *.json
-        fi
+        echo "Master file exists:" $(test -f "master-data.json" && echo "YES" || echo "NO")
+        echo "File size:" $(wc -c < master-data.json)
+        echo "Total matches:" $(jq '.matches | length' master-data.json)
+        echo "Wendy streams found:" $(grep -c "spiderembed" master-data.json)
+        echo "=== PIPELINE SUMMARY ==="
+        echo "Phase 1: Creates standardization-UNIVERSAL.json"
+        echo "Phase 2: Creates master-data.json"
+        echo "Universal System: Ready for 20+ suppliers"
         
-    - name: Commit results
+    - name: 📝 Commit and Push Changes
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add suppliers/*.json standardization-UNIVERSAL.json master-data.json
-        git commit -m "Update sports data \$(date)" || echo "No changes to commit"
-        git push
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add master-data.json suppliers/ standardization-UNIVERSAL.json
+        echo "=== GIT STATUS ==="
+        git status
+        echo "=== CHECKING FOR CHANGES ==="
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          echo "Changes detected - committing..."
+          git commit -m "🔄 Universal data update [$(date +%Y%m%d_%H%M%S)]"
+          git push
+          echo "Changes committed successfully!"
+        fi
+
