@@ -35,54 +35,62 @@ class EnhancedFieldMapperNoTournament {
   }
 
   standardizeMatch(rawMatch, supplier) {
-    const standardized = {
-      source: supplier,
-      sources: { tom: [], sarah: [], wendy: [] },
-      unix_timestamp: null,
-      sport: 'Unknown',
-      match: '',
-      tournament: '', 
-      match_id: this.generateMatchId(rawMatch)
-    };
+  const standardized = {
+    source: supplier,
+    sources: { tom: [], sarah: [], wendy: [] },
+    unix_timestamp: null,
+    sport: 'Unknown',
+    match: '',
+    tournament: '',  // Tournament field is initialized here
+    match_id: this.generateMatchId(rawMatch)
+  };
 
-    // Map basic fields without tournament
-    const mapping = this.fieldMappings[supplier];
-    
-    // Extract match name - WITH DASH-TO-VS CONVERSION
-    standardized.match = this.extractField(rawMatch, mapping.match) || 'Unknown Match';
-    
-    // Extract sport (will be reclassified using NormalizationMap)
-    standardized.sport = this.extractField(rawMatch, mapping.sport) || 'Unknown';
-    
-    // Extract timestamp
-    standardized.unix_timestamp = this.extractTimestamp(rawMatch, mapping.unix_timestamp);
-    
-    // Extract streams
-    const streams = this.extractStreams(rawMatch, mapping.streams, supplier);
-    standardized.sources[supplier] = streams;
-    
-    return standardized;
-  }
+  // Map basic fields
+  const mapping = this.fieldMappings[supplier];
+  
+  // Extract match name
+  standardized.match = this.extractField(rawMatch, mapping.match) || 'Unknown Match';
+  
+  // Extract sport
+  standardized.sport = this.extractField(rawMatch, mapping.sport) || 'Unknown';
+  
+  // ✅ ADD THIS LINE: Extract tournament/league
+  standardized.tournament = this.extractField(rawMatch, mapping.tournament) || '';
+  
+  // Extract timestamp
+  standardized.unix_timestamp = this.extractTimestamp(rawMatch, mapping.unix_timestamp);
+  
+  // Extract streams
+  const streams = this.extractStreams(rawMatch, mapping.streams, supplier);
+  standardized.sources[supplier] = streams;
+  
+  return standardized;
+}
 
   // In Universal-standizer.js, make sure this mapping exists:
 extractField(rawMatch, possibleFields) {
-    for (const field of possibleFields) {
-        if (rawMatch[field] !== undefined && rawMatch[field] !== null) {
-            let value = String(rawMatch[field]).trim();
-            
-            // For tournament field, keep it as-is (don't convert dashes to "vs")
-            if (possibleFields.includes('tournament') || possibleFields.includes('league')) {
-                return value; // Keep original tournament/league name
-            }
-            
-            // Only convert dashes for match names
-            value = value.replace(/\s+-\s+/g, ' vs ');
-            // ... rest of your conversion logic ...
-            
-            return value;
-        }
+  for (const field of possibleFields) {
+    if (rawMatch[field] !== undefined && rawMatch[field] !== null) {
+      let value = String(rawMatch[field]).trim();
+      
+      // For tournament field, keep it as-is (don't convert dashes to "vs")
+      if (possibleFields.includes('tournament') || possibleFields.includes('league')) {
+        console.log(`🎯 Extracting tournament/league: "${value}" from field "${field}"`);
+        return value; // Keep original tournament/league name
+      }
+      
+      // Only convert dashes for match names
+      value = value.replace(/\s+-\s+/g, ' vs ');
+      value = value.replace(/\s+-/g, ' vs ');
+      value = value.replace(/-\s+/g, ' vs ');
+      value = value.replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2');
+      value = value.replace(/vs\./gi, ' vs ');
+      value = value.replace(/\s+/g, ' ').trim();
+      
+      return value;
     }
-    return null;
+  }
+  return null;
 }
 
   extractTimestamp(rawMatch, possibleFields) {
@@ -572,10 +580,10 @@ class UniversalStandardizer {
         match: standardizedMatch.match,
         sport: standardizedMatch.sport,
         category: rawMatch.category || standardizedMatch.sport,
-        tournament: rawMatch.tournament || '',
+        tournament: standardizedMatch.tournament || rawMatch.tournament || '', 
         teams: rawMatch.teams || { home: { name: '' }, away: { name: '' } }
       };
-      
+      console.log(`   🏆 Tournament data: "${matchForClassification.tournament}"`);
       // Try NormalizationMap first
       let sport = this.normalizationMap.classifySport(matchForClassification);
       
