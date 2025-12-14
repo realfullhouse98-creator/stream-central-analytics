@@ -64,24 +64,26 @@ class EnhancedFieldMapperNoTournament {
     return standardized;
   }
 
-  extractField(rawMatch, possibleFields) {
+  // In Universal-standizer.js, make sure this mapping exists:
+extractField(rawMatch, possibleFields) {
     for (const field of possibleFields) {
-      if (rawMatch[field] !== undefined && rawMatch[field] !== null) {
-        let value = String(rawMatch[field]).trim();
-        
-        // ✅ Convert ALL dash formats to "vs" for consistency
-        value = value.replace(/\s+-\s+/g, ' vs ');
-        value = value.replace(/\s+-/g, ' vs ');
-        value = value.replace(/-\s+/g, ' vs ');
-        value = value.replace(/(\w[\w\s]*)-(\w[\w\s]*)/g, '$1 vs $2');
-        value = value.replace(/vs\./gi, ' vs ');
-        value = value.replace(/\s+/g, ' ').trim();
-        
-        return value;
-      }
+        if (rawMatch[field] !== undefined && rawMatch[field] !== null) {
+            let value = String(rawMatch[field]).trim();
+            
+            // For tournament field, keep it as-is (don't convert dashes to "vs")
+            if (possibleFields.includes('tournament') || possibleFields.includes('league')) {
+                return value; // Keep original tournament/league name
+            }
+            
+            // Only convert dashes for match names
+            value = value.replace(/\s+-\s+/g, ' vs ');
+            // ... rest of your conversion logic ...
+            
+            return value;
+        }
     }
     return null;
-  }
+}
 
   extractTimestamp(rawMatch, possibleFields) {
     for (const field of possibleFields) {
