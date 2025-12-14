@@ -12,18 +12,21 @@ class EnhancedFieldMapperNoTournament {
         'match': ['match', 'name', 'title', 'event_name'],
         'sport': ['sport', 'category', 'type'],
         'unix_timestamp': ['unix_timestamp', 'timestamp', 'start_time', 'time'],
+        'tournament': ['tournament', 'league', 'competition'],  
         'streams': ['channels', 'streams', 'links']
       },
       'sarah': {
         'match': ['title', 'name', 'teams'],
         'sport': ['category', 'sport'], 
         'unix_timestamp': ['date', 'timestamp', 'start_time'],
+        'tournament': ['tournament', 'league', 'competition'],  
         'streams': ['sources', 'streams', 'links']
       },
       'wendy': {
         'match': ['title', 'name', 'event'],
         'sport': ['sport', 'sportCategory', 'type'],
         'unix_timestamp': ['timestamp', 'date', 'time'],
+        'tournament': ['tournament', 'league', 'competition'],  
         'streams': ['streams', 'urls']
       }
     };
@@ -38,6 +41,7 @@ class EnhancedFieldMapperNoTournament {
       unix_timestamp: null,
       sport: 'Unknown',
       match: '',
+      tournament: '', 
       match_id: this.generateMatchId(rawMatch)
     };
 
