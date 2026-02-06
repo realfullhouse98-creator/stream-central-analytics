@@ -1,5 +1,5 @@
 {
-  "startTime": "2026-02-06T15:40:59.834Z",
+  "startTime": "2026-02-06T16:47:07.621Z",
   "strategy": "separated-endpoints",
   "updated": [
     "tom",
@@ -11,18 +11,25 @@
   "details": {
     "tom": {
       "success": true,
-      "matchCount": 187,
-      "source": "worker-combined"
+      "restored": true,
+      "source": "backup",
+      "recoveryDetails": {
+        "recovered": true,
+        "backupFile": "tom-data-1770396442627.json",
+        "timestamp": "2026-02-06T16:47:26.448Z"
+      }
     },
     "sarah": {
       "success": true,
-      "matchCount": 211,
-      "source": "worker-combined"
+      "matchCount": 214,
+      "source": "worker",
+      "dataHash": "670b0fd34c9f"
     },
     "wendy": {
       "success": true,
-      "matchCount": 1624,
-      "source": "worker-combined"
+      "matchCount": 493,
+      "source": "worker",
+      "dataHash": "wendy-fixed"
     }
   },
   "circuitBreakers": {
@@ -44,10 +51,10 @@
   },
   "integrity": {
     "totalAttempted": 3,
-    "successful": 3,
+    "successful": 2,
     "failed": 0,
-    "recovered": 0
+    "recovered": 1
   },
-  "endTime": "2026-02-06T15:41:08.296Z",
-  "duration": 8462
+  "endTime": "2026-02-06T16:47:38.839Z",
+  "duration": 31218
 }
