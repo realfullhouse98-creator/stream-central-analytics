@@ -1,19 +1,19 @@
 {
-  "processed_at": "2026-03-17T04:52:26.659Z",
+  "processed_at": "2026-03-17T05:59:50.808Z",
   "processor_version": "4.2-enterprise-enhanced-no-tournament",
   "summary": {
     "total_sports": 19,
-    "total_matches": 2387,
-    "merged_matches": 122,
-    "individual_matches": 2265,
-    "processing_time_ms": 8296,
+    "total_matches": 2384,
+    "merged_matches": 121,
+    "individual_matches": 2263,
+    "processing_time_ms": 8341,
     "merge_statistics": {
       "Basketball": {
-        "input": 433,
+        "input": 432,
         "output": 405,
         "clusters": 405,
-        "mergedClusters": 27,
-        "efficiency": "6.5%",
+        "mergedClusters": 26,
+        "efficiency": "6.3%",
         "average_confidence": "0.97"
       },
       "American Football": {
@@ -41,9 +41,9 @@
         "average_confidence": "0.97"
       },
       "Ice Hockey": {
-        "input": 154,
-        "output": 150,
-        "clusters": 150,
+        "input": 153,
+        "output": 149,
+        "clusters": 149,
         "mergedClusters": 4,
         "efficiency": "2.6%",
         "average_confidence": "0.99"
@@ -120,14 +120,6 @@
         "efficiency": "0.0%",
         "average_confidence": "1.00"
       },
-      "Baseball": {
-        "input": 78,
-        "output": 69,
-        "clusters": 69,
-        "mergedClusters": 9,
-        "efficiency": "11.5%",
-        "average_confidence": "0.95"
-      },
       "Fighting": {
         "input": 11,
         "output": 11,
@@ -152,6 +144,14 @@
         "efficiency": "0.0%",
         "average_confidence": "1.00"
       },
+      "Baseball": {
+        "input": 76,
+        "output": 67,
+        "clusters": 67,
+        "mergedClusters": 9,
+        "efficiency": "11.8%",
+        "average_confidence": "0.95"
+      },
       "Racing": {
         "input": 10,
         "output": 7,
@@ -162,32 +162,32 @@
       }
     },
     "performance_report": {
-      "total_processing_time_ms": 8296,
+      "total_processing_time_ms": 8341,
       "average_step_times": {
-        "load_data": "10.00",
-        "group_by_sport": "1.00",
+        "load_data": "9.00",
+        "group_by_sport": "0.00",
         "match_scoring": "0.01",
-        "find_merge_matches": "434.21",
+        "find_merge_matches": "436.47",
         "cluster_merging": "0.07",
-        "process_sport_Basketball": "527.00",
+        "process_sport_Basketball": "523.00",
         "process_sport_American Football": "0.00",
         "process_sport_Cricket": "1.00",
-        "process_sport_Football": "7656.00",
+        "process_sport_Football": "7708.00",
         "process_sport_Ice Hockey": "78.00",
         "process_sport_Rugby": "0.00",
         "process_sport_Equestrian": "0.00",
-        "process_sport_Tennis": "0.00",
-        "process_sport_Volleyball": "1.00",
+        "process_sport_Tennis": "1.00",
+        "process_sport_Volleyball": "0.00",
         "process_sport_Darts": "0.00",
         "process_sport_Futsal": "0.00",
         "process_sport_Lacrosse": "0.00",
         "process_sport_MMA": "0.00",
         "process_sport_Golf": "0.00",
-        "process_sport_Baseball": "16.00",
         "process_sport_Fighting": "1.00",
         "process_sport_Motorsport": "0.00",
         "process_sport_Other": "0.00",
-        "process_sport_Racing": "0.00"
+        "process_sport_Baseball": "15.00",
+        "process_sport_Racing": "1.00"
       },
       "cache_efficiency": {
         "team_normalization": "NaN",
@@ -196,7 +196,7 @@
         "token_cache": "100.0"
       },
       "average_merge_rate": "3.0%",
-      "memory_peak_mb": 45,
+      "memory_peak_mb": 43,
       "recommendations": [
         "Performance is optimal"
       ]
@@ -220,7 +220,7 @@
           "misses": 0
         },
         "tokenCache": {
-          "hits": 12205877,
+          "hits": 12203765,
           "misses": 4121
         }
       }
@@ -228,38 +228,25 @@
   },
   "matches": [
     {
-      "unix_timestamp": 1773711000000,
-      "sport": "Basketball",
-      "match": "Los Angeles Lakers vs Houston Rockets",
+      "source": "tom",
       "sources": {
         "tom": [
           "https://topembed.pw/channel/ESPNDeportes[USA]",
           "https://topembed.pw/channel/ESPN[USA]"
         ],
-        "sarah": [
-          "https://embedsports.top/embed/golf/20614/1"
-        ],
+        "sarah": [],
         "wendy": []
       },
-      "confidence": 0.7,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "tom",
-          "sarah"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.901Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "college_prefix_handling"
-        ]
-      }
+      "unix_timestamp": 1766710800,
+      "sport": "Basketball",
+      "match": "Los Angeles Lakers vs Houston Rockets",
+      "tournament": "NBA",
+      "match_id": "6b103e628f11e418",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
     },
     {
       "source": "tom",
@@ -929,7 +916,7 @@
         "merge_quality": 40
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.901Z",
+        "processed_at": "2026-03-17T05:59:43.000Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1120,7 +1107,7 @@
         "merge_quality": 40
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.901Z",
+        "processed_at": "2026-03-17T05:59:43.000Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1192,9 +1179,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-san-antonio-spurs-vs-la-clippers/1",
-          "https://embedsports.top/embed/delta/live_nba_clippers-spurs-live-streaming-431700624/1",
-          "https://embedsports.top/embed/echo/los-angeles-clippers-vs-san-antonio-spurs-basketball-470469/1",
           "https://embedsports.top/embed/golf/20615/1"
         ],
         "wendy": []
@@ -1203,7 +1187,7 @@
       "sport": "Basketball",
       "match": "Los Angeles Clippers vs San Antonio Spurs",
       "tournament": "",
-      "match_id": "8607efc97e451af9",
+      "match_id": "a3ecad6e55db14d4",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1219,7 +1203,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1773723137,
+      "unix_timestamp": 1773727182,
       "sport": "Basketball",
       "match": "NFL Streams Schedule",
       "tournament": "",
@@ -1395,6 +1379,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-detroit-pistons-vs-washington-wizards/1",
           "https://embedsports.top/embed/delta/live_nba_wizards-pistons-live-streaming-431711424/1",
           "https://embedsports.top/embed/echo/washington-wizards-vs-detroit-pistons-basketball-470470/1",
           "https://embedsports.top/embed/golf/20639/1"
@@ -1405,7 +1390,7 @@
       "sport": "Basketball",
       "match": "Washington Wizards vs Detroit Pistons",
       "tournament": "",
-      "match_id": "c0df4593ef0e6c12",
+      "match_id": "c58655377f8d72f3",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1417,6 +1402,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-oklahoma-city-thunder-vs-orlando-magic/1",
           "https://embedsports.top/embed/delta/live_nba_magic-thunder-live-streaming-431710992/1",
           "https://embedsports.top/embed/echo/orlando-magic-vs-oklahoma-city-thunder-basketball-470472/1",
           "https://embedsports.top/embed/golf/20638/1"
@@ -1427,7 +1413,7 @@
       "sport": "Basketball",
       "match": "Orlando Magic vs Oklahoma City Thunder",
       "tournament": "",
-      "match_id": "58fb2e65c8623487",
+      "match_id": "6d95dc8b87d16bb2",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1441,6 +1427,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-miami-heat-vs-charlotte-hornets/1",
           "https://embedsports.top/embed/delta/live_nba_hornets-heat-live-streaming-431710560/1",
           "https://embedsports.top/embed/echo/charlotte-hornets-vs-miami-heat-basketball-470471/1",
           "https://embedsports.top/embed/golf/20637/1"
@@ -1484,10 +1471,10 @@
         ],
         "team_consistency": 1,
         "time_consistency": 0,
-        "merge_quality": 90
+        "merge_quality": 95
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.901Z",
+        "processed_at": "2026-03-17T05:59:43.000Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1499,6 +1486,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-indiana-pacers-vs-new-york-knicks/1",
           "https://embedsports.top/embed/delta/live_nba_knicks-pacers-live-streaming-431711856/1",
           "https://embedsports.top/embed/echo/new-york-knicks-vs-indiana-pacers-basketball-470473/1",
           "https://embedsports.top/embed/golf/20640/1"
@@ -1509,7 +1497,7 @@
       "sport": "Basketball",
       "match": "New York Knicks vs Indiana Pacers",
       "tournament": "",
-      "match_id": "9443a9cbdf73fc6d",
+      "match_id": "72e9faa18d31c066",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1521,6 +1509,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-phoenix-suns-vs-minnesota-timberwolves/1",
           "https://embedsports.top/embed/delta/live_nba_timberwolves-suns-live-streaming-431712720/1",
           "https://embedsports.top/embed/echo/minnesota-timberwolves-vs-phoenix-suns-basketball-470475/1",
           "https://embedsports.top/embed/golf/20642/1"
@@ -1531,7 +1520,7 @@
       "sport": "Basketball",
       "match": "Minnesota Timberwolves vs Phoenix Suns",
       "tournament": "",
-      "match_id": "df9a876c0994ded8",
+      "match_id": "023f4fbbd830812f",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1543,6 +1532,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-cleveland-cavaliers-vs-milwaukee-bucks/1",
           "https://embedsports.top/embed/delta/live_nba_bucks-cavaliers-live-streaming-431712288/1",
           "https://embedsports.top/embed/echo/milwaukee-bucks-vs-cleveland-cavaliers-basketball-470474/1",
           "https://embedsports.top/embed/golf/20641/1"
@@ -1553,7 +1543,7 @@
       "sport": "Basketball",
       "match": "Milwaukee Bucks vs Cleveland Cavaliers",
       "tournament": "",
-      "match_id": "85bc6461fd8d2253",
+      "match_id": "3b98b5d3eb958a85",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1585,6 +1575,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-philadelphia-76-ers-vs-denver-nuggets/1",
           "https://embedsports.top/embed/delta/live_nba_nuggets-76ers-live-streaming-431713152/1",
           "https://embedsports.top/embed/echo/denver-nuggets-vs-philadelphia-76ers-basketball-470476/1",
           "https://embedsports.top/embed/golf/20643/1"
@@ -1595,7 +1586,7 @@
       "sport": "Basketball",
       "match": "Denver Nuggets vs Philadelphia 76ers",
       "tournament": "",
-      "match_id": "21ae9aebaadbab96",
+      "match_id": "7d87e1a551a14412",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1607,6 +1598,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-san-antonio-spurs-vs-sacramento-kings/1",
           "https://embedsports.top/embed/delta/live_nba_kings-spurs-live-streaming-431713584/1",
           "https://embedsports.top/embed/echo/sacramento-kings-vs-san-antonio-spurs-basketball-470477/1",
           "https://embedsports.top/embed/golf/20644/1"
@@ -1617,7 +1609,7 @@
       "sport": "Basketball",
       "match": "Sacramento Kings vs San Antonio Spurs",
       "tournament": "",
-      "match_id": "73bd007e49e5a428",
+      "match_id": "82bd9ccd14bea928",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -3267,7 +3259,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.902Z",
+        "processed_at": "2026-03-17T05:59:43.001Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -3746,7 +3738,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.902Z",
+        "processed_at": "2026-03-17T05:59:43.001Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -3849,7 +3841,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.902Z",
+        "processed_at": "2026-03-17T05:59:43.001Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -3936,7 +3928,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.902Z",
+        "processed_at": "2026-03-17T05:59:43.001Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4395,7 +4387,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.902Z",
+        "processed_at": "2026-03-17T05:59:43.001Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4424,7 +4416,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.902Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4704,7 +4696,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4733,7 +4725,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4912,7 +4904,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4941,7 +4933,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4970,7 +4962,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -4999,7 +4991,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -5028,7 +5020,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -5057,7 +5049,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -5086,7 +5078,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -5547,7 +5539,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -5684,7 +5676,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -6001,7 +5993,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.002Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -6858,7 +6850,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.903Z",
+        "processed_at": "2026-03-17T05:59:43.003Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -7607,7 +7599,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.904Z",
+        "processed_at": "2026-03-17T05:59:43.003Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -7636,7 +7628,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.904Z",
+        "processed_at": "2026-03-17T05:59:43.003Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -7665,7 +7657,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.904Z",
+        "processed_at": "2026-03-17T05:59:43.003Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -7712,7 +7704,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:18.904Z",
+        "processed_at": "2026-03-17T05:59:43.003Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -8794,7 +8786,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1773723137,
+      "unix_timestamp": 1773727182,
       "sport": "Cricket",
       "match": "Willow Cricket",
       "tournament": "",
@@ -10926,15 +10918,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-aek-athens-vs-celje/1"
+          "https://embedsports.top/embed/admin/ppv-mainz-vs-sigma-olomouc/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1773942300000,
       "sport": "Football",
-      "match": "AEK Athens vs Celje",
+      "match": "Mainz vs Sigma Olomouc",
       "tournament": "",
-      "match_id": "023ec4e7cac927c0",
+      "match_id": "7fcd759933945f9d",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -10946,15 +10938,75 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-mainz-vs-sigma-olomouc/1"
+          "https://embedsports.top/embed/admin/ppv-midtjylland-vs-nott-m-forest/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1773942300000,
       "sport": "Football",
-      "match": "Mainz vs Sigma Olomouc",
+      "match": "Midtjylland vs Nott'm Forest",
       "tournament": "",
-      "match_id": "7fcd759933945f9d",
+      "match_id": "893eef089ae04337",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-rak-w-vs-fiorentina/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773942300000,
+      "sport": "Football",
+      "match": "Raków vs Fiorentina",
+      "tournament": "",
+      "match_id": "7ee16cea3fba6678",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-freiburg-vs-genk/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773942300000,
+      "sport": "Football",
+      "match": "Freiburg vs Genk",
+      "tournament": "",
+      "match_id": "73c310d4b8118c26",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-aek-athens-vs-celje/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773942300000,
+      "sport": "Football",
+      "match": "AEK Athens vs Celje",
+      "tournament": "",
+      "match_id": "023ec4e7cac927c0",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11006,75 +11058,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-freiburg-vs-genk/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773942300000,
-      "sport": "Football",
-      "match": "Freiburg vs Genk",
-      "tournament": "",
-      "match_id": "73c310d4b8118c26",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-rak-w-vs-fiorentina/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773942300000,
-      "sport": "Football",
-      "match": "Raków vs Fiorentina",
-      "tournament": "",
-      "match_id": "7ee16cea3fba6678",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-midtjylland-vs-nott-m-forest/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773942300000,
-      "sport": "Football",
-      "match": "Midtjylland vs Nott'm Forest",
-      "tournament": "",
-      "match_id": "893eef089ae04337",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-porto-vs-stuttgart/1"
+          "https://embedsports.top/embed/admin/ppv-real-betis-vs-panathinaikos/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1773950400000,
       "sport": "Football",
-      "match": "Porto vs Stuttgart",
+      "match": "Real Betis vs Panathinaikos",
       "tournament": "",
-      "match_id": "27e96a1eda1530ec",
+      "match_id": "df20ff4fe5d38150",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11086,35 +11078,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-sparta-praha-vs-az-alkmaar/1"
+          "https://embedsports.top/embed/admin/ppv-rayo-vallecano-vs-samsunspor/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1773950400000,
       "sport": "Football",
-      "match": "Sparta Praha vs AZ Alkmaar",
+      "match": "Rayo Vallecano vs Samsunspor",
       "tournament": "",
-      "match_id": "c1c2c5474a08b7cb",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-shakhtar-vs-lech-pozna/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773950400000,
-      "sport": "Football",
-      "match": "Shakhtar vs Lech Poznań",
-      "tournament": "",
-      "match_id": "7aaeb26e8926bbef",
+      "match_id": "7c678224ac1663dc",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11135,6 +11107,26 @@
       "match": "Roma vs Bologna",
       "tournament": "",
       "match_id": "9c7ded10263e8a65",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-sparta-praha-vs-az-alkmaar/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773950400000,
+      "sport": "Football",
+      "match": "Sparta Praha vs AZ Alkmaar",
+      "tournament": "",
+      "match_id": "c1c2c5474a08b7cb",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11186,15 +11178,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-rayo-vallecano-vs-samsunspor/1"
+          "https://embedsports.top/embed/admin/ppv-porto-vs-stuttgart/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1773950400000,
       "sport": "Football",
-      "match": "Rayo Vallecano vs Samsunspor",
+      "match": "Porto vs Stuttgart",
       "tournament": "",
-      "match_id": "7c678224ac1663dc",
+      "match_id": "27e96a1eda1530ec",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11206,15 +11198,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-real-betis-vs-panathinaikos/1"
+          "https://embedsports.top/embed/admin/ppv-shakhtar-vs-lech-pozna/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1773950400000,
       "sport": "Football",
-      "match": "Real Betis vs Panathinaikos",
+      "match": "Shakhtar vs Lech Poznań",
       "tournament": "",
-      "match_id": "df20ff4fe5d38150",
+      "match_id": "7aaeb26e8926bbef",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11406,15 +11398,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-fc-cologne-vs-borussia-m-nchengladbach/1"
+          "https://embedsports.top/embed/admin/ppv-vf-l-wolfsburg-vs-werder-bremen/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1774103400000,
       "sport": "Football",
-      "match": "FC Cologne vs Borussia Mönchengladbach",
+      "match": "VfL Wolfsburg vs Werder Bremen",
       "tournament": "",
-      "match_id": "5bfd6e8714749f51",
+      "match_id": "e24d0b08cd9ccee7",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11426,15 +11418,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-vf-l-wolfsburg-vs-werder-bremen/1"
+          "https://embedsports.top/embed/admin/ppv-1-fc-heidenheim-1846-vs-bayer-leverkusen/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1774103400000,
       "sport": "Football",
-      "match": "VfL Wolfsburg vs Werder Bremen",
+      "match": "1. FC Heidenheim 1846 vs Bayer Leverkusen",
       "tournament": "",
-      "match_id": "e24d0b08cd9ccee7",
+      "match_id": "0819b2972d402943",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11466,15 +11458,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-1-fc-heidenheim-1846-vs-bayer-leverkusen/1"
+          "https://embedsports.top/embed/admin/ppv-fc-cologne-vs-borussia-m-nchengladbach/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1774103400000,
       "sport": "Football",
-      "match": "1. FC Heidenheim 1846 vs Bayer Leverkusen",
+      "match": "FC Cologne vs Borussia Mönchengladbach",
       "tournament": "",
-      "match_id": "0819b2972d402943",
+      "match_id": "5bfd6e8714749f51",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11546,6 +11538,26 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-toronto-fc-vs-columbus-crew/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774112400000,
+      "sport": "Football",
+      "match": "Toronto FC vs Columbus Crew",
+      "tournament": "",
+      "match_id": "51dc3e506dda5adc",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
           "https://embedsports.top/embed/admin/ppv-ac-milan-vs-torino/1"
         ],
         "wendy": []
@@ -11566,15 +11578,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-toronto-fc-vs-columbus-crew/1"
+          "https://embedsports.top/embed/admin/ppv-levante-vs-real-oviedo/1"
         ],
         "wendy": []
       },
-      "unix_timestamp": 1774112400000,
+      "unix_timestamp": 1774114200000,
       "sport": "Football",
-      "match": "Toronto FC vs Columbus Crew",
+      "match": "Levante vs Real Oviedo",
       "tournament": "",
-      "match_id": "51dc3e506dda5adc",
+      "match_id": "74545da1ada038c0",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11646,26 +11658,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-levante-vs-real-oviedo/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774114200000,
-      "sport": "Football",
-      "match": "Levante vs Real Oviedo",
-      "tournament": "",
-      "match_id": "74545da1ada038c0",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/admin/ppv-aj-auxerre-vs-brest/1"
         ],
         "wendy": []
@@ -11706,15 +11698,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-leeds-united-vs-brentford/1"
+          "https://embedsports.top/embed/admin/ppv-sevilla-vs-valencia/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1774123200000,
       "sport": "Football",
-      "match": "Leeds United vs Brentford",
+      "match": "Sevilla vs Valencia",
       "tournament": "",
-      "match_id": "17e7ce3431044291",
+      "match_id": "b5b3d5ac032a554e",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11726,15 +11718,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-sevilla-vs-valencia/1"
+          "https://embedsports.top/embed/admin/ppv-leeds-united-vs-brentford/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1774123200000,
       "sport": "Football",
-      "match": "Sevilla vs Valencia",
+      "match": "Leeds United vs Brentford",
       "tournament": "",
-      "match_id": "b5b3d5ac032a554e",
+      "match_id": "17e7ce3431044291",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11886,15 +11878,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-st-louis-city-sc-vs-new-england-revolution/1"
+          "https://embedsports.top/embed/admin/ppv-sporting-kansas-city-vs-colorado-rapids/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1774139400000,
       "sport": "Football",
-      "match": "St. Louis CITY SC vs New England Revolution",
+      "match": "Sporting Kansas City vs Colorado Rapids",
       "tournament": "",
-      "match_id": "4dd75a807a64ec9e",
+      "match_id": "234a13929b760c75",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11906,15 +11898,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-sporting-kansas-city-vs-colorado-rapids/1"
+          "https://embedsports.top/embed/admin/ppv-st-louis-city-sc-vs-new-england-revolution/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1774139400000,
       "sport": "Football",
-      "match": "Sporting Kansas City vs Colorado Rapids",
+      "match": "St. Louis CITY SC vs New England Revolution",
       "tournament": "",
-      "match_id": "234a13929b760c75",
+      "match_id": "4dd75a807a64ec9e",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12006,26 +11998,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-bologna-vs-lazio/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774188000000,
-      "sport": "Football",
-      "match": "Bologna vs Lazio",
-      "tournament": "",
-      "match_id": "f71d2d2bd190a476",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/admin/ppv-lyon-vs-as-monaco/1"
         ],
         "wendy": []
@@ -12066,15 +12038,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-tottenham-hotspur-vs-nottingham-forest/1"
+          "https://embedsports.top/embed/admin/ppv-bologna-vs-lazio/1"
         ],
         "wendy": []
       },
-      "unix_timestamp": 1774188900000,
+      "unix_timestamp": 1774188000000,
       "sport": "Football",
-      "match": "Tottenham Hotspur vs Nottingham Forest",
+      "match": "Bologna vs Lazio",
       "tournament": "",
-      "match_id": "7d19a8e4f846f248",
+      "match_id": "f71d2d2bd190a476",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12095,6 +12067,26 @@
       "match": "Aston Villa vs West Ham United",
       "tournament": "",
       "match_id": "60cbe6646540bbd4",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-tottenham-hotspur-vs-nottingham-forest/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774188900000,
+      "sport": "Football",
+      "match": "Tottenham Hotspur vs Nottingham Forest",
+      "tournament": "",
+      "match_id": "7d19a8e4f846f248",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12146,26 +12138,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-marseille-vs-lille/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774196100000,
-      "sport": "Football",
-      "match": "Marseille vs Lille",
-      "tournament": "",
-      "match_id": "840e2d49a87397ae",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/admin/ppv-stade-rennais-vs-metz/1"
         ],
         "wendy": []
@@ -12195,6 +12167,26 @@
       "match": "Paris FC vs Le Havre AC",
       "tournament": "",
       "match_id": "fdb07375b7a1b3a3",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-marseille-vs-lille/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774196100000,
+      "sport": "Football",
+      "match": "Marseille vs Lille",
+      "tournament": "",
+      "match_id": "840e2d49a87397ae",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12246,6 +12238,26 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-fc-cincinnati-vs-cf-montr-al/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774198800000,
+      "sport": "Football",
+      "match": "FC Cincinnati vs CF Montréal",
+      "tournament": "",
+      "match_id": "731a3a1b272a8fd2",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
           "https://embedsports.top/embed/admin/ppv-as-roma-vs-lecce/1"
         ],
         "wendy": []
@@ -12275,26 +12287,6 @@
       "match": "New York City FC vs Inter Miami CF",
       "tournament": "",
       "match_id": "5dc8e1bc86a91f8d",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-fc-cincinnati-vs-cf-montr-al/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774198800000,
-      "sport": "Football",
-      "match": "FC Cincinnati vs CF Montréal",
-      "tournament": "",
-      "match_id": "731a3a1b272a8fd2",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12750,7 +12742,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.704Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12887,7 +12879,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.704Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -13132,7 +13124,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -13611,7 +13603,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -14054,7 +14046,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -14101,7 +14093,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -14778,7 +14770,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -14870,7 +14862,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -14899,7 +14891,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.554Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15284,7 +15276,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15313,7 +15305,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15379,7 +15371,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15588,7 +15580,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15959,7 +15951,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.705Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -16888,7 +16880,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -16936,7 +16928,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -17217,7 +17209,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -17770,7 +17762,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -17799,7 +17791,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18010,7 +18002,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.555Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18311,7 +18303,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18504,7 +18496,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19307,7 +19299,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.706Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19552,7 +19544,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19653,7 +19645,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19790,7 +19782,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -20269,7 +20261,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -20514,7 +20506,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -20615,7 +20607,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.556Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -21328,7 +21320,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -21375,7 +21367,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -21800,7 +21792,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -22009,7 +22001,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -22326,7 +22318,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -22499,7 +22491,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -22852,7 +22844,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23061,7 +23053,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.707Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23090,7 +23082,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23209,7 +23201,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23238,7 +23230,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23609,7 +23601,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23998,7 +23990,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -24262,7 +24254,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -24651,7 +24643,7 @@
         "merge_quality": 30
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.557Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -24878,7 +24870,7 @@
         "merge_quality": 30
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -25159,7 +25151,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -25206,7 +25198,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -25235,7 +25227,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -25732,7 +25724,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -27111,7 +27103,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.708Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -27464,7 +27456,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -28015,7 +28007,7 @@
         "merge_quality": 40
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -28134,7 +28126,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -28181,7 +28173,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -28246,7 +28238,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -28779,7 +28771,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.558Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -29096,7 +29088,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -29125,7 +29117,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -31062,7 +31054,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -31109,7 +31101,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -31426,7 +31418,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -31563,7 +31555,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.709Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -31790,7 +31782,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -32395,7 +32387,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -33576,7 +33568,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -33641,7 +33633,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -33814,7 +33806,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.559Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -34528,7 +34520,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -34557,7 +34549,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -35036,7 +35028,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -35426,7 +35418,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -35923,7 +35915,7 @@
         "merge_quality": 30
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -36690,7 +36682,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.710Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -37296,7 +37288,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -37721,7 +37713,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -37894,7 +37886,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -37941,7 +37933,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -38060,7 +38052,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.560Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -38341,7 +38333,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.561Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -38660,7 +38652,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.561Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -39571,7 +39563,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.561Z",
+        "processed_at": "2026-03-17T05:59:50.711Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -40288,26 +40280,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/golf/20607/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773711000000,
-      "sport": "Ice Hockey",
-      "match": "Colorado Avalanche vs Pittsburgh Penguins",
-      "tournament": "",
-      "match_id": "4de5429bf410ef5a",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/echo/bremerhaven-vs-nurnberg-ice-tigers-hockey-422925/1"
         ],
         "wendy": []
@@ -40328,6 +40300,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-carolina-hurricanes-vs-columbus-blue-jackets/1",
           "https://embedsports.top/embed/delta/live_nhl_blue-jackets-hurricanes-live-streaming-522677232/1",
           "https://embedsports.top/embed/echo/columbus-blue-jackets-vs-carolina-hurricanes-hockey-416685/1",
           "https://embedsports.top/embed/golf/20630/1"
@@ -40338,7 +40311,7 @@
       "sport": "Ice Hockey",
       "match": "Columbus Blue Jackets vs Carolina Hurricanes",
       "tournament": "",
-      "match_id": "2035d6d853390353",
+      "match_id": "d36dab2eef33d20a",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40350,6 +40323,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-new-york-islanders-vs-toronto-maple-leafs/1",
           "https://embedsports.top/embed/delta/live_nhl_maple-leafs-islanders-live-streaming-522678096/1",
           "https://embedsports.top/embed/echo/toronto-maple-leafs-vs-new-york-islanders-hockey-416687/1",
           "https://embedsports.top/embed/golf/20628/1"
@@ -40360,7 +40334,7 @@
       "sport": "Ice Hockey",
       "match": "Toronto Maple Leafs vs New York Islanders",
       "tournament": "",
-      "match_id": "acf21b6f8085db94",
+      "match_id": "94c625255bbfe16b",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40372,6 +40346,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-boston-bruins-vs-montreal-canadiens/1",
           "https://embedsports.top/embed/delta/live_nhl_canadiens-bruins-live-streaming-522677664/1",
           "https://embedsports.top/embed/echo/montreal-canadiens-vs-boston-bruins-hockey-416686/1",
           "https://embedsports.top/embed/golf/20629/1"
@@ -40382,7 +40357,7 @@
       "sport": "Ice Hockey",
       "match": "Montreal Canadiens vs Boston Bruins",
       "tournament": "",
-      "match_id": "d2691efee14d6903",
+      "match_id": "424275213389fbef",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40394,6 +40369,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-minnesota-wild-vs-chicago-blackhawks/1",
           "https://embedsports.top/embed/delta/live_nhl_blackhawks-wild-live-streaming-522678528/1",
           "https://embedsports.top/embed/echo/chicago-blackhawks-vs-minnesota-wild-hockey-416688/1",
           "https://embedsports.top/embed/golf/20631/1"
@@ -40404,7 +40380,7 @@
       "sport": "Ice Hockey",
       "match": "Chicago Blackhawks vs Minnesota Wild",
       "tournament": "",
-      "match_id": "085828c6cc50bbf3",
+      "match_id": "c0297086aa0c3ef6",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40416,6 +40392,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-nashville-predators-vs-winnipeg-jets/1",
           "https://embedsports.top/embed/delta/live_nhl_jets-predators-live-streaming-522678960/1",
           "https://embedsports.top/embed/echo/winnipeg-jets-vs-nashville-predators-hockey-416689/1",
           "https://embedsports.top/embed/golf/20632/1"
@@ -40426,7 +40403,7 @@
       "sport": "Ice Hockey",
       "match": "Winnipeg Jets vs Nashville Predators",
       "tournament": "",
-      "match_id": "873ae59f3adb3d3c",
+      "match_id": "10220c8f38a7098e",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40438,6 +40415,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-san-jose-sharks-vs-edmonton-oilers/1",
           "https://embedsports.top/embed/delta/live_nhl_oilers-sharks-live-streaming-522679392/1",
           "https://embedsports.top/embed/echo/edmonton-oilers-vs-san-jose-sharks-hockey-416690/1",
           "https://embedsports.top/embed/golf/20633/1"
@@ -40448,7 +40426,7 @@
       "sport": "Ice Hockey",
       "match": "Edmonton Oilers vs San Jose Sharks",
       "tournament": "",
-      "match_id": "f8eacfc1c077a18b",
+      "match_id": "adc43906e713af69",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40460,6 +40438,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-buffalo-sabres-vs-vegas-golden-knights/1",
           "https://embedsports.top/embed/delta/live_nhl_golden-knights-sabres-live-streaming-522680688/1",
           "https://embedsports.top/embed/echo/vegas-golden-knights-vs-buffalo-sabres-hockey-416691/1",
           "https://embedsports.top/embed/golf/20635/1"
@@ -40470,7 +40449,7 @@
       "sport": "Ice Hockey",
       "match": "Vegas Golden Knights vs Buffalo Sabres",
       "tournament": "",
-      "match_id": "9dd22eda5def9592",
+      "match_id": "b7a6c2f3ca6c991a",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40482,6 +40461,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-tampa-bay-lightning-vs-seattle-kraken/1",
           "https://embedsports.top/embed/delta/live_nhl_kraken-lightning-live-streaming-522679824/1",
           "https://embedsports.top/embed/echo/seattle-kraken-vs-tampa-bay-lightning-hockey-416692/1",
           "https://embedsports.top/embed/golf/20636/1"
@@ -40492,7 +40472,7 @@
       "sport": "Ice Hockey",
       "match": "Seattle Kraken vs Tampa Bay Lightning",
       "tournament": "",
-      "match_id": "f0cc593eef871cf5",
+      "match_id": "b711eb6b920f4f50",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40504,6 +40484,7 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/admin/ppv-florida-panthers-vs-vancouver-canucks/1",
           "https://embedsports.top/embed/delta/live_nhl_canucks-panthers-live-streaming-522680256/1",
           "https://embedsports.top/embed/echo/vancouver-canucks-vs-florida-panthers-hockey-416693/1",
           "https://embedsports.top/embed/golf/20634/1"
@@ -40514,7 +40495,7 @@
       "sport": "Ice Hockey",
       "match": "Vancouver Canucks vs Florida Panthers",
       "tournament": "",
-      "match_id": "5b66c196f16f4dd4",
+      "match_id": "65bc29325ca9ccbe",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -40810,7 +40791,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.640Z",
+        "processed_at": "2026-03-17T05:59:50.790Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -41137,7 +41118,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.640Z",
+        "processed_at": "2026-03-17T05:59:50.790Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -41310,7 +41291,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.640Z",
+        "processed_at": "2026-03-17T05:59:50.790Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -41843,7 +41824,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.640Z",
+        "processed_at": "2026-03-17T05:59:50.790Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -43891,16 +43872,17 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/golf/20627/1"
+          "https://embedsports.top/embed/echo/wwe-monday-night-raw-wwe-2025/1",
+          "https://embedsports.top/embed/golf/20660/1"
         ],
         "wendy": []
       },
-      "unix_timestamp": 1773709500000,
-      "sport": "Baseball",
-      "match": "Cleveland Guardians vs Chicago Cubs",
+      "unix_timestamp": 1773705600000,
+      "sport": "Fighting",
+      "match": "WWE: Monday Night RAW",
       "tournament": "",
-      "match_id": "058906af169b2f7e",
-      "quality_score": 100,
+      "match_id": "ef117fa440634b30",
+      "quality_score": 60,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
@@ -43911,16 +43893,537 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/golf/20626/1"
+          "https://embedsports.top/embed/delta/live-event_lfc-63-legacy-fighting-championship-63-live-stream/1"
         ],
         "wendy": []
       },
-      "unix_timestamp": 1773705900000,
-      "sport": "Baseball",
-      "match": "Texas Rangers vs Chicago White Sox",
+      "unix_timestamp": 1480651200000,
+      "sport": "Fighting",
+      "match": "LFC 63: Legacy Fighting Championship 63",
       "tournament": "",
-      "match_id": "54bccf6f285faf8b",
-      "quality_score": 100,
+      "match_id": "773b07814cb28f32",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-wwe-nxt/1",
+          "https://embedsports.top/embed/echo/wwe-nxt-wwe/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773792000000,
+      "sport": "Fighting",
+      "match": "WWE: NXT",
+      "tournament": "",
+      "match_id": "44f5616e44a0869a",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-aew-wednesday-night-dynamite/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773878400000,
+      "sport": "Fighting",
+      "match": "AEW: Wednesday Night Dynamite",
+      "tournament": "",
+      "match_id": "ca0199ad20836423",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-tna-impact/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773968400000,
+      "sport": "Fighting",
+      "match": "TNA: Impact",
+      "tournament": "",
+      "match_id": "ed5194115fd6b297",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_pfl-madrid-van-steenis-vs-edwards-2-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774026000000,
+      "sport": "Fighting",
+      "match": "PFL Madrid: Van Steenis vs Edwards 2",
+      "tournament": "",
+      "match_id": "407cd0702914fa09",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_michael-conlan-vs-kevin-walsh-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774033200000,
+      "sport": "Fighting",
+      "match": "Michael Conlan vs Kevin Walsh",
+      "tournament": "",
+      "match_id": "41b92716669c7a5f",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-wwe-friday-night-smackdown/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774051200000,
+      "sport": "Fighting",
+      "match": "WWE: Friday Night Smackdown",
+      "tournament": "",
+      "match_id": "3db20a46a6d39a3a",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_ufc-fight-night-3-21-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774112400000,
+      "sport": "Fighting",
+      "match": "UFC Fight Night: Evloev vs Murphy",
+      "tournament": "",
+      "match_id": "caa1788d37aa5ccd",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-aew-saturday-night-collision/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774137600000,
+      "sport": "Fighting",
+      "match": "AEW: Saturday Night Collision",
+      "tournament": "",
+      "match_id": "10d7e27aaeee5981",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_lester-martinez-vs-immanuwel-aleem-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774141200000,
+      "sport": "Fighting",
+      "match": "Lester Martinez vs Immanuwel Aleem",
+      "tournament": "",
+      "match_id": "373acd74306e08bd",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_nascar-truck-series-2026-nascar-craftsman-truck-series-race-at-st-petersburg-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773478560000,
+      "sport": "Motorsport",
+      "match": "Nascar Truck Series 2026 vs NASCAR Craftsman Truck Series Race at St. Petersburg",
+      "tournament": "",
+      "match_id": "68964726bf9268b7",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_indycar-2026-java-house-grand-prix-of-arlington-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773477720000,
+      "sport": "Motorsport",
+      "match": "IndyCar 2026 vs Java House Grand Prix of Arlington",
+      "tournament": "",
+      "match_id": "2e6f3e9962b7a5f6",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_nascar-o-reilly-auto-parts-series-2026-the-liuna-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773391980000,
+      "sport": "Motorsport",
+      "match": "Nascar O’Reilly Auto Parts Series 2026 vs The LiUNA",
+      "tournament": "",
+      "match_id": "6944d8b4caafe1f7",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_nascar-o-reilly-auto-parts-series-2026-govx-200-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1772869980000,
+      "sport": "Motorsport",
+      "match": "Nascar O’Reilly Auto Parts Series 2026 vs GOVX 200",
+      "tournament": "",
+      "match_id": "50d7841cb935be8a",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_indycar-2026-good-ranchers-250-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1772696520000,
+      "sport": "Motorsport",
+      "match": "IndyCar 2026 vs Good Ranchers 250",
+      "tournament": "",
+      "match_id": "15735d925cb137be",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/admin-rally-tv/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773727182,
+      "sport": "Motorsport",
+      "match": "Rally TV",
+      "tournament": "",
+      "match_id": "26da967f85daab32",
+      "quality_score": 80,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_nascar-truck-series-2026-nascar-craftsman-truck-series-race-at-darlington-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773996960000,
+      "sport": "Motorsport",
+      "match": "Nascar Truck Series 2026 vs NASCAR Craftsman Truck Series Race at Darlington",
+      "tournament": "",
+      "match_id": "fd5dfa1aa1cab6bc",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_formula-e-2026-gp-madrid-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774017000000,
+      "sport": "Motorsport",
+      "match": "Formula E 2026 vs GP Madrid",
+      "tournament": "",
+      "match_id": "fe859fb6c0fda00f",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_moto2-2026-grand-prix-of-brazil-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774081320000,
+      "sport": "Motorsport",
+      "match": "Moto2 2026 vs Grand Prix of Brazil",
+      "tournament": "",
+      "match_id": "c8d5f87c1f7cff7b",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_nascar-o-reilly-auto-parts-series-2026-sport-clips-haircuts-vfw-help-a-hero-200-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774083180000,
+      "sport": "Motorsport",
+      "match": "Nascar O’Reilly Auto Parts Series 2026 vs Sport Clips Haircuts VFW Help a Hero 200",
+      "tournament": "",
+      "match_id": "ddc663651709fcf5",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_2026-truck-series-at-darlington-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774135800000,
+      "sport": "Motorsport",
+      "match": "2026 Truck Series at Darlington",
+      "tournament": "",
+      "match_id": "b61b5bda9adf6a91",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/delta/live-event_2026-nascar-cup-series-at-darlington-live-stream/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774209600000,
+      "sport": "Motorsport",
+      "match": "2026 NASCAR Cup Series at Darlington",
+      "tournament": "",
+      "match_id": "be3b23eb49fe5f3b",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-japanese-grand-prix-practice-1/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774578600000,
+      "sport": "Motorsport",
+      "match": "Japanese Grand Prix vs Practice 1",
+      "tournament": "",
+      "match_id": "179237463160fb0a",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-japanese-grand-prix-practice-3/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774665000000,
+      "sport": "Motorsport",
+      "match": "Japanese Grand Prix vs Practice 3",
+      "tournament": "",
+      "match_id": "45a158a1bf9eba19",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-japanese-grand-prix-race/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1774760400000,
+      "sport": "Motorsport",
+      "match": "Japanese Grand Prix vs Race",
+      "tournament": "",
+      "match_id": "83afe7c76e540c0a",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/snooker-world-open-2026-billar/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773727200000,
+      "sport": "Other",
+      "match": "Snooker World Open 2026 🎱",
+      "tournament": "",
+      "match_id": "d34b030df953867d",
+      "quality_score": 60,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/atpwta-1000-indian-wells-tn-1/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1773759600000,
+      "sport": "Other",
+      "match": "ATP/WTA 1000: Indian Wells 🎾",
+      "tournament": "",
+      "match_id": "27854a557d719348",
+      "quality_score": 60,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
@@ -44066,7 +44569,7 @@
         "merge_quality": 70
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.806Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44106,7 +44609,7 @@
         "merge_quality": 90
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44279,7 +44782,7 @@
         "merge_quality": 95
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44308,7 +44811,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44355,7 +44858,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44402,7 +44905,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44431,7 +44934,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44562,7 +45065,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -44825,7 +45328,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.657Z",
+        "processed_at": "2026-03-17T05:59:50.807Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -45337,569 +45840,6 @@
       "confidence": 1
     },
     {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_monday-night-raw-live-stream/1",
-          "https://embedsports.top/embed/echo/wwe-monday-night-raw-wwe-2025/1",
-          "https://embedsports.top/embed/golf/20660/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773705600000,
-      "sport": "Fighting",
-      "match": "Monday Night Raw",
-      "tournament": "",
-      "match_id": "9347bf5a2480b00f",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_lfc-63-legacy-fighting-championship-63-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1480651200000,
-      "sport": "Fighting",
-      "match": "LFC 63: Legacy Fighting Championship 63",
-      "tournament": "",
-      "match_id": "773b07814cb28f32",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-wwe-nxt/1",
-          "https://embedsports.top/embed/echo/wwe-nxt-wwe/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773792000000,
-      "sport": "Fighting",
-      "match": "WWE: NXT",
-      "tournament": "",
-      "match_id": "44f5616e44a0869a",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-aew-wednesday-night-dynamite/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773878400000,
-      "sport": "Fighting",
-      "match": "AEW: Wednesday Night Dynamite",
-      "tournament": "",
-      "match_id": "ca0199ad20836423",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-tna-impact/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773968400000,
-      "sport": "Fighting",
-      "match": "TNA: Impact",
-      "tournament": "",
-      "match_id": "ed5194115fd6b297",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_pfl-madrid-van-steenis-vs-edwards-2-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774026000000,
-      "sport": "Fighting",
-      "match": "PFL Madrid: Van Steenis vs Edwards 2",
-      "tournament": "",
-      "match_id": "407cd0702914fa09",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_michael-conlan-vs-kevin-walsh-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774033200000,
-      "sport": "Fighting",
-      "match": "Michael Conlan vs Kevin Walsh",
-      "tournament": "",
-      "match_id": "41b92716669c7a5f",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-wwe-friday-night-smackdown/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774051200000,
-      "sport": "Fighting",
-      "match": "WWE: Friday Night Smackdown",
-      "tournament": "",
-      "match_id": "3db20a46a6d39a3a",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_ufc-fight-night-3-21-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774112400000,
-      "sport": "Fighting",
-      "match": "UFC Fight Night: Evloev vs Murphy",
-      "tournament": "",
-      "match_id": "caa1788d37aa5ccd",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-aew-saturday-night-collision/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774137600000,
-      "sport": "Fighting",
-      "match": "AEW: Saturday Night Collision",
-      "tournament": "",
-      "match_id": "10d7e27aaeee5981",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_lester-martinez-vs-immanuwel-aleem-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774141200000,
-      "sport": "Fighting",
-      "match": "Lester Martinez vs Immanuwel Aleem",
-      "tournament": "",
-      "match_id": "373acd74306e08bd",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_nascar-truck-series-2026-nascar-craftsman-truck-series-race-at-st-petersburg-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773478560000,
-      "sport": "Motorsport",
-      "match": "Nascar Truck Series 2026 vs NASCAR Craftsman Truck Series Race at St. Petersburg",
-      "tournament": "",
-      "match_id": "68964726bf9268b7",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_indycar-2026-java-house-grand-prix-of-arlington-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773477720000,
-      "sport": "Motorsport",
-      "match": "IndyCar 2026 vs Java House Grand Prix of Arlington",
-      "tournament": "",
-      "match_id": "2e6f3e9962b7a5f6",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_nascar-o-reilly-auto-parts-series-2026-the-liuna-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773391980000,
-      "sport": "Motorsport",
-      "match": "Nascar O’Reilly Auto Parts Series 2026 vs The LiUNA",
-      "tournament": "",
-      "match_id": "6944d8b4caafe1f7",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_nascar-o-reilly-auto-parts-series-2026-govx-200-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1772869980000,
-      "sport": "Motorsport",
-      "match": "Nascar O’Reilly Auto Parts Series 2026 vs GOVX 200",
-      "tournament": "",
-      "match_id": "50d7841cb935be8a",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_indycar-2026-good-ranchers-250-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1772696520000,
-      "sport": "Motorsport",
-      "match": "IndyCar 2026 vs Good Ranchers 250",
-      "tournament": "",
-      "match_id": "15735d925cb137be",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/admin-rally-tv/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773723137,
-      "sport": "Motorsport",
-      "match": "Rally TV",
-      "tournament": "",
-      "match_id": "26da967f85daab32",
-      "quality_score": 80,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_nascar-truck-series-2026-nascar-craftsman-truck-series-race-at-darlington-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773996960000,
-      "sport": "Motorsport",
-      "match": "Nascar Truck Series 2026 vs NASCAR Craftsman Truck Series Race at Darlington",
-      "tournament": "",
-      "match_id": "fd5dfa1aa1cab6bc",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_formula-e-2026-gp-madrid-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774017000000,
-      "sport": "Motorsport",
-      "match": "Formula E 2026 vs GP Madrid",
-      "tournament": "",
-      "match_id": "fe859fb6c0fda00f",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_moto2-2026-grand-prix-of-brazil-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774081320000,
-      "sport": "Motorsport",
-      "match": "Moto2 2026 vs Grand Prix of Brazil",
-      "tournament": "",
-      "match_id": "c8d5f87c1f7cff7b",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_nascar-o-reilly-auto-parts-series-2026-sport-clips-haircuts-vfw-help-a-hero-200-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774083180000,
-      "sport": "Motorsport",
-      "match": "Nascar O’Reilly Auto Parts Series 2026 vs Sport Clips Haircuts VFW Help a Hero 200",
-      "tournament": "",
-      "match_id": "ddc663651709fcf5",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_2026-truck-series-at-darlington-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774135800000,
-      "sport": "Motorsport",
-      "match": "2026 Truck Series at Darlington",
-      "tournament": "",
-      "match_id": "b61b5bda9adf6a91",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_2026-nascar-cup-series-at-darlington-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774209600000,
-      "sport": "Motorsport",
-      "match": "2026 NASCAR Cup Series at Darlington",
-      "tournament": "",
-      "match_id": "be3b23eb49fe5f3b",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-japanese-grand-prix-practice-1/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774578600000,
-      "sport": "Motorsport",
-      "match": "Japanese Grand Prix vs Practice 1",
-      "tournament": "",
-      "match_id": "179237463160fb0a",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-japanese-grand-prix-qualifying/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774677600000,
-      "sport": "Motorsport",
-      "match": "Japanese Grand Prix vs Qualifying",
-      "tournament": "",
-      "match_id": "8a1e84bee3eb7702",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-japanese-grand-prix-race/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1774760400000,
-      "sport": "Motorsport",
-      "match": "Japanese Grand Prix vs Race",
-      "tournament": "",
-      "match_id": "83afe7c76e540c0a",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/snooker-world-open-2026-billar/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773727200000,
-      "sport": "Other",
-      "match": "Snooker World Open 2026 🎱",
-      "tournament": "",
-      "match_id": "d34b030df953867d",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/atpwta-1000-indian-wells-tn-1/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1773759600000,
-      "sport": "Other",
-      "match": "ATP/WTA 1000: Indian Wells 🎾",
-      "tournament": "",
-      "match_id": "27854a557d719348",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
       "source": "wendy",
       "sources": {
         "tom": [],
@@ -45995,7 +45935,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-03-17T04:52:26.658Z",
+        "processed_at": "2026-03-17T05:59:50.808Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
