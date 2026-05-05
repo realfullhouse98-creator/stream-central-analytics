@@ -1,5 +1,5 @@
 {
-  "startTime": "2026-05-05T12:02:41.215Z",
+  "startTime": "2026-05-05T15:08:52.213Z",
   "strategy": "separated-endpoints",
   "updated": [
     "tom",
@@ -11,18 +11,29 @@
   "details": {
     "tom": {
       "success": true,
-      "matchCount": 187,
-      "source": "worker-combined"
+      "restored": true,
+      "source": "backup",
+      "recoveryDetails": {
+        "recovered": true,
+        "backupFile": "tom-data-1777993747220.json",
+        "timestamp": "2026-05-05T15:09:10.624Z"
+      }
     },
     "sarah": {
       "success": true,
       "matchCount": 186,
-      "source": "worker-combined"
+      "source": "worker",
+      "dataHash": "43b8f3a5a750"
     },
     "wendy": {
       "success": true,
-      "matchCount": 566,
-      "source": "worker-combined"
+      "restored": true,
+      "source": "backup",
+      "recoveryDetails": {
+        "recovered": true,
+        "backupFile": "wendy-data-1777993753321.json",
+        "timestamp": "2026-05-05T15:10:49.531Z"
+      }
     }
   },
   "circuitBreakers": {
@@ -44,10 +55,10 @@
   },
   "integrity": {
     "totalAttempted": 3,
-    "successful": 3,
+    "successful": 1,
     "failed": 0,
-    "recovered": 0
+    "recovered": 2
   },
-  "endTime": "2026-05-05T12:02:43.374Z",
-  "duration": 2159
+  "endTime": "2026-05-05T15:10:50.033Z",
+  "duration": 117820
 }
