@@ -1,19 +1,19 @@
 {
-  "processed_at": "2026-06-24T08:22:23.591Z",
+  "processed_at": "2026-06-24T11:45:08.457Z",
   "processor_version": "4.2-enterprise-enhanced-no-tournament",
   "summary": {
     "total_sports": 18,
-    "total_matches": 444,
-    "merged_matches": 55,
-    "individual_matches": 389,
-    "processing_time_ms": 217,
+    "total_matches": 445,
+    "merged_matches": 53,
+    "individual_matches": 392,
+    "processing_time_ms": 197,
     "merge_statistics": {
       "Basketball": {
-        "input": 87,
+        "input": 86,
         "output": 80,
         "clusters": 80,
-        "mergedClusters": 7,
-        "efficiency": "8.0%",
+        "mergedClusters": 6,
+        "efficiency": "7.0%",
         "average_confidence": "0.96"
       },
       "American Football": {
@@ -33,11 +33,11 @@
         "average_confidence": "1.00"
       },
       "Football": {
-        "input": 177,
-        "output": 159,
-        "clusters": 159,
-        "mergedClusters": 17,
-        "efficiency": "10.2%",
+        "input": 184,
+        "output": 167,
+        "clusters": 167,
+        "mergedClusters": 16,
+        "efficiency": "9.2%",
         "average_confidence": "0.98"
       },
       "Ice Hockey": {
@@ -120,14 +120,6 @@
         "efficiency": "0.0%",
         "average_confidence": "1.00"
       },
-      "Baseball": {
-        "input": 96,
-        "output": 53,
-        "clusters": 53,
-        "mergedClusters": 31,
-        "efficiency": "44.8%",
-        "average_confidence": "0.83"
-      },
       "Fighting": {
         "input": 12,
         "output": 12,
@@ -151,34 +143,42 @@
         "mergedClusters": 0,
         "efficiency": "0.0%",
         "average_confidence": "1.00"
+      },
+      "Baseball": {
+        "input": 89,
+        "output": 46,
+        "clusters": 46,
+        "mergedClusters": 31,
+        "efficiency": "48.3%",
+        "average_confidence": "0.81"
       }
     },
     "performance_report": {
-      "total_processing_time_ms": 217,
+      "total_processing_time_ms": 197,
       "average_step_times": {
         "load_data": "2.00",
         "group_by_sport": "1.00",
         "match_scoring": "0.01",
-        "find_merge_matches": "9.94",
-        "cluster_merging": "0.15",
-        "process_sport_Basketball": "43.00",
-        "process_sport_American Football": "4.00",
+        "find_merge_matches": "9.83",
+        "cluster_merging": "0.09",
+        "process_sport_Basketball": "40.00",
+        "process_sport_American Football": "3.00",
         "process_sport_Cricket": "1.00",
-        "process_sport_Football": "120.00",
-        "process_sport_Ice Hockey": "4.00",
-        "process_sport_Rugby": "2.00",
+        "process_sport_Football": "121.00",
+        "process_sport_Ice Hockey": "5.00",
+        "process_sport_Rugby": "1.00",
         "process_sport_Equestrian": "0.00",
-        "process_sport_Tennis": "0.00",
-        "process_sport_Volleyball": "1.00",
+        "process_sport_Tennis": "1.00",
+        "process_sport_Volleyball": "0.00",
         "process_sport_Darts": "0.00",
         "process_sport_Futsal": "0.00",
-        "process_sport_Lacrosse": "0.00",
+        "process_sport_Lacrosse": "1.00",
         "process_sport_MMA": "0.00",
         "process_sport_Golf": "0.00",
-        "process_sport_Baseball": "21.00",
-        "process_sport_Fighting": "14.00",
-        "process_sport_Motorsport": "1.00",
-        "process_sport_Australian Football": "0.00"
+        "process_sport_Fighting": "0.00",
+        "process_sport_Motorsport": "0.00",
+        "process_sport_Australian Football": "0.00",
+        "process_sport_Baseball": "17.00"
       },
       "cache_efficiency": {
         "team_normalization": "NaN",
@@ -186,15 +186,15 @@
         "similarity_cache": "NaN",
         "token_cache": "99.6"
       },
-      "average_merge_rate": "3.5%",
-      "memory_peak_mb": 10,
+      "average_merge_rate": "3.6%",
+      "memory_peak_mb": 8,
       "recommendations": [
         "Performance is optimal"
       ]
     },
     "cache_stats": {
       "team_normalization": {
-        "cacheSize": 597,
+        "cacheSize": 610,
         "aliasesCount": 11
       },
       "internal_caches": {
@@ -211,8 +211,8 @@
           "misses": 0
         },
         "tokenCache": {
-          "hits": 136275,
-          "misses": 593
+          "hits": 142756,
+          "misses": 606
         }
       }
     }
@@ -1144,38 +1144,6 @@
       "confidence": 1
     },
     {
-      "unix_timestamp": 1782266400000,
-      "sport": "Basketball",
-      "match": "Las Vegas Aces vs New York Liberty",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-new-york-liberty-vs-las-vegas-aces/1",
-          "https://embedsports.top/embed/delta/live_wnba_las-vegas-liberty-live-streaming-1211174613/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 60
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.422Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "college_prefix_handling"
-        ]
-      }
-    },
-    {
       "source": "sarah",
       "sources": {
         "tom": [],
@@ -1219,7 +1187,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.422Z",
+        "processed_at": "2026-06-24T11:45:08.305Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1250,7 +1218,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.422Z",
+        "processed_at": "2026-06-24T11:45:08.305Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1323,7 +1291,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.423Z",
+        "processed_at": "2026-06-24T11:45:08.306Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1395,7 +1363,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.423Z",
+        "processed_at": "2026-06-24T11:45:08.306Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1447,7 +1415,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.423Z",
+        "processed_at": "2026-06-24T11:45:08.306Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1461,11 +1429,29 @@
         "sarah": [],
         "wendy": []
       },
+      "unix_timestamp": 1782284400000,
+      "sport": "Basketball",
+      "match": "Whai Tauranga vs Southland Sharks",
+      "tournament": "NBL",
+      "match_id": "8a52f94c88555af1",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
       "unix_timestamp": 1782324000000,
       "sport": "Basketball",
       "match": "Barcelona vs Valencia Basket",
       "tournament": "ACB - Final",
-      "match_id": "9156fed45dac226e",
+      "match_id": "4920bd56a4372a3c",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1483,7 +1469,7 @@
       "sport": "Basketball",
       "match": "San Salvador BC vs Lobos BKB Chalchuapa",
       "tournament": "Liga Mayor - Final",
-      "match_id": "039968bd9af10310",
+      "match_id": "009c6a27e401501d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1501,7 +1487,7 @@
       "sport": "Basketball",
       "match": "Los Indios De Moreno vs Náutico Hacoaj",
       "tournament": "Liga Federal - Conference Playoff - Metropolitan Conference",
-      "match_id": "924da32bbf5fb9f7",
+      "match_id": "55bc7bed2e23f9e2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1519,7 +1505,7 @@
       "sport": "Basketball",
       "match": "Club Social Alejandro Korn vs Club Atlético San Antonio De Padua",
       "tournament": "Liga Federal - Conference Playoff - Metropolitan Conference",
-      "match_id": "25c00c75d26bc127",
+      "match_id": "f5bc55ea65addea2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1537,43 +1523,7 @@
       "sport": "Basketball",
       "match": "Gigantes San Francisco vs Héroes de Moca",
       "tournament": "LNB - Semi Finals",
-      "match_id": "9fc33af30f4d2b08",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782351000000,
-      "sport": "Basketball",
-      "match": "Saskatchewan Rattlers vs Edmonton Stingers",
-      "tournament": "CEBL",
-      "match_id": "fcb5754b740803c9",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782352800000,
-      "sport": "Basketball",
-      "match": "Limon Sharks vs Roswell",
-      "tournament": "Costa Rica Championship - Semi Finals",
-      "match_id": "0e640c708309aeec",
+      "match_id": "1c022e36ba370972",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1591,7 +1541,43 @@
       "sport": "Basketball",
       "match": "Manawatu Jets vs Otago Nuggets",
       "tournament": "NBL",
-      "match_id": "1c79eb402e850e13",
+      "match_id": "a0309225bf47c079",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782351000000,
+      "sport": "Basketball",
+      "match": "Saskatchewan Rattlers vs Edmonton Stingers",
+      "tournament": "CEBL",
+      "match_id": "192354163f608a40",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782352800000,
+      "sport": "Basketball",
+      "match": "Limon Sharks vs Roswell",
+      "tournament": "Costa Rica Championship - Semi Finals",
+      "match_id": "f90fe9892d11315e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1609,7 +1595,7 @@
       "sport": "Basketball",
       "match": "Deportivo San Jose vs Felix Perez Cardozo",
       "tournament": "LNB - Semi Finals",
-      "match_id": "4274e44fbcdd6e5e",
+      "match_id": "c1165adea41d65ae",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1627,7 +1613,7 @@
       "sport": "Basketball",
       "match": "Club Social Y Deportivo Pinocho vs Club Social Alejandro Korn",
       "tournament": "Liga Federal - Conference Playoff - Metropolitan Conference",
-      "match_id": "184d81b24ae855f8",
+      "match_id": "5f0aa9048cefd1dd",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1645,7 +1631,7 @@
       "sport": "Basketball",
       "match": "Club Sportivo Pilar vs Los Indios De Moreno",
       "tournament": "Liga Federal - Conference Playoff - Metropolitan Conference",
-      "match_id": "1c3b88a3cf2d2196",
+      "match_id": "6fc84a80a39549ef",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1663,7 +1649,7 @@
       "sport": "Basketball",
       "match": "Olimpia vs Colonias Gold Basketball",
       "tournament": "LNB - Semi Finals",
-      "match_id": "4b4ec53f7d205166",
+      "match_id": "871ed4363bc084bb",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1681,7 +1667,7 @@
       "sport": "Basketball",
       "match": "Unimed Campinas (W) vs Sodie Mesquita (W)",
       "tournament": "LBF - Quarter Finals",
-      "match_id": "6f929383a11fa352",
+      "match_id": "63a0bf6bc7fc33ef",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1699,7 +1685,25 @@
       "sport": "Basketball",
       "match": "Maccabi Tel Aviv vs Hapoel Tel Aviv",
       "tournament": "Winner League - Final",
-      "match_id": "e821b637f1ba055d",
+      "match_id": "855ccb0c796fc1b9",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782266400000,
+      "sport": "Basketball",
+      "match": "Las Vegas Aces vs New York Liberty",
+      "tournament": "WNBA",
+      "match_id": "0fb081b32a8a4cee",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1717,7 +1721,7 @@
       "sport": "Basketball",
       "match": "Frayles De Guasave vs Astros De Jalisco",
       "tournament": "CIBACOPA - Final",
-      "match_id": "9399cd7d4b56e9e7",
+      "match_id": "3c3e7576ade4aae9",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1735,7 +1739,7 @@
       "sport": "Basketball",
       "match": "Urquiza Santa Elena vs Club Gimnasia y Esgrima de Rosario",
       "tournament": "Liga Federal - Conference Playoff - Littoral Conference",
-      "match_id": "cb21b5ce8158d90d",
+      "match_id": "bc89246484c4a3d0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1753,7 +1757,7 @@
       "sport": "Basketball",
       "match": "Metapan BC vs Santa Tecla IMDELS",
       "tournament": "Liga Mayor - Semi Finals",
-      "match_id": "fd5a12c781c109b0",
+      "match_id": "5d6079af4e12a07d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1771,7 +1775,7 @@
       "sport": "Basketball",
       "match": "Metros De Santiago vs Caneros Del Este",
       "tournament": "LNB - Semi Finals",
-      "match_id": "c8d2e87022c0eb12",
+      "match_id": "3a3ee4641a45a516",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1800,7 +1804,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.423Z",
+        "processed_at": "2026-06-24T11:45:08.306Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1818,25 +1822,7 @@
       "sport": "Basketball",
       "match": "Osos de Manati vs Capitanes De Arecibo",
       "tournament": "BSN",
-      "match_id": "47404e568e85dce3",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782284400000,
-      "sport": "Basketball",
-      "match": "Whai Tauranga vs Southland Sharks",
-      "tournament": "NBL",
-      "match_id": "d0695a1ddd914485",
+      "match_id": "f6ce4ccc216dbdeb",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -1854,7 +1840,7 @@
       "sport": "Basketball",
       "match": "Italy vs Croatia",
       "tournament": "International Friendlies",
-      "match_id": "b42db1df9793522b",
+      "match_id": "963ceb3ff6ed879e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2606,7 +2592,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1782289343,
+      "unix_timestamp": 1782301508,
       "sport": "Cricket",
       "match": "Willow Cricket",
       "tournament": "",
@@ -3382,41 +3368,6 @@
       "confidence": 1
     },
     {
-      "unix_timestamp": 1782266400000,
-      "sport": "Football",
-      "match": "Colombia vs DR Congo",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-colombia-vs-congo-dr/1",
-          "https://embedsports.top/embed/golf/23325/1"
-        ],
-        "wendy": [
-          "https://sportsembed.su/embed/760459/colombia-congo-dr/sigma/1",
-          "https://sportsembed.su/embed/760459/colombia-congo-dr/sigma/2"
-        ]
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 70
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.546Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "exact_team_order"
-        ]
-      }
-    },
-    {
       "unix_timestamp": 1782327600000,
       "sport": "Football",
       "match": "Bosnia vs Herzegovina vs Qatar",
@@ -3442,7 +3393,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.546Z",
+        "processed_at": "2026-06-24T11:45:08.429Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3475,7 +3426,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.429Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3508,7 +3459,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.429Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3541,7 +3492,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3574,7 +3525,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3607,7 +3558,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3640,7 +3591,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3673,7 +3624,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3706,7 +3657,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3739,33 +3690,12 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
         ]
       }
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-t-rkiye-vs-united-states/1",
-          "https://embedsports.top/embed/golf/23368/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782439200000,
-      "sport": "Football",
-      "match": "Türkiye vs United States",
-      "tournament": "",
-      "match_id": "96783e9007b93017",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
     },
     {
       "source": "sarah",
@@ -3782,6 +3712,27 @@
       "match": "Paraguay vs Australia",
       "tournament": "",
       "match_id": "15ad3d4aaeb7be6b",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-t-rkiye-vs-united-states/1",
+          "https://embedsports.top/embed/golf/23368/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782439200000,
+      "sport": "Football",
+      "match": "Türkiye vs United States",
+      "tournament": "",
+      "match_id": "96783e9007b93017",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -3909,137 +3860,120 @@
       "confidence": 1
     },
     {
-      "source": "wendy",
+      "source": "sarah",
       "sources": {
         "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782338400000,
-      "sport": "Football",
-      "match": "Dynamo Puerto FC vs Monagas SC",
-      "tournament": "Copa Venezuela",
-      "match_id": "6eb703ca54ddadb7",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782334800000,
-      "sport": "Football",
-      "match": "Zamora FC vs Atletico El Vigia",
-      "tournament": "Copa Venezuela",
-      "match_id": "1aaaba66f9e598ef",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782334800000,
-      "sport": "Football",
-      "match": "Espuce (W) vs Deportivo Ibarra (W)",
-      "tournament": "Superliga Femenina",
-      "match_id": "2e940c6db04c0742",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782352800000,
-      "sport": "Football",
-      "match": "Los Angeles FC II vs Minnesota United 2",
-      "tournament": "MLS NEXT Pro",
-      "match_id": "ee09fe6febe0747e",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782396000000,
-      "sport": "Football",
-      "match": "Los Chankas vs Santos FC",
-      "tournament": "League Cup",
-      "match_id": "f1df62f348a095bf",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1782403500000,
-      "sport": "Football",
-      "match": "Al Fahaheel vs Al vs Qadsia",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.4,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
+        "sarah": [
+          "https://embedsports.top/embed/golf/23407/1"
         ],
-        "team_consistency": 0,
-        "time_consistency": 1,
-        "merge_quality": 40
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "exact_team_order"
-        ]
-      }
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
         "wendy": []
       },
-      "unix_timestamp": 1782403200000,
+      "unix_timestamp": 1782594000000,
       "sport": "Football",
-      "match": "FC Jazz vs Tampere United",
-      "tournament": "Ykkonen",
-      "match_id": "4f7231f6b394cadb",
-      "quality_score": 85,
+      "match": "Panama vs England",
+      "tournament": "",
+      "match_id": "92e18a2dfd0fc804",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/golf/23406/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782594000000,
+      "sport": "Football",
+      "match": "Croatia vs Ghana",
+      "tournament": "",
+      "match_id": "ac0aa36bfcf1d5e0",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/golf/23409/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782603000000,
+      "sport": "Football",
+      "match": "Congo DR vs Uzbekistan",
+      "tournament": "",
+      "match_id": "db0c23241e0dafd0",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/golf/23408/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782603000000,
+      "sport": "Football",
+      "match": "Colombia vs Portugal",
+      "tournament": "",
+      "match_id": "522e856b43e8ade2",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/golf/23411/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782612000000,
+      "sport": "Football",
+      "match": "Jordan vs Argentina",
+      "tournament": "",
+      "match_id": "036433fbf9d4ea68",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/golf/23410/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782612000000,
+      "sport": "Football",
+      "match": "Algeria vs Austria",
+      "tournament": "",
+      "match_id": "1df5042c0aa9f05a",
+      "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
@@ -4052,191 +3986,11 @@
         "sarah": [],
         "wendy": []
       },
-      "unix_timestamp": 1782396000000,
+      "unix_timestamp": 1782324000000,
       "sport": "Football",
-      "match": "Cesar Vallejo vs Carlos A. Mannucci",
-      "tournament": "League Cup",
-      "match_id": "b96d099cf7bc096e",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782396000000,
-      "sport": "Football",
-      "match": "Alianza Lima vs Alianza Atletico",
-      "tournament": "League Cup",
-      "match_id": "38824e0f6475ff66",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782396000000,
-      "sport": "Football",
-      "match": "Grobiņa vs Auda",
-      "tournament": "Virsliga",
-      "match_id": "861f727a2dead621",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782403200000,
-      "sport": "Football",
-      "match": "Våg vs Viking 2",
-      "tournament": "Norsk Tipping-ligaen",
-      "match_id": "57d57f10582af5e7",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782399600000,
-      "sport": "Football",
-      "match": "BFC Daugavpils vs Riga FC",
-      "tournament": "Virsliga",
-      "match_id": "6f08ecaeae0f8b56",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782403200000,
-      "sport": "Football",
-      "match": "Piteå (W) vs Hammarby (W)",
-      "tournament": "Damallsvenskan",
-      "match_id": "77a7e69bee31b551",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782399600000,
-      "sport": "Football",
-      "match": "Bjørkelangen vs Sarpsborg 08 2",
-      "tournament": "Norsk Tipping-ligaen",
-      "match_id": "7659c8c6cb91cb52",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782403200000,
-      "sport": "Football",
-      "match": "JJK Jyväskylä vs FC Inter Turku II",
-      "tournament": "Ykkonen",
-      "match_id": "4426a656db236823",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782396000000,
-      "sport": "Football",
-      "match": "Cusco FC vs Cienciano",
-      "tournament": "League Cup",
-      "match_id": "b7f2ee33c265b4ba",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782396000000,
-      "sport": "Football",
-      "match": "Deportivo Garcilaso vs Binacional",
-      "tournament": "League Cup",
-      "match_id": "e8638996a3871f46",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782403200000,
-      "sport": "Football",
-      "match": "Åsane 2 vs Os",
-      "tournament": "Norsk Tipping-ligaen",
-      "match_id": "9fb6eea1e2d7c3c5",
+      "match": "Blumenau vs Caravaggio",
+      "tournament": "Catarinense - Serie B",
+      "match_id": "623e295fd8c107ef",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4254,25 +4008,7 @@
       "sport": "Football",
       "match": "Rayo Zuliano vs Trujillanos FC",
       "tournament": "Copa Venezuela",
-      "match_id": "82c4ec3f9f5db636",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782331200000,
-      "sport": "Football",
-      "match": "Deportes La Serena vs Cobresal",
-      "tournament": "Chilean Cup",
-      "match_id": "5d874f774e56a85a",
+      "match_id": "2116384d3625e55c",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4290,7 +4026,25 @@
       "sport": "Football",
       "match": "Barquisimeto SC vs Yaracuyanos",
       "tournament": "Copa Venezuela",
-      "match_id": "d6e1ad033efe96ab",
+      "match_id": "a74165c53ec3b742",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782331200000,
+      "sport": "Football",
+      "match": "La Serena vs Cobresal",
+      "tournament": "Copa Chile",
+      "match_id": "6f69732ee0c613d7",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4319,7 +4073,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4337,7 +4091,7 @@
       "sport": "Football",
       "match": "Caracas FC vs Aragua FC",
       "tournament": "Copa Venezuela",
-      "match_id": "a89a99998d355573",
+      "match_id": "c81eb92f559ced63",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4355,7 +4109,7 @@
       "sport": "Football",
       "match": "Real Frontera vs Club Atletico Barinas",
       "tournament": "Copa Venezuela",
-      "match_id": "8d916573f15cb575",
+      "match_id": "55dfd991143bc824",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4373,7 +4127,7 @@
       "sport": "Football",
       "match": "Anzoategui Futbol Club vs Atletico Ávila FC",
       "tournament": "Copa Venezuela",
-      "match_id": "f9e4a5b280fbe6b9",
+      "match_id": "52d12be1eadcdfa6",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4391,7 +4145,7 @@
       "sport": "Football",
       "match": "Ureña SC vs Deportivo Lara",
       "tournament": "Copa Venezuela",
-      "match_id": "29903915c9f39b76",
+      "match_id": "0e69b87930d317da",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4409,7 +4163,7 @@
       "sport": "Football",
       "match": "Universidad Católica (W) vs El Nacional (W)",
       "tournament": "Superliga Femenina",
-      "match_id": "63c824f05f44bece",
+      "match_id": "10b8432aaa413477",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4427,7 +4181,7 @@
       "sport": "Football",
       "match": "Mineros De Guayana vs Bolívar SC",
       "tournament": "Copa Venezuela",
-      "match_id": "be30548a9ce9d9a2",
+      "match_id": "7e65b82e7abcd7e8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4441,11 +4195,328 @@
         "sarah": [],
         "wendy": []
       },
-      "unix_timestamp": 1782324000000,
+      "unix_timestamp": 1782334800000,
       "sport": "Football",
-      "match": "Blumenau vs Caravaggio",
-      "tournament": "Catarinense - Serie B",
-      "match_id": "425f234f6cb55efc",
+      "match": "Zamora FC vs Atletico El Vigia",
+      "tournament": "Copa Venezuela",
+      "match_id": "d0b75b34da0dc9aa",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782338400000,
+      "sport": "Football",
+      "match": "Dynamo Puerto FC vs Monagas SC",
+      "tournament": "Copa Venezuela",
+      "match_id": "4c078225ff07e8c0",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782334800000,
+      "sport": "Football",
+      "match": "Espuce (W) vs Deportivo Ibarra (W)",
+      "tournament": "Superliga Femenina",
+      "match_id": "5960e44074d4c3a2",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782352800000,
+      "sport": "Football",
+      "match": "Los Angeles FC II vs Minnesota United 2",
+      "tournament": "MLS NEXT Pro",
+      "match_id": "0e0b43f4179c6254",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782396000000,
+      "sport": "Football",
+      "match": "Los Chankas vs Santos FC",
+      "tournament": "League Cup",
+      "match_id": "789f0172675789c6",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1782403500000,
+      "sport": "Football",
+      "match": "Al Fahaheel vs Al vs Qadsia",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.4,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 0,
+        "time_consistency": 1,
+        "merge_quality": 40
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.430Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "exact_team_order"
+        ]
+      }
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782403200000,
+      "sport": "Football",
+      "match": "FC Jazz vs Tampere United",
+      "tournament": "Ykkonen",
+      "match_id": "a8acf3b9418c20d2",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782396000000,
+      "sport": "Football",
+      "match": "Cesar Vallejo vs Carlos A. Mannucci",
+      "tournament": "League Cup",
+      "match_id": "628d4c1d83ca7d81",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782396000000,
+      "sport": "Football",
+      "match": "Alianza Lima vs Alianza Atletico",
+      "tournament": "League Cup",
+      "match_id": "e8e0a25fcd2bf583",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782396000000,
+      "sport": "Football",
+      "match": "Grobiņa vs Auda",
+      "tournament": "Virsliga",
+      "match_id": "05efce267f2f0d9e",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782403200000,
+      "sport": "Football",
+      "match": "Våg vs Viking 2",
+      "tournament": "Norsk Tipping-ligaen",
+      "match_id": "db0c05e354fbd42f",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782399600000,
+      "sport": "Football",
+      "match": "BFC Daugavpils vs Riga FC",
+      "tournament": "Virsliga",
+      "match_id": "4f5f11a60b6a9c81",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782403200000,
+      "sport": "Football",
+      "match": "Piteå (W) vs Hammarby (W)",
+      "tournament": "Damallsvenskan",
+      "match_id": "6c5e2979acef0f6f",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782399600000,
+      "sport": "Football",
+      "match": "Bjørkelangen vs Sarpsborg 08 2",
+      "tournament": "Norsk Tipping-ligaen",
+      "match_id": "c024a989cf2a878d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782403200000,
+      "sport": "Football",
+      "match": "JJK Jyväskylä vs FC Inter Turku II",
+      "tournament": "Ykkonen",
+      "match_id": "931b00acf11c483b",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782396000000,
+      "sport": "Football",
+      "match": "Cusco FC vs Cienciano",
+      "tournament": "League Cup",
+      "match_id": "b879d08baa7086b6",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782396000000,
+      "sport": "Football",
+      "match": "Deportivo Garcilaso vs Binacional",
+      "tournament": "League Cup",
+      "match_id": "50da28e1d1cef189",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782403200000,
+      "sport": "Football",
+      "match": "Åsane 2 vs Os",
+      "tournament": "Norsk Tipping-ligaen",
+      "match_id": "82b5a3a824f81118",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4474,7 +4545,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4492,7 +4563,7 @@
       "sport": "Football",
       "match": "RSB Berkane vs FAR Rabat",
       "tournament": "Botola Pro",
-      "match_id": "d92634e327e9849e",
+      "match_id": "1fdc1c1ef935567f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4522,7 +4593,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4540,7 +4611,7 @@
       "sport": "Football",
       "match": "Vikingur Gota vs HB Torshavn",
       "tournament": "Løgmanssteypid Cup - Semi Finals",
-      "match_id": "91db6b8de6193034",
+      "match_id": "32bf123860b12064",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4558,7 +4629,7 @@
       "sport": "Football",
       "match": "Renaissance Club Zemamra vs Olympic Club de Safi",
       "tournament": "Botola Pro",
-      "match_id": "2ceb99cf5cf54d51",
+      "match_id": "ff39bc54b23cfc39",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4576,7 +4647,7 @@
       "sport": "Football",
       "match": "CODM Meknes vs Hassania Agadir",
       "tournament": "Botola Pro",
-      "match_id": "645edf9cdc34bb70",
+      "match_id": "59bf5aa68f7c0b32",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4594,7 +4665,7 @@
       "sport": "Football",
       "match": "Olympique Dcheira vs Ittihad Tanger",
       "tournament": "Botola Pro",
-      "match_id": "4d37c89f95f04c3f",
+      "match_id": "e281a414db18c71b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4612,7 +4683,7 @@
       "sport": "Football",
       "match": "Union Touarga Sport vs Difaa El Jadida",
       "tournament": "Botola Pro",
-      "match_id": "c33d8e186a9d25ee",
+      "match_id": "699b57801c7d942a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4630,7 +4701,7 @@
       "sport": "Football",
       "match": "Union Yacoub El vs Mansour vs Raja Casablanca",
       "tournament": "Botola Pro",
-      "match_id": "5f1f2c712f184971",
+      "match_id": "c82bdc36cd801ce9",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4648,7 +4719,7 @@
       "sport": "Football",
       "match": "SK Super Nova vs FK Jelgava",
       "tournament": "Virsliga",
-      "match_id": "05408fd9328240ae",
+      "match_id": "18cacef91f6e8584",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4677,7 +4748,7 @@
         "merge_quality": 40
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.547Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4695,7 +4766,7 @@
       "sport": "Football",
       "match": "Strindheim vs Melhus",
       "tournament": "Norsk Tipping-ligaen",
-      "match_id": "02b7269756c993c5",
+      "match_id": "9c28b9ea360d93a8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4713,7 +4784,7 @@
       "sport": "Football",
       "match": "Brumunddal vs Gjøvik vs Lyn",
       "tournament": "Norsk Tipping-ligaen",
-      "match_id": "b35389cdd8806475",
+      "match_id": "5d386899ea88d874",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4731,7 +4802,7 @@
       "sport": "Football",
       "match": "Kuwait SC vs Kazma SC",
       "tournament": "Premier Division - Championship Group",
-      "match_id": "57f5b98e7682448e",
+      "match_id": "b83d2195d55ca9a3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4749,7 +4820,7 @@
       "sport": "Football",
       "match": "Konnerud vs Ready",
       "tournament": "Norsk Tipping-ligaen",
-      "match_id": "f31febdf65d967a2",
+      "match_id": "3300603a84f226da",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4767,7 +4838,7 @@
       "sport": "Football",
       "match": "Austevoll vs FK Fyllingsdalen",
       "tournament": "Norsk Tipping-ligaen",
-      "match_id": "822df123a9e5c8be",
+      "match_id": "b8fe1d0ce564ff5e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4796,7 +4867,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.548Z",
+        "processed_at": "2026-06-24T11:45:08.430Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4814,7 +4885,7 @@
       "sport": "Football",
       "match": "FBC Melgar vs Deportivo Moquegua",
       "tournament": "League Cup",
-      "match_id": "a19a3405875dcb52",
+      "match_id": "0255b44a538aab6f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4832,25 +4903,7 @@
       "sport": "Football",
       "match": "Karlbergs BK vs Piteå",
       "tournament": "Ettan Norra",
-      "match_id": "785310de10e5e6d2",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782320400000,
-      "sport": "Football",
-      "match": "Macara (W) vs Barcelona SC (W)",
-      "tournament": "Superliga Femenina",
-      "match_id": "b8b9943b794b9bf2",
+      "match_id": "c49e0db57ec53d13",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4868,7 +4921,7 @@
       "sport": "Football",
       "match": "Växjö DFF (W) vs Brommapojkarna (W)",
       "tournament": "Damallsvenskan",
-      "match_id": "f94b40e825163ea9",
+      "match_id": "f9074a11927933a0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4886,7 +4939,7 @@
       "sport": "Football",
       "match": "FC Rosengard (W) vs Djurgårdens (W)",
       "tournament": "Damallsvenskan",
-      "match_id": "9d382a26322d1291",
+      "match_id": "8f606d524b084ffb",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4904,7 +4957,7 @@
       "sport": "Football",
       "match": "IK Uppsala (W) vs Hacken (W)",
       "tournament": "Damallsvenskan",
-      "match_id": "505ac3c074816eeb",
+      "match_id": "91e03a1eb2b9b1ce",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4922,25 +4975,7 @@
       "sport": "Football",
       "match": "Gamle Oslo vs Lokomotiv Oslo FK",
       "tournament": "Norsk Tipping-ligaen",
-      "match_id": "a5d721ee1a225ab4",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782316800000,
-      "sport": "Football",
-      "match": "Häcken vs Hammarby",
-      "tournament": "Club Friendlies",
-      "match_id": "7a079e179ac4322a",
+      "match_id": "391e65cdc5f147c1",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4958,7 +4993,7 @@
       "sport": "Football",
       "match": "FC Gagra vs FC Samgurali Tskhaltubo",
       "tournament": "Erovnuli Liga",
-      "match_id": "889bd79394d27bbd",
+      "match_id": "ff6d7e5fc82eca25",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4976,7 +5011,43 @@
       "sport": "Football",
       "match": "Deportivo Miranda FC vs Deportivo La Guaira",
       "tournament": "Copa Venezuela",
-      "match_id": "c3e201541857639e",
+      "match_id": "92d2b7c3bda7b9a8",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782320400000,
+      "sport": "Football",
+      "match": "Macara (W) vs Barcelona SC (W)",
+      "tournament": "Superliga Femenina",
+      "match_id": "f1de019c44e2fa6d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782316800000,
+      "sport": "Football",
+      "match": "Häcken vs Hammarby",
+      "tournament": "Club Friendlies",
+      "match_id": "dad15a0b5740cb3e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -4994,7 +5065,7 @@
       "sport": "Football",
       "match": "AIK (W) vs Eskilstuna United DFF (W)",
       "tournament": "Damallsvenskan",
-      "match_id": "a8aeb317e06dbc9e",
+      "match_id": "3f341bf67b8a20bf",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5012,7 +5083,7 @@
       "sport": "Football",
       "match": "IFK Norrköping (W) vs Vittsjö GIK (W)",
       "tournament": "Damallsvenskan",
-      "match_id": "44f74fb980b00da0",
+      "match_id": "3370f321c5ec82d3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5030,7 +5101,7 @@
       "sport": "Football",
       "match": "NSÍ Runavík vs KÍ Klaksvík",
       "tournament": "Løgmanssteypid Cup - Semi Finals",
-      "match_id": "58ec91ab4f9a94b3",
+      "match_id": "0e7abfe8c436fd91",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5048,7 +5119,7 @@
       "sport": "Football",
       "match": "America vs RJ vs CEAC/Araruama",
       "tournament": "Carioca, Serie A2",
-      "match_id": "ef7a46659fe228eb",
+      "match_id": "9f0342ad6346e606",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5066,7 +5137,7 @@
       "sport": "Football",
       "match": "I. Del Valle (W) vs Emelec (W)",
       "tournament": "Superliga Femenina",
-      "match_id": "abf879a4d1596727",
+      "match_id": "9ab67b0d250020ef",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5084,7 +5155,7 @@
       "sport": "Football",
       "match": "Dainava Alytus vs Transinvest",
       "tournament": "Lithuanian Cup - Semi Finals",
-      "match_id": "ab2710546ede6faa",
+      "match_id": "4d850eefe618176a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5102,7 +5173,7 @@
       "sport": "Football",
       "match": "Pamba Jiji vs Mbeya City",
       "tournament": "Tanzanian Premier League",
-      "match_id": "d8dcedb22dd94ea2",
+      "match_id": "9f444a6b5ce7904b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5120,7 +5191,7 @@
       "sport": "Football",
       "match": "Rustavi Ii vs Irao Tbilisi",
       "tournament": "David Kipiani Cup - Round of 32",
-      "match_id": "2eff8c2afe0f701b",
+      "match_id": "69356edfa8f8d4b3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5138,25 +5209,7 @@
       "sport": "Football",
       "match": "Fountain Gate FC vs Mashujaa",
       "tournament": "Tanzanian Premier League",
-      "match_id": "0a5913ea373c9d12",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782306000000,
-      "sport": "Football",
-      "match": "Young Africans vs Azam FC",
-      "tournament": "Tanzanian Premier League",
-      "match_id": "9d85330e07f7ae71",
+      "match_id": "8dc2264826728a94",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5174,7 +5227,7 @@
       "sport": "Football",
       "match": "Dodoma Jiji vs JKT Tanzania",
       "tournament": "Tanzanian Premier League",
-      "match_id": "4d8247e4184076f3",
+      "match_id": "7a6af183e76bb32d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5192,25 +5245,7 @@
       "sport": "Football",
       "match": "Mtibwa Sugar vs Simba SC",
       "tournament": "Tanzanian Premier League",
-      "match_id": "5bca8026b362a5b0",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782309600000,
-      "sport": "Football",
-      "match": "Al Taliya Hama vs Jableh SC",
-      "tournament": "Syrian Premier League",
-      "match_id": "e30f9b1447e207e0",
+      "match_id": "70e3d972e78b22cd",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5226,9 +5261,9 @@
       },
       "unix_timestamp": 1782306000000,
       "sport": "Football",
-      "match": "Kinondoni MC vs Namungo FC",
+      "match": "Young Africans vs Azam FC",
       "tournament": "Tanzanian Premier League",
-      "match_id": "f8da9d93db6b70a3",
+      "match_id": "8ea565db3884c16a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5246,7 +5281,43 @@
       "sport": "Football",
       "match": "Tabora United vs Coastal Union",
       "tournament": "Tanzanian Premier League",
-      "match_id": "7db5e9fbf52c3d21",
+      "match_id": "a93c90abc43084b6",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782309600000,
+      "sport": "Football",
+      "match": "Al Taliya Hama vs Jableh SC",
+      "tournament": "Syrian Premier League",
+      "match_id": "b1db3e481c61d008",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782306000000,
+      "sport": "Football",
+      "match": "Kinondoni MC vs Namungo FC",
+      "tournament": "Tanzanian Premier League",
+      "match_id": "7073a82bd1d9d910",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5264,7 +5335,7 @@
       "sport": "Football",
       "match": "Homs Al Fidaa SC vs Foutoua",
       "tournament": "Syrian Premier League",
-      "match_id": "b301d50968fcc9e7",
+      "match_id": "e5be304b525d2909",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5282,7 +5353,7 @@
       "sport": "Football",
       "match": "Siauliai vs Džiugas Telšiai",
       "tournament": "Lithuanian Cup - Semi Finals",
-      "match_id": "746ebab9105d77d1",
+      "match_id": "50400f7c46913395",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5300,7 +5371,7 @@
       "sport": "Football",
       "match": "Al Shorta Damascus vs Al Wahda Damascus",
       "tournament": "Syrian Premier League",
-      "match_id": "85c4a48d6dacfbef",
+      "match_id": "0841095705be893d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5318,7 +5389,7 @@
       "sport": "Football",
       "match": "Al Ittihad Aleppo vs Hottin",
       "tournament": "Syrian Premier League",
-      "match_id": "c422d3b7620e3f1c",
+      "match_id": "4772bed707cd5994",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5336,7 +5407,7 @@
       "sport": "Football",
       "match": "Babrungas vs Kauno Zalgiris II",
       "tournament": "I Lyga",
-      "match_id": "a16842413e88e004",
+      "match_id": "41ec99348f19d933",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5354,7 +5425,7 @@
       "sport": "Football",
       "match": "Khan Sheikhoun vs Al Karamah",
       "tournament": "Syrian Premier League",
-      "match_id": "e6c5bacbbbfb5019",
+      "match_id": "374608de7a32c167",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5372,7 +5443,7 @@
       "sport": "Football",
       "match": "Singida Black Stars vs Tanzania Prisons",
       "tournament": "Tanzanian Premier League",
-      "match_id": "023fd0341b699fef",
+      "match_id": "2b6a5cd78c7770d2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5390,7 +5461,7 @@
       "sport": "Football",
       "match": "Palestino vs Audax Italiano",
       "tournament": "Cup Grp. G",
-      "match_id": "b0b826ddf5c072f1",
+      "match_id": "36f6359a04ef93ba",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5408,7 +5479,100 @@
       "sport": "Football",
       "match": "Everton CD vs Universidad Católica",
       "tournament": "Copa Chile",
-      "match_id": "c4b8f91cf5053ac7",
+      "match_id": "f2f77091a3e7bb1d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": [
+          "https://sportsembed.su/embed/760459/colombia-congo-dr/sigma/1",
+          "https://sportsembed.su/embed/760459/colombia-congo-dr/sigma/2"
+        ]
+      },
+      "unix_timestamp": 1782266400000,
+      "sport": "Football",
+      "match": "Colombia vs DR Congo",
+      "tournament": "FIFA World Cup",
+      "match_id": "5a2d0b63934148a1",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782291600000,
+      "sport": "Football",
+      "match": "MFK Ruzomberok vs Ofk Malzenice",
+      "tournament": "Club Friendlies",
+      "match_id": "26fbf721104a1d21",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782288000000,
+      "sport": "Football",
+      "match": "Deren vs Central Stallions FC",
+      "tournament": "Premier League",
+      "match_id": "4a248622f63bf052",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782295200000,
+      "sport": "Football",
+      "match": "Slovacko vs Vysocina Jihlava",
+      "tournament": "Club Friendlies",
+      "match_id": "91930c853381684e",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782290700000,
+      "sport": "Football",
+      "match": "Dukla B. Bystrica vs FC Taran Presov",
+      "tournament": "Club Friendlies",
+      "match_id": "b4d8453f9d3cb78a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5426,7 +5590,7 @@
       "sport": "Football",
       "match": "Corpus Christi vs AV Alta",
       "tournament": "USL League One",
-      "match_id": "98069c27c0f71696",
+      "match_id": "8b15b9a3286e7092",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5444,7 +5608,7 @@
       "sport": "Football",
       "match": "Charlotte Independence vs Greenville Triumph SC",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "7e3b2b7e2602d76f",
+      "match_id": "bcec7e8cf8d7b5a5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5462,7 +5626,7 @@
       "sport": "Football",
       "match": "Colorado Springs Switchbacks FC vs San Antonio FC",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "690623e669872ecd",
+      "match_id": "7d0ad6450b464265",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5480,7 +5644,7 @@
       "sport": "Football",
       "match": "Union La Calera vs Universidad de Chile",
       "tournament": "Cup Grp. D",
-      "match_id": "1bc2428c7d2db083",
+      "match_id": "3c5c50165809f1ee",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5498,7 +5662,7 @@
       "sport": "Football",
       "match": "Spokane Velocity FC vs Westchester SC",
       "tournament": "USL League One",
-      "match_id": "8cdc4f8f2146bf74",
+      "match_id": "717076683603249c",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5516,7 +5680,7 @@
       "sport": "Football",
       "match": "Miami FC vs Orange County SC",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "028a826ebb186b0a",
+      "match_id": "06d8d517760a17a0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5534,7 +5698,7 @@
       "sport": "Football",
       "match": "Charleston Battery vs Loudoun United FC",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "4c20a9770bc9b859",
+      "match_id": "1a0b28b34a5ce44c",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5552,7 +5716,7 @@
       "sport": "Football",
       "match": "Portland Hearts of Pine vs Richmond Kickers",
       "tournament": "USL League One",
-      "match_id": "5e0753200739a2bc",
+      "match_id": "7927a197774d5316",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5570,7 +5734,7 @@
       "sport": "Football",
       "match": "Deportes Concepcion vs Huachipato",
       "tournament": "Cup Grp. H",
-      "match_id": "4276330058f016ae",
+      "match_id": "a54fcb9b39aeb08d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5588,7 +5752,7 @@
       "sport": "Football",
       "match": "Hilal Hudaydah vs Al Yarmok",
       "tournament": "Yemeni League",
-      "match_id": "10fff3dd7169da27",
+      "match_id": "bc9e422e2dcdd0b5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5606,8 +5770,47 @@
       "sport": "Football",
       "match": "Fahman vs Shabab Al Bayda FC",
       "tournament": "Yemeni League",
-      "match_id": "84145681cd4eadc8",
+      "match_id": "f69fa66113aea34b",
       "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782302400000,
+      "sport": "Football",
+      "match": "Mjällby AIF vs Halmstad",
+      "tournament": "Club Friendlies",
+      "match_id": "5f48d9ff84fdda16",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": [
+          "https://sportsembed.su/embed/4742193/ulaanbaatar-khangarid/regular/1",
+          "https://sportsembed.su/embed/4742193/ulaanbaatar-khangarid/regular/2"
+        ]
+      },
+      "unix_timestamp": 1782298800000,
+      "sport": "Football",
+      "match": "Ulaanbaatar vs Khangarid",
+      "tournament": "Premier League",
+      "match_id": "499b158f6fb97697",
+      "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
@@ -5624,7 +5827,7 @@
       "sport": "Football",
       "match": "East Coast Bays vs Auckland City",
       "tournament": "New Zealand National League",
-      "match_id": "cd85420f884a2f7d",
+      "match_id": "5d2e5f1eace1521d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5642,7 +5845,7 @@
       "sport": "Football",
       "match": "Cuiabá vs Londrina",
       "tournament": "Brazilian Serie B",
-      "match_id": "7b034d716ec2a4a5",
+      "match_id": "a39fa74cfc30bc90",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5660,7 +5863,7 @@
       "sport": "Football",
       "match": "Colo Colo vs O'Higgins",
       "tournament": "Copa Chile",
-      "match_id": "86962a995e7dc25e",
+      "match_id": "9892cfbea93a2572",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5678,7 +5881,7 @@
       "sport": "Football",
       "match": "Montreal Roses FC vs Ottawa Rapid FC",
       "tournament": "Northern Super League",
-      "match_id": "a31d874a8effaefb",
+      "match_id": "3acc0e4e59d70ab1",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5696,25 +5899,7 @@
       "sport": "Football",
       "match": "Nublense vs U. De Concepción",
       "tournament": "Chilean Cup",
-      "match_id": "dcb90ceecaac73f8",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782298800000,
-      "sport": "Football",
-      "match": "Ulaanbaatar vs Khangarid",
-      "tournament": "Premier League",
-      "match_id": "3cd1ab7235433a3a",
+      "match_id": "b166cc7c2e0f2ca0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5732,7 +5917,7 @@
       "sport": "Football",
       "match": "Khovd vs Hunters",
       "tournament": "Premier League",
-      "match_id": "699955118b554438",
+      "match_id": "dd6a68273f4c8374",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5750,63 +5935,7 @@
       "sport": "Football",
       "match": "Khoromkhon vs Ulaangom City FC",
       "tournament": "Premier League",
-      "match_id": "2ea0dab8af267ef9",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": [
-          "https://sportsembed.su/embed/4742194/deren-central-stallions-fc/regular/1"
-        ]
-      },
-      "unix_timestamp": 1782288000000,
-      "sport": "Football",
-      "match": "Deren vs Central Stallions FC",
-      "tournament": "Premier League",
-      "match_id": "07861edbdf3975d5",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782290700000,
-      "sport": "Football",
-      "match": "Dukla B. Bystrica vs FC Taran Presov",
-      "tournament": "Club Friendlies",
-      "match_id": "f49a4c2893bdfe6e",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782291600000,
-      "sport": "Football",
-      "match": "MFK Ruzomberok vs Ofk Malzenice",
-      "tournament": "Club Friendlies",
-      "match_id": "ec492e3859a8bd21",
+      "match_id": "b050d8ac2dac0f99",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6897,11 +7026,31 @@
       "sources": {
         "tom": [],
         "sarah": [
+          "https://embedsports.top/embed/echo/atp-wta-bad-homburg-mallorca-tn-1/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782293400000,
+      "sport": "Tennis",
+      "match": "ATP / WTA: Bad Homburg / Mallorca 🎾",
+      "tournament": "",
+      "match_id": "59c75103d81190e6",
+      "quality_score": 70,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
           "https://embedsports.top/embed/admin/admin-sky-sports-tennis/1"
         ],
         "wendy": []
       },
-      "unix_timestamp": 1782289343,
+      "unix_timestamp": 1782301508,
       "sport": "Tennis",
       "match": "Sky Sports Tennis",
       "tournament": "",
@@ -6921,32 +7070,12 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1782289343,
+      "unix_timestamp": 1782301508,
       "sport": "Tennis",
       "match": "Tennis Channel",
       "tournament": "",
       "match_id": "c0cd80d66e123fbb",
       "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/atp-wta-bad-homburg-mallorca-tn-1/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782293400000,
-      "sport": "Tennis",
-      "match": "ATP / WTA: Bad Homburg / Mallorca 🎾",
-      "tournament": "",
-      "match_id": "59c75103d81190e6",
-      "quality_score": 70,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
@@ -7623,1451 +7752,21 @@
       "confidence": 1
     },
     {
-      "unix_timestamp": 1782265500000,
-      "sport": "Baseball",
-      "match": "San Francisco Giants vs Athletics",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-athletics-vs-san-francisco-giants/1",
-          "https://embedsports.top/embed/delta/live_mlb_giants-athletics-live-streaming-1341748908/1",
-          "https://embedsports.top/embed/echo/san-francisco-giants-vs-athletics-baseball-179195/1",
-          "https://embedsports.top/embed/golf/23362/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 4,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 60
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.573Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782265200000,
-      "sport": "Baseball",
-      "match": "San Diego Padres vs Atlanta Braves",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-atlanta-braves-vs-san-diego-padres/1",
-          "https://embedsports.top/embed/delta/live_mlb_padres-braves-live-streaming-1341747909/1",
-          "https://embedsports.top/embed/echo/san-diego-padres-vs-atlanta-braves-baseball-179196/1",
-          "https://embedsports.top/embed/golf/23361/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6333333333333333,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 63.333333333333336
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.573Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782265080000,
-      "sport": "Baseball",
-      "match": "Los Angeles Angels vs Baltimore Orioles",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-baltimore-orioles-vs-los-angeles-angels/1",
-          "https://embedsports.top/embed/echo/los-angeles-angels-vs-baltimore-orioles-baseball-179200/1",
-          "https://embedsports.top/embed/golf/23360/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6333333333333333,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 60
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.573Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782261600000,
-      "sport": "Baseball",
-      "match": "Colorado Rockies vs Boston Red Sox",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-boston-red-sox-vs-colorado-rockies/1",
-          "https://embedsports.top/embed/golf/23359/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6333333333333333,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 56.666666666666664
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.573Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782258300000,
-      "sport": "Baseball",
-      "match": "St. Louis Cardinals vs Arizona Diamondbacks",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/golf/23358/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6333333333333333,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 53.333333333333336
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.573Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782258000000,
-      "sport": "Baseball",
-      "match": "Minnesota Twins vs Los Angeles Dodgers",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/golf/23357/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.7,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.573Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782258000000,
-      "sport": "Baseball",
-      "match": "Chicago White Sox vs Cleveland Guardians",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/golf/23356/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.7,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782317400000,
-      "sport": "Baseball",
-      "match": "Miami Marlins vs Texas Rangers",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-texas-rangers-vs-miami-marlins/1",
-          "https://embedsports.top/embed/delta/live_mlb_marlins-rangers-live-streaming-1341890766/1",
-          "https://embedsports.top/embed/echo/miami-marlins-vs-texas-rangers-baseball-179214/1",
-          "https://embedsports.top/embed/golf/23375/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 70
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782321000000,
-      "sport": "Baseball",
-      "match": "New York Mets vs Chicago Cubs",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-chicago-cubs-vs-new-york-mets/1",
-          "https://embedsports.top/embed/delta/live_mlb_mets-cubs-live-streaming-1353255390/1",
-          "https://embedsports.top/embed/echo/new-york-mets-vs-chicago-cubs-baseball-179182/1",
-          "https://embedsports.top/embed/golf/23376/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 4,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 60
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
       "source": "sarah",
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-cleveland-guardians-vs-chicago-white-sox/1",
-          "https://embedsports.top/embed/delta/live_mlb_white-sox-guardians-live-streaming-1341891765/1",
-          "https://embedsports.top/embed/echo/chicago-white-sox-vs-cleveland-guardians-baseball-179219/1",
-          "https://embedsports.top/embed/golf/23377/1"
+          "https://embedsports.top/embed/admin/ppv-crocker-vs-paro/1",
+          "https://embedsports.top/embed/delta/live-event_lewis-crocker-vs-liam-paro-live-stream/1",
+          "https://embedsports.top/embed/echo/boxing-lewis-crocker-vs-liam-paro-game-2/1"
         ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782324600000,
-      "sport": "Baseball",
-      "match": "Chicago White Sox vs Cleveland Guardians",
-      "tournament": "",
-      "match_id": "3642d8451dd4d63e",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-boston-red-sox-vs-colorado-rockies/1",
-          "https://embedsports.top/embed/delta/live_mlb_rockies-red-sox-live-streaming-1341892764/1",
-          "https://embedsports.top/embed/echo/colorado-rockies-vs-boston-red-sox-baseball-179217/1",
-          "https://embedsports.top/embed/golf/23378/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782328200000,
-      "sport": "Baseball",
-      "match": "Colorado Rockies vs Boston Red Sox",
-      "tournament": "",
-      "match_id": "c445ccfd1698d436",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-baltimore-orioles-vs-los-angeles-angels/1",
-          "https://embedsports.top/embed/delta/live_mlb_angels-orioles-live-streaming-1341893763/1",
-          "https://embedsports.top/embed/echo/los-angeles-angels-vs-baltimore-orioles-baseball-179215/1",
-          "https://embedsports.top/embed/golf/23379/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782331620000,
-      "sport": "Baseball",
-      "match": "Los Angeles Angels vs Baltimore Orioles",
-      "tournament": "",
-      "match_id": "2ce8e233c28eabc4",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1782340800000,
-      "sport": "Baseball",
-      "match": "Detroit Tigers vs New York Yankees",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-new-york-yankees-vs-detroit-tigers/1",
-          "https://embedsports.top/embed/delta/live_mlb_tigers-yankees-live-streaming-1341894762/1",
-          "https://embedsports.top/embed/echo/detroit-tigers-vs-new-york-yankees-baseball-179216/1",
-          "https://embedsports.top/embed/golf/23381/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 70
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782340800000,
-      "sport": "Baseball",
-      "match": "Tampa Bay Rays vs Kansas City Royals",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-kansas-city-royals-vs-tampa-bay-rays/1",
-          "https://embedsports.top/embed/delta/live_mlb_rays-royals-live-streaming-1341896760/1",
-          "https://embedsports.top/embed/echo/tampa-bay-rays-vs-kansas-city-royals-baseball-179208/1",
-          "https://embedsports.top/embed/golf/23380/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6333333333333333,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 63.333333333333336
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782340800000,
-      "sport": "Baseball",
-      "match": "Pittsburgh Pirates vs Seattle Mariners",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-seattle-mariners-vs-pittsburgh-pirates/1",
-          "https://embedsports.top/embed/delta/live_mlb_pirates-mariners-live-streaming-1341895761/1",
-          "https://embedsports.top/embed/echo/pittsburgh-pirates-vs-seattle-mariners-baseball-179205/1",
-          "https://embedsports.top/embed/golf/23382/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6333333333333333,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 63.333333333333336
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782341100000,
-      "sport": "Baseball",
-      "match": "Washington Nationals vs Philadelphia Phillies",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-philadelphia-phillies-vs-washington-nationals/1",
-          "https://embedsports.top/embed/delta/live_mlb_nationals-phillies-live-streaming-1341897759/1",
-          "https://embedsports.top/embed/echo/washington-nationals-vs-philadelphia-phillies-baseball-179206/1",
-          "https://embedsports.top/embed/golf/23383/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.6333333333333333,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 63.333333333333336
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782342420000,
-      "sport": "Baseball",
-      "match": "Toronto Blue Jays vs Houston Astros",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-houston-astros-vs-toronto-blue-jays/1",
-          "https://embedsports.top/embed/delta/live_mlb_blue-jays-astros-live-streaming-1341898758/1",
-          "https://embedsports.top/embed/echo/toronto-blue-jays-vs-houston-astros-baseball-179207/1",
-          "https://embedsports.top/embed/golf/23384/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 70
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.574Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782342600000,
-      "sport": "Baseball",
-      "match": "Cincinnati Reds vs Milwaukee Brewers",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-milwaukee-brewers-vs-cincinnati-reds/1",
-          "https://embedsports.top/embed/delta/live_mlb_reds-brewers-live-streaming-1341899757/1",
-          "https://embedsports.top/embed/echo/cincinnati-reds-vs-milwaukee-brewers-baseball-179218/1",
-          "https://embedsports.top/embed/golf/23386/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 70
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-los-angeles-dodgers-vs-minnesota-twins/1",
-          "https://embedsports.top/embed/delta/live_mlb_twins-dodgers-live-streaming-1341901755/1",
-          "https://embedsports.top/embed/echo/minnesota-twins-vs-los-angeles-dodgers-baseball-179212/1",
-          "https://embedsports.top/embed/golf/23387/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782344400000,
-      "sport": "Baseball",
-      "match": "Minnesota Twins vs Los Angeles Dodgers",
-      "tournament": "",
-      "match_id": "ae3b784c8cc15dcc",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-arizona-diamondbacks-vs-st-louis-cardinals/1",
-          "https://embedsports.top/embed/delta/live_mlb_cardinals-diamondbacks-live-streaming-1341902754/1",
-          "https://embedsports.top/embed/echo/stlouis-cardinals-vs-arizona-diamondbacks-baseball-179209/1",
-          "https://embedsports.top/embed/golf/23388/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782344700000,
-      "sport": "Baseball",
-      "match": "St. Louis Cardinals vs Arizona Diamondbacks",
-      "tournament": "",
-      "match_id": "5d4f291521198ed1",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-atlanta-braves-vs-san-diego-padres/1",
-          "https://embedsports.top/embed/delta/live_mlb_padres-braves-live-streaming-1341903753/1",
-          "https://embedsports.top/embed/echo/san-diego-padres-vs-atlanta-braves-baseball-179211/1",
-          "https://embedsports.top/embed/golf/23389/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782348000000,
-      "sport": "Baseball",
-      "match": "San Diego Padres vs Atlanta Braves",
-      "tournament": "",
-      "match_id": "66fdf8304ba8fd9d",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-athletics-vs-san-francisco-giants/1",
-          "https://embedsports.top/embed/delta/live_mlb_giants-athletics-live-streaming-1341904752/1",
-          "https://embedsports.top/embed/echo/san-francisco-giants-vs-athletics-baseball-179210/1",
-          "https://embedsports.top/embed/golf/23390/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782351900000,
-      "sport": "Baseball",
-      "match": "San Francisco Giants vs Athletics",
-      "tournament": "",
-      "match_id": "b263e9f2e65c46fd",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/tampa-bay-rays-vs-kansas-city-royals-baseball-179223/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782403800000,
-      "sport": "Baseball",
-      "match": "Tampa Bay Rays vs Kansas City Royals",
-      "tournament": "",
-      "match_id": "1f4b93aef0156f1a",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/pittsburgh-pirates-vs-seattle-mariners-baseball-179225/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782405300000,
-      "sport": "Baseball",
-      "match": "Pittsburgh Pirates vs Seattle Mariners",
-      "tournament": "",
-      "match_id": "c2a4c6f3d482a489",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/san-francisco-giants-vs-athletics-baseball-179224/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782416700000,
-      "sport": "Baseball",
-      "match": "San Francisco Giants vs Athletics",
-      "tournament": "",
-      "match_id": "3e377370bdaff24b",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1782427200000,
-      "sport": "Baseball",
-      "match": "Detroit Tigers vs Houston Astros",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/detroit-tigers-vs-houston-astros-baseball-179227/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/washington-nationals-vs-philadelphia-phillies-baseball-179221/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782427500000,
-      "sport": "Baseball",
-      "match": "Washington Nationals vs Philadelphia Phillies",
-      "tournament": "",
-      "match_id": "5109407cdb734c71",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1782428820000,
-      "sport": "Baseball",
-      "match": "Toronto Blue Jays vs Texas Rangers",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/toronto-blue-jays-vs-texas-rangers-baseball-179222/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782429000000,
-      "sport": "Baseball",
-      "match": "Boston Red Sox vs New York Yankees",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/boston-red-sox-vs-new-york-yankees-baseball-179228/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/new-york-mets-vs-chicago-cubs-baseball-179226/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782429000000,
-      "sport": "Baseball",
-      "match": "New York Mets vs Chicago Cubs",
-      "tournament": "",
-      "match_id": "e4318a3ff76cff27",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/stlouis-cardinals-vs-arizona-diamondbacks-baseball-179220/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782431100000,
-      "sport": "Baseball",
-      "match": "St. Louis Cardinals vs Arizona Diamondbacks",
-      "tournament": "",
-      "match_id": "31c11733848edad9",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1782349200000,
-      "sport": "Baseball",
-      "match": "Piratas de Campeche vs Diablos Rojos del México",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782291600000,
-      "sport": "Baseball",
-      "match": "Fukuoka Hawks vs Orix Buffaloes",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": [
-          "https://sportsembed.su/embed/4626496/fukuoka-hawks-orix-buffaloes/sigma/1",
-          "https://sportsembed.su/embed/4626496/fukuoka-hawks-orix-buffaloes/sigma/2"
-        ]
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 60
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782291600000,
-      "sport": "Baseball",
-      "match": "Hanshin Tigers vs Yakult Swallows",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": [
-          "https://sportsembed.su/embed/4627166/hanshin-tigers-yakult-swallows/sigma/1",
-          "https://sportsembed.su/embed/4627166/hanshin-tigers-yakult-swallows/sigma/2"
-        ]
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 60
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782293400000,
-      "sport": "Baseball",
-      "match": "Hanwha Eagles vs Doosan Bears",
-      "tournament": "KBO",
-      "match_id": "a2213c4761365898",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782293400000,
-      "sport": "Baseball",
-      "match": "LG Twins vs Samsung Lions",
-      "tournament": "KBO",
-      "match_id": "8a39a00217ebf47a",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782293400000,
-      "sport": "Baseball",
-      "match": "Kiwoom Heroes vs KIA Tigers",
-      "tournament": "KBO",
-      "match_id": "168026bd65310e58",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782293400000,
-      "sport": "Baseball",
-      "match": "Kt Wiz Suwon vs SSG Landers",
-      "tournament": "KBO",
-      "match_id": "8c79bdd76826ce19",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
         "wendy": []
       },
       "unix_timestamp": 1782291600000,
-      "sport": "Baseball",
-      "match": "Hiroshima Toyo Carp vs Yomiuri Giants",
-      "tournament": "NPB",
-      "match_id": "8bf0e5c94b06d7e1",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1782291600000,
-      "sport": "Baseball",
-      "match": "Chunichi Dragons vs Yokohama Baystars",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": [
-          "https://sportsembed.su/embed/4626462/chunichi-dragons-yokohama-baystars/sigma/1",
-          "https://sportsembed.su/embed/4626462/chunichi-dragons-yokohama-baystars/sigma/2"
-        ]
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 60
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782293400000,
-      "sport": "Baseball",
-      "match": "Lotte Giants vs NC Dinos",
-      "tournament": "KBO",
-      "match_id": "09ee9af8a48d4aa8",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1782324000000,
-      "sport": "Baseball",
-      "match": "Las Tunas vs Holguin",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782265500000,
-      "sport": "Baseball",
-      "match": "Acereros de Monclova vs Caliente de Durango",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782264600000,
-      "sport": "Baseball",
-      "match": "Bravos de León vs El Águila de Veracruz",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.575Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782262800000,
-      "sport": "Baseball",
-      "match": "Guerreros de Oaxaca vs Pericos de Puebla",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.576Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782262800000,
-      "sport": "Baseball",
-      "match": "Tecos de los Dos Laredos vs Algodoneros del Unión Laguna",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.5666666666666667,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.576Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782264600000,
-      "sport": "Baseball",
-      "match": "Rieleros de Aguascalientes vs Sultanes de Monterrey",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.576Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782262800000,
-      "sport": "Baseball",
-      "match": "Dorados de Chihuahua vs Toros de Tijuana",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.576Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782266400000,
-      "sport": "Baseball",
-      "match": "Conspiradores de Querétaro vs Olmecas de Tabasco",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.576Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1782266400000,
-      "sport": "Baseball",
-      "match": "Leones de Yucatán vs Tigres de Quintana Roo",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-06-24T08:22:23.576Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782410400000,
-      "sport": "Baseball",
-      "match": "Industriales vs Mayabeque",
-      "tournament": "Liga Elite - Semi Finals",
-      "match_id": "db3f0e9fa5879415",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782378000000,
-      "sport": "Baseball",
-      "match": "Rakuten Gold Eagles vs Seibu Lions",
-      "tournament": "NPB",
-      "match_id": "99ed12c202151d63",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1782273600000,
-      "sport": "Baseball",
-      "match": "Nippon Ham Fighters vs Chiba Lotte Marines",
-      "tournament": "NPB",
-      "match_id": "1692c3139e82700d",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/delta/live-event_lewis-crocker-vs-liam-paro-live-stream/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1782259200000,
       "sport": "Fighting",
       "match": "Lewis Crocker vs Liam Paro",
       "tournament": "",
-      "match_id": "26811b2ed20975d1",
+      "match_id": "0de37f574c556435",
       "quality_score": 90,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9363,7 +8062,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1782289343,
+      "unix_timestamp": 1782301508,
       "sport": "Motorsport",
       "match": "Rally TV",
       "tournament": "",
@@ -9669,6 +8368,1295 @@
       "tournament": "",
       "match_id": "42e82de328344077",
       "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1782317400000,
+      "sport": "Baseball",
+      "match": "Miami Marlins vs Texas Rangers",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-texas-rangers-vs-miami-marlins/1",
+          "https://embedsports.top/embed/delta/live_mlb_marlins-rangers-live-streaming-1341890766/1",
+          "https://embedsports.top/embed/echo/miami-marlins-vs-texas-rangers-baseball-179214/1",
+          "https://embedsports.top/embed/golf/23375/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 70
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782324600000,
+      "sport": "Baseball",
+      "match": "Chicago White Sox vs Cleveland Guardians",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-cleveland-guardians-vs-chicago-white-sox/1",
+          "https://embedsports.top/embed/delta/live_mlb_white-sox-guardians-live-streaming-1341891765/1",
+          "https://embedsports.top/embed/echo/chicago-white-sox-vs-cleveland-guardians-baseball-179219/1",
+          "https://embedsports.top/embed/golf/23377/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 70
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782328200000,
+      "sport": "Baseball",
+      "match": "Colorado Rockies vs Boston Red Sox",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-boston-red-sox-vs-colorado-rockies/1",
+          "https://embedsports.top/embed/delta/live_mlb_rockies-red-sox-live-streaming-1341892764/1",
+          "https://embedsports.top/embed/echo/colorado-rockies-vs-boston-red-sox-baseball-179217/1",
+          "https://embedsports.top/embed/golf/23378/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6333333333333333,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 63.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782331620000,
+      "sport": "Baseball",
+      "match": "Los Angeles Angels vs Baltimore Orioles",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-baltimore-orioles-vs-los-angeles-angels/1",
+          "https://embedsports.top/embed/delta/live_mlb_angels-orioles-live-streaming-1341893763/1",
+          "https://embedsports.top/embed/echo/los-angeles-angels-vs-baltimore-orioles-baseball-179215/1",
+          "https://embedsports.top/embed/golf/23379/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6333333333333333,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 63.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782340800000,
+      "sport": "Baseball",
+      "match": "Detroit Tigers vs New York Yankees",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-new-york-yankees-vs-detroit-tigers/1",
+          "https://embedsports.top/embed/delta/live_mlb_tigers-yankees-live-streaming-1341894762/1",
+          "https://embedsports.top/embed/echo/detroit-tigers-vs-new-york-yankees-baseball-179216/1",
+          "https://embedsports.top/embed/golf/23381/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 70
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782340800000,
+      "sport": "Baseball",
+      "match": "Tampa Bay Rays vs Kansas City Royals",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-kansas-city-royals-vs-tampa-bay-rays/1",
+          "https://embedsports.top/embed/delta/live_mlb_rays-royals-live-streaming-1341896760/1",
+          "https://embedsports.top/embed/echo/tampa-bay-rays-vs-kansas-city-royals-baseball-179208/1",
+          "https://embedsports.top/embed/golf/23380/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6333333333333333,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 63.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782340800000,
+      "sport": "Baseball",
+      "match": "Pittsburgh Pirates vs Seattle Mariners",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-seattle-mariners-vs-pittsburgh-pirates/1",
+          "https://embedsports.top/embed/delta/live_mlb_pirates-mariners-live-streaming-1341895761/1",
+          "https://embedsports.top/embed/echo/pittsburgh-pirates-vs-seattle-mariners-baseball-179205/1",
+          "https://embedsports.top/embed/golf/23382/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6333333333333333,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 63.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782341100000,
+      "sport": "Baseball",
+      "match": "Washington Nationals vs Philadelphia Phillies",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-philadelphia-phillies-vs-washington-nationals/1",
+          "https://embedsports.top/embed/delta/live_mlb_nationals-phillies-live-streaming-1341897759/1",
+          "https://embedsports.top/embed/echo/washington-nationals-vs-philadelphia-phillies-baseball-179206/1",
+          "https://embedsports.top/embed/golf/23383/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6333333333333333,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 63.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782342420000,
+      "sport": "Baseball",
+      "match": "Toronto Blue Jays vs Houston Astros",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-houston-astros-vs-toronto-blue-jays/1",
+          "https://embedsports.top/embed/delta/live_mlb_blue-jays-astros-live-streaming-1341898758/1",
+          "https://embedsports.top/embed/echo/toronto-blue-jays-vs-houston-astros-baseball-179207/1",
+          "https://embedsports.top/embed/golf/23384/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 70
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782342600000,
+      "sport": "Baseball",
+      "match": "Cincinnati Reds vs Milwaukee Brewers",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-milwaukee-brewers-vs-cincinnati-reds/1",
+          "https://embedsports.top/embed/delta/live_mlb_reds-brewers-live-streaming-1341899757/1",
+          "https://embedsports.top/embed/echo/cincinnati-reds-vs-milwaukee-brewers-baseball-179218/1",
+          "https://embedsports.top/embed/golf/23386/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 70
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.454Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782342600000,
+      "sport": "Baseball",
+      "match": "New York Mets vs Chicago Cubs",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-chicago-cubs-vs-new-york-mets/1",
+          "https://embedsports.top/embed/delta/live_mlb_mets-cubs-live-streaming-1353255390/1",
+          "https://embedsports.top/embed/echo/new-york-mets-vs-chicago-cubs-baseball-179182/1",
+          "https://embedsports.top/embed/golf/23376/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 4,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 60
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782344400000,
+      "sport": "Baseball",
+      "match": "Minnesota Twins vs Los Angeles Dodgers",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-los-angeles-dodgers-vs-minnesota-twins/1",
+          "https://embedsports.top/embed/delta/live_mlb_twins-dodgers-live-streaming-1341901755/1",
+          "https://embedsports.top/embed/echo/minnesota-twins-vs-los-angeles-dodgers-baseball-179212/1",
+          "https://embedsports.top/embed/golf/23387/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 70
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782344700000,
+      "sport": "Baseball",
+      "match": "St. Louis Cardinals vs Arizona Diamondbacks",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-arizona-diamondbacks-vs-st-louis-cardinals/1",
+          "https://embedsports.top/embed/delta/live_mlb_cardinals-diamondbacks-live-streaming-1341902754/1",
+          "https://embedsports.top/embed/echo/stlouis-cardinals-vs-arizona-diamondbacks-baseball-179209/1",
+          "https://embedsports.top/embed/golf/23388/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6333333333333333,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 63.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782348000000,
+      "sport": "Baseball",
+      "match": "San Diego Padres vs Atlanta Braves",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-atlanta-braves-vs-san-diego-padres/1",
+          "https://embedsports.top/embed/delta/live_mlb_padres-braves-live-streaming-1341903753/1",
+          "https://embedsports.top/embed/echo/san-diego-padres-vs-atlanta-braves-baseball-179211/1",
+          "https://embedsports.top/embed/golf/23389/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6333333333333333,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 63.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782351900000,
+      "sport": "Baseball",
+      "match": "San Francisco Giants vs Athletics",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-athletics-vs-san-francisco-giants/1",
+          "https://embedsports.top/embed/delta/live_mlb_giants-athletics-live-streaming-1341904752/1",
+          "https://embedsports.top/embed/echo/san-francisco-giants-vs-athletics-baseball-179210/1",
+          "https://embedsports.top/embed/golf/23390/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 4,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 60
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/tampa-bay-rays-vs-kansas-city-royals-baseball-179223/1",
+          "https://embedsports.top/embed/golf/23397/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782403800000,
+      "sport": "Baseball",
+      "match": "Tampa Bay Rays vs Kansas City Royals",
+      "tournament": "",
+      "match_id": "8c33d6586445b850",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/pittsburgh-pirates-vs-seattle-mariners-baseball-179225/1",
+          "https://embedsports.top/embed/golf/23398/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782405300000,
+      "sport": "Baseball",
+      "match": "Pittsburgh Pirates vs Seattle Mariners",
+      "tournament": "",
+      "match_id": "6b485094034dbf13",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/san-francisco-giants-vs-athletics-baseball-179224/1",
+          "https://embedsports.top/embed/golf/23399/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782416700000,
+      "sport": "Baseball",
+      "match": "San Francisco Giants vs Athletics",
+      "tournament": "",
+      "match_id": "50c9324df629b3c8",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1782427200000,
+      "sport": "Baseball",
+      "match": "Detroit Tigers vs Houston Astros",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/detroit-tigers-vs-houston-astros-baseball-179227/1",
+          "https://embedsports.top/embed/golf/23400/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 60
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/washington-nationals-vs-philadelphia-phillies-baseball-179221/1",
+          "https://embedsports.top/embed/golf/23401/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782427500000,
+      "sport": "Baseball",
+      "match": "Washington Nationals vs Philadelphia Phillies",
+      "tournament": "",
+      "match_id": "8dde9443bf2b2760",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1782428820000,
+      "sport": "Baseball",
+      "match": "Toronto Blue Jays vs Texas Rangers",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/toronto-blue-jays-vs-texas-rangers-baseball-179222/1",
+          "https://embedsports.top/embed/golf/23402/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 60
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782429000000,
+      "sport": "Baseball",
+      "match": "Boston Red Sox vs New York Yankees",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/boston-red-sox-vs-new-york-yankees-baseball-179228/1",
+          "https://embedsports.top/embed/golf/23404/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 60
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/new-york-mets-vs-chicago-cubs-baseball-179226/1",
+          "https://embedsports.top/embed/golf/23403/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782429000000,
+      "sport": "Baseball",
+      "match": "New York Mets vs Chicago Cubs",
+      "tournament": "",
+      "match_id": "1225810eb8573029",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/stlouis-cardinals-vs-arizona-diamondbacks-baseball-179220/1",
+          "https://embedsports.top/embed/golf/23405/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1782431100000,
+      "sport": "Baseball",
+      "match": "St. Louis Cardinals vs Arizona Diamondbacks",
+      "tournament": "",
+      "match_id": "7bcd5e84443faaf3",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1782349200000,
+      "sport": "Baseball",
+      "match": "Piratas de Campeche vs Diablos Rojos del México",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.455Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782324000000,
+      "sport": "Baseball",
+      "match": "Las Tunas vs Holguin",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782265500000,
+      "sport": "Baseball",
+      "match": "Acereros de Monclova vs Caliente de Durango",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782264600000,
+      "sport": "Baseball",
+      "match": "Bravos de León vs El Águila de Veracruz",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782262800000,
+      "sport": "Baseball",
+      "match": "Guerreros de Oaxaca vs Pericos de Puebla",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782262800000,
+      "sport": "Baseball",
+      "match": "Tecos de los Dos Laredos vs Algodoneros del Unión Laguna",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.5666666666666667,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782264600000,
+      "sport": "Baseball",
+      "match": "Rieleros de Aguascalientes vs Sultanes de Monterrey",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782262800000,
+      "sport": "Baseball",
+      "match": "Dorados de Chihuahua vs Toros de Tijuana",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782266400000,
+      "sport": "Baseball",
+      "match": "Conspiradores de Querétaro vs Olmecas de Tabasco",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782266400000,
+      "sport": "Baseball",
+      "match": "Leones de Yucatán vs Tigres de Quintana Roo",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782293400000,
+      "sport": "Baseball",
+      "match": "Kt Wiz Suwon vs SSG Landers",
+      "tournament": "KBO",
+      "match_id": "a28e3b1752dd4982",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782293400000,
+      "sport": "Baseball",
+      "match": "Hanwha Eagles vs Doosan Bears",
+      "tournament": "KBO",
+      "match_id": "559fb180131c5ed0",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1782291600000,
+      "sport": "Baseball",
+      "match": "Hanshin Tigers vs Yakult Swallows",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1782291600000,
+      "sport": "Baseball",
+      "match": "Fukuoka Hawks vs Orix Buffaloes",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": [
+          "https://sportsembed.su/embed/4626496/fukuoka-hawks-orix-buffaloes/sigma/1",
+          "https://sportsembed.su/embed/4626496/fukuoka-hawks-orix-buffaloes/sigma/2"
+        ]
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 60
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782293400000,
+      "sport": "Baseball",
+      "match": "LG Twins vs Samsung Lions",
+      "tournament": "KBO",
+      "match_id": "7273dd29b3102874",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782293400000,
+      "sport": "Baseball",
+      "match": "Kiwoom Heroes vs KIA Tigers",
+      "tournament": "KBO",
+      "match_id": "4e1cacad781b8846",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782293400000,
+      "sport": "Baseball",
+      "match": "Lotte Giants vs NC Dinos",
+      "tournament": "KBO",
+      "match_id": "0ce854a5fedd06a1",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1782291600000,
+      "sport": "Baseball",
+      "match": "Chunichi Dragons vs Yokohama Baystars",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": [
+          "https://sportsembed.su/embed/4626462/chunichi-dragons-yokohama-baystars/sigma/1",
+          "https://sportsembed.su/embed/4626462/chunichi-dragons-yokohama-baystars/sigma/2"
+        ]
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 60
+      },
+      "processing_metadata": {
+        "processed_at": "2026-06-24T11:45:08.456Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782291600000,
+      "sport": "Baseball",
+      "match": "Hiroshima Toyo Carp vs Yomiuri Giants",
+      "tournament": "NPB",
+      "match_id": "7c5a6e64a860af7a",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782410400000,
+      "sport": "Baseball",
+      "match": "Industriales vs Mayabeque",
+      "tournament": "Liga Elite - Semi Finals",
+      "match_id": "4d7089fd3e5780c0",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782378000000,
+      "sport": "Baseball",
+      "match": "Rakuten Gold Eagles vs Seibu Lions",
+      "tournament": "NPB",
+      "match_id": "9b52bb0c9a74ffd4",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1782273600000,
+      "sport": "Baseball",
+      "match": "Nippon Ham Fighters vs Chiba Lotte Marines",
+      "tournament": "NPB",
+      "match_id": "3d127b2ff3b7eabd",
+      "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
