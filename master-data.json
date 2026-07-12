@@ -1,12 +1,12 @@
 {
-  "processed_at": "2026-07-12T06:04:33.437Z",
+  "processed_at": "2026-07-12T09:02:15.117Z",
   "processor_version": "4.2-enterprise-enhanced-no-tournament",
   "summary": {
-    "total_sports": 20,
-    "total_matches": 606,
+    "total_sports": 19,
+    "total_matches": 599,
     "merged_matches": 50,
-    "individual_matches": 556,
-    "processing_time_ms": 365,
+    "individual_matches": 549,
+    "processing_time_ms": 389,
     "merge_statistics": {
       "Basketball": {
         "input": 154,
@@ -49,9 +49,9 @@
         "average_confidence": "1.00"
       },
       "Rugby": {
-        "input": 19,
-        "output": 19,
-        "clusters": 19,
+        "input": 17,
+        "output": 17,
+        "clusters": 17,
         "mergedClusters": 0,
         "efficiency": "0.0%",
         "average_confidence": "1.00"
@@ -121,9 +121,9 @@
         "average_confidence": "1.00"
       },
       "Australian Football": {
-        "input": 2,
-        "output": 2,
-        "clusters": 2,
+        "input": 1,
+        "output": 1,
+        "clusters": 1,
         "mergedClusters": 0,
         "efficiency": "0.0%",
         "average_confidence": "1.00"
@@ -137,14 +137,6 @@
         "average_confidence": "1.00"
       },
       "Other": {
-        "input": 4,
-        "output": 4,
-        "clusters": 4,
-        "mergedClusters": 0,
-        "efficiency": "0.0%",
-        "average_confidence": "1.00"
-      },
-      "Fighting": {
         "input": 1,
         "output": 1,
         "clusters": 1,
@@ -170,19 +162,19 @@
       }
     },
     "performance_report": {
-      "total_processing_time_ms": 365,
+      "total_processing_time_ms": 389,
       "average_step_times": {
         "load_data": "2.00",
-        "group_by_sport": "1.00",
+        "group_by_sport": "0.00",
         "match_scoring": "0.01",
-        "find_merge_matches": "17.55",
-        "cluster_merging": "0.10",
-        "process_sport_Basketball": "87.00",
+        "find_merge_matches": "19.74",
+        "cluster_merging": "0.06",
+        "process_sport_Basketball": "91.00",
         "process_sport_American Football": "2.00",
         "process_sport_Cricket": "1.00",
-        "process_sport_Football": "256.00",
-        "process_sport_Ice Hockey": "2.00",
-        "process_sport_Rugby": "0.00",
+        "process_sport_Football": "276.00",
+        "process_sport_Ice Hockey": "1.00",
+        "process_sport_Rugby": "1.00",
         "process_sport_Equestrian": "0.00",
         "process_sport_Tennis": "0.00",
         "process_sport_Volleyball": "0.00",
@@ -190,13 +182,12 @@
         "process_sport_Futsal": "0.00",
         "process_sport_Lacrosse": "0.00",
         "process_sport_MMA": "0.00",
-        "process_sport_Golf": "0.00",
+        "process_sport_Golf": "1.00",
         "process_sport_Australian Football": "0.00",
         "process_sport_Motorsport": "0.00",
         "process_sport_Other": "0.00",
-        "process_sport_Fighting": "0.00",
-        "process_sport_Baseball": "9.00",
-        "process_sport_Racing": "0.00"
+        "process_sport_Baseball": "8.00",
+        "process_sport_Racing": "1.00"
       },
       "cache_efficiency": {
         "team_normalization": "NaN",
@@ -204,7 +195,7 @@
         "similarity_cache": "NaN",
         "token_cache": "99.8"
       },
-      "average_merge_rate": "3.0%",
+      "average_merge_rate": "3.1%",
       "memory_peak_mb": 12,
       "recommendations": [
         "Performance is optimal"
@@ -212,7 +203,7 @@
     },
     "cache_stats": {
       "team_normalization": {
-        "cacheSize": 1001,
+        "cacheSize": 997,
         "aliasesCount": 11
       },
       "internal_caches": {
@@ -229,8 +220,8 @@
           "misses": 0
         },
         "tokenCache": {
-          "hits": 443418,
-          "misses": 958
+          "hits": 444604,
+          "misses": 954
         }
       }
     }
@@ -1384,37 +1375,6 @@
     {
       "unix_timestamp": 1783882800000,
       "sport": "Basketball",
-      "match": "Toronto Tempo W vs New York Liberty W",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/toronto-tempo-w-vs-new-york-liberty-w-basketball-494944/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.5,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 0,
-        "time_consistency": 1,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "college_prefix_handling"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1783882800000,
-      "sport": "Basketball",
       "match": "Washington Mystics W vs Seattle Storm W",
       "sources": {
         "tom": [],
@@ -1436,7 +1396,38 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
+        "processed_at": "2026-07-12T09:02:14.823Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "college_prefix_handling"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1783882800000,
+      "sport": "Basketball",
+      "match": "Toronto Tempo W vs New York Liberty W",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/toronto-tempo-w-vs-new-york-liberty-w-basketball-494944/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.5,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 0,
+        "time_consistency": 1,
+        "merge_quality": 55
+      },
+      "processing_metadata": {
+        "processed_at": "2026-07-12T09:02:14.823Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1468,7 +1459,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1540,7 +1531,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1572,7 +1563,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1604,7 +1595,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1635,7 +1626,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1667,7 +1658,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.163Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1719,7 +1710,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1750,7 +1741,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.824Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1782,7 +1773,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.825Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1834,7 +1825,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.825Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1866,7 +1857,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.825Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1898,7 +1889,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.825Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1930,7 +1921,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.825Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1961,7 +1952,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.825Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -1993,7 +1984,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.164Z",
+        "processed_at": "2026-07-12T09:02:14.825Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "college_prefix_handling"
@@ -2091,7 +2082,7 @@
       "sport": "Basketball",
       "match": "Winnipeg Sea Bears vs Calgary Surge",
       "tournament": "CEBL",
-      "match_id": "3487f764cdcc4bfd",
+      "match_id": "ce175a30cafb7aee",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2109,7 +2100,7 @@
       "sport": "Basketball",
       "match": "Niagara River Lions vs Montreal Alliance",
       "tournament": "CEBL",
-      "match_id": "8dd866826745e5d4",
+      "match_id": "e2b8f6ec1478217b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2127,7 +2118,7 @@
       "sport": "Basketball",
       "match": "Spain U20 vs Croatia U20",
       "tournament": "EuroBasket U20 - Group C",
-      "match_id": "93aa98001a9bb8e4",
+      "match_id": "a7d8bfed019901de",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2145,7 +2136,7 @@
       "sport": "Basketball",
       "match": "Cayman Islands vs Haiti",
       "tournament": "AmeriCup - Pre-qualifiers - Caribbean - Group B",
-      "match_id": "729a4334eb6f09da",
+      "match_id": "615e1614b58e0364",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2163,7 +2154,7 @@
       "sport": "Basketball",
       "match": "France U20 vs Italy U20",
       "tournament": "EuroBasket U20 - Group A",
-      "match_id": "8e578223dc58ec94",
+      "match_id": "c884f456531932ca",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2181,187 +2172,7 @@
       "sport": "Basketball",
       "match": "Ottawa Blackjacks vs Brampton Honey Badgers",
       "tournament": "CEBL",
-      "match_id": "007641847ca06b09",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783899000000,
-      "sport": "Basketball",
-      "match": "CD Español Osorno vs Deportes Castro",
-      "tournament": "LNB - South",
-      "match_id": "93c38fe609f90a25",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783900800000,
-      "sport": "Basketball",
-      "match": "Cordon (W) vs Tabare (W)",
-      "tournament": "LFB (W) - Serie 2",
-      "match_id": "c005428e3abfe56b",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783900800000,
-      "sport": "Basketball",
-      "match": "Regatas San Nicolas vs Club Belgrano San Nicolás",
-      "tournament": "Liga Federal - Interconference Playoff - South - Southeast",
-      "match_id": "88005e170cab30e8",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783900800000,
-      "sport": "Basketball",
-      "match": "Club Atlético Almagro De Esperanza vs Asociacion El Ceibo",
-      "tournament": "Liga Federal - Interconference Playoff - Center - Metropolitan",
-      "match_id": "6b8cf3b1bf441ee0",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783902600000,
-      "sport": "Basketball",
-      "match": "All Boys de Santa Rosa vs Ferro Carril Oeste De General Pico",
-      "tournament": "Liga Federal - Interconference Playoff - South - Southeast",
-      "match_id": "03986a2f948ec276",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783899000000,
-      "sport": "Basketball",
-      "match": "Club Social Y Deportivo Presidente Derqui vs Olimpia De Venado Tuerto",
-      "tournament": "Liga Federal - Interconference Playoff - Littoral - Metropolitan",
-      "match_id": "80721a34818c70b3",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783900800000,
-      "sport": "Basketball",
-      "match": "Leones De Ponce vs San German",
-      "tournament": "BSN - Quarter Finals",
-      "match_id": "c6d4f9e0ad5226be",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783899000000,
-      "sport": "Basketball",
-      "match": "Club Sportivo Pilar vs Club Unión Y Juventud Bandera",
-      "tournament": "Liga Federal - Interconference Playoff",
-      "match_id": "e51fc92a71ecb174",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783902600000,
-      "sport": "Basketball",
-      "match": "CD Valdivia vs ABA Ancud",
-      "tournament": "LNB - South",
-      "match_id": "b54e5a9aa6807c04",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783900800000,
-      "sport": "Basketball",
-      "match": "Antigua & Barbuda vs Turks and Caicos Islands",
-      "tournament": "AmeriCup - Pre-qualifiers - Caribbean - Group A",
-      "match_id": "1b43c81b951f6ccd",
+      "match_id": "fbc3ee06a170170e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2379,7 +2190,7 @@
       "sport": "Basketball",
       "match": "Israel U20 vs Slovenia U20",
       "tournament": "EuroBasket U20 - Group D",
-      "match_id": "cc53c2922bea006c",
+      "match_id": "c4ddc992f6d02e9d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2397,7 +2208,7 @@
       "sport": "Basketball",
       "match": "Poland U20 vs Latvia U20",
       "tournament": "EuroBasket U20 - Group B",
-      "match_id": "ab09dc07819a31d4",
+      "match_id": "8514d5fc48008c96",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2415,7 +2226,7 @@
       "sport": "Basketball",
       "match": "Saint Vincent And The Grenadines vs Barbados",
       "tournament": "AmeriCup - Pre-qualifiers - Caribbean - Group B",
-      "match_id": "4e4c64ffb14a830f",
+      "match_id": "b71bb411ac9202f3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2433,7 +2244,7 @@
       "sport": "Basketball",
       "match": "Urunday Universitario (W) vs 25 De Agosto (W)",
       "tournament": "LFB (W) - Serie 2",
-      "match_id": "602f9a949ec0c160",
+      "match_id": "b1c9e6de643ec3ea",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2449,9 +2260,9 @@
       },
       "unix_timestamp": 1783814400000,
       "sport": "Basketball",
-      "match": "CD Sharks vs Arturo Prat San Felipe",
-      "tournament": "LNB 2 - Semi Finals",
-      "match_id": "c340dca814c6311a",
+      "match": "Puerto Montt Básquetbol vs Las Animas",
+      "tournament": "LNB - South",
+      "match_id": "00d58bd5298a63f4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2469,25 +2280,7 @@
       "sport": "Basketball",
       "match": "Gigantes De Carolina vs Vaqueros De Bayamon",
       "tournament": "BSN - Quarter Finals",
-      "match_id": "51f42d4d755b553d",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783814400000,
-      "sport": "Basketball",
-      "match": "CEB Puerto Montt vs Las Animas",
-      "tournament": "LNB",
-      "match_id": "f1f90551efbb2177",
+      "match_id": "0acac5d6be13cb28",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2505,7 +2298,7 @@
       "sport": "Basketball",
       "match": "Leones De Quilpué vs Puente Alto",
       "tournament": "LNB - Center",
-      "match_id": "850454aa18f895ab",
+      "match_id": "04ff06d0ee236f68",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2523,7 +2316,7 @@
       "sport": "Basketball",
       "match": "CD Español Osorno vs ABA Ancud",
       "tournament": "LNB - South",
-      "match_id": "58a37c154db7b44f",
+      "match_id": "14528dad56fad244",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2541,7 +2334,7 @@
       "sport": "Basketball",
       "match": "Capitanes De Arecibo vs Santeros de Aguada",
       "tournament": "BSN - Quarter Finals",
-      "match_id": "83ecf0abccbfb151",
+      "match_id": "04ca30b9907cbf22",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2559,7 +2352,7 @@
       "sport": "Basketball",
       "match": "Guyana vs Bermuda",
       "tournament": "AmeriCup - Pre-qualifiers - Caribbean - Group A",
-      "match_id": "62e91adcab38cb5f",
+      "match_id": "090c3d2e975ea1b6",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2577,7 +2370,7 @@
       "sport": "Basketball",
       "match": "Brooklyn Nets vs Atlanta Hawks",
       "tournament": "NBA Summer League",
-      "match_id": "e749df5e7a5f5856",
+      "match_id": "452f6ed0273a7ee4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2595,25 +2388,7 @@
       "sport": "Basketball",
       "match": "Club Malvin (W) vs Defensor Sporting Club (W)",
       "tournament": "LFB (W)",
-      "match_id": "b5c176a950f72adf",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783854000000,
-      "sport": "Basketball",
-      "match": "Greece U20 vs Belgium U20",
-      "tournament": "EuroBasket U20 - Group C",
-      "match_id": "3d07ea7f7449918f",
+      "match_id": "0fce551b8c4c50c5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2631,7 +2406,7 @@
       "sport": "Basketball",
       "match": "Dominica vs Bermuda",
       "tournament": "AmeriCup - Pre-qualifiers - Caribbean - Group A",
-      "match_id": "d0885d90d57dfdaf",
+      "match_id": "3d97ea5ab52c91c5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2649,7 +2424,7 @@
       "sport": "Basketball",
       "match": "Aguada (W) vs Lagomar Country Club (W)",
       "tournament": "LFB (W) - Serie 1",
-      "match_id": "ce8b119261d4eec4",
+      "match_id": "17e3ad17c946bf0a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2667,7 +2442,7 @@
       "sport": "Basketball",
       "match": "River Plate vs Club Atletico Caza Y Pesca",
       "tournament": "Liga Federal - Interconference Playoff - Littoral - Metropolitan",
-      "match_id": "8d07db5ae7deadfd",
+      "match_id": "717e51bf96f8f4b2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2685,7 +2460,205 @@
       "sport": "Basketball",
       "match": "Sportiva Italiana (W) vs Colegio Los Leones (W)",
       "tournament": "National League Women - Final",
-      "match_id": "f686340abab78db4",
+      "match_id": "6b6342ff3fefee76",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783900800000,
+      "sport": "Basketball",
+      "match": "Cordon (W) vs Tabare (W)",
+      "tournament": "LFB (W) - Serie 2",
+      "match_id": "1ac6172ec5bdc3e0",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783899000000,
+      "sport": "Basketball",
+      "match": "CD Español Osorno vs Deportes Castro",
+      "tournament": "LNB - South",
+      "match_id": "07d928a015c8ab67",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783904400000,
+      "sport": "Basketball",
+      "match": "CD Sharks vs Arturo Prat San Felipe",
+      "tournament": "LNB 2 - Semi Finals",
+      "match_id": "5d40532996092e60",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783900800000,
+      "sport": "Basketball",
+      "match": "Regatas San Nicolas vs Club Belgrano San Nicolás",
+      "tournament": "Liga Federal - Interconference Playoff - South - Southeast",
+      "match_id": "a44ebd344acc8880",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783900800000,
+      "sport": "Basketball",
+      "match": "Club Atlético Almagro De Esperanza vs Asociacion El Ceibo",
+      "tournament": "Liga Federal - Interconference Playoff - Center - Metropolitan",
+      "match_id": "a81526390e52d6d5",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783902600000,
+      "sport": "Basketball",
+      "match": "All Boys de Santa Rosa vs Ferro Carril Oeste De General Pico",
+      "tournament": "Liga Federal - Interconference Playoff - South - Southeast",
+      "match_id": "c9fa2dcecdc40076",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783899000000,
+      "sport": "Basketball",
+      "match": "Club Social Y Deportivo Presidente Derqui vs Olimpia De Venado Tuerto",
+      "tournament": "Liga Federal - Interconference Playoff - Littoral - Metropolitan",
+      "match_id": "ff2c8b8b02fdf761",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783900800000,
+      "sport": "Basketball",
+      "match": "Leones De Ponce vs San German",
+      "tournament": "BSN - Quarter Finals",
+      "match_id": "31a1058c755ea1f2",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783899000000,
+      "sport": "Basketball",
+      "match": "Club Sportivo Pilar vs Club Unión Y Juventud Bandera",
+      "tournament": "Liga Federal - Interconference Playoff",
+      "match_id": "01eb1aedb6da45af",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783902600000,
+      "sport": "Basketball",
+      "match": "CD Valdivia vs ABA Ancud",
+      "tournament": "LNB - South",
+      "match_id": "95114b50c9778699",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783900800000,
+      "sport": "Basketball",
+      "match": "Antigua & Barbuda vs Turks and Caicos Islands",
+      "tournament": "AmeriCup - Pre-qualifiers - Caribbean - Group A",
+      "match_id": "346a05046f16158f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2703,7 +2676,25 @@
       "sport": "Basketball",
       "match": "Auckland Huskies vs Otago Nuggets",
       "tournament": "NBL",
-      "match_id": "e934f469c40b13c9",
+      "match_id": "cc699102d7a10dbd",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783854000000,
+      "sport": "Basketball",
+      "match": "Greece U20 vs Belgium U20",
+      "tournament": "EuroBasket U20 - Group C",
+      "match_id": "0e3bc377662976a3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2721,7 +2712,7 @@
       "sport": "Basketball",
       "match": "Serbia U20 vs Latvia U20",
       "tournament": "EuroBasket U20 - Group B",
-      "match_id": "ce85d6878c07a619",
+      "match_id": "05c2f36c23d6beba",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2739,7 +2730,7 @@
       "sport": "Basketball",
       "match": "Belgium U20 vs Croatia U20",
       "tournament": "EuroBasket U20 - Group C",
-      "match_id": "2fe8dd7c1d6bc1b8",
+      "match_id": "e27837bd1a2ee2bf",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2757,7 +2748,7 @@
       "sport": "Basketball",
       "match": "Edmonton Stingers vs Vancouver Bandits",
       "tournament": "CEBL",
-      "match_id": "25e2512f00094335",
+      "match_id": "f06ac4d77ff49cfb",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2775,7 +2766,7 @@
       "sport": "Basketball",
       "match": "Dallas Mavericks vs Los Angeles Lakers",
       "tournament": "NBA Summer League",
-      "match_id": "acb5b1935582ec5a",
+      "match_id": "41a4474c6efd3af4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2793,7 +2784,7 @@
       "sport": "Basketball",
       "match": "Wellington Saints vs Canterbury Rams",
       "tournament": "NBL",
-      "match_id": "36d63c36242694fa",
+      "match_id": "5c9ca004327b710f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2811,7 +2802,7 @@
       "sport": "Basketball",
       "match": "Toronto Raptors vs Houston Rockets",
       "tournament": "NBA Summer League",
-      "match_id": "49850d551a5f84db",
+      "match_id": "bfd3c0900bb34246",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2829,7 +2820,7 @@
       "sport": "Basketball",
       "match": "Espanol De Talca vs Universidad Católica",
       "tournament": "LNB - Center",
-      "match_id": "958363fbbb286819",
+      "match_id": "018451b9d8d1d7e8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2847,7 +2838,7 @@
       "sport": "Basketball",
       "match": "Czechia U20 vs Romania U20",
       "tournament": "EuroBasket U20 - Group D",
-      "match_id": "24b7fc3cf9efcf7a",
+      "match_id": "e9b9c118c14fb1b3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2865,7 +2856,7 @@
       "sport": "Basketball",
       "match": "Cerrado (W) vs Sampaio (W)",
       "tournament": "LBF - Semi Finals",
-      "match_id": "3c972d15da95e41f",
+      "match_id": "a2ac24dccf12856f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2883,7 +2874,7 @@
       "sport": "Basketball",
       "match": "Lithuania U20 vs Serbia U20",
       "tournament": "EuroBasket U20 - Group B",
-      "match_id": "8ae71f82395134b1",
+      "match_id": "8607d208d3f638e6",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2901,7 +2892,7 @@
       "sport": "Basketball",
       "match": "Manawatu Jets vs Nelson Giants",
       "tournament": "NBL",
-      "match_id": "c3b7496e7e9b6822",
+      "match_id": "c2380ab792eea66e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2919,7 +2910,7 @@
       "sport": "Basketball",
       "match": "Lithuania U20 vs Poland U20",
       "tournament": "EuroBasket U20 - Group B",
-      "match_id": "59934c810ce743ba",
+      "match_id": "500908ae92b98577",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2937,7 +2928,7 @@
       "sport": "Basketball",
       "match": "Israel U20 vs Czechia U20",
       "tournament": "EuroBasket U20 - Group D",
-      "match_id": "234fbff99e35af4b",
+      "match_id": "b6520d4f98f1897a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2955,7 +2946,7 @@
       "sport": "Basketball",
       "match": "Cangrejeros vs Criollos de Caguas",
       "tournament": "BSN - Quarter Finals",
-      "match_id": "cbb37b417e5e9be3",
+      "match_id": "c9b8b1fad9561746",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2973,7 +2964,7 @@
       "sport": "Basketball",
       "match": "Slovenia U20 vs Romania U20",
       "tournament": "EuroBasket U20 - Group D",
-      "match_id": "9ffb42d3ac3883b5",
+      "match_id": "ca4dc807f3f9186f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2991,7 +2982,7 @@
       "sport": "Basketball",
       "match": "Greece U20 vs Spain U20",
       "tournament": "EuroBasket U20 - Group C",
-      "match_id": "d016395dc0867076",
+      "match_id": "c53f8047a308dcec",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -3009,7 +3000,7 @@
       "sport": "Basketball",
       "match": "Olimpia vs Deportivo San Jose",
       "tournament": "LNB - Final",
-      "match_id": "ee1ded243420e84c",
+      "match_id": "7f1509687d5041c4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -3027,7 +3018,7 @@
       "sport": "Basketball",
       "match": "Montevideo BBC vs Larre Borges",
       "tournament": "Liga de ascenso",
-      "match_id": "8b59dfff187912f3",
+      "match_id": "2d52ef54ee9eb8cd",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -3045,7 +3036,7 @@
       "sport": "Basketball",
       "match": "Sayago vs Colon FC",
       "tournament": "Liga de ascenso",
-      "match_id": "8d1d80c00565cf1d",
+      "match_id": "a28f9c1f891749fb",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -3063,7 +3054,7 @@
       "sport": "Basketball",
       "match": "France U20 vs Germany U20",
       "tournament": "EuroBasket U20 - Group A",
-      "match_id": "b742d5e82810fe58",
+      "match_id": "276655b4a789d0e6",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -3755,7 +3746,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1783836272,
+      "unix_timestamp": 1783846934,
       "sport": "Cricket",
       "match": "Willow Cricket",
       "tournament": "",
@@ -4539,7 +4530,9 @@
         "sarah": [
           "https://embedsports.top/embed/echo/argentina-vs-switzerland-football-1582681/1"
         ],
-        "wendy": []
+        "wendy": [
+          "https://sportsembed.su/embed/760513/argentina-vs-switzerland-football-1582681/echo/1"
+        ]
       },
       "confidence": 1,
       "merged": true,
@@ -4551,10 +4544,10 @@
         ],
         "team_consistency": 1,
         "time_consistency": 1,
-        "merge_quality": 55
+        "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.423Z",
+        "processed_at": "2026-07-12T09:02:15.102Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4625,7 +4618,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.423Z",
+        "processed_at": "2026-07-12T09:02:15.102Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4656,7 +4649,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.423Z",
+        "processed_at": "2026-07-12T09:02:15.102Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4730,934 +4723,11 @@
         "sarah": [],
         "wendy": []
       },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Seattle Reign vs Portland Thorns",
-      "tournament": "NWSL",
-      "match_id": "8df4fed473b76f39",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Fluminense vs Bahia",
-      "tournament": "Club Friendlies",
-      "match_id": "72356f1be2d4bbd1",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783881000000,
-      "sport": "Football",
-      "match": "Colon vs Central Norte",
-      "tournament": "Primera Nacional",
-      "match_id": "fe25e3328054ddff",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Atletico Guemes vs San Martin San Juan",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.36666666666666664,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 0,
-        "time_consistency": 1,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.423Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "exact_team_order"
-        ]
-      }
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "CA Ferrocarril Midland vs Quilmes",
-      "tournament": "Primera Nacional",
-      "match_id": "63c8ffb7b1913f29",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "CS Sébaco vs Diriangén FC",
-      "tournament": "Nicaragua Cup - Quarter Finals",
-      "match_id": "6f010654fc5f88ca",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Agropecuario vs Temperley",
-      "tournament": "Primera Nacional",
-      "match_id": "7d569027b9e9cad4",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Avaí vs Náutico",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.4,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 0,
-        "time_consistency": 1,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.423Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "exact_team_order"
-        ]
-      }
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783881000000,
-      "sport": "Football",
-      "match": "Sao Luiz vs Velo Clube",
-      "tournament": "Serie D - Round of 32",
-      "match_id": "4ce9a68df1c86fb5",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Ituano vs Ferroviária",
-      "tournament": "Brazilian Serie C",
-      "match_id": "0912df054f0d3c5e",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Coquimbo Unido vs U. La Calera",
-      "tournament": "League Cup - Final",
-      "match_id": "1e267a473130a4f5",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Uberlandia vs Serra Branca",
-      "tournament": "Serie D - Round of 32",
-      "match_id": "5d6005bb075e7c87",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Ferroviário vs Imperatriz vs MA",
-      "tournament": "Serie D - Round of 32",
-      "match_id": "c356a8c39860b204",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Gimnasia y Esgrima de Chivilcoy vs Gimnasia y Esgrima de Concepcion",
-      "tournament": "Torneo Federal A",
-      "match_id": "afc2f0de68602d15",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Germinal vs Olimpo",
-      "tournament": "Torneo Federal A",
-      "match_id": "bf4a738bb903ff8c",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Gama vs Porto Velho EC",
-      "tournament": "Brazilian Serie D",
-      "match_id": "cae33a4b6cc4b640",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783887300000,
-      "sport": "Football",
-      "match": "Sportivo Trinidense (W) vs Recoleta FC (W)",
-      "tournament": "Championship (W)",
-      "match_id": "028f38e359f66bf9",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "ASA vs Ivinhema",
-      "tournament": "Brazilian Serie D",
-      "match_id": "eb0d38d727709d19",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Nação vs Fluminense vs SC",
-      "tournament": "Catarinense - Serie B",
-      "match_id": "66f07be32e225e5b",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886700000,
-      "sport": "Football",
-      "match": "FH Hafnarfjordur vs Valur Reykjavik",
-      "tournament": "Besta deildin",
-      "match_id": "53e78ab36e1c723c",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783884600000,
-      "sport": "Football",
-      "match": "Lota Schwager vs Provincial Osorno",
-      "tournament": "Segunda División",
-      "match_id": "1c30f11e0c8cc3f7",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "CA Bartolome Mitre vs Defensores de Vilelas",
-      "tournament": "Torneo Federal A",
-      "match_id": "8d0ce6bc116b6cab",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Gimnasia y Tiro (Salta) vs Patronato",
-      "tournament": "Primera Nacional",
-      "match_id": "2321e93c41908b20",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783881000000,
-      "sport": "Football",
-      "match": "Juventud Antoniana vs Tucuman Central",
-      "tournament": "Torneo Federal A",
-      "match_id": "d489805f772ece56",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Gremio vs Cruzeiro",
-      "tournament": "Club Friendlies",
-      "match_id": "a2e685eaf2c17062",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783883700000,
-      "sport": "Football",
-      "match": "Deportivo Cuenca vs Aucas",
-      "tournament": "LigaPro Ecuador",
-      "match_id": "1e4ad9c81f63e8a0",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Sao Bernardo vs Cuiaba",
-      "tournament": "Brazilian Serie B",
-      "match_id": "36ee8683ddd98ab5",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783881000000,
-      "sport": "Football",
-      "match": "Deportivo Rincón vs Huracán Las Heras",
-      "tournament": "Torneo Federal A",
-      "match_id": "b892c5f0decc7a5a",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Manauara vs Goiatuba SC",
-      "tournament": "Brazilian Serie D",
-      "match_id": "c5922dffcd4acc14",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783881900000,
-      "sport": "Football",
-      "match": "Argentino Monte Maiz vs Sportivo Atenas",
-      "tournament": "Torneo Federal A",
-      "match_id": "9e7c145cfc238160",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Philadelphia Union II vs Huntsville",
-      "tournament": "MLS NEXT Pro",
-      "match_id": "6d8715961def3ca8",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Chicago Fire FC II vs Red Bull New York II",
-      "tournament": "MLS NEXT Pro",
-      "match_id": "98186846df6f44fd",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Anapolis FC vs Maringa FC",
-      "tournament": "Brazilian Serie C",
-      "match_id": "146fe08418e685cc",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Iguatu vs Maguary",
-      "tournament": "Brazilian Serie D",
-      "match_id": "9b2e70f4d65555cc",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Capital FC vs Nacional AM",
-      "tournament": "Brazilian Serie D",
-      "match_id": "24e3fc96695dbc92",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Treze vs CRAC",
-      "tournament": "Brazilian Serie D",
-      "match_id": "8628cb827896cf2e",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Racing (Córdoba) vs Acassuso",
-      "tournament": "Primera Nacional",
-      "match_id": "87aed24c6bf99392",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Maranhão vs MA vs Ypiranga vs RS",
-      "tournament": "Brazilian Serie C",
-      "match_id": "8faa2864efa0b55a",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783884600000,
-      "sport": "Football",
-      "match": "Godoy Cruz vs Defensores de Belgrano",
-      "tournament": "Primera Nacional",
-      "match_id": "1673425dd36fcb1f",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Portuguesa RJ vs EC Sao Jose",
-      "tournament": "Brazilian Serie D",
-      "match_id": "acffcdb9ab0e4d42",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "ABC vs Aguia de Maraba",
-      "tournament": "Brazilian Serie D",
-      "match_id": "fcdac455a88a566c",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Talleres de Córdoba (W) vs Lanús (W)",
-      "tournament": "Campeonato Femenino - Apertura",
-      "match_id": "78f472f23aee3158",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "República Independiente de Hualqui vs Laja Histórico",
-      "tournament": "Tercera División B - South",
-      "match_id": "4287c6ebe52ad50c",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Football",
-      "match": "Montreal Roses FC vs Halifax Tides FC",
-      "tournament": "Northern Super League",
-      "match_id": "48af545ad3f0d0fc",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783887300000,
-      "sport": "Football",
-      "match": "Sporting Cristal (W) vs Universitario Deportes (W)",
-      "tournament": "Women League - Final",
-      "match_id": "2c6dac99b7daa968",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783888200000,
-      "sport": "Football",
-      "match": "Alianza Lima vs Deportivo Cali",
-      "tournament": "Club Friendlies",
-      "match_id": "639397f01547af73",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Virginia USC vs Club Deportivo Nueva Santa Cruz",
-      "tournament": "Copa Simón Bolívar - Santa Cruz",
-      "match_id": "3dde27a79bf48c13",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783883700000,
-      "sport": "Football",
-      "match": "Astor FC (W) vs Blooming (W)",
-      "tournament": "Women League",
-      "match_id": "ff32b3e05cb90c91",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783882800000,
-      "sport": "Football",
-      "match": "Gasparín FC vs Inter Concepcion",
-      "tournament": "Tercera División B - South",
-      "match_id": "e37754761dc1d311",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783888200000,
-      "sport": "Football",
-      "match": "Iberia Los Ángeles vs Fernández Vial",
-      "tournament": "Tercera División B - South",
-      "match_id": "9f4b62ca22d7aad8",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
       "unix_timestamp": 1783900800000,
       "sport": "Football",
       "match": "O'Higgins vs Nublense",
       "tournament": "League Cup - Final",
-      "match_id": "8908fddaa4e98e84",
+      "match_id": "f977f6d44756bc8a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5675,7 +4745,7 @@
       "sport": "Football",
       "match": "The Town FC vs Tacoma Defiance",
       "tournament": "MLS NEXT Pro",
-      "match_id": "6d570a39ed09e22c",
+      "match_id": "349d7b8801d75723",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5693,7 +4763,7 @@
       "sport": "Football",
       "match": "Austin Fc II vs Minnesota II",
       "tournament": "MLS NEXT Pro",
-      "match_id": "995f9d0876a19709",
+      "match_id": "874cb6f6d060de44",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5711,7 +4781,7 @@
       "sport": "Football",
       "match": "Nagano Parceiro vs Iwaki FC",
       "tournament": "Club Friendlies",
-      "match_id": "41cf6ebd9d931347",
+      "match_id": "d6bfae12b0fb6c2b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5729,7 +4799,7 @@
       "sport": "Football",
       "match": "Sepsi vs Targu Mures",
       "tournament": "Club Friendlies",
-      "match_id": "a0f2bb54bf127236",
+      "match_id": "3115430b000281b0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5747,7 +4817,7 @@
       "sport": "Football",
       "match": "Atlanta vs Colegiales",
       "tournament": "Primera Nacional",
-      "match_id": "9986dd4cb7420e10",
+      "match_id": "0cc93f64f6f6a5fa",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5765,7 +4835,7 @@
       "sport": "Football",
       "match": "Deportivo Capiata vs Atlético Tembetary",
       "tournament": "Division Intermedia",
-      "match_id": "258ebbcacb346456",
+      "match_id": "c2c38afb936b618d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5783,7 +4853,7 @@
       "sport": "Football",
       "match": "Paysandu FC vs Fenix",
       "tournament": "Uruguayan Segunda Division Profesional",
-      "match_id": "dcda9adb6a4d6251",
+      "match_id": "8b23ae9f403a8e30",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5801,7 +4871,7 @@
       "sport": "Football",
       "match": "Cerro Largo vs Defensor Sporting",
       "tournament": "Liga AUF Uruguaya",
-      "match_id": "e7fa9a217ec3f457",
+      "match_id": "e5cff5e867971a18",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5819,7 +4889,7 @@
       "sport": "Football",
       "match": "América Mineiro vs Londrina",
       "tournament": "Brazilian Serie B",
-      "match_id": "b9ecca9aa4187704",
+      "match_id": "07f6c6d590cc80d5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5837,7 +4907,7 @@
       "sport": "Football",
       "match": "Figueirense vs Volta Redonda",
       "tournament": "Brazilian Serie C",
-      "match_id": "35cdd7dac5f714fa",
+      "match_id": "7207b7721e5f46a8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5855,7 +4925,7 @@
       "sport": "Football",
       "match": "Ceara vs Athletic Club",
       "tournament": "Brazilian Serie B",
-      "match_id": "08521e4cf73fdeb5",
+      "match_id": "a665dcc894aa2f0b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5873,7 +4943,7 @@
       "sport": "Football",
       "match": "Itabaiana vs Brusque",
       "tournament": "Brazilian Serie C",
-      "match_id": "470297972b27f2c8",
+      "match_id": "cbc593a839972300",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5891,7 +4961,7 @@
       "sport": "Football",
       "match": "CSA vs Betim EC",
       "tournament": "Serie D - Round of 32",
-      "match_id": "cc595d03977231bb",
+      "match_id": "a5789d19d40b244b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5909,7 +4979,7 @@
       "sport": "Football",
       "match": "América vs RN vs Trem",
       "tournament": "Serie D - Round of 32",
-      "match_id": "f9629c8c5ee06271",
+      "match_id": "6e611f44fd97baa8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5927,7 +4997,7 @@
       "sport": "Football",
       "match": "TOP Oss vs MSV Duisburg",
       "tournament": "Club Friendlies",
-      "match_id": "fef57d8e5f1e0b2d",
+      "match_id": "8fbbec369e416a46",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5945,7 +5015,7 @@
       "sport": "Football",
       "match": "FA Siauliai vs Hegelmann",
       "tournament": "A Lyga",
-      "match_id": "6ea4081e23e01ebf",
+      "match_id": "89e55efb5ea4d10d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5963,7 +5033,7 @@
       "sport": "Football",
       "match": "Botev Plovdiv vs Beroe",
       "tournament": "Club Friendlies",
-      "match_id": "5103392a495b5329",
+      "match_id": "9680161ab47933da",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -5981,25 +5051,7 @@
       "sport": "Football",
       "match": "Juventus SC vs Guarani de Palhoça",
       "tournament": "Catarinense - Serie B",
-      "match_id": "1266abaf948bed0a",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783879200000,
-      "sport": "Football",
-      "match": "Boston River vs Central Español Fútbol Club",
-      "tournament": "Liga AUF Uruguaya",
-      "match_id": "4b1933d7c6c530f4",
+      "match_id": "04788421df8d1511",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6017,7 +5069,25 @@
       "sport": "Football",
       "match": "Academia Control Orientado vs Everton de La Plata",
       "tournament": "Promocional Amateur",
-      "match_id": "3f8a782d9a2a44fc",
+      "match_id": "171c7fd8b98bb30a",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783879200000,
+      "sport": "Football",
+      "match": "Boston River vs Central Español Fútbol Club",
+      "tournament": "Liga AUF Uruguaya",
+      "match_id": "fb4a951af188691e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6035,7 +5105,7 @@
       "sport": "Football",
       "match": "3 de Febrero F.B.C. vs Olimpia De Itá",
       "tournament": "APF Primera B",
-      "match_id": "51741e803a13aebd",
+      "match_id": "8a9c2cc5ce4d04d7",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6053,7 +5123,7 @@
       "sport": "Football",
       "match": "Jwaya vs Nejmeh SC",
       "tournament": "Premier League",
-      "match_id": "0b51feceef85588b",
+      "match_id": "3bc7fa5a56e4fdf3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6071,7 +5141,7 @@
       "sport": "Football",
       "match": "Antofagasta vs Cobresal",
       "tournament": "Copa Chile",
-      "match_id": "c853130e611853ac",
+      "match_id": "6670de59c340e65a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6089,7 +5159,7 @@
       "sport": "Football",
       "match": "Cobreloa vs La Serena",
       "tournament": "Copa Chile",
-      "match_id": "8de198365dc0dcda",
+      "match_id": "bae4e88b6fcebdad",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6107,7 +5177,7 @@
       "sport": "Football",
       "match": "KA Akureyri vs IA Akranes",
       "tournament": "Besta deildin",
-      "match_id": "46caf9a8cd059362",
+      "match_id": "eb82a482fc9b5937",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6125,7 +5195,7 @@
       "sport": "Football",
       "match": "Club Atlético Belgrano (Zarate) vs Las Mandarinas (Brandsen)",
       "tournament": "Promocional Amateur",
-      "match_id": "80be62d63ad7647e",
+      "match_id": "e80433d0e59764e4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6143,7 +5213,7 @@
       "sport": "Football",
       "match": "Sportivo Valois Rivarola vs Fulgencio Yegros",
       "tournament": "APF Primera C",
-      "match_id": "4f9cf74348d3a2a4",
+      "match_id": "de8216070d6d8ebb",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6173,7 +5243,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.423Z",
+        "processed_at": "2026-07-12T09:02:15.103Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6191,7 +5261,7 @@
       "sport": "Football",
       "match": "FC Sheriff vs Zimbru",
       "tournament": "Super Liga",
-      "match_id": "3a30b2b0893d9f8b",
+      "match_id": "ecec2d3bf3b0e7a9",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6209,7 +5279,7 @@
       "sport": "Football",
       "match": "Gimnasia Jujuy vs Chacarita Juniors",
       "tournament": "Primera Nacional",
-      "match_id": "544f1fd3f91277b9",
+      "match_id": "0161ccad8cc05eac",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6227,7 +5297,7 @@
       "sport": "Football",
       "match": "LDU vs Libertad",
       "tournament": "LigaPro Ecuador",
-      "match_id": "1b1534f6dea88799",
+      "match_id": "795c14054fabbeb6",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6245,43 +5315,7 @@
       "sport": "Football",
       "match": "Milsami Orhei vs CSCA Buiucani",
       "tournament": "Super Liga",
-      "match_id": "938a284f6cee23ac",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783876500000,
-      "sport": "Football",
-      "match": "Sarpsborg FK vs Viking FK",
-      "tournament": "Norwegian Eliteserien",
-      "match_id": "f13130d72cf957b1",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783879200000,
-      "sport": "Football",
-      "match": "Club Sportivo Cerrito vs Miramar Misiones",
-      "tournament": "Uruguayan Segunda Division Profesional",
-      "match_id": "c55a8a15ca906601",
+      "match_id": "58ef34f8fcf13993",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6299,7 +5333,7 @@
       "sport": "Football",
       "match": "General Caballero ZC vs General Diaz",
       "tournament": "APF Primera C",
-      "match_id": "322d91b8ef6bc069",
+      "match_id": "4a4d66175627dc2a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6317,7 +5351,7 @@
       "sport": "Football",
       "match": "Paulinense vs Independente SP",
       "tournament": "Paulista Serie B - Quarter Finals",
-      "match_id": "ee988b41284a92b5",
+      "match_id": "995033a07706dba8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6335,7 +5369,7 @@
       "sport": "Football",
       "match": "KR Reykjavik vs IBV Vestmannaeyjar",
       "tournament": "Besta deildin",
-      "match_id": "448ccd819cc2a3c3",
+      "match_id": "e1dbf4c08c821eaa",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6353,7 +5387,7 @@
       "sport": "Football",
       "match": "Aragua FC vs Caracas FC",
       "tournament": "Copa Venezuela",
-      "match_id": "26b8bb82dc515c1f",
+      "match_id": "8b22cdb4dc89e54d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6371,7 +5405,7 @@
       "sport": "Football",
       "match": "Sportivo Las Parejas vs Sportivo Belgrano",
       "tournament": "Torneo Federal A",
-      "match_id": "bb2a93f128a4bccd",
+      "match_id": "2a83f752b1bc38c5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6389,7 +5423,7 @@
       "sport": "Football",
       "match": "Sol De América vs Boca Unidos",
       "tournament": "Torneo Federal A",
-      "match_id": "99471b84a21beb37",
+      "match_id": "df84771544a3856d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6407,7 +5441,7 @@
       "sport": "Football",
       "match": "América SP vs José Bonifácio",
       "tournament": "Paulista Serie B - Quarter Finals",
-      "match_id": "d9a5cf587fd9a5a1",
+      "match_id": "5c5cff488a7ef4f0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6425,7 +5459,7 @@
       "sport": "Football",
       "match": "Matonense vs Flamengo vs SP",
       "tournament": "Paulista Serie B - Quarter Finals",
-      "match_id": "80363251b34829d0",
+      "match_id": "00b999e71d93dbc6",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6443,7 +5477,7 @@
       "sport": "Football",
       "match": "Trujillanos FC vs Rayo Zuliano",
       "tournament": "Copa Venezuela",
-      "match_id": "f0fa2450f32369fe",
+      "match_id": "13f8677cc338f832",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6461,7 +5495,7 @@
       "sport": "Football",
       "match": "Universitatea Craiova vs Universitatea Cluj",
       "tournament": "Super Cup",
-      "match_id": "fa114db0b7aa4611",
+      "match_id": "a58256c79db9cbfd",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6479,7 +5513,7 @@
       "sport": "Football",
       "match": "Atletico Ávila FC vs Anzoategui Futbol Club",
       "tournament": "Copa Venezuela",
-      "match_id": "bff3f6c3fc952991",
+      "match_id": "affb9d5ae324a611",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6497,7 +5531,7 @@
       "sport": "Football",
       "match": "Deportivo Lara vs Ureña SC",
       "tournament": "Copa Venezuela",
-      "match_id": "f4a0fe87a46fa395",
+      "match_id": "f2db3bf733edb08f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6515,7 +5549,7 @@
       "sport": "Football",
       "match": "Atletico El Vigia vs Zamora FC",
       "tournament": "Copa Venezuela",
-      "match_id": "f2f1bb9ae813dba4",
+      "match_id": "dc4a7f28c232398d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6533,7 +5567,7 @@
       "sport": "Football",
       "match": "Rigas FS vs FK Jelgava",
       "tournament": "Latvian Cup",
-      "match_id": "353d4765ed623736",
+      "match_id": "2b41324168679412",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6551,7 +5585,7 @@
       "sport": "Football",
       "match": "Villa Mitre vs Guillermo Brown",
       "tournament": "Torneo Federal A",
-      "match_id": "44486abec0952b63",
+      "match_id": "c89260969c5ee6fe",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6569,7 +5603,7 @@
       "sport": "Football",
       "match": "Tubarão vs Metropolitano",
       "tournament": "Catarinense - Serie B",
-      "match_id": "8b74a7d2816211a4",
+      "match_id": "58c53faa14059299",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6587,7 +5621,7 @@
       "sport": "Football",
       "match": "Throttur Vogar vs KFG",
       "tournament": "2. Deild",
-      "match_id": "63408f5f7465c338",
+      "match_id": "5cad243d9a286615",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6605,7 +5639,43 @@
       "sport": "Football",
       "match": "Monagas SC vs Dynamo Puerto FC",
       "tournament": "Copa Venezuela",
-      "match_id": "02f830b44f5aae9a",
+      "match_id": "1887d4714e8acbb9",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783876500000,
+      "sport": "Football",
+      "match": "Sarpsborg 08 vs Viking",
+      "tournament": "Norwegian Eliteserien",
+      "match_id": "186f3f9b44136a1c",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783879200000,
+      "sport": "Football",
+      "match": "Club Sportivo Cerrito vs Miramar Misiones",
+      "tournament": "Uruguayan Segunda Division Profesional",
+      "match_id": "afa9cf9aae5f107d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6623,7 +5693,7 @@
       "sport": "Football",
       "match": "Bolívar SC vs Mineros De Guayana",
       "tournament": "Copa Venezuela",
-      "match_id": "fc8c3288fe4c8b8e",
+      "match_id": "d8208662ec07d3e5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6641,7 +5711,7 @@
       "sport": "Football",
       "match": "Club Atletico Barinas vs Real Frontera",
       "tournament": "Copa Venezuela",
-      "match_id": "ca33fe8b1855e368",
+      "match_id": "e183794e92f1e20f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6659,7 +5729,7 @@
       "sport": "Football",
       "match": "Zenit vs FK Crvena Zvezda",
       "tournament": "Club Friendlies",
-      "match_id": "ef9b2fbbc7a9a1f7",
+      "match_id": "9aadaeb860f65b1a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6677,7 +5747,7 @@
       "sport": "Football",
       "match": "União Mogi vs Itaquá",
       "tournament": "Paulista Serie B - Quarter Finals",
-      "match_id": "98615d86ccbf515c",
+      "match_id": "be22e8a2bfb83b04",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6695,7 +5765,7 @@
       "sport": "Football",
       "match": "Pumas UNAM vs America de Cali",
       "tournament": "Club Friendlies",
-      "match_id": "3b0c8da06496869e",
+      "match_id": "3edcdb7e2cc872e1",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6713,7 +5783,7 @@
       "sport": "Football",
       "match": "Circulo Deportivo vs Sol de Mayo",
       "tournament": "Torneo Federal A",
-      "match_id": "71262cdbea3825df",
+      "match_id": "023326fd3fc3fa18",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6731,7 +5801,7 @@
       "sport": "Football",
       "match": "FC Nomme United II vs Flora Tallinn II",
       "tournament": "Esiliiga",
-      "match_id": "291105bdf16fa4be",
+      "match_id": "da7741b57ed481e1",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6749,7 +5819,7 @@
       "sport": "Football",
       "match": "Yaracuyanos vs Barquisimeto SC",
       "tournament": "Copa Venezuela",
-      "match_id": "83afc4bc4493c39c",
+      "match_id": "757040beb2cc06fa",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6767,7 +5837,7 @@
       "sport": "Football",
       "match": "Magni vs Haukar",
       "tournament": "2. Deild",
-      "match_id": "7a71166bf70e9377",
+      "match_id": "b7417de16d4c540d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6785,7 +5855,7 @@
       "sport": "Football",
       "match": "Club 1 De Marzo Fernando Mora vs Atlántida",
       "tournament": "APF Primera B",
-      "match_id": "6ef5ac471ca8462e",
+      "match_id": "fd37782bcd5e6225",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6803,7 +5873,7 @@
       "sport": "Football",
       "match": "Dalvik/Reynir vs Fjölnir",
       "tournament": "2. Deild",
-      "match_id": "947e425e07c14b48",
+      "match_id": "1c2f0c69e0d1504e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6821,7 +5891,7 @@
       "sport": "Football",
       "match": "FK Metalac vs Vozdovac",
       "tournament": "Club Friendlies",
-      "match_id": "8dfc630990db4a9c",
+      "match_id": "e0bf7a83a0564a2a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6839,7 +5909,7 @@
       "sport": "Football",
       "match": "IF Brommapojkarna vs IK Sirius",
       "tournament": "Swedish Allsvenskan",
-      "match_id": "61845fd7424ebb78",
+      "match_id": "6f682d42049089f5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6857,7 +5927,7 @@
       "sport": "Football",
       "match": "Operário vs PR vs Novorizontino",
       "tournament": "Brazilian Serie B",
-      "match_id": "fbbe59bd9eee5da7",
+      "match_id": "9ff7b09fe974b848",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6875,43 +5945,7 @@
       "sport": "Football",
       "match": "Rosenborg vs Kristiansund",
       "tournament": "Norwegian Eliteserien",
-      "match_id": "e4d94ddcd38383f6",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783868400000,
-      "sport": "Football",
-      "match": "Slavia Praha vs MFK Ruzomberok",
-      "tournament": "Club Friendlies",
-      "match_id": "3d8e2431a8feeb56",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783868400000,
-      "sport": "Football",
-      "match": "Columbus Crew vs Burnley",
-      "tournament": "Club Friendlies",
-      "match_id": "400760cc2827855c",
+      "match_id": "7bd225b9139c81a2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6929,7 +5963,7 @@
       "sport": "Football",
       "match": "Sandefjord vs Ham vs kam",
       "tournament": "Norwegian Eliteserien",
-      "match_id": "88276b0ecbc19092",
+      "match_id": "c08f9146a75f948e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6945,9 +5979,27 @@
       },
       "unix_timestamp": 1783868400000,
       "sport": "Football",
-      "match": "Valmieras FK vs Ogre United",
-      "tournament": "Latvian Cup",
-      "match_id": "0cc91292c6004cea",
+      "match": "Slavia Praha vs MFK Ruzomberok",
+      "tournament": "Club Friendlies",
+      "match_id": "526856974431de9c",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783868400000,
+      "sport": "Football",
+      "match": "Columbus Crew vs Burnley",
+      "tournament": "Club Friendlies",
+      "match_id": "644c6157e8fc0566",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6965,7 +6017,7 @@
       "sport": "Football",
       "match": "Al Ansar vs Al Ahed",
       "tournament": "Premier League",
-      "match_id": "5425828c08d3ad13",
+      "match_id": "4c536cd1f67570fe",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -6983,7 +6035,7 @@
       "sport": "Football",
       "match": "Tobol Kostanay vs Okzhetpes",
       "tournament": "Kazakhstan Premier League",
-      "match_id": "769ab8467d5d5664",
+      "match_id": "1bbef87178328fba",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7001,7 +6053,7 @@
       "sport": "Football",
       "match": "FK Atyrau vs Yelimay Semey",
       "tournament": "Kazakhstan Premier League",
-      "match_id": "5fb534573d8d6284",
+      "match_id": "63e09c0073c793d1",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7019,7 +6071,7 @@
       "sport": "Football",
       "match": "Fundación Amigos por el Deporte vs San Martín Mendoza",
       "tournament": "Torneo Federal A",
-      "match_id": "6fbd6e57eb326d4f",
+      "match_id": "ae079d8cbc844f83",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7037,7 +6089,7 @@
       "sport": "Football",
       "match": "GAIS vs Elfsborg",
       "tournament": "Swedish Allsvenskan",
-      "match_id": "01566eda8d4b39cf",
+      "match_id": "91a06c641c610c3c",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7055,7 +6107,7 @@
       "sport": "Football",
       "match": "FC Astana vs Aktobe",
       "tournament": "Kazakhstan Premier League",
-      "match_id": "fa32e03ddf394f6a",
+      "match_id": "f32cb48bc52b5c8a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7073,7 +6125,7 @@
       "sport": "Football",
       "match": "Brann vs Start",
       "tournament": "Norwegian Eliteserien",
-      "match_id": "2501e27aa8c509e6",
+      "match_id": "f57c30ed73c94b19",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7091,7 +6143,7 @@
       "sport": "Football",
       "match": "Inter de Limeira vs Amazonas FC",
       "tournament": "Brazilian Serie C",
-      "match_id": "d418eefb69892dee",
+      "match_id": "0fac9a259d6cae73",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7109,7 +6161,7 @@
       "sport": "Football",
       "match": "Atenas San Carlos vs Rentistas",
       "tournament": "Uruguayan Segunda Division Profesional",
-      "match_id": "998cf32123f08c26",
+      "match_id": "3f99c0a4ce66379e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7127,7 +6179,7 @@
       "sport": "Football",
       "match": "Volna Pinsk vs Shakhter Soligorsk",
       "tournament": "Pershaya Liga",
-      "match_id": "938cb5099dc9f664",
+      "match_id": "02a037aab07c7819",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7145,7 +6197,7 @@
       "sport": "Football",
       "match": "Galway United (W) vs Shamrock Rovers (W)",
       "tournament": "Women's Premier Division",
-      "match_id": "4cf7adbae156e93e",
+      "match_id": "890374cc3a06ba3b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7163,7 +6215,7 @@
       "sport": "Football",
       "match": "Barra FC vs Santa Cruz",
       "tournament": "Brazilian Serie C",
-      "match_id": "ca86090af84537b2",
+      "match_id": "5d78dd98e1da804b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7181,7 +6233,7 @@
       "sport": "Football",
       "match": "Åland United (W) vs PK vs 35 Vantaa (W)",
       "tournament": "Kansallinen Liiga",
-      "match_id": "3e2c535a2f60fa55",
+      "match_id": "0c106a3d005a02f2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7199,7 +6251,7 @@
       "sport": "Football",
       "match": "Liverpool vs Cerro",
       "tournament": "Liga AUF Uruguaya",
-      "match_id": "db9acba2026ff6ad",
+      "match_id": "78db8afe4925a151",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7217,7 +6269,25 @@
       "sport": "Football",
       "match": "Kari vs KFA",
       "tournament": "2. Deild",
-      "match_id": "d7764944ccd8120f",
+      "match_id": "699051807f3820fe",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783868400000,
+      "sport": "Football",
+      "match": "Valmieras FK vs Ogre United",
+      "tournament": "Latvian Cup",
+      "match_id": "14386b01e03ba571",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7235,7 +6305,7 @@
       "sport": "Football",
       "match": "Carl Zeiss Jena vs Union Berlin",
       "tournament": "Club Friendlies",
-      "match_id": "2f60f16f5dd6a746",
+      "match_id": "f09b8571edb80e84",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7253,7 +6323,7 @@
       "sport": "Football",
       "match": "Real Oruro (W) vs Basco FC (W)",
       "tournament": "Women League",
-      "match_id": "74a46a76e1eeaa20",
+      "match_id": "c424375942ebfa8e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7271,7 +6341,7 @@
       "sport": "Football",
       "match": "FK TransINVEST vs Banga Gargzdai",
       "tournament": "A Lyga",
-      "match_id": "1e312563f5d14a07",
+      "match_id": "c1252ee47d20ca6b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7289,7 +6359,7 @@
       "sport": "Football",
       "match": "De Graafschap vs AEK Athens",
       "tournament": "Club Friendlies",
-      "match_id": "74680ad86da8b65b",
+      "match_id": "fec300a00b56c7fd",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7307,7 +6377,7 @@
       "sport": "Football",
       "match": "Pafos FC vs Jagiellonia",
       "tournament": "Club Friendlies",
-      "match_id": "dc40508fa68ae81e",
+      "match_id": "b1ac75819c6ed4a4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7325,7 +6395,7 @@
       "sport": "Football",
       "match": "Kasimpasa vs Istanbulspor AS",
       "tournament": "Club Friendlies",
-      "match_id": "94a440913ccfdfb1",
+      "match_id": "085a9e925f38d498",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7343,7 +6413,7 @@
       "sport": "Football",
       "match": "Widzew Lodz vs Grosuplje",
       "tournament": "Club Friendlies",
-      "match_id": "6e8b3f0ff09309a3",
+      "match_id": "a3d930558519977e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7361,7 +6431,7 @@
       "sport": "Football",
       "match": "Mura 05 vs Marila Pribram",
       "tournament": "Club Friendlies",
-      "match_id": "d205d57bb71bab89",
+      "match_id": "5ebabb277e57f40e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7379,7 +6449,7 @@
       "sport": "Football",
       "match": "Tianjin Jinmen Tiger vs Liaoning Tieren",
       "tournament": "Chinese Super League",
-      "match_id": "3c4c591c1f11760e",
+      "match_id": "bd005b1574dc5b1e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7397,7 +6467,7 @@
       "sport": "Football",
       "match": "Västerås vs Degerfors IF",
       "tournament": "Swedish Allsvenskan",
-      "match_id": "5dadcac047744ef7",
+      "match_id": "8d6ea27268ebfc00",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7415,7 +6485,7 @@
       "sport": "Football",
       "match": "Polisi Tanzania FC vs Tanzania Prisons",
       "tournament": "Premier League Qualification",
-      "match_id": "06466873d06da390",
+      "match_id": "6cb11656fc9fc845",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7433,7 +6503,7 @@
       "sport": "Football",
       "match": "Yverdon vs Sport FC vs FC Sion",
       "tournament": "Club Friendlies",
-      "match_id": "cad5ea4211b13853",
+      "match_id": "8247be991fdc4fbe",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7451,7 +6521,7 @@
       "sport": "Football",
       "match": "Uruguay Montevideo Fc vs Oriental",
       "tournament": "Uruguayan Segunda Division Profesional",
-      "match_id": "040af3ba425a30b6",
+      "match_id": "a9b7394eefa894af",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7469,7 +6539,7 @@
       "sport": "Football",
       "match": "Shanghai Port vs Dalian Yingbo",
       "tournament": "Chinese Super League",
-      "match_id": "95a013f58a3c9ead",
+      "match_id": "3abeaa33831c2ed5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7498,7 +6568,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.424Z",
+        "processed_at": "2026-07-12T09:02:15.103Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7516,7 +6586,7 @@
       "sport": "Football",
       "match": "Malmö FF vs IFK Göteborg",
       "tournament": "Swedish Allsvenskan",
-      "match_id": "0a268f3cbacdd52a",
+      "match_id": "75a525e73c319a9b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7534,7 +6604,7 @@
       "sport": "Football",
       "match": "Hammarby IF vs Kalmar FF",
       "tournament": "Swedish Allsvenskan",
-      "match_id": "5b3ce961c50285bd",
+      "match_id": "93d77b45b21348d0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7552,7 +6622,7 @@
       "sport": "Football",
       "match": "KFUM Oslo vs Bodo/Glimt",
       "tournament": "Norwegian Eliteserien",
-      "match_id": "2cd36b33f9baa1f6",
+      "match_id": "80a56a1b616be7e0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7570,7 +6640,7 @@
       "sport": "Football",
       "match": "KuPS (W) vs Ilves (W)",
       "tournament": "Kansallinen Liiga",
-      "match_id": "e35d3bebd2802880",
+      "match_id": "ba6cb847fe3b77e3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7588,7 +6658,7 @@
       "sport": "Football",
       "match": "Nantong Zhiyun vs Changchun Yatai",
       "tournament": "China League One",
-      "match_id": "578aa4ca2df0fd6b",
+      "match_id": "607acb169083b436",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7617,7 +6687,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.424Z",
+        "processed_at": "2026-07-12T09:02:15.103Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7635,7 +6705,7 @@
       "sport": "Football",
       "match": "HPS (W) vs VIFK (W)",
       "tournament": "Kansallinen Liiga",
-      "match_id": "af029fec8aab688d",
+      "match_id": "6e648917a34279c4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7653,7 +6723,7 @@
       "sport": "Football",
       "match": "Guairena FC vs 12 De Junio Vh",
       "tournament": "Division Intermedia",
-      "match_id": "9e31a489b34b23de",
+      "match_id": "201f0deb54277dd6",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7671,7 +6741,7 @@
       "sport": "Football",
       "match": "Shenzhen Juniors vs Dingnan United",
       "tournament": "China League One",
-      "match_id": "2d935990b0374f94",
+      "match_id": "3cb4e0f71838757e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7689,7 +6759,7 @@
       "sport": "Football",
       "match": "Arsenal Dzerzhinsk vs FK Vitebsk",
       "tournament": "Belarusian Premier League",
-      "match_id": "0e7cfe256cbf9d87",
+      "match_id": "5dad8c07821feca0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7707,7 +6777,7 @@
       "sport": "Football",
       "match": "IF Gnistan (W) vs HJK (W)",
       "tournament": "Kansallinen Liiga",
-      "match_id": "882761158f74b150",
+      "match_id": "f8d40d59f9d9f526",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7725,7 +6795,7 @@
       "sport": "Football",
       "match": "Gomel II vs Bumprom",
       "tournament": "Pershaya Liga",
-      "match_id": "2f1643101cbb5a11",
+      "match_id": "ddd758cff258a4e1",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7743,7 +6813,7 @@
       "sport": "Football",
       "match": "Presidente Hayes vs Martín Ledesma",
       "tournament": "APF Primera B",
-      "match_id": "dfd4864a1b40fcde",
+      "match_id": "517dd917f23efea8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7761,7 +6831,7 @@
       "sport": "Football",
       "match": "Jablonec 97 vs Osnabrück",
       "tournament": "Club Friendlies",
-      "match_id": "3ca75346708a4d08",
+      "match_id": "0082db18e8ca7be3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7779,7 +6849,7 @@
       "sport": "Football",
       "match": "Atlético Colegiales vs 24 de Setiembre VP",
       "tournament": "APF Primera B",
-      "match_id": "0521d9c49eb2e9aa",
+      "match_id": "60b0ee3cf0cd952d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7797,7 +6867,7 @@
       "sport": "Football",
       "match": "VSG Altglienicke vs Eintracht Mahlsdorf",
       "tournament": "Club Friendlies",
-      "match_id": "881265efadef9da9",
+      "match_id": "483efa6a85be39a2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7815,7 +6885,7 @@
       "sport": "Football",
       "match": "Stuttgarter Kickers vs Bayern München II",
       "tournament": "Club Friendlies",
-      "match_id": "c3d8c539e714b4de",
+      "match_id": "6ae80c737738d065",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7833,7 +6903,7 @@
       "sport": "Football",
       "match": "BSG Chemie Leipzig vs FC Magdeburg",
       "tournament": "Club Friendlies",
-      "match_id": "1fafcfd25b7e3dc0",
+      "match_id": "1c84b5a8b65add56",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7851,7 +6921,7 @@
       "sport": "Football",
       "match": "Eintracht Trier vs Etzella Ettelbruck",
       "tournament": "Club Friendlies",
-      "match_id": "2419231861b3f706",
+      "match_id": "b634d77d8b68c590",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7869,7 +6939,7 @@
       "sport": "Football",
       "match": "Weiche Flensburg vs Kolding IF",
       "tournament": "Club Friendlies",
-      "match_id": "2ac737d0c873b4da",
+      "match_id": "e180d74e8517d0db",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7887,7 +6957,7 @@
       "sport": "Football",
       "match": "Rsv Eintracht vs SV Lichtenberg 47",
       "tournament": "Club Friendlies",
-      "match_id": "b3e7a697030d8508",
+      "match_id": "5f02d597b111c129",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7905,7 +6975,7 @@
       "sport": "Football",
       "match": "River Plate (W) vs Social Atletico Television (W)",
       "tournament": "Campeonato Femenino - Apertura",
-      "match_id": "0929b0e2deb73eef",
+      "match_id": "a44f0815209de6eb",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7923,7 +6993,7 @@
       "sport": "Football",
       "match": "IFK Varnamo vs Naestved",
       "tournament": "Club Friendlies",
-      "match_id": "6c4c13c1b576abd8",
+      "match_id": "13e5076e132bd75a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7941,7 +7011,7 @@
       "sport": "Football",
       "match": "Zenit vs Dynamo Makhachkala",
       "tournament": "Club Friendlies",
-      "match_id": "a9a9704ee211c05d",
+      "match_id": "5feac94f7c797d3f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7959,7 +7029,7 @@
       "sport": "Football",
       "match": "Wacker Innsbruck vs Teplice",
       "tournament": "Club Friendlies",
-      "match_id": "fd63e95359af831e",
+      "match_id": "d0f767091990bfe9",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7977,7 +7047,7 @@
       "sport": "Football",
       "match": "12 de Octubre SD vs 12 de Octubre de Itaguá",
       "tournament": "APF Primera B",
-      "match_id": "d9295c0735e8a692",
+      "match_id": "2ecad0bcccc39d17",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -7995,7 +7065,930 @@
       "sport": "Football",
       "match": "Al vs Abbassieh vs Racing",
       "tournament": "Premier League",
-      "match_id": "17fb24f64ecef7a1",
+      "match_id": "f99a618a8397c3e3",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Fluminense vs Bahia",
+      "tournament": "Club Friendlies",
+      "match_id": "7f54c31bba875201",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783881000000,
+      "sport": "Football",
+      "match": "Colon vs Central Norte",
+      "tournament": "Primera Nacional",
+      "match_id": "51084b8a47add0cd",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "CS Sébaco vs Diriangén FC",
+      "tournament": "Nicaragua Cup - Quarter Finals",
+      "match_id": "bb299f23964f9ee8",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Atletico Guemes vs San Martin San Juan",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.36666666666666664,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 0,
+        "time_consistency": 1,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-07-12T09:02:15.103Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "exact_team_order"
+        ]
+      }
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "CA Ferrocarril Midland vs Quilmes",
+      "tournament": "Primera Nacional",
+      "match_id": "0fd56ea62cf21865",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Seattle Reign vs Portland Thorns",
+      "tournament": "NWSL",
+      "match_id": "e2ae9144d24e2199",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Agropecuario vs Temperley",
+      "tournament": "Primera Nacional",
+      "match_id": "440c68a425f630bc",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Avaí vs Náutico",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.4,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 0,
+        "time_consistency": 1,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-07-12T09:02:15.103Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "exact_team_order"
+        ]
+      }
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783881000000,
+      "sport": "Football",
+      "match": "Sao Luiz vs Velo Clube",
+      "tournament": "Serie D - Round of 32",
+      "match_id": "58fce69c8d64ed0e",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Ituano vs Ferroviária",
+      "tournament": "Brazilian Serie C",
+      "match_id": "f356adf6905ef338",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Coquimbo Unido vs U. La Calera",
+      "tournament": "League Cup - Final",
+      "match_id": "36c45ce68f63587d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Uberlandia vs Serra Branca",
+      "tournament": "Serie D - Round of 32",
+      "match_id": "d68c0cce8189b276",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Ferroviário vs Imperatriz vs MA",
+      "tournament": "Serie D - Round of 32",
+      "match_id": "6cc35093c6929bed",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Germinal vs Olimpo",
+      "tournament": "Torneo Federal A",
+      "match_id": "4062acb0eb6acc76",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Gama vs Porto Velho EC",
+      "tournament": "Brazilian Serie D",
+      "match_id": "f494e27c8da1c0e3",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783887300000,
+      "sport": "Football",
+      "match": "Sportivo Trinidense (W) vs Recoleta FC (W)",
+      "tournament": "Championship (W)",
+      "match_id": "f94cab0592d7b385",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "ASA vs Ivinhema",
+      "tournament": "Brazilian Serie D",
+      "match_id": "77f82d1890334ff0",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Nação vs Fluminense vs SC",
+      "tournament": "Catarinense - Serie B",
+      "match_id": "f60300652f4ed085",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886700000,
+      "sport": "Football",
+      "match": "FH Hafnarfjordur vs Valur Reykjavik",
+      "tournament": "Besta deildin",
+      "match_id": "472f00fb0b5e923d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783884600000,
+      "sport": "Football",
+      "match": "Lota Schwager vs Provincial Osorno",
+      "tournament": "Segunda División",
+      "match_id": "9ce28c4219603655",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "CA Bartolome Mitre vs Defensores de Vilelas",
+      "tournament": "Torneo Federal A",
+      "match_id": "8d7f2c328ea94b97",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Gimnasia y Tiro (Salta) vs Patronato",
+      "tournament": "Primera Nacional",
+      "match_id": "e1c4c614fbf0c5f8",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783881000000,
+      "sport": "Football",
+      "match": "Juventud Antoniana vs Tucuman Central",
+      "tournament": "Torneo Federal A",
+      "match_id": "c34b87f03546aa20",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Gremio vs Cruzeiro",
+      "tournament": "Club Friendlies",
+      "match_id": "c593e72bfbd9584c",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783883700000,
+      "sport": "Football",
+      "match": "Deportivo Cuenca vs Aucas",
+      "tournament": "LigaPro Ecuador",
+      "match_id": "ef23587ed73c38e6",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Sao Bernardo vs Cuiaba",
+      "tournament": "Brazilian Serie B",
+      "match_id": "da08587126a6094c",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783881000000,
+      "sport": "Football",
+      "match": "Deportivo Rincón vs Huracán Las Heras",
+      "tournament": "Torneo Federal A",
+      "match_id": "fa99c3a5f52740ac",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Manauara vs Goiatuba SC",
+      "tournament": "Brazilian Serie D",
+      "match_id": "d95781ac0b48791e",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783881900000,
+      "sport": "Football",
+      "match": "Argentino Monte Maiz vs Sportivo Atenas",
+      "tournament": "Torneo Federal A",
+      "match_id": "204d1b1892e0fa6b",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Philadelphia Union II vs Huntsville",
+      "tournament": "MLS NEXT Pro",
+      "match_id": "1de16ffbab9158d8",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Chicago Fire FC II vs Red Bull New York II",
+      "tournament": "MLS NEXT Pro",
+      "match_id": "f9d572854d5ba10d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Anapolis FC vs Maringa FC",
+      "tournament": "Brazilian Serie C",
+      "match_id": "6854665b16ea5754",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Iguatu vs Maguary",
+      "tournament": "Brazilian Serie D",
+      "match_id": "63e86a5974b68fe8",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Capital FC vs Nacional AM",
+      "tournament": "Brazilian Serie D",
+      "match_id": "ef6a8c322ab84d88",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Treze vs CRAC",
+      "tournament": "Brazilian Serie D",
+      "match_id": "bd7b1d64dce63c26",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Racing (Córdoba) vs Acassuso",
+      "tournament": "Primera Nacional",
+      "match_id": "07c4af5a20bd2846",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "Montreal Roses FC vs Halifax Tides FC",
+      "tournament": "Northern Super League",
+      "match_id": "34752d91f44878cc",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783884600000,
+      "sport": "Football",
+      "match": "Godoy Cruz vs CA Defensores de Belgrano",
+      "tournament": "Primera Nacional",
+      "match_id": "da4a5e848c457c2d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Portuguesa RJ vs EC Sao Jose",
+      "tournament": "Brazilian Serie D",
+      "match_id": "54e3447217a1a63a",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "ABC vs Aguia de Maraba",
+      "tournament": "Brazilian Serie D",
+      "match_id": "9df214625cc67b47",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "República Independiente de Hualqui vs Laja Histórico",
+      "tournament": "Tercera División B - South",
+      "match_id": "6e461345168e41cb",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Maranhão vs MA vs Ypiranga vs RS",
+      "tournament": "Brazilian Serie C",
+      "match_id": "c7a431d54efd483d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Talleres de Córdoba (W) vs Lanús (W)",
+      "tournament": "Campeonato Femenino - Apertura",
+      "match_id": "d568207875975b50",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783886400000,
+      "sport": "Football",
+      "match": "CSCyD Gimnasia y Esgrima (Chivilcoy) vs Gimnasia de Concepcion del Uruguay",
+      "tournament": "Torneo Federal A",
+      "match_id": "82d83987a6095f07",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783887300000,
+      "sport": "Football",
+      "match": "Sporting Cristal (W) vs Universitario Deportes (W)",
+      "tournament": "Women League - Final",
+      "match_id": "68e666c0ac6e53e6",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783888200000,
+      "sport": "Football",
+      "match": "Alianza Lima vs Deportivo Cali",
+      "tournament": "Club Friendlies",
+      "match_id": "300bbc897489288d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Virginia USC vs Club Deportivo Nueva Santa Cruz",
+      "tournament": "Copa Simón Bolívar - Santa Cruz",
+      "match_id": "56c0494731fcbdab",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783883700000,
+      "sport": "Football",
+      "match": "Astor FC (W) vs Blooming (W)",
+      "tournament": "Women League",
+      "match_id": "314d4a7c70b30a11",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783882800000,
+      "sport": "Football",
+      "match": "Gasparín FC vs Inter Concepcion",
+      "tournament": "Tercera División B - South",
+      "match_id": "7f6ee8e382ee1859",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783888200000,
+      "sport": "Football",
+      "match": "Iberia Los Ángeles vs Fernández Vial",
+      "tournament": "Tercera División B - South",
+      "match_id": "eaa07099ae576df5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8013,7 +8006,7 @@
       "sport": "Football",
       "match": "Independiente FBC vs Tacuary",
       "tournament": "Division Intermedia",
-      "match_id": "35997b624b18edbe",
+      "match_id": "c0e86ddcbdcfdc44",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8031,7 +8024,7 @@
       "sport": "Football",
       "match": "9 De Julio Rafaela vs Defensores Belgrano (VR)",
       "tournament": "Torneo Federal A",
-      "match_id": "0f7081cb62f356a1",
+      "match_id": "3cdb4bf4735d7810",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8049,313 +8042,7 @@
       "sport": "Football",
       "match": "Vestri vs Fylkir",
       "tournament": "Inkasso Deildin",
-      "match_id": "3c384f99e30ec4b7",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783893600000,
-      "sport": "Football",
-      "match": "Connecticut United vs Toronto FC II",
-      "tournament": "MLS NEXT Pro",
-      "match_id": "dd15f38078781300",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783893600000,
-      "sport": "Football",
-      "match": "CRB vs Goias",
-      "tournament": "Brazilian Serie B",
-      "match_id": "bbbf8b1748a33a68",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783890000000,
-      "sport": "Football",
-      "match": "Guapore vs Luverdense",
-      "tournament": "Brazilian Serie D",
-      "match_id": "10f24801dfca92ea",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783891800000,
-      "sport": "Football",
-      "match": "Deportes Temuco vs Huachipato",
-      "tournament": "Copa Chile",
-      "match_id": "ff4e0699ac4ec51f",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783897800000,
-      "sport": "Football",
-      "match": "Emelec vs Barcelona SC",
-      "tournament": "LigaPro Ecuador",
-      "match_id": "c491247fbdbe545d",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783893600000,
-      "sport": "Football",
-      "match": "Fc Cincinnati II vs Orlando City B",
-      "tournament": "MLS NEXT Pro",
-      "match_id": "41098437915999c3",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783897200000,
-      "sport": "Football",
-      "match": "Denver Summit vs Houston Dash",
-      "tournament": "NWSL",
-      "match_id": "79b6b725ea48de43",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783891800000,
-      "sport": "Football",
-      "match": "Racing Club Montevideo vs Peñarol",
-      "tournament": "Uruguayan Championship - Intermediate",
-      "match_id": "7ac5d17dfcb484a0",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783891800000,
-      "sport": "Football",
-      "match": "Deportes Concepcion vs Deportes Puerto Montt",
-      "tournament": "Chilean Cup",
-      "match_id": "f77546f9c56f8899",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783895400000,
-      "sport": "Football",
-      "match": "Botafogo vs PB vs Confianca",
-      "tournament": "Brazilian Serie C",
-      "match_id": "ddb33df89ccd7fc7",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783890000000,
-      "sport": "Football",
-      "match": "Atletico GO vs Fortaleza",
-      "tournament": "Brazilian Serie B",
-      "match_id": "8dc41b01d2a97921",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783895400000,
-      "sport": "Football",
-      "match": "Rubio Ñu (W) vs Sportivo Ameliano (W)",
-      "tournament": "Championship (W)",
-      "match_id": "d41b05c2eca09aa0",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783890000000,
-      "sport": "Football",
-      "match": "San Martin de Tucuman vs Almagro",
-      "tournament": "Primera Nacional",
-      "match_id": "6e7b0978c2be6040",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783890000000,
-      "sport": "Football",
-      "match": "Carolina Core FC vs Chattanooga FC",
-      "tournament": "MLS NEXT Pro",
-      "match_id": "583e73065ef25624",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783893600000,
-      "sport": "Football",
-      "match": "Jalapa Art vs Matagalpa",
-      "tournament": "Nicaragua Cup - Quarter Finals",
-      "match_id": "4515847a07a3cf42",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783891800000,
-      "sport": "Football",
-      "match": "São Paulo (W) vs Taubaté (W)",
-      "tournament": "Paulista Women",
-      "match_id": "14ad70e9bef56265",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783893600000,
-      "sport": "Football",
-      "match": "Cultural Maipú vs Provincial Talagante",
-      "tournament": "Tercera División B - North",
-      "match_id": "9b2369553eba12b1",
+      "match_id": "06ed7122d616aab0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8373,7 +8060,7 @@
       "sport": "Football",
       "match": "Busan I'Park vs GimPo FC",
       "tournament": "K League 2",
-      "match_id": "dfea8c38f048560c",
+      "match_id": "d0b4883abced6c19",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8391,7 +8078,7 @@
       "sport": "Football",
       "match": "Helmond vs KVC Westerlo",
       "tournament": "Club Friendlies",
-      "match_id": "41cccc367769ac17",
+      "match_id": "4f8466106d0e270e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8420,7 +8107,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.424Z",
+        "processed_at": "2026-07-12T09:02:15.104Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8438,7 +8125,7 @@
       "sport": "Football",
       "match": "FC Seoul vs Gangwon FC",
       "tournament": "K League 1",
-      "match_id": "18eac4f1ec3bea80",
+      "match_id": "80dbfa9500665d5a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8456,7 +8143,7 @@
       "sport": "Football",
       "match": "Changwon City vs Chuncheon Citizen",
       "tournament": "K3 League",
-      "match_id": "fcb3cad883ff42f4",
+      "match_id": "c6b982a65f8e7c04",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8474,7 +8161,7 @@
       "sport": "Football",
       "match": "Jeju United vs Daejeon Citizen",
       "tournament": "K League 1",
-      "match_id": "b2f31dba39b0f1ca",
+      "match_id": "2a670069046800c3",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8492,7 +8179,7 @@
       "sport": "Football",
       "match": "Asan Mugunghwa FC vs Gyeongnam",
       "tournament": "K League 2",
-      "match_id": "3ead6655da717ec6",
+      "match_id": "03aab4a844208dd7",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8510,7 +8197,7 @@
       "sport": "Football",
       "match": "Incheon United vs FC Anyang",
       "tournament": "K League 1",
-      "match_id": "da47ee4f360ecc50",
+      "match_id": "c5c557914d2eae67",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8528,25 +8215,7 @@
       "sport": "Football",
       "match": "Viktoria Köln vs MVV Maastricht",
       "tournament": "Club Friendlies",
-      "match_id": "58240818f9299632",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783846800000,
-      "sport": "Football",
-      "match": "FC Bayern Alzenau vs SV Viktoria Aschaffenburg",
-      "tournament": "Club Friendlies",
-      "match_id": "8d6b89d77baeca1f",
+      "match_id": "bdf86c180b5b36b8",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8564,7 +8233,331 @@
       "sport": "Football",
       "match": "Wisla Krakow vs Podbeskidzie",
       "tournament": "Club Friendlies",
-      "match_id": "2d02ea14e23d25a5",
+      "match_id": "329d4e58ccecbe94",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783846800000,
+      "sport": "Football",
+      "match": "FC Bayern Alzenau vs SV Viktoria Aschaffenburg",
+      "tournament": "Club Friendlies",
+      "match_id": "a1ba6e7d42a04a05",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783893600000,
+      "sport": "Football",
+      "match": "CRB vs Goias",
+      "tournament": "Brazilian Serie B",
+      "match_id": "28c9e889f3d51b38",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783893600000,
+      "sport": "Football",
+      "match": "Connecticut United vs Toronto FC II",
+      "tournament": "MLS NEXT Pro",
+      "match_id": "10d4baa79723c92e",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783890000000,
+      "sport": "Football",
+      "match": "Guapore vs Luverdense",
+      "tournament": "Brazilian Serie D",
+      "match_id": "6f4400bfd674333d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783897800000,
+      "sport": "Football",
+      "match": "Emelec vs Barcelona SC",
+      "tournament": "LigaPro Ecuador",
+      "match_id": "beaa06e966b1ae91",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783893600000,
+      "sport": "Football",
+      "match": "Fc Cincinnati II vs Orlando City B",
+      "tournament": "MLS NEXT Pro",
+      "match_id": "38c46dabdc7dba85",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783897200000,
+      "sport": "Football",
+      "match": "Denver Summit vs Houston Dash",
+      "tournament": "NWSL",
+      "match_id": "99dfd1fbfd1a96be",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783891800000,
+      "sport": "Football",
+      "match": "Racing Club Montevideo vs Peñarol",
+      "tournament": "Uruguayan Championship - Intermediate",
+      "match_id": "e89cdbf7d12fff03",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783891800000,
+      "sport": "Football",
+      "match": "Deportes Concepcion vs Deportes Puerto Montt",
+      "tournament": "Chilean Cup",
+      "match_id": "fa32cf0982a83e9a",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783895400000,
+      "sport": "Football",
+      "match": "Botafogo vs PB vs Confianca",
+      "tournament": "Brazilian Serie C",
+      "match_id": "1e714a64e5b70e04",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783890000000,
+      "sport": "Football",
+      "match": "Atletico GO vs Fortaleza",
+      "tournament": "Brazilian Serie B",
+      "match_id": "62d13ac4c38f109b",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783895400000,
+      "sport": "Football",
+      "match": "Rubio Ñu (W) vs Sportivo Ameliano (W)",
+      "tournament": "Championship (W)",
+      "match_id": "fff6e2a9b9c85655",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783891800000,
+      "sport": "Football",
+      "match": "Deportes Temuco vs Huachipato",
+      "tournament": "Cup Grp. H",
+      "match_id": "b5e5b49909a716f8",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783890000000,
+      "sport": "Football",
+      "match": "San Martin de Tucuman vs Almagro",
+      "tournament": "Primera Nacional",
+      "match_id": "52652e06b9efdbf0",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783890000000,
+      "sport": "Football",
+      "match": "Carolina Core FC vs Chattanooga FC",
+      "tournament": "MLS NEXT Pro",
+      "match_id": "f42d33b2367d5cb3",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783893600000,
+      "sport": "Football",
+      "match": "Jalapa Art vs Matagalpa",
+      "tournament": "Nicaragua Cup - Quarter Finals",
+      "match_id": "7a8bfea99a603e47",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783891800000,
+      "sport": "Football",
+      "match": "São Paulo (W) vs Taubaté (W)",
+      "tournament": "Paulista Women",
+      "match_id": "e408ba51805a0866",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783893600000,
+      "sport": "Football",
+      "match": "Cultural Maipú vs Provincial Talagante",
+      "tournament": "Tercera División B - North",
+      "match_id": "ae2c41bdd98a2a68",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8582,7 +8575,7 @@
       "sport": "Football",
       "match": "Solothurn vs Prishtina",
       "tournament": "Club Friendlies",
-      "match_id": "f2444913112193d7",
+      "match_id": "ea80fa4553f11ced",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8600,7 +8593,7 @@
       "sport": "Football",
       "match": "Bradford PA vs Sheffield FC",
       "tournament": "Club Friendlies",
-      "match_id": "2e3e1f196e09823b",
+      "match_id": "a4f57d00630132f9",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8618,7 +8611,7 @@
       "sport": "Football",
       "match": "Boldmere St. Michaels vs Alvechurch",
       "tournament": "Club Friendlies",
-      "match_id": "6a3afc980754445f",
+      "match_id": "6518a4309aadc186",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8636,7 +8629,7 @@
       "sport": "Football",
       "match": "San Lorenzo (W) vs San Luis FC (W)",
       "tournament": "Campeonato Femenino - Apertura",
-      "match_id": "e9f1d08876796613",
+      "match_id": "b8e864d1af0ce296",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8654,7 +8647,7 @@
       "sport": "Football",
       "match": "Gimnasia La Plata (W) vs Huracán (W)",
       "tournament": "Campeonato Femenino - Apertura",
-      "match_id": "aea130c526b5046b",
+      "match_id": "f5c26cbfe5409334",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8683,7 +8676,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.424Z",
+        "processed_at": "2026-07-12T09:02:15.104Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8701,7 +8694,7 @@
       "sport": "Football",
       "match": "Breidablik vs Keflavik",
       "tournament": "Besta deildin",
-      "match_id": "5f49ba2847aae33d",
+      "match_id": "2b134364390d6df0",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8719,7 +8712,7 @@
       "sport": "Football",
       "match": "Djurgården vs Halmstads BK",
       "tournament": "Swedish Allsvenskan",
-      "match_id": "2c4a5834dea1d68a",
+      "match_id": "b08c41183ecbe95b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8737,7 +8730,7 @@
       "sport": "Football",
       "match": "Banfield (W) vs Belgrano (W)",
       "tournament": "Campeonato Femenino - Apertura",
-      "match_id": "c0638764e89e9149",
+      "match_id": "21541440a7ba3935",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8755,7 +8748,7 @@
       "sport": "Football",
       "match": "Ferro Carril Oeste (W) vs Boca Juniors (W)",
       "tournament": "Campeonato Femenino - Apertura",
-      "match_id": "fa13b26d105c9088",
+      "match_id": "d4be1ef7c45b0941",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8773,7 +8766,7 @@
       "sport": "Football",
       "match": "Racing Club (W) vs CA Union (W)",
       "tournament": "Campeonato Femenino - Apertura",
-      "match_id": "dc605da32d504a3d",
+      "match_id": "71bae96787029914",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8791,7 +8784,7 @@
       "sport": "Football",
       "match": "HNK Gorica vs Goztepe",
       "tournament": "Club Friendlies",
-      "match_id": "fc04190e5d280b9a",
+      "match_id": "cd2cc622fe8f3270",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8809,7 +8802,7 @@
       "sport": "Football",
       "match": "Ferro Carril Oeste Res. vs Lanus Res.",
       "tournament": "Liga Profesional - Reserva - Clausura",
-      "match_id": "bca2c118029c27a6",
+      "match_id": "453ee4c7b5bdb56e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8827,7 +8820,7 @@
       "sport": "Football",
       "match": "La Luz vs Tacuarembó FC",
       "tournament": "Uruguayan Segunda Division Profesional",
-      "match_id": "f0238be65f0d8176",
+      "match_id": "5400373752060101",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8845,7 +8838,7 @@
       "sport": "Football",
       "match": "Gloggnitz vs SC Wr. Neustadt 08",
       "tournament": "Club Friendlies",
-      "match_id": "f4870ce1fe618e4f",
+      "match_id": "20f762c81421ff00",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8863,7 +8856,7 @@
       "sport": "Football",
       "match": "Hradec Kralove vs Karlsruher",
       "tournament": "Club Friendlies",
-      "match_id": "fb5f58880a025d9f",
+      "match_id": "20973d6fcbbf1c87",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8881,7 +8874,7 @@
       "sport": "Football",
       "match": "Mineros Potosí vs Wilstermann Cooperativas",
       "tournament": "Copa Simón Bolívar - Potosí",
-      "match_id": "5a7676dfdd37ab6f",
+      "match_id": "0eaf4a555e0a87e7",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8899,7 +8892,7 @@
       "sport": "Football",
       "match": "El Paso Locomotive FC vs New Mexico United",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "e0c97a106c791e2b",
+      "match_id": "2be6b5b53a930b9a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8917,25 +8910,7 @@
       "sport": "Football",
       "match": "San Antonio FC vs Chattanooga Red Wolves",
       "tournament": "USL Cup",
-      "match_id": "a5a6dbf285809523",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783823400000,
-      "sport": "Football",
-      "match": "Los Angeles Galaxy vs Club América",
-      "tournament": "Club Friendlies",
-      "match_id": "c16df5bb481092f6",
+      "match_id": "f3d90818762d7ade",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8953,7 +8928,7 @@
       "sport": "Football",
       "match": "Monterey Bay FC vs Las Vegas Lights FC",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "c05de82033bde752",
+      "match_id": "a5f45c1e24e66d74",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8971,7 +8946,7 @@
       "sport": "Football",
       "match": "Charleston Battery vs Charlotte Independence",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "943779eba4cb89ba",
+      "match_id": "f042e8cda9c658e2",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8989,7 +8964,7 @@
       "sport": "Football",
       "match": "Athletic Club Boise vs Sacramento Republic FC",
       "tournament": "USL Cup",
-      "match_id": "ac5600d72d89b20c",
+      "match_id": "ca8418d618601c1c",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9007,7 +8982,7 @@
       "sport": "Football",
       "match": "Orange County SC vs Colorado Springs Switchbacks FC",
       "tournament": "USL Jägermeister Cup",
-      "match_id": "6bef9198ea4a890d",
+      "match_id": "5c7fda46c394dd37",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9025,7 +9000,7 @@
       "sport": "Football",
       "match": "Napier City Rovers vs Upper Hutt City",
       "tournament": "New Zealand National League",
-      "match_id": "454adbd7132bbbb0",
+      "match_id": "ad61510b5acb9861",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9043,7 +9018,7 @@
       "sport": "Football",
       "match": "Real Monarchs SLC vs Vancouver Whitecaps 2",
       "tournament": "MLS NEXT Pro",
-      "match_id": "6deae160c2411ddd",
+      "match_id": "73f23474f249c51d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9059,9 +9034,27 @@
       },
       "unix_timestamp": 1783821600000,
       "sport": "Football",
-      "match": "Los Angeles FC II vs Portland Timbers II",
+      "match": "Los Angeles FC II vs Portland Timbers 2",
       "tournament": "MLS NEXT Pro",
-      "match_id": "045c11a6e526e46f",
+      "match_id": "b8c24388cbc4f023",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783823400000,
+      "sport": "Football",
+      "match": "Los Angeles Galaxy vs Club América",
+      "tournament": "Club Friendlies",
+      "match_id": "c40032d7ec43f6ca",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9079,7 +9072,7 @@
       "sport": "Football",
       "match": "Nelson Suburbs vs Northern AFC",
       "tournament": "New Zealand National League",
-      "match_id": "eedeeaa55c17d82a",
+      "match_id": "16c3db94a644dbfd",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9097,7 +9090,7 @@
       "sport": "Football",
       "match": "Real Estelí FC vs Xilotepelt FC",
       "tournament": "Nicaragua Cup - Quarter Finals",
-      "match_id": "3ca254d6a3e3a362",
+      "match_id": "5d53670e19222fb5",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9115,7 +9108,7 @@
       "sport": "Football",
       "match": "AV Alta FC vs Phoenix Rising FC",
       "tournament": "USL Cup",
-      "match_id": "2434487358fcf6a9",
+      "match_id": "487033706eb3606e",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9133,7 +9126,7 @@
       "sport": "Football",
       "match": "Ningbo FC vs Foshan Nanshi F.C.",
       "tournament": "China League One",
-      "match_id": "2d2d6bec95afda37",
+      "match_id": "d3f7bb9fe4e8fa4f",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9151,7 +9144,7 @@
       "sport": "Football",
       "match": "Managua FC vs Rancho Santana",
       "tournament": "Nicaragua Cup - Quarter Finals",
-      "match_id": "a114f71431edbb9d",
+      "match_id": "1f792e62fc39a118",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9169,7 +9162,7 @@
       "sport": "Football",
       "match": "San Diego Wave FC vs Angel City FC",
       "tournament": "NWSL",
-      "match_id": "e55fd022482fca3c",
+      "match_id": "300fdf7018c74371",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9187,7 +9180,7 @@
       "sport": "Football",
       "match": "Birmingham Legion FC vs FC Tulsa",
       "tournament": "USL Cup",
-      "match_id": "b73c5537205cf96c",
+      "match_id": "0ee364c6d219101d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9205,7 +9198,7 @@
       "sport": "Football",
       "match": "Louisville City FC vs Lexington",
       "tournament": "USL Cup",
-      "match_id": "869dd50f71ce786b",
+      "match_id": "9f74944450367b29",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9223,7 +9216,7 @@
       "sport": "Football",
       "match": "Forward Madison FC vs Union Omaha",
       "tournament": "USL Cup",
-      "match_id": "04f7e6da277f10e5",
+      "match_id": "44dc4582dd1ee314",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9241,7 +9234,7 @@
       "sport": "Football",
       "match": "Coastal Spirit vs Nomads United",
       "tournament": "New Zealand National League",
-      "match_id": "f9ade69d806e38f2",
+      "match_id": "ebf0388cdcf6940b",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9259,7 +9252,7 @@
       "sport": "Football",
       "match": "Corpus Christi FC vs One Knoxville",
       "tournament": "USL Cup",
-      "match_id": "1031674cc119c2da",
+      "match_id": "e2d34ecb8d9c984c",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9277,7 +9270,7 @@
       "sport": "Football",
       "match": "Municipal Mejillones vs CEFF Copiapo",
       "tournament": "Tercera División B - North",
-      "match_id": "023173c8375ada68",
+      "match_id": "f61cd0577543d5ee",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9295,7 +9288,7 @@
       "sport": "Football",
       "match": "Colorado Rapids 2 vs North Texas SC",
       "tournament": "MLS NEXT Pro",
-      "match_id": "78cf7c9e749313b7",
+      "match_id": "14768877437f4086",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9313,7 +9306,7 @@
       "sport": "Football",
       "match": "FC Maardu vs Tartu JK Welko Electer",
       "tournament": "Esiliiga",
-      "match_id": "e03efafd8160281c",
+      "match_id": "916c7ddf551da30a",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9331,7 +9324,7 @@
       "sport": "Football",
       "match": "Zalgiris Vilnius vs Suduva",
       "tournament": "A Lyga",
-      "match_id": "f3b6b7ced1ca5fc6",
+      "match_id": "6a62c422a4bc5b17",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9349,7 +9342,7 @@
       "sport": "Football",
       "match": "Hradec Kralove vs Wolfsberger AC",
       "tournament": "Club Friendlies",
-      "match_id": "859f18e495f6080a",
+      "match_id": "376464352aee7c12",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9367,7 +9360,7 @@
       "sport": "Football",
       "match": "Sigma Olomouc vs Shabab Al Ahly",
       "tournament": "Club Friendlies",
-      "match_id": "ab3608fdfea1a0cc",
+      "match_id": "e6aab4e30213b839",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9385,7 +9378,7 @@
       "sport": "Football",
       "match": "Niigata vs Sagan Tosu",
       "tournament": "Club Friendlies",
-      "match_id": "0abedb1c36d64d42",
+      "match_id": "b94503434845dd3d",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9868,15 +9861,54 @@
       "sources": {
         "tom": [],
         "sarah": [],
-        "wendy": [
-          "https://sportsembed.su/embed/4769637/west-auckland-admirals-dunedin-thunder/regular/1"
-        ]
+        "wendy": []
       },
       "unix_timestamp": 1783831500000,
       "sport": "Ice Hockey",
       "match": "West Auckland Admirals vs Dunedin Thunder",
       "tournament": "NZIHL - Regular Season",
-      "match_id": "c9de39be60d2a136",
+      "match_id": "ff6747a46ff10986",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783834200000,
+      "sport": "Ice Hockey",
+      "match": "Newcastle North Stars vs Brisbane Lightning",
+      "tournament": "AIHL",
+      "match_id": "21001d65799fb6b2",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": [
+          "https://sportsembed.su/embed/4749284/sydney-bears-central-coast-rhinos/regular/1",
+          "https://sportsembed.su/embed/4749284/sydney-bears-central-coast-rhinos/regular/2",
+          "https://sportsembed.su/embed/4749284/sydney-bears-central-coast-rhinos/regular/3",
+          "https://sportsembed.su/embed/4749284/sydney-bears-central-coast-rhinos/regular/4"
+        ]
+      },
+      "unix_timestamp": 1783839600000,
+      "sport": "Ice Hockey",
+      "match": "Sydney Bears vs Central Coast Rhinos",
+      "tournament": "AIHL",
+      "match_id": "441a9449bed98665",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9889,17 +9921,17 @@
         "tom": [],
         "sarah": [],
         "wendy": [
-          "https://sportsembed.su/embed/4671024/newcastle-north-stars-brisbane-lightning/regular/1",
-          "https://sportsembed.su/embed/4671024/newcastle-north-stars-brisbane-lightning/regular/2",
-          "https://sportsembed.su/embed/4671024/newcastle-north-stars-brisbane-lightning/regular/3",
-          "https://sportsembed.su/embed/4671024/newcastle-north-stars-brisbane-lightning/regular/4"
+          "https://sportsembed.su/embed/4749280/adelaide-adrenaline-melbourne-mustangs/regular/1",
+          "https://sportsembed.su/embed/4749280/adelaide-adrenaline-melbourne-mustangs/regular/2",
+          "https://sportsembed.su/embed/4749280/adelaide-adrenaline-melbourne-mustangs/regular/3",
+          "https://sportsembed.su/embed/4749280/adelaide-adrenaline-melbourne-mustangs/regular/4"
         ]
       },
-      "unix_timestamp": 1783834200000,
+      "unix_timestamp": 1783838700000,
       "sport": "Ice Hockey",
-      "match": "Newcastle North Stars vs Brisbane Lightning",
+      "match": "Adelaide Adrenaline vs Melbourne Mustangs",
       "tournament": "AIHL",
-      "match_id": "a6a6ec04459206b9",
+      "match_id": "cc8f9acf1a16bb61",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9911,50 +9943,19 @@
       "sources": {
         "tom": [],
         "sarah": [],
-        "wendy": []
+        "wendy": [
+          "https://sportsembed.su/embed/4671099/perth-thunder-melbourne-ice/regular/1",
+          "https://sportsembed.su/embed/4671099/perth-thunder-melbourne-ice/regular/2",
+          "https://sportsembed.su/embed/4671099/perth-thunder-melbourne-ice/regular/3",
+          "https://sportsembed.su/embed/4671099/perth-thunder-melbourne-ice/regular/4"
+        ]
       },
       "unix_timestamp": 1783843200000,
       "sport": "Ice Hockey",
       "match": "Perth Thunder vs Melbourne Ice",
       "tournament": "AIHL",
-      "match_id": "1a4c5d79c307b1db",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783838700000,
-      "sport": "Ice Hockey",
-      "match": "Adelaide Adrenaline vs Melbourne Mustangs",
-      "tournament": "AIHL",
-      "match_id": "534a41e088170b6d",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783839600000,
-      "sport": "Ice Hockey",
-      "match": "Sydney Bears vs Central Coast Rhinos",
-      "tournament": "AIHL",
-      "match_id": "385975bf80df9702",
-      "quality_score": 85,
+      "match_id": "2c8bcbbca48ed8f0",
+      "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
@@ -10313,46 +10314,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-rabbitohs-vs-knights/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1783828800000,
-      "sport": "Rugby",
-      "match": "South Sydney Rabbitohs vs Newcastle Knights",
-      "tournament": "",
-      "match_id": "d090a90322413982",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-sea-eagles-vs-cowboys/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1783836300000,
-      "sport": "Rugby",
-      "match": "Manly Sea Eagles vs North Queensland Cowboys",
-      "tournament": "",
-      "match_id": "7a1513e61250071c",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/admin/ppv-storm-vs-titans/1"
         ],
         "wendy": []
@@ -10477,7 +10438,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1783836272,
+      "unix_timestamp": 1783846934,
       "sport": "Tennis",
       "match": "Sky Sports Tennis",
       "tournament": "",
@@ -10497,7 +10458,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1783836272,
+      "unix_timestamp": 1783846934,
       "sport": "Tennis",
       "match": "Tennis Channel",
       "tournament": "",
@@ -11243,26 +11204,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/echo/melbourne-demons-vs-richmond-tigers-australian-football-3572/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1783833300000,
-      "sport": "Australian Football",
-      "match": "Melbourne Demons vs Richmond Tigers",
-      "tournament": "",
-      "match_id": "26a9ed0ba6b09870",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/echo/brisbane-lions-vs-essendon-bombers-australian-football-3573/1"
         ],
         "wendy": []
@@ -11327,7 +11268,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1783836272,
+      "unix_timestamp": 1783846934,
       "sport": "Motorsport",
       "match": "Rally TV",
       "tournament": "",
@@ -11403,15 +11344,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-belgian-grand-prix-qualifying/1"
+          "https://embedsports.top/embed/admin/ppv-belgian-grand-prix-practice-3/1"
         ],
         "wendy": []
       },
-      "unix_timestamp": 1784370600000,
+      "unix_timestamp": 1784383200000,
       "sport": "Motorsport",
-      "match": "Belgian Grand Prix vs Qualifying",
+      "match": "Belgian Grand Prix vs Practice 3",
       "tournament": "",
-      "match_id": "7ad25f21d97d60c5",
+      "match_id": "19809c62e287f82c",
       "quality_score": 90,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -11443,66 +11384,6 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/echo/ppv-event-25-knoxville-sprint-cars-ppv-25/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1783816200000,
-      "sport": "Other",
-      "match": "Knoxville Sprint Cars",
-      "tournament": "",
-      "match_id": "48c7236bcb984f64",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/ppv-event-24-american-sprint-car-series-texarkana-67-ppv-24/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1783815300000,
-      "sport": "Other",
-      "match": "American Sprint Car Series Texarkana 67",
-      "tournament": "",
-      "match_id": "e5a6ef695f92ff54",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/ppv-event-23-world-of-outlaws-sprint-cars-wilmot-ppv-32/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1783815300000,
-      "sport": "Other",
-      "match": "World of Outlaws Sprint Cars Wilmot",
-      "tournament": "",
-      "match_id": "02dd43ac8f8bb822",
-      "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
           "https://embedsports.top/embed/echo/uci-tour-de-france-uci-world-tour-game-13622/1"
         ],
         "wendy": []
@@ -11513,27 +11394,6 @@
       "tournament": "",
       "match_id": "bddaed2e4eaf9212",
       "quality_score": 60,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-ufc-329-mc-gregor-vs-holloway-2/1",
-          "https://embedsports.top/embed/echo/ppv-event-02-ufc-329-mcgregor-v-holloway-ii-ppv-02/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1783803600000,
-      "sport": "Fighting",
-      "match": "UFC 329 McGregor vs Holloway 2",
-      "tournament": "",
-      "match_id": "3f2c5963c1f8e00e",
-      "quality_score": 90,
       "recovery_applied": [],
       "recovery_confidence": 1,
       "merged": false,
@@ -11565,7 +11425,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.435Z",
+        "processed_at": "2026-07-12T09:02:15.115Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11598,7 +11458,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.435Z",
+        "processed_at": "2026-07-12T09:02:15.115Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11631,7 +11491,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.435Z",
+        "processed_at": "2026-07-12T09:02:15.115Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11664,7 +11524,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.115Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11697,7 +11557,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11730,7 +11590,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11763,7 +11623,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11796,7 +11656,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11829,7 +11689,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11862,7 +11722,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11895,7 +11755,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11928,7 +11788,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11961,7 +11821,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -11995,7 +11855,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12029,7 +11889,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12058,7 +11918,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12087,7 +11947,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12105,54 +11965,7 @@
       "sport": "Baseball",
       "match": "Sultanes de Monterrey vs Toros de Tijuana",
       "tournament": "LMB",
-      "match_id": "a5f85d7369a58bc9",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "unix_timestamp": 1783886400000,
-      "sport": "Baseball",
-      "match": "Caliente de Durango vs Tecos de los Dos Laredos",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "confidence": 0.6,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 0,
-        "merge_quality": 50
-      },
-      "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "default_rules"
-        ]
-      }
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783886400000,
-      "sport": "Baseball",
-      "match": "Diablos Rojos del México vs Conspiradores de Querétaro",
-      "tournament": "LMB",
-      "match_id": "cf8c0aca6ff75ee0",
+      "match_id": "0bd483f2f0654f53",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12181,7 +11994,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12210,7 +12023,36 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "default_rules"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1783886400000,
+      "sport": "Baseball",
+      "match": "Caliente de Durango vs Tecos de los Dos Laredos",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "confidence": 0.6,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 0,
+        "merge_quality": 50
+      },
+      "processing_metadata": {
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12224,11 +12066,104 @@
         "sarah": [],
         "wendy": []
       },
+      "unix_timestamp": 1783886400000,
+      "sport": "Baseball",
+      "match": "Diablos Rojos del México vs Conspiradores de Querétaro",
+      "tournament": "LMB",
+      "match_id": "a9f882aa6f85939a",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783832400000,
+      "sport": "Baseball",
+      "match": "Fukuoka Hawks vs Rakuten Gold Eagles",
+      "tournament": "NPB",
+      "match_id": "128da0aec338ca47",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783828800000,
+      "sport": "Baseball",
+      "match": "Nippon Ham Fighters vs Seibu Lions",
+      "tournament": "NPB",
+      "match_id": "b1d736244a12393a",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
+      "unix_timestamp": 1783830600000,
+      "sport": "Baseball",
+      "match": "Chunichi Dragons vs Hiroshima Toyo Carp",
+      "tournament": "NPB",
+      "match_id": "ea6456ba4f6ac13d",
+      "quality_score": 85,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": [
+          "https://sportsembed.su/embed/4627170/chiba-lotte-marines-orix-buffaloes/regular/1",
+          "https://sportsembed.su/embed/4627170/chiba-lotte-marines-orix-buffaloes/regular/2"
+        ]
+      },
+      "unix_timestamp": 1783843200000,
+      "sport": "Baseball",
+      "match": "Chiba Lotte Marines vs Orix Buffaloes",
+      "tournament": "NPB",
+      "match_id": "6fb1fb506d31a348",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "wendy",
+      "sources": {
+        "tom": [],
+        "sarah": [],
+        "wendy": []
+      },
       "unix_timestamp": 1783846800000,
       "sport": "Baseball",
       "match": "Yokohama Baystars vs Yomiuri Giants",
       "tournament": "NPB",
-      "match_id": "74a54bb50d5dfeec",
+      "match_id": "1fc30b855aa7f6c4",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12246,7 +12181,7 @@
       "sport": "Baseball",
       "match": "Hanshin Tigers vs Yakult Swallows",
       "tournament": "NPB",
-      "match_id": "77d1de6bdfffa84f",
+      "match_id": "31db259065512d38",
       "quality_score": 85,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12275,7 +12210,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12304,7 +12239,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.436Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12333,7 +12268,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-07-12T06:04:33.437Z",
+        "processed_at": "2026-07-12T09:02:15.116Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "default_rules"
@@ -12347,89 +12282,11 @@
         "sarah": [],
         "wendy": []
       },
-      "unix_timestamp": 1783832400000,
-      "sport": "Baseball",
-      "match": "Fukuoka Hawks vs Rakuten Gold Eagles",
-      "tournament": "NPB",
-      "match_id": "338e88a4ce84f8f5",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": [
-          "https://sportsembed.su/embed/4627127/nippon-ham-fighters-seibu-lions/regular/1",
-          "https://sportsembed.su/embed/4627127/nippon-ham-fighters-seibu-lions/regular/2"
-        ]
-      },
-      "unix_timestamp": 1783828800000,
-      "sport": "Baseball",
-      "match": "Nippon Ham Fighters vs Seibu Lions",
-      "tournament": "NPB",
-      "match_id": "920febedf02f0244",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": [
-          "https://sportsembed.su/embed/4627206/chunichi-dragons-hiroshima-toyo-carp/regular/1",
-          "https://sportsembed.su/embed/4627206/chunichi-dragons-hiroshima-toyo-carp/regular/2"
-        ]
-      },
-      "unix_timestamp": 1783830600000,
-      "sport": "Baseball",
-      "match": "Chunichi Dragons vs Hiroshima Toyo Carp",
-      "tournament": "NPB",
-      "match_id": "72e350100954ee2c",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
-      "unix_timestamp": 1783843200000,
-      "sport": "Baseball",
-      "match": "Chiba Lotte Marines vs Orix Buffaloes",
-      "tournament": "NPB",
-      "match_id": "1854ab06bc2c6d38",
-      "quality_score": 85,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "wendy",
-      "sources": {
-        "tom": [],
-        "sarah": [],
-        "wendy": []
-      },
       "unix_timestamp": 1783897200000,
       "sport": "Racing",
       "match": "Quaker State 400 Available at Walmart vs NASCAR",
       "tournament": "NASCAR",
-      "match_id": "bc06ddad31ebd525",
+      "match_id": "46a54cb52dc098a7",
       "quality_score": 75,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -12447,7 +12304,7 @@
       "sport": "Racing",
       "match": "Motorrad Grand Prix Deutschland vs MOTOGP",
       "tournament": "MotoGP",
-      "match_id": "36cc77cf6da85b4d",
+      "match_id": "1d7b31ce7a4ca66b",
       "quality_score": 75,
       "recovery_applied": [],
       "recovery_confidence": 1,
