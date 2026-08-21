@@ -1,12 +1,12 @@
 {
-  "processed_at": "2026-08-21T16:34:34.882Z",
+  "processed_at": "2026-08-21T17:28:48.153Z",
   "processor_version": "4.2-enterprise-enhanced-no-tournament",
   "summary": {
     "total_sports": 19,
-    "total_matches": 1516,
+    "total_matches": 1517,
     "merged_matches": 208,
-    "individual_matches": 1308,
-    "processing_time_ms": 4752,
+    "individual_matches": 1309,
+    "processing_time_ms": 4558,
     "merge_statistics": {
       "Basketball": {
         "input": 50,
@@ -144,6 +144,14 @@
         "efficiency": "0.0%",
         "average_confidence": "1.00"
       },
+      "Australian Football": {
+        "input": 5,
+        "output": 5,
+        "clusters": 5,
+        "mergedClusters": 0,
+        "efficiency": "0.0%",
+        "average_confidence": "1.00"
+      },
       "Fighting": {
         "input": 17,
         "output": 17,
@@ -151,43 +159,35 @@
         "mergedClusters": 0,
         "efficiency": "0.0%",
         "average_confidence": "1.00"
-      },
-      "Australian Football": {
-        "input": 4,
-        "output": 4,
-        "clusters": 4,
-        "mergedClusters": 0,
-        "efficiency": "0.0%",
-        "average_confidence": "1.00"
       }
     },
     "performance_report": {
-      "total_processing_time_ms": 4752,
+      "total_processing_time_ms": 4558,
       "average_step_times": {
-        "load_data": "8.00",
+        "load_data": "7.00",
         "group_by_sport": "1.00",
         "match_scoring": "0.01",
-        "find_merge_matches": "247.68",
+        "find_merge_matches": "237.58",
         "process_sport_Basketball": "5.00",
-        "process_sport_American Football": "9.00",
-        "process_sport_Cricket": "1.00",
+        "process_sport_American Football": "11.00",
+        "process_sport_Cricket": "0.00",
         "cluster_merging": "0.06",
-        "process_sport_Football": "4706.00",
-        "process_sport_Ice Hockey": "15.00",
+        "process_sport_Football": "4511.00",
+        "process_sport_Ice Hockey": "16.00",
         "process_sport_Rugby": "1.00",
-        "process_sport_Equestrian": "1.00",
+        "process_sport_Equestrian": "0.00",
         "process_sport_Tennis": "0.00",
-        "process_sport_Volleyball": "0.00",
+        "process_sport_Volleyball": "1.00",
         "process_sport_Darts": "0.00",
-        "process_sport_Futsal": "1.00",
+        "process_sport_Futsal": "0.00",
         "process_sport_Lacrosse": "0.00",
         "process_sport_MMA": "0.00",
         "process_sport_Golf": "0.00",
-        "process_sport_Baseball": "0.00",
+        "process_sport_Baseball": "1.00",
         "process_sport_Other": "0.00",
         "process_sport_Motorsport": "0.00",
-        "process_sport_Fighting": "1.00",
-        "process_sport_Australian Football": "0.00"
+        "process_sport_Australian Football": "0.00",
+        "process_sport_Fighting": "0.00"
       },
       "cache_efficiency": {
         "team_normalization": "NaN",
@@ -196,7 +196,7 @@
         "token_cache": "100.0"
       },
       "average_merge_rate": "0.9%",
-      "memory_peak_mb": 39,
+      "memory_peak_mb": 44,
       "recommendations": [
         "Performance is optimal"
       ]
@@ -220,7 +220,7 @@
           "misses": 0
         },
         "tokenCache": {
-          "hits": 6709279,
+          "hits": 6709287,
           "misses": 2905
         }
       }
@@ -1161,7 +1161,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1787330069,
+      "unix_timestamp": 1787333323,
       "sport": "Basketball",
       "match": "NFL Streams Schedule",
       "tournament": "",
@@ -2344,8 +2344,7 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-england-vs-pakistan-1-st-test/1",
-          "https://embedsports.top/embed/echo/england-vs-pakistan-first-test-cricket-hundred-1/1"
+          "https://embedsports.top/embed/admin/ppv-england-vs-pakistan-1-st-test/1"
         ],
         "wendy": []
       },
@@ -2353,7 +2352,7 @@
       "sport": "Cricket",
       "match": "England vs Pakistan vs 1st Test",
       "tournament": "",
-      "match_id": "ff63aa0ba9b41163",
+      "match_id": "2f4fb37cd9c7433e",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -2369,7 +2368,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1787330069,
+      "unix_timestamp": 1787333323,
       "sport": "Cricket",
       "match": "Willow Cricket",
       "tournament": "",
@@ -3145,6 +3144,37 @@
       "confidence": 1
     },
     {
+      "unix_timestamp": 1787331600000,
+      "sport": "Football",
+      "match": "Benfica B vs Portimonense",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/benfica-b-vs-portimonense-football-1576458/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 1,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 1,
+        "time_consistency": 1,
+        "merge_quality": 55
+      },
+      "processing_metadata": {
+        "processed_at": "2026-08-21T17:28:48.121Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "exact_team_order"
+        ]
+      }
+    },
+    {
       "unix_timestamp": 1787329200000,
       "sport": "Football",
       "match": "Union Berlin Women vs Bayern Munich Women",
@@ -3168,7 +3198,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.849Z",
+        "processed_at": "2026-08-21T17:28:48.121Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3221,7 +3251,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.849Z",
+        "processed_at": "2026-08-21T17:28:48.121Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3252,7 +3282,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.849Z",
+        "processed_at": "2026-08-21T17:28:48.121Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3283,7 +3313,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.849Z",
+        "processed_at": "2026-08-21T17:28:48.121Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3314,38 +3344,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.849Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "exact_team_order"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1787331600000,
-      "sport": "Football",
-      "match": "Benfica B vs Portimonense",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/benfica-b-vs-portimonense-football-1576458/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 1,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 1,
-        "time_consistency": 1,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.849Z",
+        "processed_at": "2026-08-21T17:28:48.121Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3376,7 +3375,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3407,7 +3406,7 @@
         "merge_quality": 45
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3438,7 +3437,7 @@
         "merge_quality": 45
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3489,7 +3488,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3520,7 +3519,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3551,7 +3550,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3582,7 +3581,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3613,7 +3612,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3644,7 +3643,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3675,7 +3674,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3706,7 +3705,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3738,7 +3737,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3769,7 +3768,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.850Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3800,7 +3799,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3833,7 +3832,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.122Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3867,7 +3866,7 @@
         "merge_quality": 70
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3898,7 +3897,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3930,7 +3929,7 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3961,7 +3960,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -3992,7 +3991,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4024,7 +4023,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4055,7 +4054,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4106,7 +4105,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4137,7 +4136,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4168,7 +4167,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4199,7 +4198,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4230,7 +4229,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4261,7 +4260,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4292,7 +4291,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.851Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4323,7 +4322,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4356,7 +4355,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4388,7 +4387,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.123Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4421,7 +4420,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4452,7 +4451,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4483,7 +4482,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4514,7 +4513,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4545,7 +4544,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4576,7 +4575,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4609,7 +4608,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4640,7 +4639,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4671,7 +4670,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4702,7 +4701,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4733,7 +4732,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4764,7 +4763,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4795,7 +4794,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4826,7 +4825,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4857,7 +4856,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4888,7 +4887,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4919,7 +4918,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -4950,39 +4949,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "exact_team_order"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1787407200000,
-      "sport": "Football",
-      "match": "Swansea vs Sheffield Utd",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/swansea-vs-sheffield-utd-football-1563103/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.43333333333333335,
-      "merged": true,
-      "merged_count": 3,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy",
-          "wendy"
-        ],
-        "team_consistency": 0,
-        "time_consistency": 1,
-        "merge_quality": 53.333333333333336
-      },
-      "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5013,7 +4980,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5045,7 +5012,39 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.852Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "exact_team_order"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1787407200000,
+      "sport": "Football",
+      "match": "Swansea vs Sheffield Utd",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/swansea-vs-sheffield-utd-football-1563103/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.43333333333333335,
+      "merged": true,
+      "merged_count": 3,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy",
+          "wendy"
+        ],
+        "team_consistency": 0,
+        "time_consistency": 1,
+        "merge_quality": 53.333333333333336
+      },
+      "processing_metadata": {
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5078,7 +5077,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5130,7 +5129,7 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.124Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5162,7 +5161,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5195,7 +5194,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5254,7 +5253,7 @@
         "merge_quality": 54.285714285714285
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5286,7 +5285,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5317,7 +5316,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5348,7 +5347,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5379,7 +5378,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5410,7 +5409,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5446,7 +5445,7 @@
         "merge_quality": 51.42857142857143
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5478,7 +5477,7 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5510,7 +5509,7 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5541,7 +5540,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5572,7 +5571,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5603,7 +5602,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5634,7 +5633,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5665,7 +5664,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.853Z",
+        "processed_at": "2026-08-21T17:28:48.125Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5708,7 +5707,7 @@
         "merge_quality": 50.714285714285715
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5740,7 +5739,7 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5771,7 +5770,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5802,7 +5801,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5833,7 +5832,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5864,7 +5863,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5895,7 +5894,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5927,7 +5926,7 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5967,7 +5966,7 @@
         "merge_quality": 50.90909090909091
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -5998,7 +5997,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6029,7 +6028,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6062,7 +6061,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6095,7 +6094,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6128,7 +6127,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6159,7 +6158,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6210,7 +6209,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6241,7 +6240,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6273,7 +6272,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6305,7 +6304,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.854Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6336,7 +6335,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.126Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6367,7 +6366,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6398,7 +6397,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6429,7 +6428,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6460,7 +6459,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6491,7 +6490,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6522,7 +6521,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6553,7 +6552,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6584,7 +6583,7 @@
         "merge_quality": 45
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6617,7 +6616,7 @@
         "merge_quality": 65
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6649,7 +6648,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6681,7 +6680,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6712,7 +6711,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6743,7 +6742,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6774,7 +6773,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6805,7 +6804,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6836,7 +6835,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6867,7 +6866,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6898,7 +6897,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6929,7 +6928,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6960,7 +6959,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -6991,7 +6990,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7023,7 +7022,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7054,7 +7053,7 @@
         "merge_quality": 45
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.855Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7085,7 +7084,7 @@
         "merge_quality": 45
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7116,7 +7115,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.127Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7147,7 +7146,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7178,7 +7177,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7209,7 +7208,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7240,7 +7239,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7271,7 +7270,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7302,7 +7301,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7333,7 +7332,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7365,7 +7364,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7397,7 +7396,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7429,7 +7428,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7461,7 +7460,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7493,7 +7492,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7525,38 +7524,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
-        "processor_version": "4.2-enhanced-no-tournament",
-        "sport_specific_rules_applied": [
-          "exact_team_order"
-        ]
-      }
-    },
-    {
-      "unix_timestamp": 1787425200000,
-      "sport": "Football",
-      "match": "Gimnasia L.P. vs Gimnasia M.",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/gimnasia-lp-vs-gimnasia-m-football-1493082/1"
-        ],
-        "wendy": []
-      },
-      "confidence": 0.5,
-      "merged": true,
-      "merged_count": 2,
-      "cluster_details": {
-        "original_sources": [
-          "sarah",
-          "wendy"
-        ],
-        "team_consistency": 0,
-        "time_consistency": 1,
-        "merge_quality": 55
-      },
-      "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7586,6 +7554,37 @@
     {
       "unix_timestamp": 1787425200000,
       "sport": "Football",
+      "match": "Gimnasia L.P. vs Gimnasia M.",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/gimnasia-lp-vs-gimnasia-m-football-1493082/1"
+        ],
+        "wendy": []
+      },
+      "confidence": 0.5,
+      "merged": true,
+      "merged_count": 2,
+      "cluster_details": {
+        "original_sources": [
+          "sarah",
+          "wendy"
+        ],
+        "team_consistency": 0,
+        "time_consistency": 1,
+        "merge_quality": 55
+      },
+      "processing_metadata": {
+        "processed_at": "2026-08-21T17:28:48.128Z",
+        "processor_version": "4.2-enhanced-no-tournament",
+        "sport_specific_rules_applied": [
+          "exact_team_order"
+        ]
+      }
+    },
+    {
+      "unix_timestamp": 1787425200000,
+      "sport": "Football",
       "match": "Avellino vs Arezzo",
       "sources": {
         "tom": [],
@@ -7607,7 +7606,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7639,7 +7638,7 @@
         "merge_quality": 53.333333333333336
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7670,7 +7669,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7701,7 +7700,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7752,7 +7751,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7783,7 +7782,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7815,7 +7814,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7866,7 +7865,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.856Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7897,7 +7896,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7928,7 +7927,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.128Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7959,7 +7958,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -7990,7 +7989,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8042,7 +8041,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8073,7 +8072,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8104,7 +8103,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8136,7 +8135,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8168,7 +8167,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8200,7 +8199,7 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8253,7 +8252,7 @@
         "merge_quality": 56.666666666666664
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8286,7 +8285,7 @@
         "merge_quality": 56.666666666666664
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -8317,32 +8316,12 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
         ]
       }
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-nashville-sc-vs-columbus-crew/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1787445000000,
-      "sport": "Football",
-      "match": "Nashville SC vs Columbus Crew",
-      "tournament": "",
-      "match_id": "3d3a9f6540ed09c4",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
     },
     {
       "source": "sarah",
@@ -8358,6 +8337,26 @@
       "match": "Austin FC vs Philadelphia Union",
       "tournament": "",
       "match_id": "a9db024e189578a5",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-nashville-sc-vs-columbus-crew/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1787445000000,
+      "sport": "Football",
+      "match": "Nashville SC vs Columbus Crew",
+      "tournament": "",
+      "match_id": "3d3a9f6540ed09c4",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8570,32 +8569,12 @@
         "merge_quality": 60
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
         ]
       }
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/admin/ppv-angers-vs-lille/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1787490000000,
-      "sport": "Football",
-      "match": "Angers vs Lille",
-      "tournament": "",
-      "match_id": "c42bc18f74fd146a",
-      "quality_score": 100,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
     },
     {
       "source": "sarah",
@@ -8612,6 +8591,26 @@
       "match": "Manchester City vs AFC Bournemouth",
       "tournament": "",
       "match_id": "356ebcd307e4041e",
+      "quality_score": 100,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/admin/ppv-angers-vs-lille/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1787490000000,
+      "sport": "Football",
+      "match": "Angers vs Lille",
+      "tournament": "",
+      "match_id": "c42bc18f74fd146a",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8744,15 +8743,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-torino-vs-ac-milan/1"
+          "https://embedsports.top/embed/admin/ppv-atalanta-vs-sassuolo/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1787510700000,
       "sport": "Football",
-      "match": "Torino vs AC Milan",
+      "match": "Atalanta vs Sassuolo",
       "tournament": "",
-      "match_id": "2df2c46af7555bbd",
+      "match_id": "d45a8e645b01b63c",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8764,15 +8763,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-atalanta-vs-sassuolo/1"
+          "https://embedsports.top/embed/admin/ppv-torino-vs-ac-milan/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1787510700000,
       "sport": "Football",
-      "match": "Atalanta vs Sassuolo",
+      "match": "Torino vs AC Milan",
       "tournament": "",
-      "match_id": "d45a8e645b01b63c",
+      "match_id": "2df2c46af7555bbd",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -8843,7 +8842,7 @@
         "merge_quality": 55
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -9036,15 +9035,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-bodo-glimt-vs-nec-nijmegen/1"
+          "https://embedsports.top/embed/admin/ppv-lask-linz-vs-celtic/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1787684400000,
       "sport": "Football",
-      "match": "Bodo/Glimt vs NEC Nijmegen",
+      "match": "LASK Linz vs Celtic",
       "tournament": "",
-      "match_id": "dc91abbefad1acac",
+      "match_id": "e3cb620185b5e8c1",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9056,15 +9055,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-lask-linz-vs-celtic/1"
+          "https://embedsports.top/embed/admin/ppv-bodo-glimt-vs-nec-nijmegen/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1787684400000,
       "sport": "Football",
-      "match": "LASK Linz vs Celtic",
+      "match": "Bodo/Glimt vs NEC Nijmegen",
       "tournament": "",
-      "match_id": "e3cb620185b5e8c1",
+      "match_id": "dc91abbefad1acac",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9116,15 +9115,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-lyon-vs-fenerbahce/1"
+          "https://embedsports.top/embed/admin/ppv-aek-athens-vs-levski-sofia/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1787770800000,
       "sport": "Football",
-      "match": "Lyon vs Fenerbahce",
+      "match": "AEK Athens vs Levski Sofia",
       "tournament": "",
-      "match_id": "10553d9fe84bf3ef",
+      "match_id": "69928a72467f904a",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9136,15 +9135,15 @@
       "sources": {
         "tom": [],
         "sarah": [
-          "https://embedsports.top/embed/admin/ppv-aek-athens-vs-levski-sofia/1"
+          "https://embedsports.top/embed/admin/ppv-lyon-vs-fenerbahce/1"
         ],
         "wendy": []
       },
       "unix_timestamp": 1787770800000,
       "sport": "Football",
-      "match": "AEK Athens vs Levski Sofia",
+      "match": "Lyon vs Fenerbahce",
       "tournament": "",
-      "match_id": "69928a72467f904a",
+      "match_id": "10553d9fe84bf3ef",
       "quality_score": 100,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -9371,7 +9370,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -9436,7 +9435,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -9555,7 +9554,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.857Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -10016,7 +10015,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.129Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -10248,7 +10247,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -10457,7 +10456,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -10704,7 +10703,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -11705,7 +11704,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12004,7 +12003,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12141,7 +12140,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12170,7 +12169,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12201,7 +12200,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12248,7 +12247,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12529,7 +12528,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12612,7 +12611,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.858Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -12965,7 +12964,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.859Z",
+        "processed_at": "2026-08-21T17:28:48.130Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -13336,7 +13335,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.859Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15363,7 +15362,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.859Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15918,7 +15917,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -15947,7 +15946,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -16212,7 +16211,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -16259,7 +16258,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -16360,7 +16359,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -17847,7 +17846,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18038,7 +18037,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.131Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18086,7 +18085,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18277,7 +18276,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18306,7 +18305,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.860Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18479,7 +18478,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18598,7 +18597,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18717,7 +18716,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18908,7 +18907,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -18992,7 +18991,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19291,7 +19290,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19536,7 +19535,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19637,7 +19636,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19738,7 +19737,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19769,7 +19768,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19817,7 +19816,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -19864,7 +19863,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -20721,7 +20720,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.861Z",
+        "processed_at": "2026-08-21T17:28:48.132Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23414,7 +23413,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -23605,7 +23604,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -24192,7 +24191,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -24402,7 +24401,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -25134,7 +25133,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -25451,7 +25450,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -26542,7 +26541,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -26895,7 +26894,7 @@
         "merge_quality": 50
       },
       "processing_metadata": {
-        "processed_at": "2026-08-21T16:34:34.862Z",
+        "processed_at": "2026-08-21T17:28:48.133Z",
         "processor_version": "4.2-enhanced-no-tournament",
         "sport_specific_rules_applied": [
           "exact_team_order"
@@ -29047,7 +29046,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1787330069,
+      "unix_timestamp": 1787333323,
       "sport": "Tennis",
       "match": "Tennis Channel",
       "tournament": "",
@@ -30574,7 +30573,7 @@
         ],
         "wendy": []
       },
-      "unix_timestamp": 1787330069,
+      "unix_timestamp": 1787333323,
       "sport": "Motorsport",
       "match": "Rally TV",
       "tournament": "",
@@ -30781,6 +30780,106 @@
       "match": "IndyCar 2026 vs Snap vs on Milwaukee Mile 250 Race 1",
       "tournament": "",
       "match_id": "742c4ee4a4164425",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/collingwood-magpies-vs-brisbane-lions-australian-football-3544/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1787305200000,
+      "sport": "Australian Football",
+      "match": "Collingwood Football Club vs Brisbane Lions",
+      "tournament": "",
+      "match_id": "411a18086512e39b",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/carlton-blues-vs-fremantle-dockers-australian-football-3545/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1787368500000,
+      "sport": "Australian Football",
+      "match": "Carlton Blues vs Fremantle Dockers",
+      "tournament": "",
+      "match_id": "200ae1e20da1d926",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/melbourne-demons-vs-western-bulldogs-australian-football-3548/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1787379300000,
+      "sport": "Australian Football",
+      "match": "Melbourne Football Club vs Western Bulldogs",
+      "tournament": "",
+      "match_id": "6857fb8e638163de",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/geelong-cats-vs-richmond-tigers-australian-football-3547/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1787391900000,
+      "sport": "Australian Football",
+      "match": "Geelong Cats vs Richmond Tigers",
+      "tournament": "",
+      "match_id": "b39d7edc85c6c650",
+      "quality_score": 90,
+      "recovery_applied": [],
+      "recovery_confidence": 1,
+      "merged": false,
+      "confidence": 1
+    },
+    {
+      "source": "sarah",
+      "sources": {
+        "tom": [],
+        "sarah": [
+          "https://embedsports.top/embed/echo/adelaide-crows-vs-greater-western-sydney-giants-australian-football-3543/1"
+        ],
+        "wendy": []
+      },
+      "unix_timestamp": 1787393400000,
+      "sport": "Australian Football",
+      "match": "Adelaide Football Club vs Greater Western Sydney Giants",
+      "tournament": "",
+      "match_id": "5f77d8bd9991053a",
       "quality_score": 90,
       "recovery_applied": [],
       "recovery_confidence": 1,
@@ -31130,86 +31229,6 @@
       "match": "Lester Martinez vs Luka Plantic",
       "tournament": "",
       "match_id": "a425214502f5299c",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/carlton-blues-vs-fremantle-dockers-australian-football-3545/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1787368500000,
-      "sport": "Australian Football",
-      "match": "Carlton Blues vs Fremantle Dockers",
-      "tournament": "",
-      "match_id": "200ae1e20da1d926",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/melbourne-demons-vs-western-bulldogs-australian-football-3548/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1787379300000,
-      "sport": "Australian Football",
-      "match": "Melbourne Football Club vs Western Bulldogs",
-      "tournament": "",
-      "match_id": "6857fb8e638163de",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/geelong-cats-vs-richmond-tigers-australian-football-3618/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1787391900000,
-      "sport": "Australian Football",
-      "match": "Geelong Cats vs Richmond Tigers",
-      "tournament": "",
-      "match_id": "366aa3da48144a8d",
-      "quality_score": 90,
-      "recovery_applied": [],
-      "recovery_confidence": 1,
-      "merged": false,
-      "confidence": 1
-    },
-    {
-      "source": "sarah",
-      "sources": {
-        "tom": [],
-        "sarah": [
-          "https://embedsports.top/embed/echo/adelaide-crows-vs-greater-western-sydney-giants-australian-football-3619/1"
-        ],
-        "wendy": []
-      },
-      "unix_timestamp": 1787393400000,
-      "sport": "Australian Football",
-      "match": "Adelaide Football Club vs Greater Western Sydney Giants",
-      "tournament": "",
-      "match_id": "3dee8a8d75849f34",
       "quality_score": 90,
       "recovery_applied": [],
       "recovery_confidence": 1,
